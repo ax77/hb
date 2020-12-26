@@ -1,4 +1,4 @@
-package njast.ast_class.methods;
+package njast.ast_class;
 
 public class FormalParameter {
 

@@ -1,33 +1,62 @@
 package njast.ast_class;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.symtab.Ident;
 
 public class ClassDeclaration {
-  private Ident identifier; // njast:mark - symbol instead ident?
-  private ClassBody classBody;
+  //<class body declaration> ::= <class member declaration> | <static initializer> | <constructor declaration>
 
-  public ClassDeclaration() {
+  private final Ident identifier;
+
+  // constructors
+  private List<ConstructorDeclaration> constructors;
+
+  // static-initializers
+  // TODO:
+
+  // members
+  private List<FieldDeclaration> fields;
+  private List<MethodDeclaration> methods;
+
+  public ClassDeclaration(Ident identifier) {
+    this.identifier = identifier;
+    initLists();
   }
 
-  public ClassDeclaration(Ident identifier, ClassBody classBody) {
-    this.identifier = identifier;
-    this.classBody = classBody;
+  private void initLists() {
+    this.constructors = new ArrayList<ConstructorDeclaration>();
+    this.fields = new ArrayList<FieldDeclaration>();
+    this.methods = new ArrayList<MethodDeclaration>();
   }
 
   public Ident getIdentifier() {
     return identifier;
   }
 
-  public void setIdentifier(Ident identifier) {
-    this.identifier = identifier;
+  public void put(ConstructorDeclaration e) {
+    this.constructors.add(e);
   }
 
-  public ClassBody getClassBody() {
-    return classBody;
+  public void put(FieldDeclaration e) {
+    this.fields.add(e);
   }
 
-  public void setClassBody(ClassBody classBody) {
-    this.classBody = classBody;
+  public void put(MethodDeclaration e) {
+    this.methods.add(e);
+  }
+
+  public List<ConstructorDeclaration> getConstructorDeclaration() {
+    return constructors;
+  }
+
+  public List<FieldDeclaration> getFieldDeclaration() {
+    return fields;
+  }
+
+  public List<MethodDeclaration> getMethodDeclaration() {
+    return methods;
   }
 
 }

@@ -1,21 +1,16 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_class.ClassBody;
-import njast.ast_class.ClassBodyDeclaration;
 import njast.ast_class.ClassDeclaration;
-import njast.ast_class.ClassMemberDeclaration;
-import njast.ast_class.fields.FieldDeclaration;
-import njast.ast_class.methods.FormalParameterList;
-import njast.ast_class.methods.MethodBody;
-import njast.ast_class.methods.MethodDeclaration;
-import njast.ast_class.methods.MethodDeclarator;
-import njast.ast_class.methods.MethodHeader;
-import njast.ast_class.methods.ResultType;
+import njast.ast_class.ConstructorDeclaration;
+import njast.ast_class.FieldDeclaration;
+import njast.ast_class.MethodDeclaration;
 import njast.ast_class.vars.VariableDeclarator;
-import njast.ast_class.vars.VariableDeclarators;
 import njast.ast_top.TypeDeclaration;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
@@ -38,10 +33,9 @@ public class TypeDeclarationParse {
 
     if (tok.isIdent(IdentMap.class_ident)) {
 
-      Ident ident = parser.getIdent();
-      ClassBody classBody = parseClassBody();
+      ClassDeclaration classBody = parseClassDeclaration_();
 
-      TypeDeclaration typeDeclaration = new TypeDeclaration(new ClassDeclaration(ident, classBody));
+      TypeDeclaration typeDeclaration = new TypeDeclaration(classBody);
       return typeDeclaration;
 
     }
@@ -58,20 +52,20 @@ public class TypeDeclarationParse {
   //
   //  <class member declaration> ::= <field declaration> | <method declaration>
 
-  private ClassBody parseClassBody() {
+  private ClassDeclaration parseClassDeclaration_() {
+    Ident ident = parser.getIdent();
     Token lbrace = parser.lbrace();
 
-    ClassBody classBody = new ClassBody();
+    ClassDeclaration clazz = new ClassDeclaration(ident);
 
     // class C { }
     // ..........^
     if (parser.is(T.T_RIGHT_BRACE)) {
-      return classBody;
+      return clazz;
     }
 
     while (!parser.isEof()) {
-      ClassBodyDeclaration classBodyDeclaration = parseClassBodyDeclaration();
-      classBody.put(classBodyDeclaration);
+      putConstructorOrFieldOrMethodIntoClass(clazz);
 
       if (parser.is(T.T_RIGHT_BRACE)) {
         break;
@@ -81,39 +75,44 @@ public class TypeDeclarationParse {
 
     Token rbrace = parser.rbrace();
 
-    return classBody;
+    return clazz;
   }
 
-  private ClassBodyDeclaration parseClassBodyDeclaration() {
+  private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration classBody) {
 
-    ClassMemberDeclaration classMemberDeclaration = parseClassMemberDeclaration();
-    return new ClassBodyDeclaration(classMemberDeclaration);
-  }
+    // 1) constructor
+    // 
+    if (parser.is(T.TOKEN_IDENT) && parser.tok().getIdent().equals(classBody.getIdentifier())) {
+      Ident identifier = parser.getIdent();
+      ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration(identifier);
 
-  //  <field declaration> ::= <field modifiers>? <type> <variable declarators> ;
-  //
-  //  <field modifiers> ::= <field modifier> | <field modifiers> <field modifier>
-  //
-  //  <field modifier> ::= public | protected | private | static | final | transient | volatile
-  //
-  //  <variable declarators> ::= <variable declarator> | <variable declarators> , <variable declarator>
-  //
-  //  <variable declarator> ::= <variable declarator id> | <variable declarator id> = <variable initializer>
-  //
-  //  <variable declarator id> ::= <identifier> | <variable declarator id> [ ]
-  //
-  //  <variable initializer> ::= <expression> | <array initializer>
+      // TODO: params
+      parser.lparen();
+      parser.rparen();
 
-  private ClassMemberDeclaration parseClassMemberDeclaration() {
+      // TODO: body
+      parser.lbrace();
+      parser.rbrace();
 
-    boolean isFunction = new IsFunc(parser).isFunc();
-    if (isFunction) {
-      MethodDeclaration methodDeclaration = parseMethodDeclaration();
-      return new ClassMemberDeclaration(methodDeclaration);
+      classBody.put(constructorDeclaration);
+      return;
     }
 
-    FieldDeclaration fieldDeclaration = parseFieldDeclaration();
-    return new ClassMemberDeclaration(fieldDeclaration);
+    // 2) function or field
+    //
+    boolean isFunction = new IsFunc(parser).isFunc();
+
+    if (isFunction) {
+      MethodDeclaration methodDeclaration = parseMethodDeclaration();
+      classBody.put(methodDeclaration);
+    }
+
+    else {
+
+      FieldDeclaration fieldDeclaration = parseFieldDeclaration();
+      classBody.put(fieldDeclaration);
+    }
+
   }
 
   private MethodDeclaration parseMethodDeclaration() {
@@ -126,54 +125,37 @@ public class TypeDeclarationParse {
     //    <method declarator> ::= <identifier> ( <formal parameter list>? )
     //    <method body> ::= <block> | ;
 
-    MethodHeader methodHeader = parseMethodHeader();
-    MethodBody methodBody = parseMethodBody();
-    return new MethodDeclaration(methodHeader, methodBody);
-  }
-
-  private MethodBody parseMethodBody() {
-    // TODO:
-    parser.lbrace();
-    parser.rbrace();
-    return new MethodBody();
-  }
-
-  private MethodHeader parseMethodHeader() {
-    ResultType resultType = parseResultType();
-    MethodDeclarator methodDeclarator = parseMethodDeclarator();
-    return new MethodHeader(resultType, methodDeclarator);
-  }
-
-  private MethodDeclarator parseMethodDeclarator() {
-    // <method declarator> ::= <identifier> ( <formal parameter list>? )
-    Ident ident = parser.getIdent();
-    parser.lparen();
-    parser.rparen();
-    return new MethodDeclarator(ident, new FormalParameterList());
-  }
-
-  private ResultType parseResultType() {
     // <result type> ::= <type> | void
 
     parser.checkedMove(IdentMap.void_ident);
-    ResultType resultType = new ResultType();
 
-    return resultType;
+    Ident ident = parser.getIdent();
+    MethodDeclaration md = new MethodDeclaration(ident);
+
+    // TODO: params
+    parser.lparen();
+    parser.rparen();
+
+    // TODO: body
+    parser.lbrace();
+    parser.rbrace();
+
+    return md;
   }
 
   private FieldDeclaration parseFieldDeclaration() {
     Type type = parseType();
-    VariableDeclarators variableDeclarators = parseVariableDeclarators();
+    List<VariableDeclarator> variableDeclarators = parseVariableDeclarators();
 
     parser.semicolon();
     return new FieldDeclaration(type, variableDeclarators);
   }
 
-  private VariableDeclarators parseVariableDeclarators() {
-    VariableDeclarators variableDeclarators = new VariableDeclarators();
+  private List<VariableDeclarator> parseVariableDeclarators() {
+    List<VariableDeclarator> variableDeclarators = new ArrayList<VariableDeclarator>();
 
     VariableDeclarator variableDeclarator = parseVariableDeclarator();
-    variableDeclarators.put(variableDeclarator);
+    variableDeclarators.add(variableDeclarator);
 
     // while(is comma) { rest }
 

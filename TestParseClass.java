@@ -1,12 +1,9 @@
 package njast;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
 import org.junit.Test;
 
-import njast.ast_top.TypeDeclaration;
 import njast.ast_top.TypeDeclarationsList;
 import njast.ast_visitors.AstVisitor;
 import njast.ast_visitors.AstVisitorXml;
@@ -24,6 +21,7 @@ public class TestParseClass {
     sb.append(" /*002*/    int a;        \n");
     sb.append(" /*003*/    int b;        \n");
     sb.append(" /*004*/    int c;        \n");
+    sb.append(" /*004*/    First() {}    \n");
     sb.append(" /*005*/    void x() {    \n");
     sb.append(" /*006*/    }             \n");
     sb.append(" /*007*/    void y() {    \n");
@@ -35,7 +33,7 @@ public class TestParseClass {
 
     Parse p = new ParserMain(sb).initiateParse();
     TypeDeclarationsList unit = p.parse();
-
+    System.out.println();
   }
 
   @Test

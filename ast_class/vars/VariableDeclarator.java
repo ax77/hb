@@ -10,35 +10,11 @@ public class VariableDeclarator {
   //
   //  <variable initializer> ::= <expression> | <array initializer>
 
-  private Ident variableDeclaratorId; // njast:mark - symbol instead ident?
-  private VarialbeInitializer varialbeInitializer;
+  private final Ident identifier; // njast:mark - symbol instead ident?
+  private VarialbeInitializer initializer;
 
-  public VariableDeclarator() {
-  }
-
-  public VariableDeclarator(Ident variableDeclaratorId) {
-    this.variableDeclaratorId = variableDeclaratorId;
-  }
-
-  public VariableDeclarator(Ident variableDeclaratorId, VarialbeInitializer varialbeInitializer) {
-    this.variableDeclaratorId = variableDeclaratorId;
-    this.varialbeInitializer = varialbeInitializer;
-  }
-
-  public Ident getVariableDeclaratorId() {
-    return variableDeclaratorId;
-  }
-
-  public void setVariableDeclaratorId(Ident variableDeclaratorId) {
-    this.variableDeclaratorId = variableDeclaratorId;
-  }
-
-  public VarialbeInitializer getVarialbeInitializer() {
-    return varialbeInitializer;
-  }
-
-  public void setVarialbeInitializer(VarialbeInitializer varialbeInitializer) {
-    this.varialbeInitializer = varialbeInitializer;
+  public VariableDeclarator(Ident identifier) {
+    this.identifier = identifier;
   }
 
 }
