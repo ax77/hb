@@ -11,7 +11,7 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_parsers.TypeDeclarationParse;
+import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.ast_top.TypeDeclaration;
 import njast.ast_top.TypeDeclarationsList;
 import njast.errors.EParseErrors;
@@ -406,7 +406,7 @@ public class Parse {
       // before each function or global declaration
       moveStraySemicolon();
 
-      TypeDeclaration ed = new TypeDeclarationParse(this).parse();
+      TypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
       tu.put(ed);
     }
 

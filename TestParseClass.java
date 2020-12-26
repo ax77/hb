@@ -2,6 +2,7 @@ package njast;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import njast.ast_top.TypeDeclarationsList;
@@ -22,11 +23,11 @@ public class TestParseClass {
     sb.append(" /*003*/    int b;        \n");
     sb.append(" /*004*/    int c;        \n");
     sb.append(" /*004*/    First() {}    \n");
-    sb.append(" /*005*/    void x() {    \n");
+    sb.append(" /*005*/    int x() {    \n");
     sb.append(" /*006*/    }             \n");
-    sb.append(" /*007*/    void y() {    \n");
+    sb.append(" /*007*/    int y() {    \n");
     sb.append(" /*008*/    }             \n");
-    sb.append(" /*009*/    void z() {    \n");
+    sb.append(" /*009*/    int z() {    \n");
     sb.append(" /*010*/    }             \n");
     sb.append(" /*011*/  }               \n");
     //@formatter:on
@@ -36,6 +37,7 @@ public class TestParseClass {
     System.out.println();
   }
 
+  @Ignore
   @Test
   public void testVisitor() throws Exception {
 
@@ -45,11 +47,11 @@ public class TestParseClass {
     sb.append(" /*002*/    int a;        \n");
     sb.append(" /*003*/    int b;        \n");
     sb.append(" /*004*/    int c;        \n");
-    sb.append(" /*005*/    void x() {    \n");
+    sb.append(" /*005*/    int x() {    \n");
     sb.append(" /*006*/    }             \n");
-    sb.append(" /*007*/    void y() {    \n");
+    sb.append(" /*007*/    int y() {    \n");
     sb.append(" /*008*/    }             \n");
-    sb.append(" /*009*/    void z() {    \n");
+    sb.append(" /*009*/    int z() {    \n");
     sb.append(" /*010*/    }             \n");
     sb.append(" /*011*/  }               \n");
     //@formatter:on

@@ -1,8 +1,6 @@
 package njast.ast_class;
 
-import java.util.List;
-
-import njast.ast_class.vars.VariableDeclarator;
+import njast.ast_class.vars.VariableDeclaratorsList;
 import njast.types.Type;
 
 public class FieldDeclaration {
@@ -24,9 +22,9 @@ public class FieldDeclaration {
   // private FieldModifier fieldModifier;
 
   private Type type;
-  private List<VariableDeclarator> variables;
+  private VariableDeclaratorsList variables;
 
-  public FieldDeclaration(Type type, List<VariableDeclarator> variables) {
+  public FieldDeclaration(Type type, VariableDeclaratorsList variables) {
     this.type = type;
     this.variables = variables;
   }

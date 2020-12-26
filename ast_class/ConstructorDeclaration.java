@@ -15,22 +15,17 @@ public class ConstructorDeclaration {
   //
   //  <constructor declarator> ::= <simple type name> ( <formal parameter list>? )
   //
-  // <constructor body> ::= { <explicit constructor invocation>? <block statements>? }
+  //  <constructor body> ::= { <explicit constructor invocation>? <block statements>? }
 
   private final Ident identifier;
-  private List<FormalParameter> formalParameters;
+  private FormalParameterList formalParameterList;
 
   public ConstructorDeclaration(Ident identifier) {
     this.identifier = identifier;
-    this.formalParameters = new ArrayList<FormalParameter>();
   }
 
   public Ident getIdentifier() {
     return identifier;
-  }
-
-  public List<FormalParameter> getFormalParameters() {
-    return formalParameters;
   }
 
 }
