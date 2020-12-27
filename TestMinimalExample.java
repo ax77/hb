@@ -33,7 +33,7 @@ public class TestMinimalExample {
     sb.append(" /*014*/    // }                                           \n");
     sb.append(" /*015*/    public int func1(int a, int b) {            \n");
     sb.append(" /*016*/      int local = 32;                           \n");
-    sb.append(" /*017*/      return field + local + a + b + func0();   \n");
+    sb.append(" /*017*/      return /*field + local + a + b + */ func0().func().abc;   \n");
     sb.append(" /*018*/    }                                           \n");
     sb.append(" /*019*/  }                                             \n");
     //@formatter:on

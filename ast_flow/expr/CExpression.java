@@ -15,6 +15,7 @@ public class CExpression {
   private NumericConstant cnumber;
   private Ident symbol;
   private Ecall methodInvocation;
+  private Eselect fieldAccess;
 
   public CExpression(Eunary unary) {
     this.base = CExpressionBase.EUNARY;
@@ -47,8 +48,13 @@ public class CExpression {
   }
 
   public CExpression(Ecall methodInvocation) {
-    this.base = CExpressionBase.EFCALL;
+    this.base = CExpressionBase.EMETHOD_INVOCATION;
     this.methodInvocation = methodInvocation;
+  }
+
+  public CExpression(Eselect fieldAccess) {
+    this.base = CExpressionBase.EFIELD_ACCESS;
+    this.fieldAccess = fieldAccess;
   }
 
   public CExpression(Ident symbol) {

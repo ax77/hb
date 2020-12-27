@@ -36,6 +36,7 @@ import njast.ast_checkers.IsIdent;
 import njast.ast_flow.expr.CExpression;
 import njast.ast_flow.expr.Ebinary;
 import njast.ast_flow.expr.Ecall;
+import njast.ast_flow.expr.Eselect;
 import njast.ast_flow.expr.Eternary;
 import njast.ast_flow.expr.Eunary;
 import njast.ast_flow.expr.ExprUtil;
@@ -328,6 +329,13 @@ public class ParseExpression {
         parser.rparen();
       }
 
+      else if (parser.tp() == T.T_DOT) {
+        Token operator = parser.moveget();
+        Token identifier = parser.checkedMove(T.TOKEN_IDENT);
+        lhs = new CExpression(new Eselect(lhs, identifier));
+
+      }
+
       else {
         break;
       }
@@ -438,38 +446,17 @@ public class ParseExpression {
   private CExpression e_prim() {
 
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
-      Token saved = parser.tok();
-      parser.move();
+      Token saved = parser.moveget();
 
       if (saved.ofType(TOKEN_STRING)) {
         parser.unimplemented("string constants");
-        //return build_strconst(saved);
-      }
-
-      else {
-
-        //TODO:NUMBERS
-        String toeval = "";
-        if (saved.ofType(TOKEN_CHAR)) {
-          toeval = String.format("%d", saved.getCharconstant().getV());
-        } else {
-          toeval = saved.getValue();
-        }
-
-        // TODO:NUMBERS
-        C_strtox strtox = new C_strtox(toeval);
-        return build_number(strtox, saved);
+      } else {
+        return primaryNumber(saved);
       }
     }
 
     if (parser.tp() == T.TOKEN_IDENT) {
       Token saved = parser.moveget();
-
-      //      CSymbol sym = parser.getSym(saved.getIdent());
-      //      if (sym == null) {
-      //        parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
-      //      }
-
       return new CExpression(saved.getIdent());
     }
 
@@ -483,6 +470,20 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
+  }
+
+  private CExpression primaryNumber(Token saved) {
+    //TODO:NUMBERS
+    String toeval = "";
+    if (saved.ofType(TOKEN_CHAR)) {
+      toeval = String.format("%d", saved.getCharconstant().getV());
+    } else {
+      toeval = saved.getValue();
+    }
+
+    // TODO:NUMBERS
+    C_strtox strtox = new C_strtox(toeval);
+    return build_number(strtox, saved);
   }
 
 }
