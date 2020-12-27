@@ -12,8 +12,8 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_parsers.ParseTypeDeclarationsList;
-import njast.ast_top.TypeDeclaration;
 import njast.ast_top.CompilationUnit;
+import njast.ast_top.TypeDeclaration;
 import njast.errors.EParseErrors;
 import njast.errors.EParseException;
 

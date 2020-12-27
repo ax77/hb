@@ -1,4 +1,4 @@
-package njast.ast_flow;
+package njast.ast_flow.expr;
 
 import jscan.cstrtox.NumType;
 

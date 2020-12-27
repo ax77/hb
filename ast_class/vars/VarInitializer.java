@@ -1,6 +1,6 @@
 package njast.ast_class.vars;
 
-import njast.ast_flow.CExpression;
+import njast.ast_flow.expr.CExpression;
 
 public class VarInitializer {
   private CExpression initializer;

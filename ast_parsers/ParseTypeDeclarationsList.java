@@ -5,7 +5,6 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsConstructor;
 import njast.ast_checkers.IsFunc;
-import njast.ast_checkers.IsIdent;
 import njast.ast_class.ClassDeclaration;
 import njast.ast_class.ConstructorDeclaration;
 import njast.ast_class.FieldDeclaration;

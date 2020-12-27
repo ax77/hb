@@ -1,4 +1,4 @@
-package njast.ast_flow;
+package njast.ast_flow.expr;
 
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_EQUAL;

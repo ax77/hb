@@ -3,8 +3,8 @@ package njast.ast_visitors;
 import java.util.LinkedList;
 import java.util.List;
 
-import njast.ast_top.TypeDeclaration;
 import njast.ast_top.CompilationUnit;
+import njast.ast_top.TypeDeclaration;
 
 public class AstVisitorXml implements AstVisitor {
 

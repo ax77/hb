@@ -1,6 +1,7 @@
 package njast.ast_flow;
 
 import jscan.tokenize.Token;
+import njast.ast_flow.expr.CExpression;
 
 public class CStatement {
 

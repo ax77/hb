@@ -26,13 +26,19 @@ import static jscan.tokenize.T.T_RSHIFT;
 import static jscan.tokenize.T.T_TIMES;
 import static jscan.tokenize.T.T_XOR;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.cstrtox.C_strtox;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_flow.CExpression;
-import njast.ast_flow.CExpressionBase;
-import njast.ast_flow.ExprUtil;
+import njast.ast_flow.expr.CExpression;
+import njast.ast_flow.expr.Ebinary;
+import njast.ast_flow.expr.Ecall;
+import njast.ast_flow.expr.Eternary;
+import njast.ast_flow.expr.Eunary;
+import njast.ast_flow.expr.ExprUtil;
 import njast.parse.Parse;
 
 public class ParseExpression {
@@ -43,23 +49,23 @@ public class ParseExpression {
   }
 
   private CExpression build_unary(Token op, CExpression operand) {
-    return new CExpression(op, operand);
+    return new CExpression(new Eunary(op, operand));
   }
 
   private CExpression build_binary(Token operator, CExpression lhs, CExpression rhs) {
-    return new CExpression(CExpressionBase.EBINARY, lhs, rhs, operator);
+    return new CExpression(new Ebinary(operator, lhs, rhs));
   }
 
   private CExpression build_ternary(CExpression cnd, CExpression btrue, CExpression bfalse, Token tok) {
-    return new CExpression(cnd, btrue, bfalse, tok);
+    return new CExpression(new Eternary(cnd, btrue, bfalse));
   }
 
   private CExpression build_assign(Token tok, CExpression lvalue, CExpression rvalue) {
-    return new CExpression(CExpressionBase.EASSIGN, lvalue, rvalue, tok);
+    return new CExpression(new Ebinary(tok, lvalue, rvalue));
   }
 
-  private CExpression build_comma(Token tok, T op, CExpression lhs, CExpression rhs) {
-    return new CExpression(CExpressionBase.ECOMMA, lhs, rhs, tok);
+  private CExpression build_comma(Token tok, CExpression lhs, CExpression rhs) {
+    return new CExpression(new Ebinary(tok, lhs, rhs));
   }
 
   // numeric-char-constants
@@ -72,7 +78,7 @@ public class ParseExpression {
 
     while (parser.tp() == T.T_COMMA) {
       Token saved = parser.checkedMove(T.T_COMMA);
-      e = build_comma(saved, saved.getType(), e, e_expression());
+      e = build_comma(saved, e, e_expression());
     }
 
     return e;
@@ -297,6 +303,36 @@ public class ParseExpression {
 
     CExpression lhs = e_prim();
 
+    for (;;) {
+
+      // function - call
+      //
+      if (parser.tp() == T_LEFT_PAREN) {
+        Token lparen = parser.lparen();
+
+        List<CExpression> arglist = new ArrayList<CExpression>();
+
+        if (parser.tp() != T_RIGHT_PAREN) {
+          CExpression onearg = e_assign();
+          arglist.add(onearg);
+
+          while (parser.tp() == T.T_COMMA) {
+            parser.move();
+
+            CExpression oneargSeq = e_assign();
+            arglist.add(oneargSeq);
+          }
+        }
+
+        lhs = new CExpression(new Ecall(lhs, arglist));
+        parser.rparen();
+      }
+
+      else {
+        break;
+      }
+    }
+
     //    for (;;) {
     //
     //      // function - call
@@ -427,15 +463,14 @@ public class ParseExpression {
     }
 
     if (parser.tp() == T.TOKEN_IDENT) {
-      Token saved = parser.tok();
-      parser.move();
+      Token saved = parser.moveget();
 
       //      CSymbol sym = parser.getSym(saved.getIdent());
       //      if (sym == null) {
       //        parser.perror("symbol '" + saved.getValue() + "' was not declared in the scope.");
       //      }
 
-      return new CExpression(saved);
+      return new CExpression(saved.getIdent());
     }
 
     if (parser.tp() == T_LEFT_PAREN) {

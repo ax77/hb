@@ -14,9 +14,9 @@ import njast.ast_class.vars.VarDeclaratorsList;
 import njast.ast_flow.Block;
 import njast.ast_flow.BlockStatement;
 import njast.ast_flow.BlockStatements;
-import njast.ast_flow.CExpression;
 import njast.ast_flow.CStatement;
 import njast.ast_flow.CStatementBase;
+import njast.ast_flow.expr.CExpression;
 import njast.parse.Parse;
 import njast.types.Type;
 

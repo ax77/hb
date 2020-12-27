@@ -5,7 +5,7 @@ import jscan.tokenize.T;
 import njast.ast_class.vars.VarDeclarator;
 import njast.ast_class.vars.VarDeclaratorsList;
 import njast.ast_class.vars.VarInitializer;
-import njast.ast_flow.CExpression;
+import njast.ast_flow.expr.CExpression;
 import njast.parse.Parse;
 
 public class ParseVarDeclaratorsList {
