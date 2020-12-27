@@ -8,6 +8,7 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.ast_class.vars.LocalVarDeclaration;
 import njast.ast_class.vars.VarDeclaratorsList;
 import njast.ast_flow.Block;
@@ -107,7 +108,7 @@ public class ParseStatement {
 
   private BlockStatement parseOneBlock() {
 
-    if (parser.isDeclSpecStart()) {
+    if (IsIdent.isBasicTypeIdent(parser.tok())) {
 
       Type type = new ParseType(parser).parse();
       VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();

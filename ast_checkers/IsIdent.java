@@ -49,24 +49,21 @@ public abstract class IsIdent {
         || what.isIdent(IdentMap.float_ident)
         || what.isIdent(IdentMap.double_ident);
   }
-
-  public static boolean isConstIdent(Token what) {
-    return what.isIdent(IdentMap.const_ident);
+  
+  public static boolean isBasicTypeIdent(Token what) {
+    return what.isIdent(IdentMap.byte_ident)
+        || what.isIdent(IdentMap.short_ident)
+        || what.isIdent(IdentMap.char_ident)
+        || what.isIdent(IdentMap.int_ident)
+        || what.isIdent(IdentMap.long_ident)
+        || what.isIdent(IdentMap.float_ident)
+        || what.isIdent(IdentMap.double_ident)
+        || what.isIdent(IdentMap.boolean_ident);
   }
 
-  public static boolean isVolatileIdent(Token what) {
-    return what.isIdent(IdentMap.volatile_ident);
+  public static boolean isUserDefinedIdentNoKeyword(Token what) {
+    return what.ofType(T.TOKEN_IDENT) && !what.isBuiltinIdent();
   }
-
-  public static boolean isTypeQual(Token what) {
-    return isConstIdent(what) || isVolatileIdent(what) ;
-  }
-
-
-  public static boolean isEnumSpecStart(Token what) {
-    return what.isIdent(IdentMap.enum_ident);
-  }
-  //@formatter:on
 
   public static boolean is_class_modifier(Token what) {
     return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.abstract_ident)
@@ -74,43 +71,61 @@ public abstract class IsIdent {
   }
 
   public static boolean is_field_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.protected_ident)
-        || what.isIdent(IdentMap.private_ident) || what.isIdent(IdentMap.static_ident)
-        || what.isIdent(IdentMap.final_ident) || what.isIdent(IdentMap.transient_ident)
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.protected_ident)
+        || what.isIdent(IdentMap.private_ident) 
+        || what.isIdent(IdentMap.static_ident)
+        || what.isIdent(IdentMap.final_ident) 
+        || what.isIdent(IdentMap.transient_ident)
         || what.isIdent(IdentMap.volatile_ident);
   }
 
   public static boolean is_method_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.protected_ident)
-        || what.isIdent(IdentMap.private_ident) || what.isIdent(IdentMap.static_ident)
-        || what.isIdent(IdentMap.abstract_ident) || what.isIdent(IdentMap.final_ident)
-        || what.isIdent(IdentMap.synchronized_ident) || what.isIdent(IdentMap.native_ident);
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.protected_ident)
+        || what.isIdent(IdentMap.private_ident) 
+        || what.isIdent(IdentMap.static_ident)
+        || what.isIdent(IdentMap.abstract_ident) 
+        || what.isIdent(IdentMap.final_ident)
+        || what.isIdent(IdentMap.synchronized_ident) 
+        || what.isIdent(IdentMap.native_ident);
   }
 
   public static boolean is_constructor_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.protected_ident)
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.protected_ident)
         || what.isIdent(IdentMap.private_ident);
   }
 
   public static boolean is_interface_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.abstract_ident);
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.abstract_ident);
   }
 
   public static boolean is_abstract_method_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.abstract_ident);
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.abstract_ident);
   }
 
   public static boolean is_constant_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.static_ident)
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.static_ident)
         || what.isIdent(IdentMap.final_ident);
   }
 
   public static boolean is_any_modifier(Token what) {
-    return what.isIdent(IdentMap.public_ident) || what.isIdent(IdentMap.abstract_ident)
-        || what.isIdent(IdentMap.final_ident) || what.isIdent(IdentMap.protected_ident)
-        || what.isIdent(IdentMap.private_ident) || what.isIdent(IdentMap.static_ident)
-        || what.isIdent(IdentMap.transient_ident) || what.isIdent(IdentMap.volatile_ident)
-        || what.isIdent(IdentMap.synchronized_ident) || what.isIdent(IdentMap.native_ident);
+    return what.isIdent(IdentMap.public_ident) 
+        || what.isIdent(IdentMap.abstract_ident)
+        || what.isIdent(IdentMap.final_ident) 
+        || what.isIdent(IdentMap.protected_ident)
+        || what.isIdent(IdentMap.private_ident) 
+        || what.isIdent(IdentMap.static_ident)
+        || what.isIdent(IdentMap.transient_ident) 
+        || what.isIdent(IdentMap.volatile_ident)
+        || what.isIdent(IdentMap.synchronized_ident) 
+        || what.isIdent(IdentMap.native_ident);
   }
+  
+  //@formatter:on
 
 }

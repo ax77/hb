@@ -12,7 +12,6 @@ import njast.ast_class.MethodDeclaration;
 import njast.ast_top.TypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
-import njast.parse.ParseState;
 import njast.symtab.IdentMap;
 
 public class ParseTypeDeclarationsList {

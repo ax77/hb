@@ -11,7 +11,6 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.ast_top.TypeDeclaration;
 import njast.ast_top.TypeDeclarationsList;
@@ -306,81 +305,17 @@ public class Parse {
 
   //////////////////////////////////////////////////////////////////////
 
-  public boolean isAssignOperator() {
-    return IsIdent.isAssignOperator(tok);
-  }
-
-  public boolean isUnaryOperator() {
-    return IsIdent.isUnaryOperator(tok);
-  }
-
-  public boolean isTypeSpec() {
-    return IsIdent.isTypeSpec(tok);
-  }
-
-  public boolean isTypeQual() {
-    return IsIdent.isTypeQual(tok);
-  }
-
-  public boolean isEnumSpecStart() {
-    return IsIdent.isEnumSpecStart(tok);
-  }
-
-  public boolean isDeclSpecStart() {
-    return isTypeSpec() || isTypeQual() || isEnumSpecStart();
-  }
-
-  public boolean isDeclSpecStart(Token what) {
-    return IsIdent.isTypeSpec(what) || IsIdent.isTypeQual(what) || IsIdent.isEnumSpecStart(what);
-  }
-
-  public boolean isAttributeStartC2X() {
-    Token currtok = tok();
-    Token nexttok = peek();
-    // [[  ...  ]]
-    return currtok.ofType(T.T_LEFT_BRACKET) && nexttok.ofType(T.T_LEFT_BRACKET);
-  }
-
-  //  private boolean isTypedefName(Token tok) {
-  //    if (!tok.ofType(TOKEN_IDENT)) {
-  //      return false;
-  //    }
-  //    if (tok.isBuiltinIdent()) {
-  //      return false;
-  //    }
-  //    CSymbol s = getSym(tok.getIdent());
-  //    return s != null && s.getBase() == CSymbolBase.SYM_TYPEDEF;
-  //  }
-
   public boolean isEof() {
     return tok.ofType(T.TOKEN_EOF);
   }
-
-  //  public CType parseTypename() {
-  //
-  //    CType base = new ParseBase(this).parseBase();
-  //    CDecl decl = new ParseDecl(this).parseDecl();
-  //    CType type = TypeMerger.build(base, decl);
-  //
-  //    if (!decl.isAstract()) {
-  //      perror("expect abstract declarator.");
-  //    }
-  //    return null;
-  //
-  //  }
 
   public Tokenlist getTokenlist() {
     return tokenlist;
   }
 
-  //  public void setCurrentFn(FunctionDefinition currentFn) {
-  //    this.currentFn = currentFn;
-  //  }
-
   public void restoreState(ParseState parseState) {
     this.tokenlist.setOffset(parseState.getTokenlistOffset());
     this.tok = parseState.getTok();
-    //    this.currentFn = parseState.getCurrentFn();
     this.ringBuffer = new ArrayList<Token>(parseState.getRingBuffer());
     this.lastloc = parseState.getLastloc();
     this.prevtok = parseState.getPrevtok();

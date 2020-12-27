@@ -1,10 +1,9 @@
 package njast.ast_parsers;
 
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
-import njast.types.IntegralType;
-import njast.types.NumericType;
 import njast.types.PrimitiveType;
 import njast.types.Type;
 
@@ -16,13 +15,13 @@ public class ParseType {
   }
 
   public Type parse() {
-    if (!parser.isTypeSpec()) {
+    if (!IsIdent.isBasicTypeIdent(parser.tok())) {
       parser.perror("expect int for test");
     }
 
     Token tok = parser.moveget();
     if (tok.isIdent(IdentMap.int_ident)) {
-      return new Type(new PrimitiveType(new NumericType(IntegralType.TP_INT)));
+      return new Type(PrimitiveType.TP_INT);
     }
 
     parser.perror("unimpl");
