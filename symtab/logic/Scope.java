@@ -1,4 +1,4 @@
-package njast.symtab;
+package njast.symtab.logic;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -7,9 +7,11 @@ import java.util.Map.Entry;
 /// file or block
 public class Scope<K, V> {
   private final HashMap<K, V> scope;
+  private final String name;
 
-  public Scope() {
+  public Scope(String name) {
     this.scope = new HashMap<K, V>();
+    this.name = name;
   }
 
   public void put(K key, V value) {
@@ -30,7 +32,7 @@ public class Scope<K, V> {
 
   public void dump() {
     for (Entry<K, V> e : scope.entrySet()) {
-      System.out.println(e.getKey().toString() + " " + e.getValue().toString());
+      System.out.println(name + ": " + e.getKey().toString() + " " + e.getValue().toString());
       System.out.println();
     }
 

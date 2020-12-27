@@ -9,11 +9,12 @@ import njast.ast_flow.CExpression;
 import njast.ast_top.CompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
+import njast.symtab.logic.Symtab;
 
 public class TestMinimalExample {
 
   @Test
-  public void test() throws IOException {
+  public void testMinimalClass() throws IOException {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
@@ -42,11 +43,26 @@ public class TestMinimalExample {
         .getBody().getBlockStatements().getBlockStatements()) {
       if (bs.getStatement() != null) {
         final CExpression expr = bs.getStatement().getExpr();
-        System.out.println(expr.toString());
       }
     }
 
-    System.out.println();
+  }
+
+  @Test
+  public void testSymtab() throws Exception {
+    Symtab<String, String> tab = new Symtab<>();
+
+    // class-scope
+    tab.pushscope("class:ClassName:Main.java:6");
+    tab.addsym("ClassName", "symbol-here");
+    tab.addsym("x", "field-type-int");
+
+    // function
+    tab.pushscope("function:main():Main.java:14");
+    tab.addsym("main", "type=function");
+    tab.addsym("a", "type=int->parameter");
+    tab.addsym("b", "type=int->parameter");
+
   }
 
 }

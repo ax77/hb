@@ -1,4 +1,4 @@
-package njast.symtab;
+package njast.symtab.logic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,8 @@ public class Symtab<K, V> {
     this.scopes = new ArrayList<Scope<K, V>>();
   }
 
-  public void pushscope() {
-    this.scopes.add(0, new Scope<K, V>());
+  public void pushscope(String name) {
+    this.scopes.add(0, new Scope<K, V>(name));
   }
 
   public void popscope() {

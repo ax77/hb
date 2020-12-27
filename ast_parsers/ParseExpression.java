@@ -383,15 +383,23 @@ public class ParseExpression {
     return lhs;
   }
 
-  private CExpression e_prim() {
+  //  <primary> ::=
+  //      <primary no new array>
+  //      | <array creation expression>
+  //
+  //  <primary no new array> ::=
+  //      <literal>
+  //      | this
+  //      | ( <expression> )
+  //      | <class instance creation expression>
+  //      | <field access>
+  //      | <method invocation>
+  //      | <array access>
+  //
+  //  <class instance creation expression> ::=
+  //      new <class type> ( <argument list>? )
 
-    //  primary_expression
-    //      : IDENTIFIER
-    //      | constant
-    //      | string
-    //      | '(' expression ')'
-    //      | generic_selection
-    //      ;
+  private CExpression e_prim() {
 
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
       Token saved = parser.tok();
