@@ -2,7 +2,7 @@ package njast.ast_class.vars;
 
 import jscan.symtab.Ident;
 
-public class VariableDeclarator {
+public class VarDeclarator {
 
   //  <variable declarator> ::= <variable declarator id> | <variable declarator id> = <variable initializer>
   //
@@ -11,10 +11,22 @@ public class VariableDeclarator {
   //  <variable initializer> ::= <expression> | <array initializer>
 
   private final Ident identifier; // njast:mark - symbol instead ident?
-  private VarialbeInitializer initializer;
+  private VarInitializer initializer;
 
-  public VariableDeclarator(Ident identifier) {
+  public VarDeclarator(Ident identifier) {
     this.identifier = identifier;
+  }
+
+  public VarInitializer getInitializer() {
+    return initializer;
+  }
+
+  public void setInitializer(VarInitializer initializer) {
+    this.initializer = initializer;
+  }
+
+  public Ident getIdentifier() {
+    return identifier;
   }
 
 }

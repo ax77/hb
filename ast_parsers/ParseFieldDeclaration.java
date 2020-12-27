@@ -1,9 +1,7 @@
 package njast.ast_parsers;
 
-import jscan.symtab.Ident;
 import njast.ast_class.FieldDeclaration;
-import njast.ast_class.vars.VariableDeclarator;
-import njast.ast_class.vars.VariableDeclaratorsList;
+import njast.ast_class.vars.VarDeclaratorsList;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -16,25 +14,9 @@ public class ParseFieldDeclaration {
 
   public FieldDeclaration parse() {
     Type type = new ParseType(parser).parse();
-    VariableDeclaratorsList variableDeclarators = parseVariableDeclarators();
+    VarDeclaratorsList variableDeclarators = new ParseVarDeclaratorsList(parser).parse();
 
-    parser.semicolon();
     return new FieldDeclaration(type, variableDeclarators);
-  }
-
-  private VariableDeclaratorsList parseVariableDeclarators() {
-
-    VariableDeclaratorsList variableDeclarators = new VariableDeclaratorsList();
-    variableDeclarators.put(parseVariableDeclarator());
-
-    // while(is comma) { rest }
-
-    return variableDeclarators;
-  }
-
-  private VariableDeclarator parseVariableDeclarator() {
-    Ident id = parser.getIdent();
-    return new VariableDeclarator(id);
   }
 
 }
