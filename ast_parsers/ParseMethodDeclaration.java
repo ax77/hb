@@ -1,9 +1,10 @@
 package njast.ast_parsers;
 
 import jscan.symtab.Ident;
+import njast.ast_class.FormalParameterList;
 import njast.ast_class.MethodDeclaration;
 import njast.ast_flow.Block;
-import njast.ast_flow.CStatement;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -24,19 +25,17 @@ public class ParseMethodDeclaration {
     //    <method declarator> ::= <identifier> ( <formal parameter list>? )
     //    <method body> ::= <block> | ;
 
+    Modifiers modifiers = new ParseModifiers(parser).parse();
+
     Type type = new ParseType(parser).parse();
+
     Ident ident = parser.getIdent();
 
-    MethodDeclaration md = new MethodDeclaration(ident, type);
-
-    // TODO: params
-    parser.lparen();
-    parser.rparen();
+    FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
 
     Block block = new ParseStatement(parser).parseBlock();
-    md.setBody(block);
 
-    return md;
+    return new MethodDeclaration(type, ident, formalParameterList, block);
   }
 
 }

@@ -12,6 +12,7 @@ import njast.ast_class.vars.LocalVarDeclaration;
 import njast.ast_class.vars.VarDeclaratorsList;
 import njast.ast_flow.Block;
 import njast.ast_flow.BlockStatement;
+import njast.ast_flow.BlockStatements;
 import njast.ast_flow.CExpression;
 import njast.ast_flow.CStatement;
 import njast.ast_flow.CStatementBase;
@@ -29,7 +30,7 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  public List<BlockStatement> parseBlockStamentList() {
+  public BlockStatements parseBlockStamentList() {
     List<BlockStatement> bs = new ArrayList<BlockStatement>();
 
     BlockStatement oneBlock = parseOneBlock();
@@ -44,14 +45,18 @@ public class ParseStatement {
       oneBlock = parseOneBlock();
     }
 
-    return bs;
+    return new BlockStatements(bs);
   }
 
   public Block parseBlock() {
 
     Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
+    if (parser.tp() == T.T_RIGHT_BRACE) {
+      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
+      return new Block(new BlockStatements());
+    }
 
-    List<BlockStatement> blockStatements = parseBlockStamentList();
+    BlockStatements blockStatements = parseBlockStamentList();
     Block block = new Block(blockStatements);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
@@ -61,17 +66,9 @@ public class ParseStatement {
 
   public CStatement parseCompoundStatement() {
 
-    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
+    Token lbrace = parser.tok();
 
-    if (parser.tp() == T.T_RIGHT_BRACE) {
-      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-      return new CStatement(lbrace, new Block());
-    }
-
-    List<BlockStatement> blockStatements = parseBlockStamentList();
-    Block block = new Block(blockStatements);
-
-    Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
+    Block block = parseBlock();
 
     return new CStatement(lbrace, block);
   }

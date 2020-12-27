@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_flow.BlockStatements;
 
 public class ConstructorDeclaration {
 
@@ -19,6 +20,7 @@ public class ConstructorDeclaration {
 
   private final Ident identifier;
   private FormalParameterList formalParameterList;
+  private BlockStatements blockStatements;
 
   public ConstructorDeclaration(Ident identifier) {
     this.identifier = identifier;
@@ -26,6 +28,22 @@ public class ConstructorDeclaration {
 
   public Ident getIdentifier() {
     return identifier;
+  }
+
+  public FormalParameterList getFormalParameterList() {
+    return formalParameterList;
+  }
+
+  public void setFormalParameterList(FormalParameterList formalParameterList) {
+    this.formalParameterList = formalParameterList;
+  }
+
+  public BlockStatements getBlockStatements() {
+    return blockStatements;
+  }
+
+  public void setBlockStatements(BlockStatements blockStatements) {
+    this.blockStatements = blockStatements;
   }
 
 }

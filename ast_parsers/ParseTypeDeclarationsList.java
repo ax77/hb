@@ -8,7 +8,9 @@ import njast.ast_class.ConstructorDeclaration;
 import njast.ast_class.FieldDeclaration;
 import njast.ast_class.MethodDeclaration;
 import njast.ast_top.TypeDeclaration;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
+import njast.parse.ParseState;
 import njast.symtab.IdentMap;
 
 public class ParseTypeDeclarationsList {
@@ -19,9 +21,12 @@ public class ParseTypeDeclarationsList {
   }
 
   public TypeDeclaration parse() {
-    Token tok = parser.moveget();
 
-    if (tok.isIdent(IdentMap.class_ident)) {
+    Modifiers modifiers = new ParseModifiers(parser).parse();
+
+    if (parser.tok().isIdent(IdentMap.class_ident)) {
+
+      Token tok = parser.moveget();
 
       ClassDeclaration classBody = parseClassDeclaration();
 
@@ -34,6 +39,7 @@ public class ParseTypeDeclarationsList {
   }
 
   private ClassDeclaration parseClassDeclaration() {
+
     Ident ident = parser.getIdent();
     Token lbrace = parser.lbrace();
 
@@ -60,8 +66,16 @@ public class ParseTypeDeclarationsList {
   }
 
   private boolean isConstructorDeclaration(ClassDeclaration classBody) {
-    final Ident identifier = classBody.getIdentifier();
-    return parser.is(T.TOKEN_IDENT) && parser.tok().getIdent().equals(identifier);
+
+    boolean isConstructor = false;
+
+    ParseState state = new ParseState(parser);
+    Modifiers modifiers = new ParseModifiers(parser).parse();
+    Ident identifier = classBody.getIdentifier();
+    isConstructor = parser.is(T.TOKEN_IDENT) && parser.tok().getIdent().equals(identifier);
+    parser.restoreState(state);
+
+    return isConstructor;
   }
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration classBody) {

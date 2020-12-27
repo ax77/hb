@@ -8,18 +8,22 @@ import njast.types.Type;
 public class MethodDeclaration {
 
   // header
+  private Type resultType;
   private final Ident identifier;
   private FormalParameterList formalParameterList;
-  private Type resultType;
   private boolean isVoid;
 
   // body
   private Block body;
 
-  public MethodDeclaration(Ident identifier, Type resultType) {
-    this.identifier = identifier;
+  public MethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList, Block body) {
+
     this.resultType = resultType;
+    this.identifier = identifier;
+    this.formalParameterList = formalParameterList;
     this.isVoid = false;
+    this.body = body;
+
   }
 
   public FormalParameterList getFormalParameterList() {

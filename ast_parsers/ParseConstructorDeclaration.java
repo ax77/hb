@@ -1,7 +1,11 @@
 package njast.ast_parsers;
 
 import jscan.symtab.Ident;
+import jscan.tokenize.T;
 import njast.ast_class.ConstructorDeclaration;
+import njast.ast_class.FormalParameterList;
+import njast.ast_flow.BlockStatements;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 
 public class ParseConstructorDeclaration {
@@ -11,19 +15,51 @@ public class ParseConstructorDeclaration {
     this.parser = parser;
   }
 
+  //  <constructor declaration> ::= <constructor modifiers>? <constructor declarator> <throws>? <constructor body>
+  //
+  //  <constructor modifiers> ::= <constructor modifier> | <constructor modifiers> <constructor modifier>
+  //
+  //  <constructor modifier> ::= public | protected | private
+  //
+  //  <constructor declarator> ::= <simple type name> ( <formal parameter list>? )
+  //
+  //  <formal parameter list> ::= <formal parameter> | <formal parameter list> , <formal parameter>
+  //
+  //  <formal parameter> ::= <type> <variable declarator id>
+  //
+  //  <throws> ::= throws <class type list>
+  //
+  //  <class type list> ::= <class type> | <class type list> , <class type>
+  //
+  //  <constructor body> ::= { <explicit constructor invocation>? <block statements>? }
+
   public ConstructorDeclaration parse() {
+
+    Modifiers modifiers = new ParseModifiers(parser).parse();
+
     Ident identifier = parser.getIdent();
+
     ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration(identifier);
 
-    // TODO: params
-    parser.lparen();
-    parser.rparen();
+    FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
+    constructorDeclaration.setFormalParameterList(formalParameterList);
 
-    // TODO: body
-    parser.lbrace();
-    parser.rbrace();
-
+    parseBody(constructorDeclaration);
     return constructorDeclaration;
+  }
+
+  private void parseBody(ConstructorDeclaration constructorDeclaration) {
+    parser.lbrace();
+
+    if (parser.is(T.T_RIGHT_BRACE)) {
+      parser.moveget();
+      return;
+    }
+
+    BlockStatements blockStatements = new ParseStatement(parser).parseBlockStamentList();
+    constructorDeclaration.setBlockStatements(blockStatements);
+
+    parser.rbrace();
   }
 
 }

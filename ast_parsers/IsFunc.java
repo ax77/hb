@@ -2,6 +2,7 @@ package njast.ast_parsers;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 
@@ -45,6 +46,8 @@ public class IsFunc {
     while (parser.tp() == T.T_SEMI_COLON) {
       parser.move();
     }
+
+    Modifiers modifiers = new ParseModifiers(parser).parse();
 
     boolean hasOpen = false;
     boolean hasClose = false;
