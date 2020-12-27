@@ -6,10 +6,10 @@ import java.util.List;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class TypeDeclarationsList implements AstTraverser {
+public class CompilationUnit implements AstTraverser {
   private List<TypeDeclaration> typeDeclarations;
 
-  public TypeDeclarationsList() {
+  public CompilationUnit() {
     this.typeDeclarations = new ArrayList<TypeDeclaration>();
   }
 

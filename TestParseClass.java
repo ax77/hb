@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import njast.ast_top.TypeDeclarationsList;
+import njast.ast_top.CompilationUnit;
 import njast.ast_visitors.AstVisitor;
 import njast.ast_visitors.AstVisitorXml;
 import njast.main.ParserMain;
@@ -33,7 +33,7 @@ public class TestParseClass {
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
-    TypeDeclarationsList unit = p.parse();
+    CompilationUnit unit = p.parse();
     System.out.println();
   }
 
@@ -57,7 +57,7 @@ public class TestParseClass {
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
-    TypeDeclarationsList unit = p.parse();
+    CompilationUnit unit = p.parse();
 
     AstVisitor walker = new AstVisitorXml();
     unit.accept(walker);

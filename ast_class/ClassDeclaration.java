@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_flow.Block;
 
 public class ClassDeclaration {
   //<class body declaration> ::= <class member declaration> | <static initializer> | <constructor declaration>
@@ -13,8 +14,8 @@ public class ClassDeclaration {
   // constructors
   private List<ConstructorDeclaration> constructors;
 
-  // static-initializers
-  // TODO:
+  // static { }
+  private List<Block> staticInitializers;
 
   // members
   private List<FieldDeclaration> fields;
@@ -29,6 +30,7 @@ public class ClassDeclaration {
     this.constructors = new ArrayList<ConstructorDeclaration>();
     this.fields = new ArrayList<FieldDeclaration>();
     this.methods = new ArrayList<MethodDeclaration>();
+    this.staticInitializers = new ArrayList<Block>();
   }
 
   public Ident getIdentifier() {
@@ -45,6 +47,10 @@ public class ClassDeclaration {
 
   public void put(MethodDeclaration e) {
     this.methods.add(e);
+  }
+
+  public void put(Block e) {
+    this.staticInitializers.add(e);
   }
 
   public List<ConstructorDeclaration> getConstructorDeclaration() {

@@ -19,8 +19,6 @@ public class FieldDeclaration {
   //
   //  <variable initializer> ::= <expression> | <array initializer>
 
-  // private FieldModifier fieldModifier;
-
   private Type type;
   private VarDeclaratorsList variables;
 

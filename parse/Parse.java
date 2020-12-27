@@ -13,7 +13,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.ast_top.TypeDeclaration;
-import njast.ast_top.TypeDeclarationsList;
+import njast.ast_top.CompilationUnit;
 import njast.errors.EParseErrors;
 import njast.errors.EParseException;
 
@@ -330,8 +330,8 @@ public class Parse {
     }
   }
 
-  public TypeDeclarationsList parse() {
-    TypeDeclarationsList tu = new TypeDeclarationsList();
+  public CompilationUnit parse() {
+    CompilationUnit tu = new CompilationUnit();
     pushscope();
 
     // top-level

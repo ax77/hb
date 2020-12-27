@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import njast.ast_top.TypeDeclaration;
-import njast.ast_top.TypeDeclarationsList;
+import njast.ast_top.CompilationUnit;
 
 public class AstVisitorXml implements AstVisitor {
 
@@ -62,7 +62,7 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(TypeDeclarationsList o) {
+  public void visit(CompilationUnit o) {
     openTag(sname(o));
 
     for (TypeDeclaration elem : o.getTypeDeclarations()) {

@@ -5,10 +5,12 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsConstructor;
 import njast.ast_checkers.IsFunc;
+import njast.ast_checkers.IsIdent;
 import njast.ast_class.ClassDeclaration;
 import njast.ast_class.ConstructorDeclaration;
 import njast.ast_class.FieldDeclaration;
 import njast.ast_class.MethodDeclaration;
+import njast.ast_flow.Block;
 import njast.ast_top.TypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
@@ -69,12 +71,25 @@ public class ParseTypeDeclarationsList {
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration classBody) {
 
+    // 0) static { <block> }
+    //
+    boolean isStaticInitializer = parser.tok().isIdent(IdentMap.static_ident) && parser.peek().ofType(T.T_LEFT_BRACE);
+    if (isStaticInitializer) {
+      Token kw = parser.checkedMove(IdentMap.static_ident);
+
+      Block block = new ParseStatement(parser).parseBlock();
+      classBody.put(block);
+
+      return;
+    }
+
     // 1) constructor
     // 
     boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(classBody);
     if (isConstructorDeclaration) {
       ConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
       classBody.put(constructorDeclaration);
+
       return;
     }
 

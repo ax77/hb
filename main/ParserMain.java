@@ -12,7 +12,7 @@ import jscan.preprocess.Scan;
 import jscan.tokenize.Stream;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_top.TypeDeclarationsList;
+import njast.ast_top.CompilationUnit;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
 import njast.parse.Parse;
@@ -55,7 +55,7 @@ public class ParserMain implements ParserMainApi {
   }
 
   @Override
-  public TypeDeclarationsList parseUnit() throws IOException {
+  public CompilationUnit parseUnit() throws IOException {
     Parse p = initiateParse();
     return p.parse();
   }

@@ -1,6 +1,7 @@
 package njast.ast_checkers;
 
 import jscan.symtab.Ident;
+import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_class.ClassDeclaration;
 import njast.ast_parsers.ParseModifiers;
@@ -16,17 +17,28 @@ public class IsConstructor {
   }
 
   public boolean isConstructorDeclaration(ClassDeclaration classBody) {
-
     ParseState state = new ParseState(parser);
+    boolean result = isConstructorInternal(classBody);
+
+    parser.restoreState(state);
+    return result;
+  }
+
+  private boolean isConstructorInternal(ClassDeclaration classBody) {
+
+    // public class ClassName {
+    //     public ClassName() {}
+    //     .......^........^
+    // }
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
     final Token currentTok = parser.tok();
     final Ident className = classBody.getIdentifier();
-    boolean isConstructor = IsIdent.isUserDefinedIdentNoKeyword(currentTok) && currentTok.getIdent().equals(className);
+    final Token nextTok = parser.peek();
 
-    parser.restoreState(state);
-    return isConstructor;
+    return IsIdent.isUserDefinedIdentNoKeyword(currentTok) && currentTok.getIdent().equals(className)
+        && nextTok.ofType(T.T_LEFT_PAREN);
   }
 
 }
