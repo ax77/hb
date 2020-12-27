@@ -13,5 +13,5 @@ public interface ParserMainApi {
   public Parse initiateParse() throws IOException;
 
   public TypeDeclarationsList parseUnit() throws IOException;
-  
+
 }

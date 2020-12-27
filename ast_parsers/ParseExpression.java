@@ -29,10 +29,11 @@ import static jscan.tokenize.T.T_XOR;
 import jscan.cstrtox.C_strtox;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.ast_flow.CExpression;
 import njast.ast_flow.CExpressionBase;
+import njast.ast_flow.ExprUtil;
 import njast.parse.Parse;
-import njast.parse.Pcheckers;
 
 public class ParseExpression {
   private final Parse parser;
@@ -89,7 +90,7 @@ public class ParseExpression {
   }
 
   private boolean isCompoundAssign(Token what) {
-    return Pcheckers.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
+    return IsIdent.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
   }
 
   public CExpression e_assign() {

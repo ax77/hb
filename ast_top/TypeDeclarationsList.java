@@ -5,7 +5,6 @@ import java.util.List;
 
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
-import njast.ast_visitors.AstVisitorXml;
 
 public class TypeDeclarationsList implements AstTraverser {
   private List<TypeDeclaration> typeDeclarations;

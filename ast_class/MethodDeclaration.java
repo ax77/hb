@@ -2,7 +2,6 @@ package njast.ast_class;
 
 import jscan.symtab.Ident;
 import njast.ast_flow.Block;
-import njast.ast_flow.CStatement;
 import njast.types.Type;
 
 public class MethodDeclaration {

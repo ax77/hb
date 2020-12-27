@@ -11,6 +11,7 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.ast_top.TypeDeclaration;
 import njast.ast_top.TypeDeclarationsList;
@@ -306,23 +307,23 @@ public class Parse {
   //////////////////////////////////////////////////////////////////////
 
   public boolean isAssignOperator() {
-    return Pcheckers.isAssignOperator(tok);
+    return IsIdent.isAssignOperator(tok);
   }
 
   public boolean isUnaryOperator() {
-    return Pcheckers.isUnaryOperator(tok);
+    return IsIdent.isUnaryOperator(tok);
   }
 
   public boolean isTypeSpec() {
-    return Pcheckers.isTypeSpec(tok);
+    return IsIdent.isTypeSpec(tok);
   }
 
   public boolean isTypeQual() {
-    return Pcheckers.isTypeQual(tok);
+    return IsIdent.isTypeQual(tok);
   }
 
   public boolean isEnumSpecStart() {
-    return Pcheckers.isEnumSpecStart(tok);
+    return IsIdent.isEnumSpecStart(tok);
   }
 
   public boolean isDeclSpecStart() {
@@ -330,7 +331,7 @@ public class Parse {
   }
 
   public boolean isDeclSpecStart(Token what) {
-    return Pcheckers.isTypeSpec(what) || Pcheckers.isTypeQual(what) || Pcheckers.isEnumSpecStart(what);
+    return IsIdent.isTypeSpec(what) || IsIdent.isTypeQual(what) || IsIdent.isEnumSpecStart(what);
   }
 
   public boolean isAttributeStartC2X() {

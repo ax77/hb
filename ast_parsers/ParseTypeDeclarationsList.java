@@ -3,6 +3,8 @@ package njast.ast_parsers;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsConstructor;
+import njast.ast_checkers.IsFunc;
 import njast.ast_class.ClassDeclaration;
 import njast.ast_class.ConstructorDeclaration;
 import njast.ast_class.FieldDeclaration;
@@ -48,6 +50,7 @@ public class ParseTypeDeclarationsList {
     // class C { }
     // ..........^
     if (parser.is(T.T_RIGHT_BRACE)) {
+      Token rbrace = parser.rbrace();
       return clazz;
     }
 
@@ -65,24 +68,12 @@ public class ParseTypeDeclarationsList {
     return clazz;
   }
 
-  private boolean isConstructorDeclaration(ClassDeclaration classBody) {
-
-    boolean isConstructor = false;
-
-    ParseState state = new ParseState(parser);
-    Modifiers modifiers = new ParseModifiers(parser).parse();
-    Ident identifier = classBody.getIdentifier();
-    isConstructor = parser.is(T.TOKEN_IDENT) && parser.tok().getIdent().equals(identifier);
-    parser.restoreState(state);
-
-    return isConstructor;
-  }
-
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration classBody) {
 
     // 1) constructor
     // 
-    if (isConstructorDeclaration(classBody)) {
+    boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(classBody);
+    if (isConstructorDeclaration) {
       ConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
       classBody.put(constructorDeclaration);
       return;

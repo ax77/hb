@@ -76,7 +76,7 @@ public final class IdentMap {
   //@formatter:on
 
   private static Ident g(String name) {
-    return Hash_ident.getHashedIdent(name, 0);
+    return Hash_ident.getHashedIdent(name, 32);
   }
 
 }

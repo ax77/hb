@@ -2,6 +2,7 @@ package njast.ast_parsers;
 
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import njast.ast_class.ConstructorDeclaration;
 import njast.ast_class.FormalParameterList;
 import njast.ast_flow.BlockStatements;
@@ -39,27 +40,24 @@ public class ParseConstructorDeclaration {
 
     Ident identifier = parser.getIdent();
 
-    ConstructorDeclaration constructorDeclaration = new ConstructorDeclaration(identifier);
-
     FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
-    constructorDeclaration.setFormalParameterList(formalParameterList);
 
-    parseBody(constructorDeclaration);
-    return constructorDeclaration;
+    BlockStatements blockStatements = parseBody();
+
+    return new ConstructorDeclaration(identifier, formalParameterList, blockStatements);
   }
 
-  private void parseBody(ConstructorDeclaration constructorDeclaration) {
+  private BlockStatements parseBody() {
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
-      parser.moveget();
-      return;
+      Token rbrace = parser.moveget();
+      return new BlockStatements();
     }
 
     BlockStatements blockStatements = new ParseStatement(parser).parseBlockStamentList();
-    constructorDeclaration.setBlockStatements(blockStatements);
-
-    parser.rbrace();
+    Token rbrace = parser.rbrace();
+    return blockStatements;
   }
 
 }

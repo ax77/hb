@@ -1,23 +1,23 @@
 package njast.modifiers;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.errors.EParseException;
-import njast.parse.Pcheckers;
 import njast.symtab.IdentMap;
 
 public class Modifiers {
   private Set<Ident> modifiers;
 
   public Modifiers() {
-    this.modifiers = new HashSet<Ident>();
+    this.modifiers = new LinkedHashSet<Ident>();
   }
 
   public void put(Token tok) {
-    if (!Pcheckers.is_any_modifier(tok)) {
+    if (!IsIdent.is_any_modifier(tok)) {
       throw new EParseException("not modifier: " + tok.getValue());
     }
     modifiers.add(tok.getIdent());

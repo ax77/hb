@@ -1,4 +1,4 @@
-package njast.parse;
+package njast.ast_checkers;
 
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_EXCLAMATION;
@@ -11,7 +11,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.symtab.IdentMap;
 
-public abstract class Pcheckers {
+public abstract class IsIdent {
 
   //@formatter:off
   
