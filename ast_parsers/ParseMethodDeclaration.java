@@ -2,6 +2,7 @@ package njast.ast_parsers;
 
 import jscan.symtab.Ident;
 import njast.ast_class.MethodDeclaration;
+import njast.ast_flow.Block;
 import njast.ast_flow.CStatement;
 import njast.parse.Parse;
 import njast.types.Type;
@@ -32,7 +33,7 @@ public class ParseMethodDeclaration {
     parser.lparen();
     parser.rparen();
 
-    CStatement block = new ParseStatement(parser).parseCompoundStatement();
+    Block block = new ParseStatement(parser).parseBlock();
     md.setBody(block);
 
     return md;

@@ -1,9 +1,16 @@
 package njast.ast_flow;
 
 import jscan.tokenize.Token;
-import njast.ast_class.Block;
 
 public class CStatement {
+
+  //  <statement> ::= <statement without trailing substatement> | <labeled statement> | <if then statement> | <if then else statement> | <while statement> | <for statement>
+  //
+  //  <statement no short if> ::= <statement without trailing substatement> | <labeled statement no short if> | <if then else statement no short if> | <while statement no short if> | <for statement no short if>
+  //
+  //  <statement without trailing substatement> ::= <block> | <empty statement> | <expression statement> | <switch statement> | <do statement> | <break statement> | <continue statement> | <return statement> | <synchronized statement> | <throws statements> | <try statement>
+  //
+  //  <empty statement> ::= ;
 
   private final CStatementBase base;
 

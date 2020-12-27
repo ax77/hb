@@ -3,12 +3,15 @@ package njast.ast_parsers;
 import static jscan.tokenize.T.T_SEMI_COLON;
 import static njast.symtab.IdentMap.return_ident;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_class.Block;
-import njast.ast_class.BlockStatement;
 import njast.ast_class.vars.LocalVarDeclaration;
 import njast.ast_class.vars.VarDeclaratorsList;
+import njast.ast_flow.Block;
+import njast.ast_flow.BlockStatement;
 import njast.ast_flow.CExpression;
 import njast.ast_flow.CStatement;
 import njast.ast_flow.CStatementBase;
@@ -26,19 +29,12 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  public CStatement parseCompoundStatement() {
-    Block block = new Block();
-
-    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
-
-    if (parser.tp() == T.T_RIGHT_BRACE) {
-      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-      return new CStatement(lbrace, block);
-    }
+  public List<BlockStatement> parseBlockStamentList() {
+    List<BlockStatement> bs = new ArrayList<BlockStatement>();
 
     BlockStatement oneBlock = parseOneBlock();
     for (;;) {
-      block.put(oneBlock);
+      bs.add(oneBlock);
       if (parser.tp() == T.T_RIGHT_BRACE) {
         break;
       }
@@ -47,6 +43,33 @@ public class ParseStatement {
       }
       oneBlock = parseOneBlock();
     }
+
+    return bs;
+  }
+
+  public Block parseBlock() {
+
+    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
+
+    List<BlockStatement> blockStatements = parseBlockStamentList();
+    Block block = new Block(blockStatements);
+
+    Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
+
+    return block;
+  }
+
+  public CStatement parseCompoundStatement() {
+
+    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
+
+    if (parser.tp() == T.T_RIGHT_BRACE) {
+      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
+      return new CStatement(lbrace, new Block());
+    }
+
+    List<BlockStatement> blockStatements = parseBlockStamentList();
+    Block block = new Block(blockStatements);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
 

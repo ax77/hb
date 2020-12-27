@@ -1,4 +1,4 @@
-package njast.ast_class;
+package njast.ast_flow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,8 @@ public class Block {
     this.blockStatements = new ArrayList<BlockStatement>();
   }
 
-  public void put(BlockStatement e) {
-    this.blockStatements.add(e);
+  public Block(List<BlockStatement> blockStatements) {
+    this.blockStatements = blockStatements;
   }
 
   public List<BlockStatement> getBlockStatements() {

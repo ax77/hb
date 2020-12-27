@@ -1,8 +1,7 @@
-package njast.ast_class;
+package njast.ast_flow;
 
 import njast.ast_class.vars.LocalVarDeclaration;
 import njast.ast_class.vars.VarDeclaratorsList;
-import njast.ast_flow.CStatement;
 
 public class BlockStatement {
   //  <block statement> ::= <local variable declaration statement> | <statement>

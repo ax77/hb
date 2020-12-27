@@ -1,6 +1,7 @@
 package njast.ast_class;
 
 import jscan.symtab.Ident;
+import njast.ast_flow.Block;
 import njast.ast_flow.CStatement;
 import njast.types.Type;
 
@@ -13,7 +14,7 @@ public class MethodDeclaration {
   private boolean isVoid;
 
   // body
-  private CStatement body;
+  private Block body;
 
   public MethodDeclaration(Ident identifier, Type resultType) {
     this.identifier = identifier;
@@ -45,11 +46,11 @@ public class MethodDeclaration {
     this.isVoid = isVoid;
   }
 
-  public CStatement getBody() {
+  public Block getBody() {
     return body;
   }
 
-  public void setBody(CStatement body) {
+  public void setBody(Block body) {
     this.body = body;
   }
 

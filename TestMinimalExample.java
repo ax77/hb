@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import njast.ast_class.BlockStatement;
+import njast.ast_flow.BlockStatement;
 import njast.ast_flow.CExpression;
 import njast.ast_top.TypeDeclarationsList;
 import njast.main.ParserMain;
@@ -36,7 +36,7 @@ public class TestMinimalExample {
     TypeDeclarationsList unit = p.parse();
 
     for (BlockStatement bs : unit.getTypeDeclarations().get(0).getClassDeclaration().getMethodDeclaration().get(0)
-        .getBody().getCompound().getBlockStatements()) {
+        .getBody().getBlockStatements()) {
       if (bs.getStatement() != null) {
         final CExpression expr = bs.getStatement().getExpr();
         System.out.println(expr.toString());
