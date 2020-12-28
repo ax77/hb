@@ -3,6 +3,11 @@ package njast.ast_visitors;
 import java.util.LinkedList;
 import java.util.List;
 
+import jscan.symtab.Ident;
+import njast.ast_flow.expr.CExpression;
+import njast.ast_flow.expr.CExpressionBase;
+import njast.ast_flow.expr.FieldAccess;
+import njast.ast_flow.expr.MethodInvocation;
 import njast.ast_top.CompilationUnit;
 import njast.ast_top.TypeDeclaration;
 
@@ -62,25 +67,58 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(CompilationUnit o) {
-    openTag(sname(o));
+  public void visit(CExpression o) {
 
-    for (TypeDeclaration elem : o.getTypeDeclarations()) {
-      visit(elem);
+    CExpressionBase base = o.getBase();
+    openTag(base.toString());
+
+    if (base == CExpressionBase.EMETHOD_INVOCATION) {
+      visit(o.getMethodInvocation());
+    }
+
+    if (base == CExpressionBase.EFIELD_ACCESS) {
+      visit(o.getFieldAccess());
+    }
+
+    if (base == CExpressionBase.EPRIMARY_IDENT) {
+      visit(o.getSymbol());
     }
 
     closeTag();
+  }
+
+  @Override
+  public void visit(MethodInvocation o) {
+    //    openTag(sname(o));
+
+    put("function-expression=");
+    visit(o.getFunction());
+
+    //    closeTag();
 
   }
 
   @Override
-  public void visit(TypeDeclaration o) {
-    openTag(sname(o));
+  public void visit(Ident o) {
+    //    openTag(sname(o));
 
-    put(o.getClassDeclaration().getIdentifier().getName());
+    put("id=" + o.getName());
 
-    closeTag();
+    //    closeTag();
 
+  }
+
+  @Override
+  public void visit(FieldAccess o) {
+    //    openTag(sname(o));
+
+    put("field-name=");
+    visit(o.getName());
+
+    put("selection=");
+    visit(o.getExpression());
+
+    //    closeTag();
   }
 
 }

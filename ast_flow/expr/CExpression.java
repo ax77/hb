@@ -5,8 +5,10 @@ import static njast.ast_flow.expr.CExpressionBase.ETERNARY;
 import jscan.cstrtox.C_strtox;
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 
-public class CExpression {
+public class CExpression implements AstTraverser {
 
   private final CExpressionBase base; // what union contains
   private Eunary unary;
@@ -14,8 +16,8 @@ public class CExpression {
   private Eternary eternary;
   private NumericConstant cnumber;
   private Ident symbol;
-  private Ecall methodInvocation;
-  private Eselect fieldAccess;
+  private MethodInvocation methodInvocation;
+  private FieldAccess fieldAccess;
 
   public CExpression(Eunary unary) {
     this.base = CExpressionBase.EUNARY;
@@ -47,12 +49,12 @@ public class CExpression {
     this.cnumber = number;
   }
 
-  public CExpression(Ecall methodInvocation) {
+  public CExpression(MethodInvocation methodInvocation) {
     this.base = CExpressionBase.EMETHOD_INVOCATION;
     this.methodInvocation = methodInvocation;
   }
 
-  public CExpression(Eselect fieldAccess) {
+  public CExpression(FieldAccess fieldAccess) {
     this.base = CExpressionBase.EFIELD_ACCESS;
     this.fieldAccess = fieldAccess;
   }
@@ -86,8 +88,17 @@ public class CExpression {
     return symbol;
   }
 
-  public Ecall getMethodInvocation() {
+  public MethodInvocation getMethodInvocation() {
     return methodInvocation;
+  }
+
+  public FieldAccess getFieldAccess() {
+    return fieldAccess;
+  }
+  
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
   }
 
 }

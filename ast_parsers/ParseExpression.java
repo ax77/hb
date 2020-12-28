@@ -34,9 +34,10 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.ast_flow.expr.CExpression;
+import njast.ast_flow.expr.CExpressionBase;
 import njast.ast_flow.expr.Ebinary;
-import njast.ast_flow.expr.Ecall;
-import njast.ast_flow.expr.Eselect;
+import njast.ast_flow.expr.MethodInvocation;
+import njast.ast_flow.expr.FieldAccess;
 import njast.ast_flow.expr.Eternary;
 import njast.ast_flow.expr.Eunary;
 import njast.ast_flow.expr.ExprUtil;
@@ -300,44 +301,72 @@ public class ParseExpression {
     return e_postfix();
   }
 
+  //  postfix-expression:  
+  //    primary-expression
+  //    postfix-expression [ expression ]
+  //    postfix-expression [ braced-init-listopt ]     C++0x
+  //    postfix-expression ( expression-listopt )
+  //    simple-type-specifier ( expression-listopt )
+  //    typename-specifier ( expression-listopt )
+  //    simple-type-specifier braced-init-list     C++0x
+  //    typename-specifier braced-init-list     C++0x
+  //    postfix-expression . templateopt id-expression
+  //    postfix-expression -> templateopt id-expression
+  //    postfix-expression . pseudo-destructor-name
+  //    postfix-expression -> pseudo-destructor-name
+  //    postfix-expression ++
+  //    postfix-expression --
+  //    dynamic_cast < type-id > ( expression )
+  //    static_cast < type-id > ( expression )
+  //    reinterpret_cast < type-id > ( expression )
+  //    const_cast < type-id > ( expression )
+  //    typeid ( expression )
+  //    typeid ( type-id )
+
+  //         "List": [
+  //           {
+  //             "X": {
+  //               "Sel": {
+  //                 "Name": "c",
+  //                 "_type": "Ident"
+  //               },
+  //               "X": {
+  //                 "Args": [],
+  //                 "Ellipsis": 0,
+  //                 "Fun": {
+  //                   "Sel": {
+  //                     "Name": "b",
+  //                     "_type": "Ident"
+  //                   },
+  //                   "X": {
+  //                     "Args": [],
+  //                     "Ellipsis": 0,
+  //                     "Fun": {
+  //                       "Name": "a",
+  //                       "_type": "Ident"
+  //                     },
+  //                     "_type": "CallExpr"
+  //                   },
+  //                   "_type": "SelectorExpr"
+  //                 },
+  //                 "_type": "CallExpr"
+  //               },
+  //               "_type": "SelectorExpr"
+  //             },
+  //             "_type": "ExprStmt"
+  //           }
+  //         ],
+
   private CExpression e_postfix() {
 
     CExpression lhs = e_prim();
 
-    for (;;) {
-
-      // function - call
-      //
-      if (parser.tp() == T_LEFT_PAREN) {
-        Token lparen = parser.lparen();
-
-        List<CExpression> arglist = new ArrayList<CExpression>();
-
-        if (parser.tp() != T_RIGHT_PAREN) {
-          CExpression onearg = e_assign();
-          arglist.add(onearg);
-
-          while (parser.tp() == T.T_COMMA) {
-            parser.move();
-
-            CExpression oneargSeq = e_assign();
-            arglist.add(oneargSeq);
-          }
-        }
-
-        lhs = new CExpression(new Ecall(lhs, arglist));
-        parser.rparen();
-      }
-
-      else if (parser.tp() == T.T_DOT) {
-        Token operator = parser.moveget();
-        Token identifier = parser.checkedMove(T.TOKEN_IDENT);
-        lhs = new CExpression(new Eselect(lhs, identifier));
-
-      }
-
-      else {
-        break;
+    while (parser.is(T_LEFT_PAREN) || parser.is(T.T_DOT)) {
+      boolean isDot = parser.is(T.T_DOT);
+      if (!isDot) {
+        lhs = methodInvocation(lhs);
+      } else {
+        lhs = fieldAccess(lhs);
       }
     }
 
@@ -424,6 +453,38 @@ public class ParseExpression {
     //      }
     //    }
 
+    return lhs;
+  }
+
+  private CExpression fieldAccess(CExpression lhs) {
+
+    Token operator = parser.moveget();
+    Token identifier = parser.checkedMove(T.TOKEN_IDENT);
+
+    lhs = new CExpression(new FieldAccess(identifier.getIdent(), lhs));
+    return lhs;
+  }
+
+  private CExpression methodInvocation(CExpression lhs) {
+    Token lparen = parser.lparen();
+
+    List<CExpression> arglist = new ArrayList<CExpression>();
+
+    if (parser.tp() != T_RIGHT_PAREN) {
+      CExpression onearg = e_assign();
+      arglist.add(onearg);
+
+      while (parser.tp() == T.T_COMMA) {
+        parser.move();
+
+        CExpression oneargSeq = e_assign();
+        arglist.add(oneargSeq);
+      }
+    }
+
+    lhs = new CExpression(new MethodInvocation(lhs, arglist));
+
+    Token rparen = parser.rparen();
     return lhs;
   }
 

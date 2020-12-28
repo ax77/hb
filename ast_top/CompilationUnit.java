@@ -6,7 +6,7 @@ import java.util.List;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class CompilationUnit implements AstTraverser {
+public class CompilationUnit {
   private List<TypeDeclaration> typeDeclarations;
 
   public CompilationUnit() {
@@ -19,11 +19,6 @@ public class CompilationUnit implements AstTraverser {
 
   public List<TypeDeclaration> getTypeDeclarations() {
     return typeDeclarations;
-  }
-
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
   }
 
 }
