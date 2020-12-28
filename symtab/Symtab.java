@@ -1,4 +1,4 @@
-package njast.symtab.logic;
+package njast.symtab;
 
 import java.util.ArrayList;
 import java.util.List;

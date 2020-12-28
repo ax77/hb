@@ -1,10 +1,12 @@
 package njast.ast_parsers;
 
+import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
 import njast.types.PrimitiveType;
+import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class ParseType {
@@ -15,17 +17,25 @@ public class ParseType {
   }
 
   public Type parse() {
-    if (!IsIdent.isBasicTypeIdent(parser.tok())) {
-      parser.perror("expect int for test");
+    final boolean isPrimitiveType = IsIdent.isBasicTypeIdent(parser.tok());
+    final boolean isReferenceType = parser.isClassName();
+    final boolean typeWasFound = isPrimitiveType || isReferenceType;
+
+    if (!typeWasFound) {
+      parser.perror("type is not recognized");
     }
 
-    Token tok = parser.moveget();
-    if (tok.isIdent(IdentMap.int_ident)) {
-      return new Type(PrimitiveType.TP_INT);
+    if (isPrimitiveType) {
+      Token tok = parser.moveget();
+      if (tok.isIdent(IdentMap.int_ident)) {
+        return new Type(PrimitiveType.TP_INT);
+      }
     }
 
-    parser.perror("unimpl");
-    return null;
+    Ident typeName = parser.getIdent();
+    ReferenceType referenceType = new ReferenceType(typeName);
+
+    return new Type(referenceType);
   }
 
 }

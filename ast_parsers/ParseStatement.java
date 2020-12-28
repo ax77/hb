@@ -108,7 +108,7 @@ public class ParseStatement {
 
   private BlockStatement parseOneBlock() {
 
-    if (IsIdent.isBasicTypeIdent(parser.tok())) {
+    if (parser.isClassName() || IsIdent.isBasicTypeIdent(parser.tok())) {
 
       Type type = new ParseType(parser).parse();
       VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();

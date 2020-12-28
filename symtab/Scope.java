@@ -1,4 +1,4 @@
-package njast.symtab.logic;
+package njast.symtab;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

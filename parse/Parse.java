@@ -11,11 +11,13 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.ast_top.CompilationUnit;
 import njast.ast_top.TypeDeclaration;
 import njast.errors.EParseErrors;
 import njast.errors.EParseException;
+import njast.symtab.Symtab;
 
 public class Parse {
 
@@ -23,98 +25,57 @@ public class Parse {
   private final Tokenlist tokenlist;
   private Token tok;
 
-  //  // need for labels, also for binding local variable's
-  //  private FunctionDefinition currentFn;
-  //
-  //  // symbol-tables
-  //  private Symtab<Ident, CSymbol> symbols;
-  //  private Symtab<Ident, CSymbol> tags;
-
   // location, error-handling
   private String lastloc;
   private List<Token> ringBuffer;
   private Token prevtok;
 
-  //  public Symtab<Ident, CSymbol> getSymbols() {
-  //    return symbols;
-  //  }
-  //
-  //  public Symtab<Ident, CSymbol> getTags() {
-  //    return tags;
-  //  }
-  //
   public Token tok() {
     return tok;
   }
-  //
-  //  public FunctionDefinition getCurrentFn() {
-  //    return currentFn;
-  //  }
 
-  //  public void defineSym(Ident key, CSymbol sym) {
-  //
-  //    //    CSymbol prevsym = symbols.getsymFromCurrentScope(key);
-  //    //    if (prevsym != null) {
-  //    //      if (prevsym.getBase() == CSymbolBase.SYM_TYPEDEF) {
-  //    //        if (!prevsym.getType().isEqualTo(sym.getType())) {
-  //    //          perror("redefinition, previous defined here: " + prevsym.getLocationToString());
-  //    //        }
-  //    //      } else {
-  //    //
-  //    //        if (sym.isFunction() && prevsym.getType().isEqualTo(sym.getType())) {
-  //    //          // TODO: normal prototype logic.
-  //    //        } else {
-  //    //          perror("redefinition, previous defined here: " + prevsym.getLocationToString());
-  //    //        }
-  //    //
-  //    //      }
-  //    //    }
-  //    //
-  //    //    if (currentFn != null) {
-  //    //      currentFn.addLocal(sym);
-  //    //    }
-  //    //
-  //    //    symbols.addsym(key, sym);
-  //  }
+  //////////////////////////////////////////////////////////////////////////////////////
 
-  //  public void defineTag(Ident key, CSymbol sym) {
-  //    tags.addsym(key, sym);
-  //  }
-  //
-  //  public boolean isHasTag(Ident name) {
-  //    return getTag(name) != null;
-  //  }
-  //
-  //  public boolean isHasTagInCurrentScope(Ident name) {
-  //    return tags.getsymFromCurrentScope(name) != null;
-  //  }
-  //
-  //  public CSymbol getTagFromCurrentScope(Ident name) {
-  //    return tags.getsymFromCurrentScope(name);
-  //  }
-  //
-  //  public CSymbol getSym(Ident name) {
-  //    return symbols.getsym(name);
-  //  }
-  //
-  //  public CSymbol getTag(Ident name) {
-  //    return tags.getsym(name);
-  //  }
+  // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
+  // class-type and simple types like int/char/etc.
+  private Symtab<Ident, Boolean> referenceTypes;
 
-  //TODO:SEMANTIC
+  //  Types
   //
-  public void pushscope() {
-    //    tags.pushscope();
-    //    symbols.pushscope();
+  //  <type> ::= <primitive type> | <reference type>
+  //
+  //  <primitive type> ::=  byte | short | int | long | char | boolean
+  //
+  //  <class or interface type> ::= <class type> | <interface type>
+  //
+  //  <class type> ::= <type name>
+  //
+  //  <interface type> ::= <type name>
+
+  public void pushscope(String name) {
+    referenceTypes.pushscope(name);
   }
 
   public void popscope() {
-    //    tags.popscope();
-    //    symbols.popscope();
+    referenceTypes.popscope();
   }
 
-  //
-  // TODO:SEMANTIC
+  public void defineClassName(Ident name) {
+    this.referenceTypes.addsym(name, true);
+  }
+
+  public boolean isClassName(Ident ident) {
+    return referenceTypes.getsym(ident);
+  }
+
+  public boolean isClassName() {
+    if (IsIdent.isUserDefinedIdentNoKeyword(tok)) {
+      return isClassName(tok.getIdent());
+    }
+    return false;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////
 
   public Parse(List<Token> tokens) {
     this.tokenlist = new Tokenlist(tokens);
@@ -138,8 +99,7 @@ public class Parse {
   }
 
   private void initScopes() {
-    //    this.symbols = new Symtab<Ident, CSymbol>();
-    //    this.tags = new Symtab<Ident, CSymbol>();
+    this.referenceTypes = new Symtab<Ident, Boolean>();
   }
 
   public String getLastLoc() {
@@ -160,6 +120,10 @@ public class Parse {
 
   public boolean is(T toktype) {
     return tok.getType().equals(toktype);
+  }
+
+  public boolean is(Ident ident) {
+    return tok.ofType(T.TOKEN_IDENT) && ident.equals(tok.getIdent());
   }
 
   public T tp() {
@@ -332,7 +296,7 @@ public class Parse {
 
   public CompilationUnit parse() {
     CompilationUnit tu = new CompilationUnit();
-    pushscope();
+    pushscope("unit");
 
     // top-level
     moveStraySemicolon();

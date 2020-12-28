@@ -24,16 +24,19 @@ public class Type {
 
   private PrimitiveType primitiveType;
   private ReferenceType referenceType;
+  private boolean isPrimitive;
 
   public Type() {
   }
 
   public Type(PrimitiveType primitiveType) {
     this.primitiveType = primitiveType;
+    this.isPrimitive = true;
   }
 
   public Type(ReferenceType referenceType) {
     this.referenceType = referenceType;
+    this.isPrimitive = false;
   }
 
   public PrimitiveType getPrimitiveType() {
@@ -50,6 +53,14 @@ public class Type {
 
   public void setReferenceType(ReferenceType referenceType) {
     this.referenceType = referenceType;
+  }
+
+  public boolean isPrimitive() {
+    return isPrimitive;
+  }
+
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
   }
 
 }

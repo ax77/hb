@@ -45,6 +45,14 @@ public class ParseTypeDeclarationsList {
     Ident ident = parser.getIdent();
     Token lbrace = parser.lbrace();
 
+    // we'll register this name for type-handling
+    // we can't register the whole class, because our compiler is not a one-pass one ;)
+    // we'll resolve all methods, fields later, right now we need to know that this simple
+    // identifier is a class name, and nothing more...
+    // maybe I'm wrong here, and there is more clean and nice way, I'll think about it later.
+    //
+    parser.defineClassName(ident);
+
     ClassDeclaration clazz = new ClassDeclaration(ident);
 
     // class C { }
@@ -72,7 +80,7 @@ public class ParseTypeDeclarationsList {
 
     // 0) static { <block> }
     //
-    boolean isStaticInitializer = parser.tok().isIdent(IdentMap.static_ident) && parser.peek().ofType(T.T_LEFT_BRACE);
+    boolean isStaticInitializer = parser.is(IdentMap.static_ident) && parser.peek().ofType(T.T_LEFT_BRACE);
     if (isStaticInitializer) {
       Token kw = parser.checkedMove(IdentMap.static_ident);
 
