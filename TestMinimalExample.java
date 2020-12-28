@@ -72,7 +72,7 @@ public class TestMinimalExample {
     StringBuilder sb = new StringBuilder();
     sb.append(" /*012*/  public class C {                     \n");
     sb.append(" /*013*/    int func(int a) {                  \n");
-    sb.append(" /*015*/      return a().b().c.d().e.f.g().h;   \n");
+    sb.append(" /*015*/      return a(1).b(2,3).c.d().e.f.g().h;   \n");
     sb.append(" /*016*/    }                                  \n");
     sb.append(" /*017*/  }                                    \n");
     //@formatter:on

@@ -15,4 +15,5 @@ public enum CExpressionBase {
  , EPREINCDEC
  , EPOSTINCDEC
  , EFIELD_ACCESS
+ , EGET_POINTER_TO_CLASS
 }

@@ -18,6 +18,12 @@ public class CExpression implements AstTraverser {
   private Ident symbol;
   private MethodInvocation methodInvocation;
   private FieldAccess fieldAccess;
+  private GetPointerToClass getPointerToClass;
+
+  public CExpression(GetPointerToClass getPointerToClass) {
+    this.base = CExpressionBase.EGET_POINTER_TO_CLASS;
+    this.getPointerToClass = getPointerToClass;
+  }
 
   public CExpression(Eunary unary) {
     this.base = CExpressionBase.EUNARY;
@@ -94,6 +100,10 @@ public class CExpression implements AstTraverser {
 
   public FieldAccess getFieldAccess() {
     return fieldAccess;
+  }
+
+  public GetPointerToClass getGetPointerToClass() {
+    return getPointerToClass;
   }
 
   @Override

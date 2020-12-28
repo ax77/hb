@@ -1,47 +1,27 @@
 package njast.ast_visitors;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ast_flow.expr.CExpression;
 import njast.ast_flow.expr.CExpressionBase;
 import njast.ast_flow.expr.FieldAccess;
+import njast.ast_flow.expr.GetPointerToClass;
 import njast.ast_flow.expr.MethodInvocation;
 
 public class AstVisitorXml implements AstVisitor {
 
   private StringBuilder text;
   private int level;
-  private List<String> tagStack;
 
   public AstVisitorXml() {
     text = new StringBuilder();
-    text.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n");
-
     level = 0;
-    tagStack = new LinkedList<String>();
   }
 
   @Override
   public String getText() {
     return text.toString();
-  }
-
-  private void openTag(String tag) {
-    // text.append(pad() + "<" + tag + ">\n");
-    text.append(pad() + tag + ": {\n");
-
-    ++level;
-    tagStack.add(0, tag);
-  }
-
-  private void closeTag() {
-    String tag = tagStack.remove(0);
-
-    --level;
-    // text.append(pad() + "</" + tag + ">\n");
-    text.append(pad() + "}\n");
   }
 
   private void put(String name) {
@@ -54,6 +34,10 @@ public class AstVisitorXml implements AstVisitor {
     return o.getClass().getSimpleName();
   }
 
+  private String q(String trim) {
+    return "\"" + trim + "\"";
+  }
+
   private String pad() {
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < level; i++) {
@@ -62,19 +46,15 @@ public class AstVisitorXml implements AstVisitor {
     return res.toString();
   }
 
-  private String q(String trim) {
-    return "\"" + trim + "\"";
-  }
-
   @Override
   public void visit(CExpression o) {
-    
-    if(o==null){
+
+    if (o == null) {
+      System.out.println(">> warn: null expression");
       return;
     }
 
     CExpressionBase base = o.getBase();
-    openTag(base.toString());
 
     if (base == CExpressionBase.EMETHOD_INVOCATION) {
       visit(o.getMethodInvocation());
@@ -88,15 +68,28 @@ public class AstVisitorXml implements AstVisitor {
       visit(o.getSymbol());
     }
 
-    closeTag();
+    if (base == CExpressionBase.EGET_POINTER_TO_CLASS) {
+      visit(o.getGetPointerToClass());
+    }
+
   }
 
   @Override
   public void visit(MethodInvocation o) {
-
-    put("func:" + o.getFuncname().getName());
     visit(o.getFunction());
 
+    final List<CExpression> arguments = o.getArguments();
+    for (int i = arguments.size(); --i >= 0;) {
+      CExpression e = arguments.get(i);
+      if (e.getCnumber() == null) {
+        throw new RuntimeException("wanna numbers for test");
+      }
+      put("push " + String.format("%d", e.getCnumber().getClong()));
+    }
+
+    put("call " + o.getFuncname().getName());
+    put("mov eax, return_val");
+    put("push eax\n");
   }
 
   @Override
@@ -106,10 +99,15 @@ public class AstVisitorXml implements AstVisitor {
 
   @Override
   public void visit(FieldAccess o) {
-    put("property: " + o.getName().getName());
-    put("object: ");
-
     visit(o.getExpression());
+    put("mov eax, offset_of_field [" + o.getName().getName() + "]");
+    put("push eax\n");
+  }
+
+  @Override
+  public void visit(GetPointerToClass o) {
+    put("mov ecx, offset_of_class [" + o.getClassname().getName() + "]");
+    put("push ecx\n");
   }
 
 }

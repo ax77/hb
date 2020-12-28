@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.cstrtox.C_strtox;
+import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -41,6 +42,7 @@ import njast.ast_flow.expr.Eternary;
 import njast.ast_flow.expr.Eunary;
 import njast.ast_flow.expr.ExprUtil;
 import njast.ast_flow.expr.FieldAccess;
+import njast.ast_flow.expr.GetPointerToClass;
 import njast.ast_flow.expr.MethodInvocation;
 import njast.parse.Parse;
 import njast.parse.ParseState;
@@ -340,7 +342,10 @@ public class ParseExpression {
         if (funcname == null) {
           parser.perror("expect function name");
         }
-        lhs = methodInvocation(funcname, null); // TODO: null, or empty leaf here?
+
+        GetPointerToClass classptr = new GetPointerToClass(Hash_ident.getHashedIdent("todo_curr_class"));
+        CExpression pointerToClass = new CExpression(classptr);
+        lhs = methodInvocation(funcname, pointerToClass); // TODO: more clean, more simple.
       }
 
       else {
