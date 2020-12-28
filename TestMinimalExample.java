@@ -47,39 +47,34 @@ public class TestMinimalExample {
   //   }
   // ],
 
-  //  <EFIELD_ACCESS>
-  //  <FieldAccess>
-  //    <Ident>
-  //      c
-  //    </Ident>
-  //    <EMETHOD_INVOCATION>
-  //      <EXPR:EFIELD_ACCESS>
-  //        <EFIELD_ACCESS>
-  //          <FieldAccess>
-  //            <Ident>
-  //              b
-  //            </Ident>
-  //            <EMETHOD_INVOCATION>
-  //              <EXPR:EPRIMARY_IDENT>
-  //                <EPRIMARY_IDENT>
-  //                  <Ident>
-  //                    a
-  //                  </Ident>
-  //                </EPRIMARY_IDENT>
-  //              </EXPR:EPRIMARY_IDENT>
-  //            </EMETHOD_INVOCATION>
-  //          </FieldAccess>
+  //EFIELD_ACCESS: {
+  //  property: c
+  //  object: 
+  //  EMETHOD_INVOCATION: {
+  //    callee:
+  //    EFIELD_ACCESS: {
+  //      property: b
+  //      object: 
+  //      EMETHOD_INVOCATION: {
+  //        callee:
+  //        EPRIMARY_IDENT: {
+  //          id=a
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
 
   @Test
   public void testMinimalClass() throws IOException {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*002*/  public class C {                              \n");
-    sb.append(" /*015*/    public int func1() {            \n");
-    sb.append(" /*017*/      return a().b().c;   \n");
-    sb.append(" /*018*/    }                                           \n");
-    sb.append(" /*019*/  }                                             \n");
+    sb.append(" /*012*/  public class C {                     \n");
+    sb.append(" /*013*/    int func(int a) {                  \n");
+    sb.append(" /*015*/      return a().b().c;   \n");
+    sb.append(" /*016*/    }                                  \n");
+    sb.append(" /*017*/  }                                    \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();

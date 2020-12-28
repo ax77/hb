@@ -3,9 +3,6 @@ package njast.ast_top;
 import java.util.ArrayList;
 import java.util.List;
 
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
-
 public class CompilationUnit {
   private List<TypeDeclaration> typeDeclarations;
 

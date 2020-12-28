@@ -95,7 +95,7 @@ public class CExpression implements AstTraverser {
   public FieldAccess getFieldAccess() {
     return fieldAccess;
   }
-  
+
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);

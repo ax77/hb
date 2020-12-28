@@ -8,8 +8,6 @@ import njast.ast_flow.expr.CExpression;
 import njast.ast_flow.expr.CExpressionBase;
 import njast.ast_flow.expr.FieldAccess;
 import njast.ast_flow.expr.MethodInvocation;
-import njast.ast_top.CompilationUnit;
-import njast.ast_top.TypeDeclaration;
 
 public class AstVisitorXml implements AstVisitor {
 
@@ -31,7 +29,8 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   private void openTag(String tag) {
-    text.append(pad() + "<" + tag + ">\n");
+    // text.append(pad() + "<" + tag + ">\n");
+    text.append(pad() + tag + ": {\n");
 
     ++level;
     tagStack.add(0, tag);
@@ -41,7 +40,8 @@ public class AstVisitorXml implements AstVisitor {
     String tag = tagStack.remove(0);
 
     --level;
-    text.append(pad() + "</" + tag + ">\n");
+    // text.append(pad() + "</" + tag + ">\n");
+    text.append(pad() + "}\n");
   }
 
   private void put(String name) {
@@ -89,36 +89,23 @@ public class AstVisitorXml implements AstVisitor {
 
   @Override
   public void visit(MethodInvocation o) {
-    //    openTag(sname(o));
 
-    put("function-expression=");
+    put("callee:");
     visit(o.getFunction());
-
-    //    closeTag();
 
   }
 
   @Override
   public void visit(Ident o) {
-    //    openTag(sname(o));
-
     put("id=" + o.getName());
-
-    //    closeTag();
-
   }
 
   @Override
   public void visit(FieldAccess o) {
-    //    openTag(sname(o));
+    put("property: " + o.getName().getName());
+    put("object: ");
 
-    put("field-name=");
-    visit(o.getName());
-
-    put("selection=");
     visit(o.getExpression());
-
-    //    closeTag();
   }
 
 }

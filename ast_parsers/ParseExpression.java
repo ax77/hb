@@ -34,13 +34,12 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.ast_flow.expr.CExpression;
-import njast.ast_flow.expr.CExpressionBase;
 import njast.ast_flow.expr.Ebinary;
-import njast.ast_flow.expr.MethodInvocation;
-import njast.ast_flow.expr.FieldAccess;
 import njast.ast_flow.expr.Eternary;
 import njast.ast_flow.expr.Eunary;
 import njast.ast_flow.expr.ExprUtil;
+import njast.ast_flow.expr.FieldAccess;
+import njast.ast_flow.expr.MethodInvocation;
 import njast.parse.Parse;
 
 public class ParseExpression {
@@ -301,72 +300,16 @@ public class ParseExpression {
     return e_postfix();
   }
 
-  //  postfix-expression:  
-  //    primary-expression
-  //    postfix-expression [ expression ]
-  //    postfix-expression [ braced-init-listopt ]     C++0x
-  //    postfix-expression ( expression-listopt )
-  //    simple-type-specifier ( expression-listopt )
-  //    typename-specifier ( expression-listopt )
-  //    simple-type-specifier braced-init-list     C++0x
-  //    typename-specifier braced-init-list     C++0x
-  //    postfix-expression . templateopt id-expression
-  //    postfix-expression -> templateopt id-expression
-  //    postfix-expression . pseudo-destructor-name
-  //    postfix-expression -> pseudo-destructor-name
-  //    postfix-expression ++
-  //    postfix-expression --
-  //    dynamic_cast < type-id > ( expression )
-  //    static_cast < type-id > ( expression )
-  //    reinterpret_cast < type-id > ( expression )
-  //    const_cast < type-id > ( expression )
-  //    typeid ( expression )
-  //    typeid ( type-id )
-
-  //         "List": [
-  //           {
-  //             "X": {
-  //               "Sel": {
-  //                 "Name": "c",
-  //                 "_type": "Ident"
-  //               },
-  //               "X": {
-  //                 "Args": [],
-  //                 "Ellipsis": 0,
-  //                 "Fun": {
-  //                   "Sel": {
-  //                     "Name": "b",
-  //                     "_type": "Ident"
-  //                   },
-  //                   "X": {
-  //                     "Args": [],
-  //                     "Ellipsis": 0,
-  //                     "Fun": {
-  //                       "Name": "a",
-  //                       "_type": "Ident"
-  //                     },
-  //                     "_type": "CallExpr"
-  //                   },
-  //                   "_type": "SelectorExpr"
-  //                 },
-  //                 "_type": "CallExpr"
-  //               },
-  //               "_type": "SelectorExpr"
-  //             },
-  //             "_type": "ExprStmt"
-  //           }
-  //         ],
-
   private CExpression e_postfix() {
 
     CExpression lhs = e_prim();
 
     while (parser.is(T_LEFT_PAREN) || parser.is(T.T_DOT)) {
       boolean isDot = parser.is(T.T_DOT);
-      if (!isDot) {
-        lhs = methodInvocation(lhs);
-      } else {
+      if (isDot) {
         lhs = fieldAccess(lhs);
+      } else {
+        lhs = methodInvocation(lhs);
       }
     }
 
@@ -488,21 +431,37 @@ public class ParseExpression {
     return lhs;
   }
 
-  //  <primary> ::=
-  //      <primary no new array>
-  //      | <array creation expression>
-  //
-  //  <primary no new array> ::=
-  //      <literal>
-  //      | this
-  //      | ( <expression> )
-  //      | <class instance creation expression>
-  //      | <field access>
-  //      | <method invocation>
-  //      | <array access>
-  //
-  //  <class instance creation expression> ::=
-  //      new <class type> ( <argument list>? )
+  //primary-expression:
+  //    | literal
+  //    | simple-name
+  //    | parenthesized-expression
+  //    | member-access
+  //    | invocation-expression
+  //       
+  //member-access:
+  //    | primary-expression . identifier
+  //    
+  //invocation-expression:
+  //    | primary-expression ( argument-listopt )
+  //    
+  //literal:
+  //    | boolean-literal
+  //    | integer-literal
+  //    | real-literal
+  //    | character-literal
+  //    | string-literal
+  //    | null-literal
+  //    
+  //simple-name:
+  //    | identifier
+  //    
+  //--->>>
+  //primary-expression:
+  //    | literal
+  //    | simple-name
+  //    | parenthesized-expression
+  //    | primary-expression . identifier
+  //    | primary-expression ( argument-listopt )
 
   private CExpression e_prim() {
 
@@ -522,9 +481,9 @@ public class ParseExpression {
     }
 
     if (parser.tp() == T_LEFT_PAREN) {
-      parser.move();
+      Token lparen = parser.moveget();
       CExpression e = e_expression();
-      parser.checkedMove(T_RIGHT_PAREN);
+      Token rparen = parser.checkedMove(T_RIGHT_PAREN);
       return e;
     }
 
