@@ -68,6 +68,10 @@ public class AstVisitorXml implements AstVisitor {
 
   @Override
   public void visit(CExpression o) {
+    
+    if(o==null){
+      return;
+    }
 
     CExpressionBase base = o.getBase();
     openTag(base.toString());
@@ -90,7 +94,7 @@ public class AstVisitorXml implements AstVisitor {
   @Override
   public void visit(MethodInvocation o) {
 
-    put("callee:");
+    put("func:" + o.getFuncname().getName());
     visit(o.getFunction());
 
   }

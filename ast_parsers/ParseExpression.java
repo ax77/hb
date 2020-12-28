@@ -30,10 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.cstrtox.C_strtox;
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.ast_flow.expr.CExpression;
+import njast.ast_flow.expr.CExpressionBase;
 import njast.ast_flow.expr.Ebinary;
 import njast.ast_flow.expr.Eternary;
 import njast.ast_flow.expr.Eunary;
@@ -41,6 +43,7 @@ import njast.ast_flow.expr.ExprUtil;
 import njast.ast_flow.expr.FieldAccess;
 import njast.ast_flow.expr.MethodInvocation;
 import njast.parse.Parse;
+import njast.parse.ParseState;
 
 public class ParseExpression {
   private final Parse parser;
@@ -304,12 +307,44 @@ public class ParseExpression {
 
     CExpression lhs = e_prim();
 
-    while (parser.is(T_LEFT_PAREN) || parser.is(T.T_DOT)) {
-      boolean isDot = parser.is(T.T_DOT);
-      if (isDot) {
-        lhs = fieldAccess(lhs);
-      } else {
-        lhs = methodInvocation(lhs);
+    for (;;) {
+      if (parser.is(T.T_DOT)) {
+
+        ParseState parseState = new ParseState(parser);
+
+        final Token dot = parser.moveget();
+        final Token peek = parser.peek();
+
+        if (IsIdent.isUserDefinedIdentNoKeyword(parser.tok()) && peek.ofType(T.T_LEFT_PAREN)) {
+          Ident ident = parser.getIdent();
+
+          // TODO: think about it, is it correct?
+          // the result tree is correct as I think, but I'm not sure.
+          // maybe I have to rebuild the node from field-access to func-call
+          // for example: the path like "a().b().c"
+          if (lhs.getBase() == CExpressionBase.EFIELD_ACCESS) {
+          }
+
+          lhs = methodInvocation(ident, lhs);
+        }
+
+        else {
+          parser.restoreState(parseState); // normal field access like: "a.b.c.d.e"
+          lhs = fieldAccess(lhs);
+        }
+
+      }
+
+      else if (parser.is(T_LEFT_PAREN)) {
+        Ident funcname = lhs.getSymbol();
+        if (funcname == null) {
+          parser.perror("expect function name");
+        }
+        lhs = methodInvocation(funcname, null); // TODO: null, or empty leaf here?
+      }
+
+      else {
+        break;
       }
     }
 
@@ -408,7 +443,7 @@ public class ParseExpression {
     return lhs;
   }
 
-  private CExpression methodInvocation(CExpression lhs) {
+  private CExpression methodInvocation(Ident funcname, CExpression lhs) {
     Token lparen = parser.lparen();
 
     List<CExpression> arglist = new ArrayList<CExpression>();
@@ -425,7 +460,7 @@ public class ParseExpression {
       }
     }
 
-    lhs = new CExpression(new MethodInvocation(lhs, arglist));
+    lhs = new CExpression(new MethodInvocation(funcname, lhs, arglist));
 
     Token rparen = parser.rparen();
     return lhs;
