@@ -9,14 +9,14 @@ import java.util.List;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_class.vars.LocalVarDeclaration;
-import njast.ast_class.vars.VarDeclaratorsList;
-import njast.ast_flow.Block;
-import njast.ast_flow.BlockStatement;
-import njast.ast_flow.BlockStatements;
-import njast.ast_flow.CStatement;
-import njast.ast_flow.CStatementBase;
-import njast.ast_flow.expr.CExpression;
+import njast.ast_kinds.CStatementBase;
+import njast.ast_nodes.clazz.vars.LocalVarDeclaration;
+import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
+import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.stmt.Block;
+import njast.ast_nodes.stmt.BlockStatement;
+import njast.ast_nodes.stmt.BlockStatements;
+import njast.ast_nodes.stmt.CStatement;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -27,7 +27,7 @@ public class ParseStatement {
     this.parser = parser;
   }
 
-  private CExpression e_expression() {
+  private Expression e_expression() {
     return new ParseExpression(parser).e_expression();
   }
 
@@ -87,7 +87,7 @@ public class ParseStatement {
         return new CStatement(from, CStatementBase.SRETURN, null);
       }
 
-      CExpression expr = e_expression();
+      Expression expr = e_expression();
 
       parser.checkedMove(T_SEMI_COLON);
       return new CStatement(from, CStatementBase.SRETURN, expr);

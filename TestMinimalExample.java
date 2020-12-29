@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import njast.ast_flow.BlockStatement;
-import njast.ast_flow.expr.CExpression;
-import njast.ast_top.CompilationUnit;
+import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.stmt.BlockStatement;
+import njast.ast_nodes.top.CompilationUnit;
 import njast.ast_visitors.AstVisitorXml;
 import njast.main.ParserMain;
 import njast.parse.Parse;
@@ -83,7 +83,7 @@ public class TestMinimalExample {
     for (BlockStatement bs : unit.getTypeDeclarations().get(0).getClassDeclaration().getMethodDeclaration().get(0)
         .getBody().getBlockStatements().getBlockStatements()) {
       if (bs.getStatement() != null) {
-        final CExpression expr = bs.getStatement().getExpr();
+        final Expression expr = bs.getStatement().getExpr();
         AstVisitorXml vis = new AstVisitorXml();
         expr.accept(vis);
         System.out.println(vis.getText());

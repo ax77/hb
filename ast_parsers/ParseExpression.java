@@ -30,20 +30,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.cstrtox.C_strtox;
-import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_flow.expr.CExpression;
-import njast.ast_flow.expr.CExpressionBase;
-import njast.ast_flow.expr.Ebinary;
-import njast.ast_flow.expr.Eternary;
-import njast.ast_flow.expr.Eunary;
-import njast.ast_flow.expr.ExprUtil;
-import njast.ast_flow.expr.FieldAccess;
-import njast.ast_flow.expr.GetPointerToClass;
-import njast.ast_flow.expr.MethodInvocation;
+import njast.ast_kinds.CExpressionBase;
+import njast.ast_nodes.expr.Binary;
+import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.FieldAccess;
+import njast.ast_nodes.expr.MethodInvocation;
+import njast.ast_nodes.expr.Ternary;
+import njast.ast_nodes.expr.Unary;
+import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 
@@ -54,33 +52,33 @@ public class ParseExpression {
     this.parser = parser;
   }
 
-  private CExpression build_unary(Token op, CExpression operand) {
-    return new CExpression(new Eunary(op, operand));
+  private Expression build_unary(Token op, Expression operand) {
+    return new Expression(new Unary(op, operand));
   }
 
-  private CExpression build_binary(Token operator, CExpression lhs, CExpression rhs) {
-    return new CExpression(new Ebinary(operator, lhs, rhs));
+  private Expression build_binary(Token operator, Expression lhs, Expression rhs) {
+    return new Expression(new Binary(operator, lhs, rhs));
   }
 
-  private CExpression build_ternary(CExpression cnd, CExpression btrue, CExpression bfalse, Token tok) {
-    return new CExpression(new Eternary(cnd, btrue, bfalse));
+  private Expression build_ternary(Expression cnd, Expression btrue, Expression bfalse, Token tok) {
+    return new Expression(new Ternary(cnd, btrue, bfalse));
   }
 
-  private CExpression build_assign(Token tok, CExpression lvalue, CExpression rvalue) {
-    return new CExpression(new Ebinary(tok, lvalue, rvalue));
+  private Expression build_assign(Token tok, Expression lvalue, Expression rvalue) {
+    return new Expression(new Binary(tok, lvalue, rvalue));
   }
 
-  private CExpression build_comma(Token tok, CExpression lhs, CExpression rhs) {
-    return new CExpression(new Ebinary(tok, lhs, rhs));
+  private Expression build_comma(Token tok, Expression lhs, Expression rhs) {
+    return new Expression(new Binary(tok, lhs, rhs));
   }
 
   // numeric-char-constants
-  private CExpression build_number(C_strtox e, Token token) {
-    return new CExpression(e, token);
+  private Expression build_number(C_strtox e, Token token) {
+    return new Expression(e, token);
   }
 
-  public CExpression e_expression() {
-    CExpression e = e_assign();
+  public Expression e_expression() {
+    Expression e = e_assign();
 
     while (parser.tp() == T.T_COMMA) {
       Token saved = parser.checkedMove(T.T_COMMA);
@@ -90,13 +88,13 @@ public class ParseExpression {
     return e;
   }
 
-  public CExpression e_const_expr() {
+  public Expression e_const_expr() {
     return e_cnd();
   }
 
-  public CExpression getExprInParen() {
+  public Expression getExprInParen() {
     parser.checkedMove(T_LEFT_PAREN);
-    CExpression e = e_expression();
+    Expression e = e_expression();
     parser.checkedMove(T.T_RIGHT_PAREN);
     return e;
   }
@@ -105,8 +103,8 @@ public class ParseExpression {
     return IsIdent.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
   }
 
-  public CExpression e_assign() {
-    CExpression lhs = e_cnd();
+  public Expression e_assign() {
+    Expression lhs = e_cnd();
 
     // if simple, then: this...
     //
@@ -133,7 +131,7 @@ public class ParseExpression {
         Token assignOperator = ExprUtil.assignOperator(saved);
         Token binaryOperator = ExprUtil.getOperatorFromCompAssign(saved);
 
-        CExpression rhs = build_binary(binaryOperator, lhs, e_assign());
+        Expression rhs = build_binary(binaryOperator, lhs, e_assign());
         lhs = build_assign(assignOperator, lhs, rhs);
       }
 
@@ -148,8 +146,8 @@ public class ParseExpression {
     return lhs;
   }
 
-  private CExpression e_cnd() {
-    CExpression res = e_lor();
+  private Expression e_cnd() {
+    Expression res = e_lor();
 
     if (parser.tp() != T_QUESTION) {
       return res;
@@ -158,14 +156,14 @@ public class ParseExpression {
     Token saved = parser.tok();
     parser.move();
 
-    CExpression btrue = e_expression();
+    Expression btrue = e_expression();
     parser.checkedMove(T_COLON);
 
     return build_ternary(res, btrue, e_cnd(), saved);
   }
 
-  private CExpression e_lor() {
-    CExpression e = e_land();
+  private Expression e_lor() {
+    Expression e = e_land();
     while (parser.tp() == T_OR_OR) {
       Token saved = parser.tok();
       parser.move();
@@ -174,8 +172,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_land() {
-    CExpression e = e_bor();
+  private Expression e_land() {
+    Expression e = e_bor();
     while (parser.tp() == T_AND_AND) {
       Token saved = parser.tok();
       parser.move();
@@ -184,8 +182,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_bor() {
-    CExpression e = e_bxor();
+  private Expression e_bor() {
+    Expression e = e_bxor();
     while (parser.tp() == T_OR) {
       Token saved = parser.tok();
       parser.move();
@@ -194,8 +192,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_bxor() {
-    CExpression e = e_band();
+  private Expression e_bxor() {
+    Expression e = e_band();
     while (parser.tp() == T_XOR) {
       Token saved = parser.tok();
       parser.move();
@@ -204,8 +202,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_band() {
-    CExpression e = e_equality();
+  private Expression e_band() {
+    Expression e = e_equality();
     while (parser.tp() == T_AND) {
       Token saved = parser.tok();
       parser.move();
@@ -214,8 +212,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_equality() {
-    CExpression e = e_relational();
+  private Expression e_equality() {
+    Expression e = e_relational();
     while (parser.tp() == T_EQ || parser.tp() == T_NE) {
       Token saved = parser.tok();
       parser.move();
@@ -224,8 +222,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_relational() {
-    CExpression e = e_shift();
+  private Expression e_relational() {
+    Expression e = e_shift();
     while (parser.tp() == T_LT || parser.tp() == T_GT || parser.tp() == T_LE || parser.tp() == T_GE) {
       Token saved = parser.tok();
       parser.move();
@@ -234,8 +232,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_shift() {
-    CExpression e = e_add();
+  private Expression e_shift() {
+    Expression e = e_add();
     while (parser.tp() == T_LSHIFT || parser.tp() == T_RSHIFT) {
       Token saved = parser.tok();
       parser.move();
@@ -244,8 +242,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_add() {
-    CExpression e = e_mul();
+  private Expression e_add() {
+    Expression e = e_mul();
     while (parser.tp() == T_PLUS || parser.tp() == T_MINUS) {
       Token saved = parser.tok();
       parser.move();
@@ -254,8 +252,8 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_mul() {
-    CExpression e = e_cast();
+  private Expression e_mul() {
+    Expression e = e_cast();
     while (parser.tp() == T_TIMES || parser.tp() == T_DIVIDE || parser.tp() == T_PERCENT) {
       Token saved = parser.tok();
       parser.move();
@@ -264,7 +262,7 @@ public class ParseExpression {
     return e;
   }
 
-  private CExpression e_cast() {
+  private Expression e_cast() {
 
     //    if (parser.tp() == T_LEFT_PAREN) {
     //      ParseState state = new ParseState(parser);
@@ -293,7 +291,7 @@ public class ParseExpression {
     return e_unary();
   }
 
-  private CExpression e_unary() {
+  private Expression e_unary() {
 
     // [& * + - ~ !]
     if (IsIdent.isUnaryOperator(parser.tok())) {
@@ -305,9 +303,9 @@ public class ParseExpression {
     return e_postfix();
   }
 
-  private CExpression e_postfix() {
+  private Expression e_postfix() {
 
-    CExpression lhs = e_prim();
+    Expression lhs = e_prim();
 
     for (;;) {
       if (parser.is(T.T_DOT)) {
@@ -343,9 +341,7 @@ public class ParseExpression {
           parser.perror("expect function name");
         }
 
-        GetPointerToClass classptr = new GetPointerToClass(Hash_ident.getHashedIdent("todo_curr_class"));
-        CExpression pointerToClass = new CExpression(classptr);
-        lhs = methodInvocation(funcname, pointerToClass); // TODO: more clean, more simple.
+        lhs = methodInvocation(funcname); // TODO: more clean, more precise.
       }
 
       else {
@@ -439,36 +435,48 @@ public class ParseExpression {
     return lhs;
   }
 
-  private CExpression fieldAccess(CExpression lhs) {
+  private Expression fieldAccess(Expression lhs) {
 
     Token operator = parser.moveget();
     Token identifier = parser.checkedMove(T.TOKEN_IDENT);
 
-    lhs = new CExpression(new FieldAccess(identifier.getIdent(), lhs));
+    lhs = new Expression(new FieldAccess(identifier.getIdent(), lhs));
     return lhs;
   }
 
-  private CExpression methodInvocation(Ident funcname, CExpression lhs) {
+  private Expression methodInvocation(Ident funcname) {
+    Token lparen = parser.lparen();
+    List<Expression> arglist = parseArglist();
+    Token rparen = parser.rparen();
+    return new Expression(new MethodInvocation(funcname, arglist));
+  }
+
+  private Expression methodInvocation(Ident funcname, Expression lhs) {
     Token lparen = parser.lparen();
 
-    List<CExpression> arglist = new ArrayList<CExpression>();
+    List<Expression> arglist = parseArglist();
+
+    lhs = new Expression(new MethodInvocation(funcname, lhs, arglist));
+
+    Token rparen = parser.rparen();
+    return lhs;
+  }
+
+  private List<Expression> parseArglist() {
+    List<Expression> arglist = new ArrayList<Expression>();
 
     if (parser.tp() != T_RIGHT_PAREN) {
-      CExpression onearg = e_assign();
+      Expression onearg = e_assign();
       arglist.add(onearg);
 
       while (parser.tp() == T.T_COMMA) {
         parser.move();
 
-        CExpression oneargSeq = e_assign();
+        Expression oneargSeq = e_assign();
         arglist.add(oneargSeq);
       }
     }
-
-    lhs = new CExpression(new MethodInvocation(funcname, lhs, arglist));
-
-    Token rparen = parser.rparen();
-    return lhs;
+    return arglist;
   }
 
   //primary-expression:
@@ -503,7 +511,7 @@ public class ParseExpression {
   //    | primary-expression . identifier
   //    | primary-expression ( argument-listopt )
 
-  private CExpression e_prim() {
+  private Expression e_prim() {
 
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
       Token saved = parser.moveget();
@@ -517,12 +525,12 @@ public class ParseExpression {
 
     if (parser.tp() == T.TOKEN_IDENT) {
       Token saved = parser.moveget();
-      return new CExpression(saved.getIdent());
+      return new Expression(saved.getIdent());
     }
 
     if (parser.tp() == T_LEFT_PAREN) {
       Token lparen = parser.moveget();
-      CExpression e = e_expression();
+      Expression e = e_expression();
       Token rparen = parser.checkedMove(T_RIGHT_PAREN);
       return e;
     }
@@ -532,7 +540,7 @@ public class ParseExpression {
 
   }
 
-  private CExpression primaryNumber(Token saved) {
+  private Expression primaryNumber(Token saved) {
     //TODO:NUMBERS
     String toeval = "";
     if (saved.ofType(TOKEN_CHAR)) {

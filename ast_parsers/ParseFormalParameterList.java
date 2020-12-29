@@ -3,8 +3,8 @@ package njast.ast_parsers;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_class.FormalParameter;
-import njast.ast_class.FormalParameterList;
+import njast.ast_nodes.clazz.FormalParameter;
+import njast.ast_nodes.clazz.FormalParameterList;
 import njast.parse.Parse;
 import njast.types.Type;
 

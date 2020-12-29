@@ -7,7 +7,6 @@ import static jscan.tokenize.T.T_PLUS;
 import static jscan.tokenize.T.T_TILDE;
 import static jscan.tokenize.T.T_TIMES;
 
-import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.symtab.IdentMap;

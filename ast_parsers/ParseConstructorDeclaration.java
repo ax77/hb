@@ -3,9 +3,9 @@ package njast.ast_parsers;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_class.ConstructorDeclaration;
-import njast.ast_class.FormalParameterList;
-import njast.ast_flow.BlockStatements;
+import njast.ast_nodes.clazz.ConstructorDeclaration;
+import njast.ast_nodes.clazz.FormalParameterList;
+import njast.ast_nodes.stmt.BlockStatements;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 

@@ -3,7 +3,7 @@ package njast.ast_checkers;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_class.ClassDeclaration;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_parsers.ParseModifiers;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;

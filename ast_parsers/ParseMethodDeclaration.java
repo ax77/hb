@@ -1,9 +1,9 @@
 package njast.ast_parsers;
 
 import jscan.symtab.Ident;
-import njast.ast_class.FormalParameterList;
-import njast.ast_class.MethodDeclaration;
-import njast.ast_flow.Block;
+import njast.ast_nodes.clazz.FormalParameterList;
+import njast.ast_nodes.clazz.MethodDeclaration;
+import njast.ast_nodes.stmt.Block;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.types.Type;

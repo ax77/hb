@@ -3,11 +3,10 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import njast.ast_flow.expr.CExpression;
-import njast.ast_flow.expr.CExpressionBase;
-import njast.ast_flow.expr.FieldAccess;
-import njast.ast_flow.expr.GetPointerToClass;
-import njast.ast_flow.expr.MethodInvocation;
+import njast.ast_kinds.CExpressionBase;
+import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.FieldAccess;
+import njast.ast_nodes.expr.MethodInvocation;
 
 public class AstVisitorXml implements AstVisitor {
 
@@ -47,7 +46,7 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(CExpression o) {
+  public void visit(Expression o) {
 
     if (o == null) {
       System.out.println(">> warn: null expression");
@@ -68,19 +67,17 @@ public class AstVisitorXml implements AstVisitor {
       visit(o.getSymbol());
     }
 
-    if (base == CExpressionBase.EGET_POINTER_TO_CLASS) {
-      visit(o.getGetPointerToClass());
-    }
-
   }
 
   @Override
   public void visit(MethodInvocation o) {
-    visit(o.getFunction());
+    if (o.isMethodInvocation()) {
+      visit(o.getFunction());
+    }
 
-    final List<CExpression> arguments = o.getArguments();
+    final List<Expression> arguments = o.getArguments();
     for (int i = arguments.size(); --i >= 0;) {
-      CExpression e = arguments.get(i);
+      Expression e = arguments.get(i);
       if (e.getCnumber() == null) {
         throw new RuntimeException("wanna numbers for test");
       }
@@ -102,12 +99,6 @@ public class AstVisitorXml implements AstVisitor {
     visit(o.getExpression());
     put("mov eax, offset_of_field [" + o.getName().getName() + "]");
     put("push eax\n");
-  }
-
-  @Override
-  public void visit(GetPointerToClass o) {
-    put("mov ecx, offset_of_class [" + o.getClassname().getName() + "]");
-    put("push ecx\n");
   }
 
 }
