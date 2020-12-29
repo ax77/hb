@@ -27,10 +27,33 @@ import njast.types.Type;
 
 public class AstVisitorTypeApplier {
 
+  //to define a symbol in a function or nested block and check redefinition
+  //1) check the current block 
+  //2) check the whole function scope
+  //
+  //to bind a symbol in a expression - 
+  //1) block scope
+  //2) function scope
+  //3) class scope
+  //4) file scope
+  //
+  //note: function parameters also a variables in a function scope
+
+  // you have to initialize each field with its default value
+  // you have to initialize each LHS like that, before you'll apply RHS
+  //
+  //  class Idn {
+  //    int i = func();
+  //    int func() {
+  //      return this.i;
+  //    }
+  //  }
+
   //////////////////////////////////////////////////////////////////////
   // SYMTAB 
   //
   private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
+    System.out.println("param_name: " + paramName.getName());
   }
 
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var, Type type) {
@@ -42,6 +65,13 @@ public class AstVisitorTypeApplier {
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
     System.out.println(m.getIdentifier().getName());
   }
+
+  private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
+  }
+
+  private void initVarZero(VarDeclarator var, Type type) {
+  }
+
   //
   //////////////////////////////////////////////////////////////////////
 
@@ -53,11 +83,12 @@ public class AstVisitorTypeApplier {
     System.out.println(object.getIdentifier().getName());
 
     //fields
-    for (ClassFieldDeclaration f : object.getFieldDeclaration()) {
-      Type type = f.getType();
-      VarDeclaratorsList vars = f.getVariables();
+    for (ClassFieldDeclaration field : object.getFieldDeclaration()) {
+      Type type = field.getType();
+      VarDeclaratorsList vars = field.getVariables();
       for (VarDeclarator var : vars.getVariables()) {
-        defineClassField(f, type, var); // check redefinition
+        initVarZero(var, type);
+        defineClassField(field, type, var); // check redefinition
       }
     }
 
@@ -83,6 +114,7 @@ public class AstVisitorTypeApplier {
           Type type = localVars.getType();
           VarDeclaratorsList vars = localVars.getVars();
           for (VarDeclarator var : vars.getVariables()) {
+            initVarZero(var, type);
             defineMethodVariable(method, var, type);
           }
         }
@@ -90,12 +122,15 @@ public class AstVisitorTypeApplier {
         // statements
         final StmtStatement statement = block.getStatement();
         if (statement != null) {
-          //
+          // block variables here ... 
         }
       }
     }
 
-    //
+    //constructors (the last, it works with methods and fields)
+    for (ClassConstructorDeclaration constructor : object.getConstructorDeclaration()) {
+      defineConstructor(object, constructor); // check overloading/redefinition/etc
+    }
   }
 
   public void visit(ExprBinary o) {

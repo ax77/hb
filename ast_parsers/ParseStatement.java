@@ -54,7 +54,8 @@ public class ParseStatement {
   public StmtBlock parseBlock() {
 
     Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
-    if (parser.tp() == T.T_RIGHT_BRACE) {
+
+    if (parser.is(T.T_RIGHT_BRACE)) {
       Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
       return new StmtBlock(new ArrayList<StmtBlockItem>(0));
     }
@@ -81,7 +82,7 @@ public class ParseStatement {
     // return ... ;
     // return ;
 
-    if (parser.tok().isIdent(return_ident)) {
+    if (parser.is(return_ident)) {
       Token from = parser.checkedMove(return_ident);
 
       if (parser.tp() == T_SEMI_COLON) {
@@ -97,7 +98,7 @@ public class ParseStatement {
 
     // for( ;; )
 
-    if (parser.tok().isIdent(for_ident)) {
+    if (parser.is(for_ident)) {
       VarDeclarationLocal decl = null;
       ExprExpression init = null;
       ExprExpression test = null;
@@ -148,7 +149,7 @@ public class ParseStatement {
 
     // {  }
 
-    if (parser.tok().ofType(T.T_LEFT_BRACE)) {
+    if (parser.is(T.T_LEFT_BRACE)) {
       return parseCompoundStatement();
     }
 
