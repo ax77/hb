@@ -5,12 +5,12 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsConstructor;
 import njast.ast_checkers.IsFunc;
+import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.ConstructorDeclaration;
-import njast.ast_nodes.clazz.FieldDeclaration;
-import njast.ast_nodes.clazz.MethodDeclaration;
-import njast.ast_nodes.stmt.Block;
-import njast.ast_nodes.top.TypeDeclaration;
+import njast.ast_nodes.clazz.ClassFieldDeclaration;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
@@ -22,7 +22,7 @@ public class ParseTypeDeclarationsList {
     this.parser = parser;
   }
 
-  public TypeDeclaration parse() {
+  public TopLevelTypeDeclaration parse() {
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
@@ -32,7 +32,7 @@ public class ParseTypeDeclarationsList {
 
       ClassDeclaration classBody = parseClassDeclaration();
 
-      return new TypeDeclaration(classBody);
+      return new TopLevelTypeDeclaration(classBody);
 
     }
 
@@ -84,7 +84,7 @@ public class ParseTypeDeclarationsList {
     if (isStaticInitializer) {
       Token kw = parser.checkedMove(IdentMap.static_ident);
 
-      Block block = new ParseStatement(parser).parseBlock();
+      StmtBlock block = new ParseStatement(parser).parseBlock();
       classBody.put(block);
 
       return;
@@ -94,7 +94,7 @@ public class ParseTypeDeclarationsList {
     // 
     boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(classBody);
     if (isConstructorDeclaration) {
-      ConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
+      ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
       classBody.put(constructorDeclaration);
 
       return;
@@ -105,13 +105,13 @@ public class ParseTypeDeclarationsList {
     boolean isFunction = new IsFunc(parser).isFunc();
 
     if (isFunction) {
-      MethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();
+      ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();
       classBody.put(methodDeclaration);
     }
 
     else {
 
-      FieldDeclaration fieldDeclaration = new ParseFieldDeclaration(parser).parse();
+      ClassFieldDeclaration fieldDeclaration = new ParseFieldDeclaration(parser).parse();
       classBody.put(fieldDeclaration);
     }
 

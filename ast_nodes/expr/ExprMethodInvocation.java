@@ -6,33 +6,33 @@ import jscan.symtab.Ident;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class MethodInvocation implements AstTraverser {
-  private final ExpressionNode function;
-  private final List<ExpressionNode> arguments;
+public class ExprMethodInvocation implements AstTraverser {
+  private final ExprExpression object;
+  private final List<ExprExpression> arguments;
   private final Ident funcname;
   private final boolean isMethodInvocation;
 
   // a.b()
-  public MethodInvocation(Ident funcname, ExpressionNode function, List<ExpressionNode> arguments) {
+  public ExprMethodInvocation(Ident funcname, ExprExpression object, List<ExprExpression> arguments) {
     this.funcname = funcname;
-    this.function = function;
+    this.object = object;
     this.arguments = arguments;
     this.isMethodInvocation = true;
   }
 
   // b()
-  public MethodInvocation(Ident funcname, List<ExpressionNode> arguments) {
+  public ExprMethodInvocation(Ident funcname, List<ExprExpression> arguments) {
     this.funcname = funcname;
-    this.function = null;
+    this.object = null;
     this.arguments = arguments;
     this.isMethodInvocation = false;
   }
 
-  public ExpressionNode getFunction() {
-    return function;
+  public ExprExpression getObject() {
+    return object;
   }
 
-  public List<ExpressionNode> getArguments() {
+  public List<ExprExpression> getArguments() {
     return arguments;
   }
 

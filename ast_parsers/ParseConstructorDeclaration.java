@@ -3,9 +3,9 @@ package njast.ast_parsers;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_nodes.clazz.ConstructorDeclaration;
-import njast.ast_nodes.clazz.FormalParameterList;
-import njast.ast_nodes.stmt.BlockStatements;
+import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.ast_nodes.stmt.StmtBlockStatements;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 
@@ -34,7 +34,7 @@ public class ParseConstructorDeclaration {
   //
   //  <constructor body> ::= { <explicit constructor invocation>? <block statements>? }
 
-  public ConstructorDeclaration parse() {
+  public ClassConstructorDeclaration parse() {
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
@@ -42,20 +42,20 @@ public class ParseConstructorDeclaration {
 
     FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
 
-    BlockStatements blockStatements = parseBody();
+    StmtBlockStatements blockStatements = parseBody();
 
-    return new ConstructorDeclaration(identifier, formalParameterList, blockStatements);
+    return new ClassConstructorDeclaration(identifier, formalParameterList, blockStatements);
   }
 
-  private BlockStatements parseBody() {
+  private StmtBlockStatements parseBody() {
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       Token rbrace = parser.moveget();
-      return new BlockStatements();
+      return new StmtBlockStatements();
     }
 
-    BlockStatements blockStatements = new ParseStatement(parser).parseBlockStamentList();
+    StmtBlockStatements blockStatements = new ParseStatement(parser).parseBlockStamentList();
     Token rbrace = parser.rbrace();
     return blockStatements;
   }

@@ -3,7 +3,7 @@ package njast.main;
 import java.io.IOException;
 
 import jscan.Tokenlist;
-import njast.ast_nodes.top.CompilationUnit;
+import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.parse.Parse;
 
 public interface ParserMainApi {
@@ -12,6 +12,6 @@ public interface ParserMainApi {
 
   public Parse initiateParse() throws IOException;
 
-  public CompilationUnit parseUnit() throws IOException;
+  public TopLevelCompilationUnit parseUnit() throws IOException;
 
 }

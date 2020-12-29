@@ -3,7 +3,15 @@ package njast.ast_nodes.clazz.vars;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VarDeclaratorsList {
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
+
+public class VarDeclaratorsList implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
+
   private List<VarDeclarator> variables;
 
   public VarDeclaratorsList() {

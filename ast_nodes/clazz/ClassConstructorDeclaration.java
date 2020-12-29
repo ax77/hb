@@ -1,9 +1,16 @@
 package njast.ast_nodes.clazz;
 
 import jscan.symtab.Ident;
-import njast.ast_nodes.stmt.BlockStatements;
+import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 
-public class ConstructorDeclaration {
+public class ClassConstructorDeclaration implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
 
   //  <constructor declaration> ::= <constructor modifiers>? <constructor declarator> <throws>? <constructor body>
   //
@@ -17,10 +24,10 @@ public class ConstructorDeclaration {
 
   private final Ident identifier;
   private final FormalParameterList formalParameterList;
-  private final BlockStatements blockStatements;
+  private final StmtBlockStatements blockStatements;
 
-  public ConstructorDeclaration(Ident identifier, FormalParameterList formalParameterList,
-      BlockStatements blockStatements) {
+  public ClassConstructorDeclaration(Ident identifier, FormalParameterList formalParameterList,
+      StmtBlockStatements blockStatements) {
     this.identifier = identifier;
     this.formalParameterList = formalParameterList;
     this.blockStatements = blockStatements;
@@ -34,7 +41,7 @@ public class ConstructorDeclaration {
     return formalParameterList;
   }
 
-  public BlockStatements getBlockStatements() {
+  public StmtBlockStatements getBlockStatements() {
     return blockStatements;
   }
 

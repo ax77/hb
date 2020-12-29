@@ -1,20 +1,27 @@
 package njast.ast_nodes.expr;
 
 import jscan.cstrtox.NumType;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 
-public class NumericConstant {
+public class ExprNumericConstant implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
+
   private final NumType numtype;
 
   private final long clong;
   private final double cdouble;
 
-  public NumericConstant(long clong, NumType numtype) {
+  public ExprNumericConstant(long clong, NumType numtype) {
     this.numtype = numtype;
     this.clong = clong;
     this.cdouble = (double) clong;
   }
 
-  public NumericConstant(double cdouble, NumType numtype) {
+  public ExprNumericConstant(double cdouble, NumType numtype) {
     this.numtype = numtype;
     this.clong = (long) cdouble;
     this.cdouble = cdouble;

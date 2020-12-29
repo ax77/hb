@@ -9,91 +9,91 @@ import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class ExpressionNode implements AstTraverser {
+public class ExprExpression implements AstTraverser {
 
   private final ExpressionBase base; // what union contains
-  private Unary unary;
-  private Binary binary;
-  private Ternary eternary;
-  private NumericConstant cnumber;
-  private Ident symbol;
-  private MethodInvocation methodInvocation;
-  private FieldAccess fieldAccess;
+  private ExprUnary unary;
+  private ExprBinary binary;
+  private ExprTernary eternary;
+  private ExprNumericConstant literalNumber;
+  private Ident literalIdentifier;
+  private ExprMethodInvocation methodInvocation;
+  private ExprFieldAccess fieldAccess;
 
-  public ExpressionNode(Unary unary) {
+  public ExprExpression(ExprUnary unary) {
     this.base = ExpressionBase.EUNARY;
     this.unary = unary;
   }
 
-  public ExpressionNode(Binary binary) {
+  public ExprExpression(ExprBinary binary) {
     this.base = ExpressionBase.EBINARY;
     this.binary = binary;
   }
 
-  public ExpressionNode(Ternary eternary) {
+  public ExprExpression(ExprTernary eternary) {
     this.base = ETERNARY;
     this.eternary = eternary;
   }
 
-  public ExpressionNode(C_strtox e, Token token) {
+  public ExprExpression(C_strtox e, Token token) {
     e.ev(); // XXX:
 
     this.base = ExpressionBase.EPRIMARY_NUMBER;
 
-    NumericConstant number = null;
+    ExprNumericConstant number = null;
     if (e.isIntegerKind()) {
-      number = new NumericConstant(e.getClong(), e.getNumtype());
+      number = new ExprNumericConstant(e.getClong(), e.getNumtype());
     } else {
-      number = new NumericConstant(e.getCdouble(), e.getNumtype());
+      number = new ExprNumericConstant(e.getCdouble(), e.getNumtype());
     }
 
-    this.cnumber = number;
+    this.literalNumber = number;
   }
 
-  public ExpressionNode(MethodInvocation methodInvocation) {
+  public ExprExpression(ExprMethodInvocation methodInvocation) {
     this.base = ExpressionBase.EMETHOD_INVOCATION;
     this.methodInvocation = methodInvocation;
   }
 
-  public ExpressionNode(FieldAccess fieldAccess) {
+  public ExprExpression(ExprFieldAccess fieldAccess) {
     this.base = ExpressionBase.EFIELD_ACCESS;
     this.fieldAccess = fieldAccess;
   }
 
-  public ExpressionNode(Ident symbol) {
+  public ExprExpression(Ident symbol) {
     this.base = ExpressionBase.EPRIMARY_IDENT;
-    this.symbol = symbol;
+    this.literalIdentifier = symbol;
   }
 
   public ExpressionBase getBase() {
     return base;
   }
 
-  public Unary getUnary() {
+  public ExprUnary getUnary() {
     return unary;
   }
 
-  public Binary getBinary() {
+  public ExprBinary getBinary() {
     return binary;
   }
 
-  public Ternary getEternary() {
+  public ExprTernary getEternary() {
     return eternary;
   }
 
-  public NumericConstant getCnumber() {
-    return cnumber;
+  public ExprNumericConstant getCnumber() {
+    return literalNumber;
   }
 
   public Ident getSymbol() {
-    return symbol;
+    return literalIdentifier;
   }
 
-  public MethodInvocation getMethodInvocation() {
+  public ExprMethodInvocation getMethodInvocation() {
     return methodInvocation;
   }
 
-  public FieldAccess getFieldAccess() {
+  public ExprFieldAccess getFieldAccess() {
     return fieldAccess;
   }
 

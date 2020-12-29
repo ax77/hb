@@ -9,15 +9,14 @@ import java.util.List;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_kinds.StatementBase;
-import njast.ast_nodes.clazz.vars.LocalVarDeclaration;
+import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
-import njast.ast_nodes.expr.ExpressionNode;
-import njast.ast_nodes.stmt.Block;
-import njast.ast_nodes.stmt.BlockStatement;
-import njast.ast_nodes.stmt.BlockStatements;
-import njast.ast_nodes.stmt.Return;
-import njast.ast_nodes.stmt.StatementNode;
+import njast.ast_nodes.expr.ExprExpression;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_nodes.stmt.StmtBlockStatement;
+import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtReturn;
+import njast.ast_nodes.stmt.StmtStatement;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -28,14 +27,14 @@ public class ParseStatement {
     this.parser = parser;
   }
 
-  private ExpressionNode e_expression() {
+  private ExprExpression e_expression() {
     return new ParseExpression(parser).e_expression();
   }
 
-  public BlockStatements parseBlockStamentList() {
-    List<BlockStatement> bs = new ArrayList<BlockStatement>();
+  public StmtBlockStatements parseBlockStamentList() {
+    List<StmtBlockStatement> bs = new ArrayList<StmtBlockStatement>();
 
-    BlockStatement oneBlock = parseOneBlock();
+    StmtBlockStatement oneBlock = parseOneBlock();
     for (;;) {
       bs.add(oneBlock);
       if (parser.tp() == T.T_RIGHT_BRACE) {
@@ -47,35 +46,35 @@ public class ParseStatement {
       oneBlock = parseOneBlock();
     }
 
-    return new BlockStatements(bs);
+    return new StmtBlockStatements(bs);
   }
 
-  public Block parseBlock() {
+  public StmtBlock parseBlock() {
 
     Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
     if (parser.tp() == T.T_RIGHT_BRACE) {
       Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-      return new Block(new BlockStatements());
+      return new StmtBlock(new StmtBlockStatements());
     }
 
-    BlockStatements blockStatements = parseBlockStamentList();
-    Block block = new Block(blockStatements);
+    StmtBlockStatements blockStatements = parseBlockStamentList();
+    StmtBlock block = new StmtBlock(blockStatements);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
 
     return block;
   }
 
-  public StatementNode parseCompoundStatement() {
+  public StmtStatement parseCompoundStatement() {
 
     Token lbrace = parser.tok();
 
-    Block block = parseBlock();
+    StmtBlock block = parseBlock();
 
-    return new StatementNode(lbrace, block);
+    return new StmtStatement(lbrace, block);
   }
 
-  private StatementNode parseStatement() {
+  private StmtStatement parseStatement() {
 
     // return ... ;
     // return ;
@@ -85,13 +84,13 @@ public class ParseStatement {
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new StatementNode(new Return(null));
+        return new StmtStatement(new StmtReturn(null));
       }
 
-      ExpressionNode expr = e_expression();
+      ExprExpression expr = e_expression();
 
       parser.checkedMove(T_SEMI_COLON);
-      return new StatementNode(new Return(expr));
+      return new StmtStatement(new StmtReturn(expr));
     }
 
     // {  }
@@ -102,26 +101,26 @@ public class ParseStatement {
 
     // expression-statement by default
     //
-    StatementNode ret = new StatementNode(e_expression());
+    StmtStatement ret = new StmtStatement(e_expression());
     parser.semicolon();
     return ret;
   }
 
-  private BlockStatement parseOneBlock() {
+  private StmtBlockStatement parseOneBlock() {
 
     if (parser.isClassName() || IsIdent.isBasicTypeIdent(parser.tok())) {
 
       Type type = new ParseType(parser).parse();
       VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();
 
-      LocalVarDeclaration decls = new LocalVarDeclaration(type, vars);
+      VarDeclarationLocal decls = new VarDeclarationLocal(type, vars);
 
-      return new BlockStatement(decls);
+      return new StmtBlockStatement(decls);
     }
 
-    StatementNode stmt = parseStatement();
+    StmtStatement stmt = parseStatement();
     if (stmt != null) {
-      return new BlockStatement(stmt);
+      return new StmtBlockStatement(stmt);
     }
 
     return null;

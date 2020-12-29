@@ -12,11 +12,12 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_nodes.top.CompilationUnit;
-import njast.ast_nodes.top.TypeDeclaration;
+import njast.ast_nodes.top.TopLevelCompilationUnit;
+import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.errors.EParseErrors;
 import njast.errors.EParseException;
+import njast.symtab.ScopeLevels;
 import njast.symtab.Symtab;
 
 public class Parse {
@@ -52,8 +53,8 @@ public class Parse {
   //
   //  <interface type> ::= <type name>
 
-  public void pushscope(String name) {
-    referenceTypes.pushscope(name);
+  public void pushscope(ScopeLevels level, String name) {
+    referenceTypes.pushscope(level, name);
   }
 
   public void popscope() {
@@ -294,9 +295,9 @@ public class Parse {
     }
   }
 
-  public CompilationUnit parse() {
-    CompilationUnit tu = new CompilationUnit();
-    pushscope("unit");
+  public TopLevelCompilationUnit parse() {
+    TopLevelCompilationUnit tu = new TopLevelCompilationUnit();
+    pushscope(ScopeLevels.FILE_SCOPE, "unit");
 
     // top-level
     moveStraySemicolon();
@@ -306,7 +307,7 @@ public class Parse {
       // before each function or global declaration
       moveStraySemicolon();
 
-      TypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
+      TopLevelTypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
       tu.put(ed);
     }
 

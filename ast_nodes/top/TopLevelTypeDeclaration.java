@@ -1,14 +1,21 @@
 package njast.ast_nodes.top;
 
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 
-public class TypeDeclaration {
-  private ClassDeclaration classDeclaration;
-
-  public TypeDeclaration() {
+public class TopLevelTypeDeclaration implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
   }
 
-  public TypeDeclaration(ClassDeclaration classDeclaration) {
+  private ClassDeclaration classDeclaration;
+
+  public TopLevelTypeDeclaration() {
+  }
+
+  public TopLevelTypeDeclaration(ClassDeclaration classDeclaration) {
     this.classDeclaration = classDeclaration;
   }
 

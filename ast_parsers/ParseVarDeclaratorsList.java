@@ -5,7 +5,7 @@ import jscan.tokenize.T;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.ast_nodes.clazz.vars.VarInitializer;
-import njast.ast_nodes.expr.ExpressionNode;
+import njast.ast_nodes.expr.ExprExpression;
 import njast.parse.Parse;
 
 public class ParseVarDeclaratorsList {
@@ -34,7 +34,7 @@ public class ParseVarDeclaratorsList {
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();
-      ExpressionNode init = new ParseExpression(parser).e_expression();
+      ExprExpression init = new ParseExpression(parser).e_expression();
       var.setInitializer(new VarInitializer(init));
     }
 

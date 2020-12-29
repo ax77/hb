@@ -4,9 +4,30 @@ import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ast_kinds.ExpressionBase;
-import njast.ast_nodes.expr.ExpressionNode;
-import njast.ast_nodes.expr.FieldAccess;
-import njast.ast_nodes.expr.MethodInvocation;
+import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.ClassFieldDeclaration;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameter;
+import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
+import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
+import njast.ast_nodes.clazz.vars.VarInitializer;
+import njast.ast_nodes.expr.ExprBinary;
+import njast.ast_nodes.expr.ExprExpression;
+import njast.ast_nodes.expr.ExprFieldAccess;
+import njast.ast_nodes.expr.ExprMethodInvocation;
+import njast.ast_nodes.expr.ExprNumericConstant;
+import njast.ast_nodes.expr.ExprTernary;
+import njast.ast_nodes.expr.ExprUnary;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_nodes.stmt.StmtBlockStatement;
+import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtReturn;
+import njast.ast_nodes.stmt.StmtStatement;
+import njast.ast_nodes.top.TopLevelCompilationUnit;
+import njast.ast_nodes.top.TopLevelTypeDeclaration;
 
 public class AstVisitorXml implements AstVisitor {
 
@@ -46,7 +67,7 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(ExpressionNode o) {
+  public void visit(ExprExpression o) {
 
     if (o == null) {
       System.out.println(">> warn: null expression");
@@ -70,14 +91,14 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(MethodInvocation o) {
+  public void visit(ExprMethodInvocation o) {
     if (o.isMethodInvocation()) {
-      visit(o.getFunction());
+      visit(o.getObject());
     }
 
-    final List<ExpressionNode> arguments = o.getArguments();
+    final List<ExprExpression> arguments = o.getArguments();
     for (int i = arguments.size(); --i >= 0;) {
-      ExpressionNode e = arguments.get(i);
+      ExprExpression e = arguments.get(i);
       if (e.getCnumber() == null) {
         throw new RuntimeException("wanna numbers for test");
       }
@@ -95,10 +116,136 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(FieldAccess o) {
-    visit(o.getExpression());
-    put("mov eax, offset_of_field [" + o.getName().getName() + "]");
+  public void visit(ExprFieldAccess o) {
+    visit(o.getObject());
+    put("mov eax, offset_of_field [" + o.getFieldName().getName() + "]");
     put("push eax\n");
+  }
+
+  @Override
+  public void visit(ClassConstructorDeclaration o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ClassDeclaration o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ClassFieldDeclaration o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ClassMethodDeclaration o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ExprBinary o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ExprNumericConstant o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ExprTernary o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(ExprUnary o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(FormalParameter o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(FormalParameterList o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(StmtBlock o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(StmtBlockStatement o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(StmtBlockStatements o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(StmtReturn o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(StmtStatement o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(TopLevelCompilationUnit o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(TopLevelTypeDeclaration o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(VarDeclarationLocal o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(VarDeclarator o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(VarDeclaratorsList o) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visit(VarInitializer o) {
+    // TODO Auto-generated method stub
+
   }
 
 }

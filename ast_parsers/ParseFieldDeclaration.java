@@ -1,6 +1,6 @@
 package njast.ast_parsers;
 
-import njast.ast_nodes.clazz.FieldDeclaration;
+import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
@@ -13,12 +13,12 @@ public class ParseFieldDeclaration {
     this.parser = parser;
   }
 
-  public FieldDeclaration parse() {
+  public ClassFieldDeclaration parse() {
     Modifiers modifiers = new ParseModifiers(parser).parse();
     Type type = new ParseType(parser).parse();
     VarDeclaratorsList variableDeclarators = new ParseVarDeclaratorsList(parser).parse();
 
-    return new FieldDeclaration(type, variableDeclarators);
+    return new ClassFieldDeclaration(type, variableDeclarators);
   }
 
 }

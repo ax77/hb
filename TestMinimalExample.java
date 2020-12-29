@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import njast.ast_nodes.expr.ExpressionNode;
-import njast.ast_nodes.stmt.BlockStatement;
-import njast.ast_nodes.top.CompilationUnit;
+import njast.ast_nodes.expr.ExprExpression;
+import njast.ast_nodes.stmt.StmtBlockStatement;
+import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.AstVisitorXml;
 import njast.main.ParserMain;
 import njast.parse.Parse;
@@ -78,12 +78,12 @@ public class TestMinimalExample {
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
-    CompilationUnit unit = p.parse();
+    TopLevelCompilationUnit unit = p.parse();
 
-    for (BlockStatement bs : unit.getTypeDeclarations().get(0).getClassDeclaration().getMethodDeclaration().get(0)
+    for (StmtBlockStatement bs : unit.getTypeDeclarations().get(0).getClassDeclaration().getMethodDeclaration().get(0)
         .getBody().getBlockStatements().getBlockStatements()) {
       if (bs.getStatement() != null) {
-        final ExpressionNode expr = bs.getStatement().getSreturn().getExpr();
+        final ExprExpression expr = bs.getStatement().getSreturn().getExpr();
         AstVisitorXml vis = new AstVisitorXml();
         expr.accept(vis);
         System.out.println(vis.getText());

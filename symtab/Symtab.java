@@ -17,8 +17,8 @@ public class Symtab<K, V> {
     this.scopes = new ArrayList<Scope<K, V>>();
   }
 
-  public void pushscope(String name) {
-    this.scopes.add(0, new Scope<K, V>(name));
+  public void pushscope(ScopeLevels level, String name) {
+    this.scopes.add(0, new Scope<K, V>(level, name));
   }
 
   public void popscope() {

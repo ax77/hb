@@ -1,8 +1,14 @@
 package njast.ast_nodes.clazz.vars;
 
 import jscan.symtab.Ident;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 
-public class VarDeclarator {
+public class VarDeclarator implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
 
   //  <variable declarator> ::= <variable declarator id> | <variable declarator id> = <variable initializer>
   //

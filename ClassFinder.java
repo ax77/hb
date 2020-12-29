@@ -1,18 +1,12 @@
 package njast;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.print.DocFlavor.URL;
-
+import org.junit.Ignore;
 import org.junit.Test;
-
-import njast.ast_nodes.expr.ExpressionNode;
-import njast.ast_visitors.AstVisitor;
 
 public class ClassFinder {
 
@@ -56,48 +50,55 @@ public class ClassFinder {
     return classes;
   }
 
+  private static List<String> strSplitChar(String where, char sep, boolean includeEmpty) {
+
+    List<String> lines = new ArrayList<String>(0);
+    final int len = where.length();
+
+    if (len == 0) {
+      return lines;
+    }
+
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < len; i++) {
+      char c = where.charAt(i);
+      if (c == sep) {
+        if (sb.length() > 0 || (sb.length() == 0 && includeEmpty)) {
+          lines.add(sb.toString());
+        }
+        sb = new StringBuilder();
+        continue;
+      }
+      sb.append(c);
+    }
+    if (sb.length() > 0 || (sb.length() == 0 && includeEmpty)) {
+      lines.add(sb.toString());
+    }
+
+    return lines;
+  }
+
+  @Ignore
   @Test
   public void test() {
+
     List<Class<?>> classes = ClassFinder.find("njast.ast_nodes");
     List<String> names = new ArrayList<>();
-    for(Class c : classes) {
+    for (Class c : classes) {
       names.add(c.getSimpleName());
     }
     Collections.sort(names);
-    
+
+    // njast.ast_nodes.clazz.ClassConstructorDeclaration
+
     // void visit(ExpressionNode o);
-    for(String classname: names) {
+    System.out.println("//@formatter:off");
+    for (String classname : names) {
       System.out.println("void visit(" + classname + " o);");
     }
-    
-    // @Override public void accept(AstVisitor visitor) { visitor.visit(this); }
-    for(String classname: names) {
-      // System.out.println();
-    }
+    System.out.println("//@formatter:on");
+
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

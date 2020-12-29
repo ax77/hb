@@ -7,10 +7,13 @@ import java.util.Map.Entry;
 /// file or block
 public class Scope<K, V> {
   private final HashMap<K, V> scope;
-  private final String name;
 
-  public Scope(String name) {
+  private final ScopeLevels level;
+  private final String name; // for debug
+
+  public Scope(ScopeLevels level, String name) {
     this.scope = new HashMap<K, V>();
+    this.level = level;
     this.name = name;
   }
 
@@ -36,6 +39,14 @@ public class Scope<K, V> {
       System.out.println();
     }
 
+  }
+
+  public ScopeLevels getLevel() {
+    return level;
+  }
+
+  public String getName() {
+    return name;
   }
 
 }

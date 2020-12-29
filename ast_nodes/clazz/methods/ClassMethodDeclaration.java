@@ -1,10 +1,16 @@
-package njast.ast_nodes.clazz;
+package njast.ast_nodes.clazz.methods;
 
 import jscan.symtab.Ident;
-import njast.ast_nodes.stmt.Block;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
 
-public class MethodDeclaration {
+public class ClassMethodDeclaration implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
 
   // header
   private Type resultType;
@@ -13,9 +19,10 @@ public class MethodDeclaration {
   private boolean isVoid;
 
   // body
-  private Block body;
+  private StmtBlock body;
 
-  public MethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList, Block body) {
+  public ClassMethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList,
+      StmtBlock body) {
 
     this.resultType = resultType;
     this.identifier = identifier;
@@ -49,11 +56,11 @@ public class MethodDeclaration {
     this.isVoid = isVoid;
   }
 
-  public Block getBody() {
+  public StmtBlock getBody() {
     return body;
   }
 
-  public void setBody(Block body) {
+  public void setBody(StmtBlock body) {
     this.body = body;
   }
 

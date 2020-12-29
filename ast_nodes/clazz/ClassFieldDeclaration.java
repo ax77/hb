@@ -1,9 +1,15 @@
 package njast.ast_nodes.clazz;
 
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
 
-public class FieldDeclaration {
+public class ClassFieldDeclaration implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
 
   //  <field declaration> ::= <field modifiers>? <type> <variable declarators> ;
   //
@@ -22,7 +28,7 @@ public class FieldDeclaration {
   private Type type;
   private VarDeclaratorsList variables;
 
-  public FieldDeclaration(Type type, VarDeclaratorsList variables) {
+  public ClassFieldDeclaration(Type type, VarDeclaratorsList variables) {
     this.type = type;
     this.variables = variables;
   }

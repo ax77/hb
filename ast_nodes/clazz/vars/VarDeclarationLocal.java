@@ -1,15 +1,21 @@
 package njast.ast_nodes.clazz.vars;
 
+import njast.ast_visitors.AstTraverser;
+import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
 
-public class LocalVarDeclaration {
+public class VarDeclarationLocal implements AstTraverser {
+  @Override
+  public void accept(AstVisitor visitor) {
+    visitor.visit(this);
+  }
 
   // <local variable declaration> ::= <type> <variable declarators>
 
   private final Type type;
   private final VarDeclaratorsList vars;
 
-  public LocalVarDeclaration(Type type, VarDeclaratorsList vars) {
+  public VarDeclarationLocal(Type type, VarDeclaratorsList vars) {
     this.type = type;
     this.vars = vars;
   }
