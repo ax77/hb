@@ -7,8 +7,10 @@ import java.util.List;
 import jscan.Tokenlist;
 import jscan.fio.FileWrapper;
 import jscan.hashed.Hash_all;
+import jscan.hashed.Hash_ident;
 import jscan.hashed.Hash_stream;
 import jscan.preprocess.Scan;
+import jscan.symtab.Ident;
 import jscan.tokenize.Stream;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -38,6 +40,8 @@ public class ParserMain implements ParserMainApi {
   @Override
   public Tokenlist preprocess() throws IOException {
 
+    initIdents();
+
     if (isFromFile) {
       ParserInternal conf = new ParserInternal(ParserInternal.PREPROCESS_FILE_INPUT, filename);
       return conf.preprocess();
@@ -58,6 +62,62 @@ public class ParserMain implements ParserMainApi {
   public CompilationUnit parseUnit() throws IOException {
     Parse p = initiateParse();
     return p.parse();
+  }
+
+  private Ident g(String name) {
+    return Hash_ident.getHashedIdent(name, 32);
+  }
+
+  // TODO: more clean, fast, precise...
+  private void initIdents() {
+    g("abstract");
+    g("boolean");
+    g("break");
+    g("byte");
+    g("case");
+    g("catch");
+    g("char");
+    g("class");
+    g("const");
+    g("continue");
+    g("default");
+    g("do");
+    g("double");
+    g("else");
+    g("enum");
+    g("extends");
+    g("final");
+    g("finally");
+    g("float");
+    g("for");
+    g("goto");
+    g("if");
+    g("implements");
+    g("import");
+    g("instanceof");
+    g("int");
+    g("interface");
+    g("long");
+    g("native");
+    g("new");
+    g("package");
+    g("private");
+    g("protected");
+    g("public");
+    g("return");
+    g("short");
+    g("static");
+    g("super");
+    g("switch");
+    g("synchronized");
+    g("this");
+    g("throw");
+    g("throws");
+    g("transient");
+    g("try");
+    g("void");
+    g("volatile");
+    g("while");
   }
 
   // details.

@@ -1,13 +1,13 @@
 package njast.ast_visitors;
 
 import jscan.symtab.Ident;
-import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.ExpressionNode;
 import njast.ast_nodes.expr.FieldAccess;
 import njast.ast_nodes.expr.MethodInvocation;
 
 public interface AstVisitor {
 
-  void visit(Expression o);
+  void visit(ExpressionNode o);
 
   void visit(MethodInvocation o);
 

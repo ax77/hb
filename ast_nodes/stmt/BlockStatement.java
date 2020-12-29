@@ -12,13 +12,13 @@ public class BlockStatement {
   //  <statement> ::= <statement without trailing substatement> | <labeled statement> | <if then statement> | <if then else statement> | <while statement> | <for statement>
 
   private LocalVarDeclaration localVars;
-  private CStatement statement;
+  private StatementNode statement;
 
   public BlockStatement(LocalVarDeclaration localVars) {
     this.localVars = localVars;
   }
 
-  public BlockStatement(CStatement statement) {
+  public BlockStatement(StatementNode statement) {
     this.statement = statement;
   }
 
@@ -30,11 +30,11 @@ public class BlockStatement {
     this.localVars = localVars;
   }
 
-  public CStatement getStatement() {
+  public StatementNode getStatement() {
     return statement;
   }
 
-  public void setStatement(CStatement statement) {
+  public void setStatement(StatementNode statement) {
     this.statement = statement;
   }
 

@@ -1,19 +1,19 @@
 package njast.ast_nodes.clazz.vars;
 
-import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.ExpressionNode;
 
 public class VarInitializer {
-  private Expression initializer;
+  private ExpressionNode initializer;
 
-  public VarInitializer(Expression initializer) {
+  public VarInitializer(ExpressionNode initializer) {
     this.initializer = initializer;
   }
 
-  public Expression getInitializer() {
+  public ExpressionNode getInitializer() {
     return initializer;
   }
 
-  public void setInitializer(Expression initializer) {
+  public void setInitializer(ExpressionNode initializer) {
     this.initializer = initializer;
   }
 

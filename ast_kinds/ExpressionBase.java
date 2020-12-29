@@ -1,7 +1,7 @@
 package njast.ast_kinds;
 
 //@formatter:off
-public enum CExpressionBase {
+public enum ExpressionBase {
    EASSIGN
  , EBINARY
  , ECOMMA

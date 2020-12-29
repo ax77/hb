@@ -3,8 +3,8 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import njast.ast_kinds.CExpressionBase;
-import njast.ast_nodes.expr.Expression;
+import njast.ast_kinds.ExpressionBase;
+import njast.ast_nodes.expr.ExpressionNode;
 import njast.ast_nodes.expr.FieldAccess;
 import njast.ast_nodes.expr.MethodInvocation;
 
@@ -46,24 +46,24 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(Expression o) {
+  public void visit(ExpressionNode o) {
 
     if (o == null) {
       System.out.println(">> warn: null expression");
       return;
     }
 
-    CExpressionBase base = o.getBase();
+    ExpressionBase base = o.getBase();
 
-    if (base == CExpressionBase.EMETHOD_INVOCATION) {
+    if (base == ExpressionBase.EMETHOD_INVOCATION) {
       visit(o.getMethodInvocation());
     }
 
-    if (base == CExpressionBase.EFIELD_ACCESS) {
+    if (base == ExpressionBase.EFIELD_ACCESS) {
       visit(o.getFieldAccess());
     }
 
-    if (base == CExpressionBase.EPRIMARY_IDENT) {
+    if (base == ExpressionBase.EPRIMARY_IDENT) {
       visit(o.getSymbol());
     }
 
@@ -75,9 +75,9 @@ public class AstVisitorXml implements AstVisitor {
       visit(o.getFunction());
     }
 
-    final List<Expression> arguments = o.getArguments();
+    final List<ExpressionNode> arguments = o.getArguments();
     for (int i = arguments.size(); --i >= 0;) {
-      Expression e = arguments.get(i);
+      ExpressionNode e = arguments.get(i);
       if (e.getCnumber() == null) {
         throw new RuntimeException("wanna numbers for test");
       }

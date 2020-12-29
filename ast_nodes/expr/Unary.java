@@ -4,9 +4,9 @@ import jscan.tokenize.Token;
 
 public class Unary {
   private final Token operator;
-  private final Expression operand;
+  private final ExpressionNode operand;
 
-  public Unary(Token operator, Expression operand) {
+  public Unary(Token operator, ExpressionNode operand) {
     this.operator = operator;
     this.operand = operand;
   }
@@ -15,7 +15,7 @@ public class Unary {
     return operator;
   }
 
-  public Expression getOperand() {
+  public ExpressionNode getOperand() {
     return operand;
   }
 

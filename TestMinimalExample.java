@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.ExpressionNode;
 import njast.ast_nodes.stmt.BlockStatement;
 import njast.ast_nodes.top.CompilationUnit;
 import njast.ast_visitors.AstVisitorXml;
@@ -71,7 +71,7 @@ public class TestMinimalExample {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*012*/  public class C {                     \n");
-    sb.append(" /*013*/    int func(int a) {                  \n");
+    sb.append(" /*013*/    int func(C a) {                  \n");
     sb.append(" /*015*/      return a(1).b(2,3).c.d().e.f.g().h;   \n");
     sb.append(" /*016*/    }                                  \n");
     sb.append(" /*017*/  }                                    \n");
@@ -83,7 +83,7 @@ public class TestMinimalExample {
     for (BlockStatement bs : unit.getTypeDeclarations().get(0).getClassDeclaration().getMethodDeclaration().get(0)
         .getBody().getBlockStatements().getBlockStatements()) {
       if (bs.getStatement() != null) {
-        final Expression expr = bs.getStatement().getExpr();
+        final ExpressionNode expr = bs.getStatement().getSreturn().getExpr();
         AstVisitorXml vis = new AstVisitorXml();
         expr.accept(vis);
         System.out.println(vis.getText());

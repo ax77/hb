@@ -6,9 +6,9 @@ import njast.ast_visitors.AstVisitor;
 
 public class FieldAccess implements AstTraverser {
   private final Ident name;
-  private final Expression expression;
+  private final ExpressionNode expression;
 
-  public FieldAccess(Ident name, Expression expression) {
+  public FieldAccess(Ident name, ExpressionNode expression) {
     this.name = name;
     this.expression = expression;
   }
@@ -17,7 +17,7 @@ public class FieldAccess implements AstTraverser {
     return name;
   }
 
-  public Expression getExpression() {
+  public ExpressionNode getExpression() {
     return expression;
   }
 

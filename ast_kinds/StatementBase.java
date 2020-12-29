@@ -1,6 +1,6 @@
 package njast.ast_kinds;
 
-public enum CStatementBase {
+public enum StatementBase {
   //@formatter:off
     SBLOCK
   , SIF

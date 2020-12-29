@@ -7,13 +7,13 @@ import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
 public class MethodInvocation implements AstTraverser {
-  private final Expression function;
-  private final List<Expression> arguments;
+  private final ExpressionNode function;
+  private final List<ExpressionNode> arguments;
   private final Ident funcname;
   private final boolean isMethodInvocation;
 
   // a.b()
-  public MethodInvocation(Ident funcname, Expression function, List<Expression> arguments) {
+  public MethodInvocation(Ident funcname, ExpressionNode function, List<ExpressionNode> arguments) {
     this.funcname = funcname;
     this.function = function;
     this.arguments = arguments;
@@ -21,18 +21,18 @@ public class MethodInvocation implements AstTraverser {
   }
 
   // b()
-  public MethodInvocation(Ident funcname, List<Expression> arguments) {
+  public MethodInvocation(Ident funcname, List<ExpressionNode> arguments) {
     this.funcname = funcname;
     this.function = null;
     this.arguments = arguments;
     this.isMethodInvocation = false;
   }
 
-  public Expression getFunction() {
+  public ExpressionNode getFunction() {
     return function;
   }
 
-  public List<Expression> getArguments() {
+  public List<ExpressionNode> getArguments() {
     return arguments;
   }
 

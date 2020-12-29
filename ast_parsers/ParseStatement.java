@@ -9,14 +9,15 @@ import java.util.List;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
-import njast.ast_kinds.CStatementBase;
+import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.vars.LocalVarDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
-import njast.ast_nodes.expr.Expression;
+import njast.ast_nodes.expr.ExpressionNode;
 import njast.ast_nodes.stmt.Block;
 import njast.ast_nodes.stmt.BlockStatement;
 import njast.ast_nodes.stmt.BlockStatements;
-import njast.ast_nodes.stmt.CStatement;
+import njast.ast_nodes.stmt.Return;
+import njast.ast_nodes.stmt.StatementNode;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -27,7 +28,7 @@ public class ParseStatement {
     this.parser = parser;
   }
 
-  private Expression e_expression() {
+  private ExpressionNode e_expression() {
     return new ParseExpression(parser).e_expression();
   }
 
@@ -65,16 +66,16 @@ public class ParseStatement {
     return block;
   }
 
-  public CStatement parseCompoundStatement() {
+  public StatementNode parseCompoundStatement() {
 
     Token lbrace = parser.tok();
 
     Block block = parseBlock();
 
-    return new CStatement(lbrace, block);
+    return new StatementNode(lbrace, block);
   }
 
-  private CStatement parseStatement() {
+  private StatementNode parseStatement() {
 
     // return ... ;
     // return ;
@@ -84,13 +85,13 @@ public class ParseStatement {
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new CStatement(from, CStatementBase.SRETURN, null);
+        return new StatementNode(new Return(null));
       }
 
-      Expression expr = e_expression();
+      ExpressionNode expr = e_expression();
 
       parser.checkedMove(T_SEMI_COLON);
-      return new CStatement(from, CStatementBase.SRETURN, expr);
+      return new StatementNode(new Return(expr));
     }
 
     // {  }
@@ -101,7 +102,7 @@ public class ParseStatement {
 
     // expression-statement by default
     //
-    CStatement ret = new CStatement(parser.tok(), CStatementBase.SEXPR, e_expression());
+    StatementNode ret = new StatementNode(e_expression());
     parser.semicolon();
     return ret;
   }
@@ -118,7 +119,7 @@ public class ParseStatement {
       return new BlockStatement(decls);
     }
 
-    CStatement stmt = parseStatement();
+    StatementNode stmt = parseStatement();
     if (stmt != null) {
       return new BlockStatement(stmt);
     }

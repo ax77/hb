@@ -4,10 +4,10 @@ import jscan.tokenize.Token;
 
 public class Binary {
   private final Token operator;
-  private final Expression lhs;
-  private final Expression rhs;
+  private final ExpressionNode lhs;
+  private final ExpressionNode rhs;
 
-  public Binary(Token operator, Expression lhs, Expression rhs) {
+  public Binary(Token operator, ExpressionNode lhs, ExpressionNode rhs) {
     this.operator = operator;
     this.lhs = lhs;
     this.rhs = rhs;
@@ -17,11 +17,11 @@ public class Binary {
     return operator;
   }
 
-  public Expression getLhs() {
+  public ExpressionNode getLhs() {
     return lhs;
   }
 
-  public Expression getRhs() {
+  public ExpressionNode getRhs() {
     return rhs;
   }
 

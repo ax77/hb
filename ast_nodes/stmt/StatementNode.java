@@ -1,10 +1,10 @@
 package njast.ast_nodes.stmt;
 
 import jscan.tokenize.Token;
-import njast.ast_kinds.CStatementBase;
-import njast.ast_nodes.expr.Expression;
+import njast.ast_kinds.StatementBase;
+import njast.ast_nodes.expr.ExpressionNode;
 
-public class CStatement {
+public class StatementNode {
 
   //  <statement> ::= <statement without trailing substatement> | <labeled statement> | <if then statement> | <if then else statement> | <while statement> | <for statement>
   //
@@ -14,25 +14,24 @@ public class CStatement {
   //
   //  <empty statement> ::= ;
 
-  private final CStatementBase base;
-
+  private final StatementBase base;
   private Block compound;
+  private Return sreturn;
+  private ExpressionNode sexpression;
 
-  // return expr
-  // expr-stmt
-  private Expression expr;
+  public StatementNode(ExpressionNode sexpression) {
+    this.base = StatementBase.SEXPR;
+    this.sexpression = sexpression;
+  }
 
-  // return expr
-  // return ;
-  // expr-stmt
-  public CStatement(Token from, CStatementBase base, Expression expr) {
-    this.base = base;
-    this.expr = expr;
+  public StatementNode(Return sreturn) {
+    this.base = StatementBase.SRETURN;
+    this.sreturn = sreturn;
   }
 
   // {  }
-  public CStatement(Token from, Block compound) {
-    this.base = CStatementBase.SBLOCK;
+  public StatementNode(Token from, Block compound) {
+    this.base = StatementBase.SBLOCK;
     this.compound = compound;
   }
 
@@ -44,16 +43,16 @@ public class CStatement {
     this.compound = compound;
   }
 
-  public Expression getExpr() {
-    return expr;
-  }
-
-  public void setExpr(Expression expr) {
-    this.expr = expr;
-  }
-
-  public CStatementBase getBase() {
+  public StatementBase getBase() {
     return base;
+  }
+
+  public Return getSreturn() {
+    return sreturn;
+  }
+
+  public ExpressionNode getSexpression() {
+    return sexpression;
   }
 
 }

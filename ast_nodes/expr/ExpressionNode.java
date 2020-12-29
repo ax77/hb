@@ -1,17 +1,17 @@
 package njast.ast_nodes.expr;
 
-import static njast.ast_kinds.CExpressionBase.ETERNARY;
+import static njast.ast_kinds.ExpressionBase.ETERNARY;
 
 import jscan.cstrtox.C_strtox;
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
-import njast.ast_kinds.CExpressionBase;
+import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class Expression implements AstTraverser {
+public class ExpressionNode implements AstTraverser {
 
-  private final CExpressionBase base; // what union contains
+  private final ExpressionBase base; // what union contains
   private Unary unary;
   private Binary binary;
   private Ternary eternary;
@@ -20,25 +20,25 @@ public class Expression implements AstTraverser {
   private MethodInvocation methodInvocation;
   private FieldAccess fieldAccess;
 
-  public Expression(Unary unary) {
-    this.base = CExpressionBase.EUNARY;
+  public ExpressionNode(Unary unary) {
+    this.base = ExpressionBase.EUNARY;
     this.unary = unary;
   }
 
-  public Expression(Binary binary) {
-    this.base = CExpressionBase.EBINARY;
+  public ExpressionNode(Binary binary) {
+    this.base = ExpressionBase.EBINARY;
     this.binary = binary;
   }
 
-  public Expression(Ternary eternary) {
+  public ExpressionNode(Ternary eternary) {
     this.base = ETERNARY;
     this.eternary = eternary;
   }
 
-  public Expression(C_strtox e, Token token) {
+  public ExpressionNode(C_strtox e, Token token) {
     e.ev(); // XXX:
 
-    this.base = CExpressionBase.EPRIMARY_NUMBER;
+    this.base = ExpressionBase.EPRIMARY_NUMBER;
 
     NumericConstant number = null;
     if (e.isIntegerKind()) {
@@ -50,22 +50,22 @@ public class Expression implements AstTraverser {
     this.cnumber = number;
   }
 
-  public Expression(MethodInvocation methodInvocation) {
-    this.base = CExpressionBase.EMETHOD_INVOCATION;
+  public ExpressionNode(MethodInvocation methodInvocation) {
+    this.base = ExpressionBase.EMETHOD_INVOCATION;
     this.methodInvocation = methodInvocation;
   }
 
-  public Expression(FieldAccess fieldAccess) {
-    this.base = CExpressionBase.EFIELD_ACCESS;
+  public ExpressionNode(FieldAccess fieldAccess) {
+    this.base = ExpressionBase.EFIELD_ACCESS;
     this.fieldAccess = fieldAccess;
   }
 
-  public Expression(Ident symbol) {
-    this.base = CExpressionBase.EPRIMARY_IDENT;
+  public ExpressionNode(Ident symbol) {
+    this.base = ExpressionBase.EPRIMARY_IDENT;
     this.symbol = symbol;
   }
 
-  public CExpressionBase getBase() {
+  public ExpressionBase getBase() {
     return base;
   }
 
