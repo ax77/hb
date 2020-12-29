@@ -36,6 +36,7 @@ import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.expr.ExprBinary;
+import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
@@ -44,6 +45,7 @@ import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
 import njast.parse.ParseState;
+import njast.symtab.IdentMap;
 
 public class ParseExpression {
   private final Parse parser;
@@ -445,24 +447,19 @@ public class ParseExpression {
   }
 
   private ExprExpression methodInvocation(Ident funcname) {
-    Token lparen = parser.lparen();
     List<ExprExpression> arglist = parseArglist();
-    Token rparen = parser.rparen();
     return new ExprExpression(new ExprMethodInvocation(funcname, arglist));
   }
 
   private ExprExpression methodInvocation(Ident funcname, ExprExpression lhs) {
-    Token lparen = parser.lparen();
-
     List<ExprExpression> arglist = parseArglist();
-
     lhs = new ExprExpression(new ExprMethodInvocation(funcname, lhs, arglist));
-
-    Token rparen = parser.rparen();
     return lhs;
   }
 
   private List<ExprExpression> parseArglist() {
+
+    Token lparen = parser.lparen();
     List<ExprExpression> arglist = new ArrayList<ExprExpression>();
 
     if (parser.tp() != T_RIGHT_PAREN) {
@@ -476,46 +473,15 @@ public class ParseExpression {
         arglist.add(oneargSeq);
       }
     }
+
+    Token rparen = parser.rparen();
     return arglist;
   }
-
-  //primary-expression:
-  //    | literal
-  //    | simple-name
-  //    | parenthesized-expression
-  //    | member-access
-  //    | invocation-expression
-  //       
-  //member-access:
-  //    | primary-expression . identifier
-  //    
-  //invocation-expression:
-  //    | primary-expression ( argument-listopt )
-  //    
-  //literal:
-  //    | boolean-literal
-  //    | integer-literal
-  //    | real-literal
-  //    | character-literal
-  //    | string-literal
-  //    | null-literal
-  //    
-  //simple-name:
-  //    | identifier
-  //    
-  //--->>>
-  //primary-expression:
-  //    | literal
-  //    | simple-name
-  //    | parenthesized-expression
-  //    | primary-expression . identifier
-  //    | primary-expression ( argument-listopt )
 
   private ExprExpression e_prim() {
 
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
       Token saved = parser.moveget();
-
       if (saved.ofType(TOKEN_STRING)) {
         parser.unimplemented("string constants");
       } else {
@@ -523,11 +489,21 @@ public class ParseExpression {
       }
     }
 
-    if (parser.tp() == T.TOKEN_IDENT) {
+    // new ClassName(x, y, z)
+    if (parser.is(IdentMap.new_ident)) {
+      Token saved = parser.moveget();
+      Ident classname = parser.getIdent();
+      List<ExprExpression> arguments = parseArglist();
+      return new ExprExpression(new ExprClassInstanceCreation(classname, arguments));
+    }
+
+    // simple name
+    if (IsIdent.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
       return new ExprExpression(saved.getIdent());
     }
 
+    // ( expression )
     if (parser.tp() == T_LEFT_PAREN) {
       Token lparen = parser.moveget();
       ExprExpression e = e_expression();

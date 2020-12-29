@@ -19,6 +19,12 @@ public class ExprExpression implements AstTraverser {
   private Ident literalIdentifier;
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
+  private ExprClassInstanceCreation classInstanceCreation;
+
+  public ExprExpression(ExprClassInstanceCreation classInstanceCreation) {
+    this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
+    this.classInstanceCreation = classInstanceCreation;
+  }
 
   public ExprExpression(ExprUnary unary) {
     this.base = ExpressionBase.EUNARY;
@@ -95,6 +101,10 @@ public class ExprExpression implements AstTraverser {
 
   public ExprFieldAccess getFieldAccess() {
     return fieldAccess;
+  }
+
+  public ExprClassInstanceCreation getClassInstanceCreation() {
+    return classInstanceCreation;
   }
 
   @Override
