@@ -4,7 +4,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
-public class StmtBlockStatement implements AstTraverser {
+public class StmtBlockItem implements AstTraverser {
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);
@@ -20,11 +20,11 @@ public class StmtBlockStatement implements AstTraverser {
   private VarDeclarationLocal localVars;
   private StmtStatement statement;
 
-  public StmtBlockStatement(VarDeclarationLocal localVars) {
+  public StmtBlockItem(VarDeclarationLocal localVars) {
     this.localVars = localVars;
   }
 
-  public StmtBlockStatement(StmtStatement statement) {
+  public StmtBlockItem(StmtStatement statement) {
     this.statement = statement;
   }
 

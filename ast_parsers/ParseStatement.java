@@ -1,7 +1,9 @@
 package njast.ast_parsers;
 
-import static jscan.tokenize.T.*;
-import static njast.symtab.IdentMap.*;
+import static jscan.tokenize.T.T_RIGHT_PAREN;
+import static jscan.tokenize.T.T_SEMI_COLON;
+import static njast.symtab.IdentMap.for_ident;
+import static njast.symtab.IdentMap.return_ident;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_nodes.stmt.StmtBlockStatement;
-import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
@@ -32,10 +33,10 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  public StmtBlockStatements parseBlockStamentList() {
-    List<StmtBlockStatement> bs = new ArrayList<StmtBlockStatement>();
+  public List<StmtBlockItem> parseBlockStamentList() {
+    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
 
-    StmtBlockStatement oneBlock = parseOneBlock();
+    StmtBlockItem oneBlock = parseOneBlock();
     for (;;) {
       bs.add(oneBlock);
       if (parser.tp() == T.T_RIGHT_BRACE) {
@@ -47,7 +48,7 @@ public class ParseStatement {
       oneBlock = parseOneBlock();
     }
 
-    return new StmtBlockStatements(bs);
+    return bs;
   }
 
   public StmtBlock parseBlock() {
@@ -55,10 +56,10 @@ public class ParseStatement {
     Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
     if (parser.tp() == T.T_RIGHT_BRACE) {
       Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-      return new StmtBlock(new StmtBlockStatements());
+      return new StmtBlock(new ArrayList<StmtBlockItem>(0));
     }
 
-    StmtBlockStatements blockStatements = parseBlockStamentList();
+    List<StmtBlockItem> blockStatements = parseBlockStamentList();
     StmtBlock block = new StmtBlock(blockStatements);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
@@ -158,7 +159,7 @@ public class ParseStatement {
     return ret;
   }
 
-  private StmtBlockStatement parseOneBlock() {
+  private StmtBlockItem parseOneBlock() {
 
     if (parser.isClassName() || IsIdent.isBasicTypeIdent(parser.tok())) {
 
@@ -167,12 +168,12 @@ public class ParseStatement {
 
       VarDeclarationLocal decls = new VarDeclarationLocal(type, vars);
 
-      return new StmtBlockStatement(decls);
+      return new StmtBlockItem(decls);
     }
 
     StmtStatement stmt = parseStatement();
     if (stmt != null) {
-      return new StmtBlockStatement(stmt);
+      return new StmtBlockItem(stmt);
     }
 
     return null;

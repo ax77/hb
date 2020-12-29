@@ -1,5 +1,7 @@
 package njast.ast_nodes.stmt;
 
+import java.util.List;
+
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
@@ -11,13 +13,13 @@ public class StmtBlock implements AstTraverser {
   //  <block> ::= { <block statements>? }
   //  <block statements> ::= <block statement> | <block statements> <block statement>
 
-  private final StmtBlockStatements blockStatements;
+  private final List<StmtBlockItem> blockStatements;
 
-  public StmtBlock(StmtBlockStatements blockStatements) {
+  public StmtBlock(List<StmtBlockItem> blockStatements) {
     this.blockStatements = blockStatements;
   }
 
-  public StmtBlockStatements getBlockStatements() {
+  public List<StmtBlockItem> getBlockStatements() {
     return blockStatements;
   }
 

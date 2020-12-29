@@ -33,4 +33,20 @@ public class ClassFieldDeclaration implements AstTraverser {
     this.variables = variables;
   }
 
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  public VarDeclaratorsList getVariables() {
+    return variables;
+  }
+
+  public void setVariables(VarDeclaratorsList variables) {
+    this.variables = variables;
+  }
+
 }

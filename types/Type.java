@@ -63,4 +63,22 @@ public class Type {
     this.isPrimitive = isPrimitive;
   }
 
+  public boolean isEqualTo(Type another) {
+    if (isPrimitive) {
+      if (!another.isPrimitive()) {
+        return false;
+      }
+      if (!primitiveType.equals(another.getPrimitiveType())) {
+        return false;
+      }
+    } else {
+      final String thisStringName = referenceType.getTypeName().getName();
+      final String anotStringName = another.getReferenceType().getTypeName().getName();
+      if (!thisStringName.equals(anotStringName)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }

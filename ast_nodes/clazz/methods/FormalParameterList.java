@@ -26,4 +26,23 @@ public class FormalParameterList implements AstTraverser {
     return parameters;
   }
 
+  public boolean isEqualTo(FormalParameterList another) {
+    final int bound = parameters.size();
+
+    final List<FormalParameter> anotherParameters = another.getParameters();
+    if (bound != anotherParameters.size()) {
+      return false;
+    }
+
+    for (int i = 0; i < bound; i++) {
+      FormalParameter fp1 = parameters.get(i);
+      FormalParameter fp2 = anotherParameters.get(i);
+      if (!fp1.getType().isEqualTo(fp2.getType())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }

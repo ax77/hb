@@ -1,11 +1,14 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
-import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 
@@ -42,20 +45,20 @@ public class ParseConstructorDeclaration {
 
     FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
 
-    StmtBlockStatements blockStatements = parseBody();
+    List<StmtBlockItem> blockStatements = parseBody();
 
     return new ClassConstructorDeclaration(identifier, formalParameterList, blockStatements);
   }
 
-  private StmtBlockStatements parseBody() {
+  private List<StmtBlockItem> parseBody() {
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       Token rbrace = parser.moveget();
-      return new StmtBlockStatements();
+      return new ArrayList<StmtBlockItem>(0);
     }
 
-    StmtBlockStatements blockStatements = new ParseStatement(parser).parseBlockStamentList();
+    List<StmtBlockItem> blockStatements = new ParseStatement(parser).parseBlockStamentList();
     Token rbrace = parser.rbrace();
     return blockStatements;
   }

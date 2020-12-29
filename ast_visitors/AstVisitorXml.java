@@ -22,8 +22,7 @@ import njast.ast_nodes.expr.ExprNumericConstant;
 import njast.ast_nodes.expr.ExprTernary;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_nodes.stmt.StmtBlockStatement;
-import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
@@ -189,13 +188,7 @@ public class AstVisitorXml implements AstVisitor {
   }
 
   @Override
-  public void visit(StmtBlockStatement o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void visit(StmtBlockStatements o) {
+  public void visit(StmtBlockItem o) {
     // TODO Auto-generated method stub
 
   }
