@@ -17,4 +17,5 @@ public enum ExpressionBase {
  , EFIELD_ACCESS
  , EGET_POINTER_TO_CLASS
  , ECLASS_INSTANCE_CREATION
+ , ETHIS
 }

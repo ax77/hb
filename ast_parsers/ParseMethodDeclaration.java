@@ -1,11 +1,13 @@
 package njast.ast_parsers;
 
 import jscan.symtab.Ident;
+import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ParseMethodDeclaration {
@@ -26,8 +28,13 @@ public class ParseMethodDeclaration {
     //    <method body> ::= <block> | ;
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
+    Type type = null;
 
-    Type type = new ParseType(parser).parse();
+    if (parser.is(IdentMap.void_ident)) {
+      Token saved = parser.moveget();
+    } else {
+      type = new ParseType(parser).parse();
+    }
 
     Ident ident = parser.getIdent();
 
@@ -35,7 +42,7 @@ public class ParseMethodDeclaration {
 
     StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    return new ClassMethodDeclaration(type, ident, formalParameterList, block);
+    return new ClassMethodDeclaration(null, ident, formalParameterList, block);
   }
 
 }

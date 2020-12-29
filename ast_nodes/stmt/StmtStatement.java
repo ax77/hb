@@ -24,6 +24,12 @@ public class StmtStatement implements AstTraverser {
   private StmtBlock compound;
   private StmtReturn sreturn;
   private ExprExpression sexpression;
+  private StmtFor sfor;
+
+  public StmtStatement(StmtFor sfor) {
+    this.base = StatementBase.SFOR;
+    this.sfor = sfor;
+  }
 
   public StmtStatement(ExprExpression sexpression) {
     this.base = StatementBase.SEXPR;
@@ -59,6 +65,10 @@ public class StmtStatement implements AstTraverser {
 
   public ExprExpression getSexpression() {
     return sexpression;
+  }
+
+  public StmtFor getSfor() {
+    return sfor;
   }
 
 }

@@ -27,7 +27,7 @@ public class ClassMethodDeclaration implements AstTraverser {
     this.resultType = resultType;
     this.identifier = identifier;
     this.formalParameterList = formalParameterList;
-    this.isVoid = false;
+    this.isVoid = (resultType == null);
     this.body = body;
 
   }

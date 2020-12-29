@@ -1,7 +1,7 @@
 package njast.ast_parsers;
 
-import static jscan.tokenize.T.T_SEMI_COLON;
-import static njast.symtab.IdentMap.return_ident;
+import static jscan.tokenize.T.*;
+import static njast.symtab.IdentMap.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockStatement;
 import njast.ast_nodes.stmt.StmtBlockStatements;
+import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.parse.Parse;
@@ -91,6 +92,57 @@ public class ParseStatement {
 
       parser.checkedMove(T_SEMI_COLON);
       return new StmtStatement(new StmtReturn(expr));
+    }
+
+    // for( ;; )
+
+    if (parser.tok().isIdent(for_ident)) {
+      VarDeclarationLocal decl = null;
+      ExprExpression init = null;
+      ExprExpression test = null;
+      ExprExpression step = null;
+      StmtStatement loop = null;
+
+      //      pushLoop("for");
+      //      parser.pushscope(); // TODO:
+
+      Token from = parser.checkedMove(for_ident);
+      parser.lparen();
+
+      if (parser.tp() != T_SEMI_COLON) {
+
+        if (parser.isPrimitiveOrReferenceTypeBegin()) {
+
+          Type type = new ParseType(parser).parse();
+          VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();
+          decl = new VarDeclarationLocal(type, vars);
+        }
+
+        else {
+          init = e_expression();
+          parser.semicolon();
+        }
+      }
+
+      else {
+        parser.semicolon();
+      }
+
+      if (parser.tp() != T_SEMI_COLON) {
+        test = e_expression();
+      }
+      parser.semicolon();
+
+      if (parser.tp() != T_RIGHT_PAREN) {
+        step = e_expression();
+      }
+      parser.rparen();
+
+      loop = parseStatement();
+
+      //      popLoop();
+      //      parser.popscope(); // TODO:
+      return new StmtStatement(new StmtFor(decl, init, test, step, loop));
     }
 
     // {  }

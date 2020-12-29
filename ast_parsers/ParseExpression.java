@@ -317,7 +317,10 @@ public class ParseExpression {
         final Token dot = parser.moveget();
         final Token peek = parser.peek();
 
-        if (IsIdent.isUserDefinedIdentNoKeyword(parser.tok()) && peek.ofType(T.T_LEFT_PAREN)) {
+        final boolean dot_ident_lparen = IsIdent.isUserDefinedIdentNoKeyword(parser.tok())
+            && peek.ofType(T.T_LEFT_PAREN);
+
+        if (dot_ident_lparen) {
           Ident ident = parser.getIdent();
 
           // TODO: think about it, is it correct?
@@ -495,6 +498,12 @@ public class ParseExpression {
       Ident classname = parser.getIdent();
       List<ExprExpression> arguments = parseArglist();
       return new ExprExpression(new ExprClassInstanceCreation(classname, arguments));
+    }
+
+    if (parser.is(IdentMap.this_ident)) {
+      Token saved = parser.moveget();
+      ExprExpression thisexpr = new ExprExpression(saved);
+      return thisexpr;
     }
 
     // simple name

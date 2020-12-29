@@ -39,7 +39,7 @@ public class Parse {
 
   // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
   // class-type and simple types like int/char/etc.
-  private Symtab<Ident, Boolean> referenceTypes;
+  private Symtab<Ident, Integer> referenceTypes;
 
   //  Types
   //
@@ -62,11 +62,12 @@ public class Parse {
   }
 
   public void defineClassName(Ident name) {
-    this.referenceTypes.addsym(name, true);
+    this.referenceTypes.addsym(name, 128);
   }
 
   public boolean isClassName(Ident ident) {
-    return referenceTypes.getsym(ident);
+    final Integer sym = referenceTypes.getsym(ident);
+    return sym != null && sym == 128;
   }
 
   public boolean isClassName() {
@@ -74,6 +75,12 @@ public class Parse {
       return isClassName(tok.getIdent());
     }
     return false;
+  }
+
+  public boolean isPrimitiveOrReferenceTypeBegin() {
+    final boolean isPrimitiveType = IsIdent.isBasicTypeIdent(tok());
+    final boolean isReferenceType = isClassName();
+    return isPrimitiveType || isReferenceType;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +107,7 @@ public class Parse {
   }
 
   private void initScopes() {
-    this.referenceTypes = new Symtab<Ident, Boolean>();
+    this.referenceTypes = new Symtab<Ident, Integer>();
   }
 
   public String getLastLoc() {

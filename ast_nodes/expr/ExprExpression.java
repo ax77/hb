@@ -20,6 +20,12 @@ public class ExprExpression implements AstTraverser {
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
+  private Token thisExpression; // actually we don't need the token here, for position maybe. 
+
+  public ExprExpression(Token thisExpression) {
+    this.base = ExpressionBase.ETHIS;
+    this.thisExpression = thisExpression;
+  }
 
   public ExprExpression(ExprClassInstanceCreation classInstanceCreation) {
     this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
@@ -105,6 +111,15 @@ public class ExprExpression implements AstTraverser {
 
   public ExprClassInstanceCreation getClassInstanceCreation() {
     return classInstanceCreation;
+  }
+
+  public Token getThisExpression() {
+    return thisExpression;
+  }
+
+  @Override
+  public String toString() {
+    return base.toString();
   }
 
   @Override
