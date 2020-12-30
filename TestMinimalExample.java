@@ -26,13 +26,23 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class Idn {                        \n");
-    sb.append(" /*002*/    int fieldvar = 64;               \n");
-    sb.append(" /*003*/    int func() {                     \n");
-    sb.append(" /*004*/      int methodvar = 32;            \n");
-    sb.append(" /*005*/      return methodvar + fieldvar;   \n");
-    sb.append(" /*006*/    }                                \n");
-    sb.append(" /*007*/  }                                  \n");
+    sb.append(" /*001*/  class Some {                                  \n");
+    sb.append(" /*002*/    int fieldInSomeClass;                       \n");
+    sb.append(" /*003*/    int funcInSomeClass() {                     \n");
+    sb.append(" /*004*/      return fieldInSomeClass;                  \n");
+    sb.append(" /*005*/    }                                           \n");
+    sb.append(" /*006*/  }                                             \n");
+    sb.append(" /*007*/  class Idn {                                   \n");
+    sb.append(" /*008*/    int fieldvar = 64;                          \n");
+    sb.append(" /*009*/    Some classTypeField;                        \n");
+    sb.append(" /*010*/    int func() {                                \n");
+    sb.append(" /*011*/      int methodvar = 32;                       \n");
+    sb.append(" /*012*/      return methodvar                          \n");
+    sb.append(" /*013*/          + fieldvar                            \n");
+    sb.append(" /*014*/          + classTypeField.funcInSomeClass()    \n");
+    sb.append(" /*015*/          + classTypeField.fieldInSomeClass;    \n");
+    sb.append(" /*016*/    }                                           \n");
+    sb.append(" /*017*/  }                                             \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();

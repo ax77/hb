@@ -1,6 +1,8 @@
 package njast.ast_visitors;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jscan.symtab.Ident;
 import njast.ast_kinds.ExpressionBase;
@@ -29,7 +31,6 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.errors.EParseException;
 import njast.symtab.ScopeLevels;
 import njast.symtab.Symtab;
-import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class AstVisitorTypeApplier {
@@ -355,9 +356,22 @@ public class AstVisitorTypeApplier {
     }
 
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
-      Ident id = e.getSymbol();
-      Symbol tp = findBindingFromIdentifierToTypename(id);
-      System.out.println(id.getName() + ": " + tp.toString());
+      Symbol sym = findBindingFromIdentifierToTypename(e.getSymbol());
+      e.setBindings(sym);
+    }
+
+    else if (base == ExpressionBase.EMETHOD_INVOCATION) {
+      ExprMethodInvocation methodInvocation = e.getMethodInvocation();
+      applyExpr(methodInvocation.getObject());
+
+      //TODO:here
+    }
+
+    else if (base == ExpressionBase.EFIELD_ACCESS) {
+      ExprFieldAccess fieldAccess = e.getFieldAccess();
+      applyExpr(fieldAccess.getObject());
+
+      //TODO:here
     }
 
     else {

@@ -8,13 +8,14 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.ast_visitors.Symbol;
 import njast.types.Type;
 
 public class ExprExpression implements AstTraverser {
 
   // main
   private final ExpressionBase base; // what union contains
-  private Type resultType; // which type holds expression after execution
+  private Symbol bindings;
 
   // nodes
   private ExprUnary unary;
@@ -119,6 +120,14 @@ public class ExprExpression implements AstTraverser {
   @Override
   public String toString() {
     return base.toString();
+  }
+
+  public Symbol getBindings() {
+    return bindings;
+  }
+
+  public void setBindings(Symbol bindings) {
+    this.bindings = bindings;
   }
 
   @Override
