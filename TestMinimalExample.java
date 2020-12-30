@@ -28,9 +28,9 @@ public class TestMinimalExample {
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class C {  \n");
     sb.append(" /*031*/    void f_error_7(int paramvar) {                     \n");
-    sb.append(" /*032*/      int methodVar = 0;                           \n");
+    sb.append(" /*032*/      int jxxx = 0;                           \n");
     sb.append(" /*033*/      for (int i = 0; i < 8; i += 1) {     \n");
-    sb.append(" /*034*/        for (int j = 0; j < 8; j += 1) {   \n");
+    sb.append(" /*034*/         for (int j = 0; j < 8; j += 1) {   \n");
     sb.append(" /*035*/        }                                  \n");
     sb.append(" /*036*/      }                                    \n");
     sb.append(" /*037*/    }                                      \n");

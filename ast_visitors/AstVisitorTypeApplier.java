@@ -20,6 +20,7 @@ import njast.ast_nodes.expr.ExprTernary;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
+import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
@@ -111,6 +112,14 @@ public class AstVisitorTypeApplier {
     variablesMethod.addsym(paramName, var);
   }
 
+  private VarDeclarator findVarMethodClass(Ident name) {
+    VarDeclarator var = variablesMethod.getsym(name);
+    if (var == null) {
+      var = variablesClass.getsym(name);
+    }
+    return var;
+  }
+
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
 
     VarDeclarator maybeAlreadyDefined = findVarMethodClass(var.getIdentifier());
@@ -119,6 +128,38 @@ public class AstVisitorTypeApplier {
     }
 
     variablesMethod.addsym(var.getIdentifier(), var);
+  }
+
+  private VarDeclarator findVarBlockMethod(Ident name) {
+    VarDeclarator var = variablesBlock.getsym(name);
+    if (var == null) {
+      var = variablesMethod.getsym(name);
+    }
+    return var;
+  }
+
+  private void defineBlockVar(VarDeclarator var) {
+
+    VarDeclarator maybeAlreadyDefined = findVarBlockMethod(var.getIdentifier());
+    if (maybeAlreadyDefined != null) {
+      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined));
+    }
+
+    variablesBlock.addsym(var.getIdentifier(), var);
+  }
+
+  private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
+  }
+
+  private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
+  }
+
+  private void initVarZero(VarDeclarator var) {
+  }
+
+  private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
+    final VarDeclarator fieldVar = field.getField();
+    variablesClass.addsym(fieldVar.getIdentifier(), fieldVar);
   }
 
   private String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
@@ -138,36 +179,6 @@ public class AstVisitorTypeApplier {
     sb.append("\n");
 
     return sb.toString();
-  }
-
-  private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
-  }
-
-  private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
-  }
-
-  private void initVarZero(VarDeclarator var) {
-  }
-
-  private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
-    final VarDeclarator fieldVar = field.getField();
-    variablesClass.addsym(fieldVar.getIdentifier(), fieldVar);
-  }
-
-  private VarDeclarator findVarMethodClass(Ident name) {
-    VarDeclarator var = variablesMethod.getsym(name);
-    if (var == null) {
-      var = variablesClass.getsym(name);
-    }
-    return var;
-  }
-
-  private VarDeclarator findVarBlockMethod(Ident name) {
-    VarDeclarator var = variablesBlock.getsym(name);
-    if (var == null) {
-      var = variablesMethod.getsym(name);
-    }
-    return var;
   }
 
   //
@@ -238,6 +249,51 @@ public class AstVisitorTypeApplier {
     }
 
     // process-statement
+
+    if (base == StatementBase.SFOR) {
+      StmtFor forloop = statement.getSfor();
+      List<VarDeclarator> vars = forloop.getDecl();
+      if (vars != null) {
+        for (VarDeclarator var : vars) {
+          initVarZero(var);
+          defineBlockVar(var);
+        }
+      }
+      StmtStatement loop = forloop.getLoop();
+      if (loop != null) {
+        applyStatement(loop);
+      }
+    }
+
+    else if (base == StatementBase.SBLOCK) {
+
+      final StmtBlock body = statement.getCompound();
+      final List<StmtBlockItem> blocks = body.getBlockStatements();
+
+      for (StmtBlockItem block : blocks) {
+
+        // declarations
+        final List<VarDeclarator> localVars = block.getLocalVars();
+        if (localVars != null) {
+          for (VarDeclarator var : localVars) {
+            initVarZero(var);
+            defineBlockVar(var);
+          }
+        }
+
+        // statements
+        final StmtStatement statementRest = block.getStatement();
+        if (statementRest != null) {
+          applyStatement(statementRest);
+        }
+
+      }
+
+    }
+
+    else {
+      throw new EParseException("unimpl:" + base.toString());
+    }
 
     if (hasItsOwnScope) {
       closeBlockScope();
