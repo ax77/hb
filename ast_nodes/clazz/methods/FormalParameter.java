@@ -31,4 +31,9 @@ public class FormalParameter implements AstTraverser {
     return name;
   }
 
+  @Override
+  public String toString() {
+    return name + ": " + type.toString();
+  }
+
 }

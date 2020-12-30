@@ -71,4 +71,9 @@ public class StmtStatement implements AstTraverser {
     return sfor;
   }
 
+  @Override
+  public String toString() {
+    return base.toString();
+  }
+
 }

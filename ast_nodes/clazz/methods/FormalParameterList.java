@@ -45,4 +45,25 @@ public class FormalParameterList implements AstTraverser {
     return true;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("(");
+
+    for (int i = 0; i < parameters.size(); i++) {
+      FormalParameter param = parameters.get(i);
+
+      sb.append(param.getName().getName());
+      sb.append(": ");
+      sb.append(param.getType().toString());
+
+      if (i + 1 < parameters.size()) {
+        sb.append(", ");
+      }
+    }
+
+    sb.append(")");
+    return sb.toString();
+  }
+
 }

@@ -1,7 +1,5 @@
 package njast.ast_nodes.clazz.methods;
 
-import java.util.List;
-
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -18,15 +16,11 @@ public class ClassMethodDeclaration implements AstTraverser, ILocation {
   }
 
   private final SourceLocation location;
-
-  // header
-  private Type resultType;
+  private final Type resultType;
   private final Ident identifier;
   private final FormalParameterList formalParameterList;
   private final boolean isVoid;
-
-  // body
-  private StmtBlock body;
+  private final StmtBlock body;
 
   public ClassMethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList,
       StmtBlock body, SourceLocation location) {
@@ -50,20 +44,12 @@ public class ClassMethodDeclaration implements AstTraverser, ILocation {
     return resultType;
   }
 
-  public void setResultType(Type resultType) {
-    this.resultType = resultType;
-  }
-
   public boolean isVoid() {
     return isVoid;
   }
 
   public StmtBlock getBody() {
     return body;
-  }
-
-  public void setBody(StmtBlock body) {
-    this.body = body;
   }
 
   public Ident getIdentifier() {
@@ -80,29 +66,8 @@ public class ClassMethodDeclaration implements AstTraverser, ILocation {
     }
     sb.append(" ");
     sb.append(identifier.getName());
-    sb.append(fp());
+    sb.append(formalParameterList.toString());
 
-    return sb.toString();
-  }
-
-  private String fp() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("(");
-
-    final List<FormalParameter> parameters = formalParameterList.getParameters();
-    for (int i = 0; i < parameters.size(); i++) {
-      FormalParameter param = parameters.get(i);
-
-      sb.append(param.getName().getName());
-      sb.append(": ");
-      sb.append(param.getType().toString());
-
-      if (i + 1 < parameters.size()) {
-        sb.append(", ");
-      }
-    }
-
-    sb.append(")");
     return sb.toString();
   }
 
