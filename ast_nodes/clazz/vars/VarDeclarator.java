@@ -1,12 +1,14 @@
 package njast.ast_nodes.clazz.vars;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 import njast.modifiers.Modifiers;
+import njast.parse.ILocation;
 import njast.types.Type;
 
-public class VarDeclarator implements AstTraverser {
+public class VarDeclarator implements AstTraverser, ILocation {
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);
@@ -21,11 +23,13 @@ public class VarDeclarator implements AstTraverser {
 
   private Modifiers modifiers; // later
 
+  private final SourceLocation location;
   private final Type type;
   private final Ident identifier; // njast:mark - symbol instead ident?
   private VarInitializer initializer;
 
-  public VarDeclarator(Type type, Ident identifier) {
+  public VarDeclarator(SourceLocation location, Type type, Ident identifier) {
+    this.location = location;
     this.type = type;
     this.identifier = identifier;
   }
@@ -64,6 +68,31 @@ public class VarDeclarator implements AstTraverser {
 
     sb.append(";");
     return sb.toString();
+  }
+
+  @Override
+  public SourceLocation getLocation() {
+    return location;
+  }
+
+  @Override
+  public String getLocationToString() {
+    return location.toString();
+  }
+
+  @Override
+  public int getLocationLine() {
+    return location.getLine();
+  }
+
+  @Override
+  public int getLocationColumn() {
+    return location.getColumn();
+  }
+
+  @Override
+  public String getLocationFile() {
+    return location.getFilename();
   }
 
 }

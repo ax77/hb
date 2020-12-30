@@ -29,10 +29,10 @@ public class TestMinimalExample {
     sb.append(" /*001*/  class C { public int xxx=1, yyy, zzz=3;  \n");
     sb.append(" /*002*/    int f_error_0(int a) {                     \n");
     sb.append(" /*003*/      a = 64;                              \n");
-    sb.append(" /*004*/      int a = 32;                          \n");
+//    sb.append(" /*004*/      int a = 32;                          \n");
     sb.append(" /*005*/    }                                      \n");
     sb.append(" /*006*/    void f_error_0(int a, int b) {                     \n");
-    sb.append(" /*007*/      int a = 32;                          \n");
+//    sb.append(" /*007*/      int a = 32;                          \n");
     sb.append(" /*008*/      {                                    \n");
     sb.append(" /*009*/        int a = 64;                        \n");
     sb.append(" /*010*/      }                                    \n");

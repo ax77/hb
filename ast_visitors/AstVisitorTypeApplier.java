@@ -21,9 +21,63 @@ import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
+import njast.errors.EParseException;
+import njast.symtab.ScopeLevels;
+import njast.symtab.Symtab;
 import njast.types.Type;
 
 public class AstVisitorTypeApplier {
+
+  private Symtab<Ident, ClassDeclaration> typeNames;
+  private Symtab<Ident, VarDeclarator> variablesClass; // fields
+  private Symtab<Ident, VarDeclarator> variablesMethod; // parameters+locals_outside_block
+  private Symtab<Ident, VarDeclarator> variablesBlock; // locals_inside_block
+
+  public AstVisitorTypeApplier() {
+    this.typeNames = new Symtab<>();
+    this.variablesClass = new Symtab<>();
+    this.variablesMethod = new Symtab<>();
+    this.variablesBlock = new Symtab<>();
+  }
+
+  private void openFileScope() {
+    this.typeNames.pushscope(ScopeLevels.FILE_SCOPE, "compilation_unit_scope");
+  }
+
+  private void closeFileScope() {
+    this.typeNames.popscope();
+  }
+
+  private void openClassScope(String className) {
+    this.variablesClass.pushscope(ScopeLevels.CLASS_SCOPE, className);
+  }
+
+  private void closeClassScope() {
+    this.variablesClass.popscope();
+  }
+
+  private void openMethodScope(String methodName) {
+    this.variablesMethod.pushscope(ScopeLevels.METHOD_SCOPE, methodName);
+  }
+
+  private void closeMethodScope() {
+    this.variablesMethod.popscope();
+  }
+
+  private void openBlockScope(String name) {
+    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, name);
+  }
+
+  private void closeBlockScope() {
+    this.variablesBlock.popscope();
+  }
+
+  private void dump() {
+    typeNames.dump();
+    variablesClass.dump();
+    variablesMethod.dump();
+    variablesBlock.dump();
+  }
 
   //to define a symbol in a function or nested block and check redefinition
   //1) check the current block 
@@ -51,14 +105,41 @@ public class AstVisitorTypeApplier {
   // SYMTAB 
   //
   private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
+    VarDeclarator var = new VarDeclarator(method.getLocation(), paramType, paramName);
+    variablesMethod.addsym(paramName, var);
   }
 
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
-    System.out.println("local: " + var.toString());
+
+    VarDeclarator maybeAlreadyDefined = findVarMethodClass(var.getIdentifier());
+    if (maybeAlreadyDefined != null) {
+      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined));
+    }
+
+    variablesMethod.addsym(var.getIdentifier(), var);
+  }
+
+  private String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
+
+    final String name = varYouWantToDefine.getIdentifier().getName();
+    final String location = varYouWantToDefine.getLocationToString();
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("\nError: ");
+    sb.append(location);
+    sb.append("\n");
+    sb.append("duplicate variable: ");
+    sb.append(name);
+    sb.append("\n");
+    sb.append("previously defined here: ");
+    sb.append(varDefinedPreviously.getLocationToString());
+    sb.append("\n");
+
+    return sb.toString();
   }
 
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
-    System.out.println(m.toString());
+    // System.out.println(m.toString());
   }
 
   private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
@@ -68,7 +149,16 @@ public class AstVisitorTypeApplier {
   }
 
   private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
-    System.out.println(field.getField().toString());
+    final VarDeclarator fieldVar = field.getField();
+    variablesClass.addsym(fieldVar.getIdentifier(), fieldVar);
+  }
+
+  private VarDeclarator findVarMethodClass(Ident name) {
+    VarDeclarator var = variablesMethod.getsym(name);
+    if (var == null) {
+      var = variablesClass.getsym(name);
+    }
+    return var;
   }
 
   //
@@ -76,7 +166,7 @@ public class AstVisitorTypeApplier {
 
   public void visit(ClassDeclaration object) {
 
-    System.out.println(object.getIdentifier().getName());
+    openClassScope(object.getIdentifier().getName());
 
     //fields
     for (ClassFieldDeclaration field : object.getFields()) {
@@ -85,6 +175,8 @@ public class AstVisitorTypeApplier {
 
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
+      openMethodScope(method.getIdentifier().getName());
+
       defineMethod(object, method); // check overloading/redefinition/etc
 
       for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
@@ -95,7 +187,11 @@ public class AstVisitorTypeApplier {
 
       //body
       final StmtBlock body = method.getBody();
-      for (StmtBlockItem block : body.getBlockStatements()) {
+      final List<StmtBlockItem> blocks = body.getBlockStatements();
+
+      for (StmtBlockItem block : blocks) {
+        String name = ((block.getLocalVars() == null) ? "stmt" : "decl");
+        // openBlockScope(name);
 
         // declarations
         final List<VarDeclarator> localVars = block.getLocalVars();
@@ -111,13 +207,19 @@ public class AstVisitorTypeApplier {
         if (statement != null) {
           // block variables here ... 
         }
+
+        // closeBlockScope();
       }
+
+      closeMethodScope();
     }
 
     //constructors (the last, it works with methods and fields)
     for (ClassConstructorDeclaration constructor : object.getConstructors()) {
       defineConstructor(object, constructor); // check overloading/redefinition/etc
     }
+
+    closeClassScope();
   }
 
   public void visit(ExprBinary o) {
@@ -156,13 +258,11 @@ public class AstVisitorTypeApplier {
   }
 
   public void visit(TopLevelCompilationUnit o) {
+    openFileScope();
     for (TopLevelTypeDeclaration td : o.getTypeDeclarations()) {
-      visit(td);
+      visit(td.getClassDeclaration());
     }
-  }
-
-  public void visit(TopLevelTypeDeclaration o) {
-    visit(o.getClassDeclaration());
+    closeFileScope();
   }
 
 }

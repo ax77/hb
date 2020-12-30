@@ -67,4 +67,9 @@ public class ClassDeclaration implements AstTraverser {
     return methods;
   }
 
+  @Override
+  public String toString() {
+    return identifier.getName() + ": class_type";
+  }
+
 }

@@ -1,5 +1,6 @@
 package njast.ast_parsers;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
@@ -27,6 +28,8 @@ public class ParseMethodDeclaration {
     //    <method declarator> ::= <identifier> ( <formal parameter list>? )
     //    <method body> ::= <block> | ;
 
+    Token location = parser.tok();
+
     Modifiers modifiers = new ParseModifiers(parser).parse();
     Type type = null;
 
@@ -42,7 +45,7 @@ public class ParseMethodDeclaration {
 
     StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    return new ClassMethodDeclaration(type, ident, formalParameterList, block);
+    return new ClassMethodDeclaration(type, ident, formalParameterList, block, new SourceLocation(location));
   }
 
 }

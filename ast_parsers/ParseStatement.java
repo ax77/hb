@@ -32,7 +32,7 @@ public class ParseStatement {
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-      return new StmtBlock(new ArrayList<StmtBlockItem>(0));
+      return new StmtBlock();
     }
 
     List<StmtBlockItem> blockStatements = parseBlockStamentList();

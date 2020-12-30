@@ -2,18 +2,22 @@ package njast.ast_nodes.clazz.methods;
 
 import java.util.List;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.parse.ILocation;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
-public class ClassMethodDeclaration implements AstTraverser {
+public class ClassMethodDeclaration implements AstTraverser, ILocation {
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);
   }
+
+  private final SourceLocation location;
 
   // header
   private Type resultType;
@@ -25,7 +29,7 @@ public class ClassMethodDeclaration implements AstTraverser {
   private StmtBlock body;
 
   public ClassMethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList,
-      StmtBlock body) {
+      StmtBlock body, SourceLocation location) {
 
     NullChecker.check(identifier, formalParameterList, body);
 
@@ -34,6 +38,7 @@ public class ClassMethodDeclaration implements AstTraverser {
     this.formalParameterList = formalParameterList;
     this.isVoid = (resultType == null);
     this.body = body;
+    this.location = location;
 
   }
 
@@ -99,6 +104,31 @@ public class ClassMethodDeclaration implements AstTraverser {
 
     sb.append(")");
     return sb.toString();
+  }
+
+  @Override
+  public SourceLocation getLocation() {
+    return location;
+  }
+
+  @Override
+  public String getLocationToString() {
+    return location.toString();
+  }
+
+  @Override
+  public int getLocationLine() {
+    return location.getLine();
+  }
+
+  @Override
+  public int getLocationColumn() {
+    return location.getColumn();
+  }
+
+  @Override
+  public String getLocationFile() {
+    return location.getFilename();
   }
 
 }

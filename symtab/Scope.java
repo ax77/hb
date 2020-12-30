@@ -35,7 +35,7 @@ public class Scope<K, V> {
 
   public void dump() {
     for (Entry<K, V> e : scope.entrySet()) {
-      System.out.println(name + ": " + e.getKey().toString() + " " + e.getValue().toString());
+      System.out.println(name + ": <" + e.getKey().toString() + "> = <" + e.getValue().toString() + ">");
       System.out.println();
     }
 

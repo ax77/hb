@@ -116,7 +116,7 @@ public class ParseTypeDeclarationsList {
 
     else {
 
-      List<ClassFieldDeclaration> fieldDeclaration = new ParseFieldDeclaration(parser).parse();
+      List<ClassFieldDeclaration> fieldDeclaration = new ParseFieldDeclaration(parser).parse(clazz);
       for (ClassFieldDeclaration field : fieldDeclaration) {
         checkRedefinition(clazz, field);
         clazz.put(field);

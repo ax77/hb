@@ -3,6 +3,7 @@ package njast.ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.modifiers.Modifiers;
@@ -15,14 +16,14 @@ public class ParseFieldDeclaration {
     this.parser = parser;
   }
 
-  public List<ClassFieldDeclaration> parse() {
+  public List<ClassFieldDeclaration> parse(ClassDeclaration owner) {
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
     List<VarDeclarator> variableDeclarators = new ParseVarDeclaratorsList(parser).parse();
 
     List<ClassFieldDeclaration> fields = new ArrayList<ClassFieldDeclaration>();
     for (VarDeclarator var : variableDeclarators) {
-      fields.add(new ClassFieldDeclaration(var));
+      fields.add(new ClassFieldDeclaration(owner, var));
     }
 
     return fields;

@@ -3,8 +3,10 @@ package njast.ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
+import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprExpression;
@@ -43,8 +45,9 @@ public class ParseVarDeclaratorsList {
 
   private void getOneVarAndOptInitializer(Type type, List<VarDeclarator> variableDeclarators) {
 
-    Ident id = parser.getIdent();
-    VarDeclarator var = new VarDeclarator(type, id);
+    Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    Ident id = tok.getIdent();
+    VarDeclarator var = new VarDeclarator(new SourceLocation(tok), type, id);
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();
