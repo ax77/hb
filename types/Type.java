@@ -83,8 +83,8 @@ public class Type {
         return false;
       }
     } else {
-      final Ident name1 = referenceType.getTypeName();
-      final Ident name2 = another.getReferenceType().getTypeName();
+      final Ident name1 = referenceType.getTypeName().getIdentifier();
+      final Ident name2 = another.getReferenceType().getTypeName().getIdentifier();
       if (!name1.equals(name2)) {
         return false;
       }
@@ -97,7 +97,7 @@ public class Type {
     if (isPrimitive) {
       return primitiveType.toString();
     }
-    return referenceType.getTypeName().getName();
+    return referenceType.getTypeName().getIdentifier().getName();
   }
 
 }

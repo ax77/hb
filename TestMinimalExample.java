@@ -26,15 +26,13 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class C {  \n");
-    sb.append(" /*031*/    void f_error_7(int paramvar) {                     \n");
-    sb.append(" /*032*/      int jxxx = 0;                           \n");
-    sb.append(" /*033*/      for (int i = 0; i < 8; i += 1) {     \n");
-    sb.append(" /*034*/         for (int j = 0; j < 8; j += 1) {   \n");
-    sb.append(" /*035*/        }                                  \n");
-    sb.append(" /*036*/      }                                    \n");
-    sb.append(" /*037*/    }                                      \n");
-    sb.append(" /*038*/  }                                        \n");
+    sb.append(" /*001*/  class Idn {                        \n");
+    sb.append(" /*002*/    int fieldvar = 64;               \n");
+    sb.append(" /*003*/    int func() {                     \n");
+    sb.append(" /*004*/      int methodvar = 32;            \n");
+    sb.append(" /*005*/      return methodvar + fieldvar;   \n");
+    sb.append(" /*006*/    }                                \n");
+    sb.append(" /*007*/  }                                  \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();

@@ -50,7 +50,7 @@ public class ParseType {
     }
 
     Ident typeName = parser.getIdent();
-    ReferenceType referenceType = new ReferenceType(typeName);
+    ReferenceType referenceType = new ReferenceType(parser.getClassType(typeName));
 
     return new Type(referenceType);
   }

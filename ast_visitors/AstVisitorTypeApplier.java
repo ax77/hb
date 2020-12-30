@@ -3,6 +3,7 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
@@ -21,20 +22,22 @@ import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
+import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.errors.EParseException;
 import njast.symtab.ScopeLevels;
 import njast.symtab.Symtab;
+import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class AstVisitorTypeApplier {
 
-  private Symtab<Ident, ClassDeclaration> typeNames;
-  private Symtab<Ident, VarDeclarator> variablesClass; // fields
-  private Symtab<Ident, VarDeclarator> variablesMethod; // parameters+locals_outside_block
-  private Symtab<Ident, VarDeclarator> variablesBlock; // locals_inside_block
+  private Symtab<Ident, Symbol> typeNames;
+  private Symtab<Ident, Symbol> variablesClass; // fields
+  private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
+  private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
   public AstVisitorTypeApplier() {
     this.typeNames = new Symtab<>();
@@ -107,13 +110,18 @@ public class AstVisitorTypeApplier {
   //////////////////////////////////////////////////////////////////////
   // SYMTAB 
   //
-  private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, method.getLocation(), paramType, paramName);
-    variablesMethod.addsym(paramName, var);
+
+  private Symbol varsym(VarDeclarator var) {
+    return new Symbol(var);
   }
 
-  private VarDeclarator findVarMethodClass(Ident name) {
-    VarDeclarator var = variablesMethod.getsym(name);
+  private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, method.getLocation(), paramType, paramName);
+    variablesMethod.addsym(paramName, varsym(var));
+  }
+
+  private Symbol findVarMethodClass(Ident name) {
+    Symbol var = variablesMethod.getsym(name);
     if (var == null) {
       var = variablesClass.getsym(name);
     }
@@ -122,16 +130,16 @@ public class AstVisitorTypeApplier {
 
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
 
-    VarDeclarator maybeAlreadyDefined = findVarMethodClass(var.getIdentifier());
+    Symbol maybeAlreadyDefined = findVarMethodClass(var.getIdentifier());
     if (maybeAlreadyDefined != null) {
-      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined));
+      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
     }
 
-    variablesMethod.addsym(var.getIdentifier(), var);
+    variablesMethod.addsym(var.getIdentifier(), varsym(var));
   }
 
-  private VarDeclarator findVarBlockMethod(Ident name) {
-    VarDeclarator var = variablesBlock.getsym(name);
+  private Symbol findVarBlockMethod(Ident name) {
+    Symbol var = variablesBlock.getsym(name);
     if (var == null) {
       var = variablesMethod.getsym(name);
     }
@@ -140,12 +148,40 @@ public class AstVisitorTypeApplier {
 
   private void defineBlockVar(VarDeclarator var) {
 
-    VarDeclarator maybeAlreadyDefined = findVarBlockMethod(var.getIdentifier());
+    Symbol maybeAlreadyDefined = findVarBlockMethod(var.getIdentifier());
     if (maybeAlreadyDefined != null) {
-      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined));
+      throw new EParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
     }
 
-    variablesBlock.addsym(var.getIdentifier(), var);
+    variablesBlock.addsym(var.getIdentifier(), varsym(var));
+  }
+
+  private Symbol findBindingFromIdentifierToTypename(Ident name) {
+
+    Symbol var = variablesBlock.getsym(name);
+    if (var != null) {
+      return var;
+    }
+
+    var = variablesMethod.getsym(name);
+    if (var != null) {
+      return var;
+    }
+
+    var = variablesClass.getsym(name);
+    if (var != null) {
+      return var;
+    }
+
+    Symbol classtype = typeNames.getsym(name);
+    if (classtype != null) {
+      return classtype;
+    }
+
+    else {
+      throw new EParseException("type not found for id: " + name.getName());
+    }
+
   }
 
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
@@ -159,7 +195,7 @@ public class AstVisitorTypeApplier {
 
   private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
     final VarDeclarator fieldVar = field.getField();
-    variablesClass.addsym(fieldVar.getIdentifier(), fieldVar);
+    variablesClass.addsym(fieldVar.getIdentifier(), varsym(fieldVar));
   }
 
   private String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
@@ -291,12 +327,41 @@ public class AstVisitorTypeApplier {
 
     }
 
+    else if (base == StatementBase.SRETURN) {
+      StmtReturn ret = statement.getSreturn();
+      final ExprExpression retExpr = ret.getExpr();
+      if (retExpr != null) {
+        applyExpr(retExpr);
+      }
+    }
+
     else {
-      throw new EParseException("unimpl:" + base.toString());
+      throw new EParseException("unimpl. stmt.:" + base.toString());
     }
 
     if (hasItsOwnScope) {
       closeBlockScope();
+    }
+
+  }
+
+  private void applyExpr(ExprExpression e) {
+    ExpressionBase base = e.getBase();
+
+    if (base == ExpressionBase.EBINARY) {
+      ExprBinary node = e.getBinary();
+      applyExpr(node.getLhs());
+      applyExpr(node.getRhs());
+    }
+
+    else if (base == ExpressionBase.EPRIMARY_IDENT) {
+      Ident id = e.getSymbol();
+      Symbol tp = findBindingFromIdentifierToTypename(id);
+      System.out.println(id.getName() + ": " + tp.toString());
+    }
+
+    else {
+      throw new EParseException("unimpl. expr.:" + base.toString());
     }
 
   }

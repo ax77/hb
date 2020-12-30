@@ -1,16 +1,16 @@
 package njast.types;
 
-import jscan.symtab.Ident;
+import njast.ast_nodes.clazz.ClassDeclaration;
 
 public class ReferenceType {
-  private final Ident typeName;
+  private final ClassDeclaration classType;
 
-  public ReferenceType(Ident typeName) {
-    this.typeName = typeName;
+  public ReferenceType(ClassDeclaration classType) {
+    this.classType = classType;
   }
 
-  public Ident getTypeName() {
-    return typeName;
+  public ClassDeclaration getTypeName() {
+    return classType;
   }
 
 }

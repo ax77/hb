@@ -71,6 +71,13 @@ public class Parse {
     return sym != null;
   }
 
+  public ClassDeclaration getClassType(Ident ident) {
+    if (!isClassName(ident)) {
+      perror("class not found: " + ident.getName());
+    }
+    return referenceTypes.getsym(ident);
+  }
+
   public boolean isClassName() {
     if (IsIdent.isUserDefinedIdentNoKeyword(tok)) {
       return isClassName(tok.getIdent());
