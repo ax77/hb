@@ -10,9 +10,7 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
-import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
-import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
@@ -20,35 +18,12 @@ import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.parse.Parse;
-import njast.types.Type;
 
 public class ParseStatement {
   private final Parse parser;
 
   public ParseStatement(Parse parser) {
     this.parser = parser;
-  }
-
-  private ExprExpression e_expression() {
-    return new ParseExpression(parser).e_expression();
-  }
-
-  public List<StmtBlockItem> parseBlockStamentList() {
-    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
-
-    StmtBlockItem oneBlock = parseOneBlock();
-    for (;;) {
-      bs.add(oneBlock);
-      if (parser.tp() == T.T_RIGHT_BRACE) {
-        break;
-      }
-      if (oneBlock == null) {
-        break;
-      }
-      oneBlock = parseOneBlock();
-    }
-
-    return bs;
   }
 
   public StmtBlock parseBlock() {
@@ -69,12 +44,38 @@ public class ParseStatement {
   }
 
   public StmtStatement parseCompoundStatement() {
-
     Token lbrace = parser.tok();
-
     StmtBlock block = parseBlock();
-
     return new StmtStatement(lbrace, block);
+  }
+
+  private List<StmtBlockItem> parseBlockStamentList() {
+    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
+
+    while (parser.tp() != T.T_RIGHT_BRACE) {
+      StmtBlockItem oneBlock = parseOneBlock();
+      bs.add(oneBlock);
+    }
+
+    return bs;
+  }
+
+  private StmtBlockItem parseOneBlock() {
+
+    if (parser.isPrimitiveOrReferenceTypeBegin()) {
+      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse();
+      return new StmtBlockItem(vars);
+    }
+
+    StmtStatement stmt = parseStatement();
+    if (stmt == null) {
+      parser.perror("something wrong in a statement");
+    }
+    return new StmtBlockItem(stmt);
+  }
+
+  private ExprExpression e_expression() {
+    return new ParseExpression(parser).e_expression();
   }
 
   private StmtStatement parseStatement() {
@@ -99,7 +100,7 @@ public class ParseStatement {
     // for( ;; )
 
     if (parser.is(for_ident)) {
-      VarDeclarationLocal decl = null;
+      List<VarDeclarator> decl = null;
       ExprExpression init = null;
       ExprExpression test = null;
       ExprExpression step = null;
@@ -114,10 +115,7 @@ public class ParseStatement {
       if (parser.tp() != T_SEMI_COLON) {
 
         if (parser.isPrimitiveOrReferenceTypeBegin()) {
-
-          Type type = new ParseType(parser).parse();
-          VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();
-          decl = new VarDeclarationLocal(type, vars);
+          decl = new ParseVarDeclaratorsList(parser).parse();
         }
 
         else {
@@ -158,26 +156,6 @@ public class ParseStatement {
     StmtStatement ret = new StmtStatement(e_expression());
     parser.semicolon();
     return ret;
-  }
-
-  private StmtBlockItem parseOneBlock() {
-
-    if (parser.isClassName() || IsIdent.isBasicTypeIdent(parser.tok())) {
-
-      Type type = new ParseType(parser).parse();
-      VarDeclaratorsList vars = new ParseVarDeclaratorsList(parser).parse();
-
-      VarDeclarationLocal decls = new VarDeclarationLocal(type, vars);
-
-      return new StmtBlockItem(decls);
-    }
-
-    StmtStatement stmt = parseStatement();
-    if (stmt != null) {
-      return new StmtBlockItem(stmt);
-    }
-
-    return null;
   }
 
 }

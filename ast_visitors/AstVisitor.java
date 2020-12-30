@@ -7,9 +7,7 @@ import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
-import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
@@ -49,9 +47,7 @@ public interface AstVisitor {
   void visit(StmtStatement o);
   void visit(TopLevelCompilationUnit o);
   void visit(TopLevelTypeDeclaration o);
-  void visit(VarDeclarationLocal o);
   void visit(VarDeclarator o);
-  void visit(VarDeclaratorsList o);
   void visit(VarInitializer o);
   //@formatter:on
 

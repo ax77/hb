@@ -1,18 +1,20 @@
 package njast.ast_nodes.stmt;
 
-import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
+import java.util.List;
+
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 
 public class StmtFor {
 
   // for
-  private VarDeclarationLocal decl;
+  private List<VarDeclarator> decl;
   private ExprExpression init;
   private ExprExpression test;
   private ExprExpression step;
   private StmtStatement loop;
 
-  public StmtFor(VarDeclarationLocal decl, ExprExpression init, ExprExpression test, ExprExpression step,
+  public StmtFor(List<VarDeclarator> decl, ExprExpression init, ExprExpression test, ExprExpression step,
       StmtStatement loop) {
     this.decl = decl;
     this.init = init;
@@ -21,11 +23,11 @@ public class StmtFor {
     this.loop = loop;
   }
 
-  public VarDeclarationLocal getDecl() {
+  public List<VarDeclarator> getDecl() {
     return decl;
   }
 
-  public void setDecl(VarDeclarationLocal decl) {
+  public void setDecl(List<VarDeclarator> decl) {
     this.decl = decl;
   }
 

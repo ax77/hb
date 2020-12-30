@@ -3,6 +3,8 @@ package njast.ast_nodes.clazz.vars;
 import jscan.symtab.Ident;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.modifiers.Modifiers;
+import njast.types.Type;
 
 public class VarDeclarator implements AstTraverser {
   @Override
@@ -10,16 +12,21 @@ public class VarDeclarator implements AstTraverser {
     visitor.visit(this);
   }
 
-  //  <variable declarator> ::= <variable declarator id> | <variable declarator id> = <variable initializer>
+  // var-declarator-list:
+  // type:[int] var-declarators:[a, b=1, c, d=2];
   //
-  //  <variable declarator id> ::= <identifier> | <variable declarator id> [ ]
-  //
-  //  <variable initializer> ::= <expression> | <array initializer>
+  // we simplify this in a parse stage:
+  // parse type, and apply this type to each variable (i.e. name)
+  // and we have a list of variables with its types as a result
 
+  private Modifiers modifiers; // later
+
+  private final Type type;
   private final Ident identifier; // njast:mark - symbol instead ident?
   private VarInitializer initializer;
 
-  public VarDeclarator(Ident identifier) {
+  public VarDeclarator(Type type, Ident identifier) {
+    this.type = type;
     this.identifier = identifier;
   }
 
@@ -33,6 +40,16 @@ public class VarDeclarator implements AstTraverser {
 
   public Ident getIdentifier() {
     return identifier;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public String toString() {
+    return "VarDeclarator [type=" + type + ", identifier=" + identifier.getName() + ", initializer="
+        + ((initializer != null) ? initializer.getInitializer().toString() : "no_init") + "]";
   }
 
 }

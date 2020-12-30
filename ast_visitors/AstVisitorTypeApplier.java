@@ -8,9 +8,7 @@ import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
-import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
@@ -56,7 +54,7 @@ public class AstVisitorTypeApplier {
     System.out.println("param_name: " + paramName.getName());
   }
 
-  private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var, Type type) {
+  private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
   }
 
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
@@ -66,11 +64,11 @@ public class AstVisitorTypeApplier {
   private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
   }
 
-  private void initVarZero(VarDeclarator var, Type type) {
+  private void initVarZero(VarDeclarator var) {
   }
 
   private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
-    System.out.println(field.toString());
+    System.out.println(field.getField().toString());
   }
 
   //
@@ -102,13 +100,11 @@ public class AstVisitorTypeApplier {
       for (StmtBlockItem block : blockStatements) {
 
         // declarations
-        final VarDeclarationLocal localVars = block.getLocalVars();
+        final List<VarDeclarator> localVars = block.getLocalVars();
         if (localVars != null) {
-          Type type = localVars.getType();
-          VarDeclaratorsList vars = localVars.getVars();
-          for (VarDeclarator var : vars.getVariables()) {
-            initVarZero(var, type);
-            defineMethodVariable(method, var, type);
+          for (VarDeclarator var : localVars) {
+            initVarZero(var);
+            defineMethodVariable(method, var);
           }
         }
 

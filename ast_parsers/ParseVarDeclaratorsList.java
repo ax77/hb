@@ -1,12 +1,15 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.parse.Parse;
+import njast.types.Type;
 
 public class ParseVarDeclaratorsList {
   private final Parse parser;
@@ -23,31 +26,32 @@ public class ParseVarDeclaratorsList {
     this.parser = parser;
   }
 
-  public VarDeclaratorsList parse() {
+  public List<VarDeclarator> parse() {
 
-    VarDeclaratorsList variableDeclarators = new VarDeclaratorsList();
+    Type type = new ParseType(parser).parse();
+    List<VarDeclarator> variableDeclarators = new ArrayList<VarDeclarator>();
 
-    getOneVarAndOptInitializer(variableDeclarators);
+    getOneVarAndOptInitializer(type, variableDeclarators);
     while (parser.is(T.T_COMMA)) {
       parser.moveget();
-      getOneVarAndOptInitializer(variableDeclarators);
+      getOneVarAndOptInitializer(type, variableDeclarators);
     }
 
     parser.semicolon();
     return variableDeclarators;
   }
 
-  private void getOneVarAndOptInitializer(VarDeclaratorsList variableDeclarators) {
+  private void getOneVarAndOptInitializer(Type type, List<VarDeclarator> variableDeclarators) {
 
     Ident id = parser.getIdent();
-    VarDeclarator var = new VarDeclarator(id);
+    VarDeclarator var = new VarDeclarator(type, id);
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();
       var.setInitializer(parseInitializer());
     }
 
-    variableDeclarators.put(var);
+    variableDeclarators.add(var);
 
   }
 

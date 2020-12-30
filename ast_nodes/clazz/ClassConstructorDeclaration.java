@@ -1,10 +1,8 @@
 package njast.ast_nodes.clazz;
 
-import java.util.List;
-
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
-import njast.ast_nodes.stmt.StmtBlockItem;
+import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
@@ -26,13 +24,12 @@ public class ClassConstructorDeclaration implements AstTraverser {
 
   private final Ident identifier;
   private final FormalParameterList formalParameterList;
-  private final List<StmtBlockItem> blockStatements;
+  private final StmtBlock block;
 
-  public ClassConstructorDeclaration(Ident identifier, FormalParameterList formalParameterList,
-      List<StmtBlockItem> blockStatements) {
+  public ClassConstructorDeclaration(Ident identifier, FormalParameterList formalParameterList, StmtBlock block) {
     this.identifier = identifier;
     this.formalParameterList = formalParameterList;
-    this.blockStatements = blockStatements;
+    this.block = block;
   }
 
   public Ident getIdentifier() {
@@ -43,8 +40,8 @@ public class ClassConstructorDeclaration implements AstTraverser {
     return formalParameterList;
   }
 
-  public List<StmtBlockItem> getBlockStatements() {
-    return blockStatements;
+  public StmtBlock getBlock() {
+    return block;
   }
 
 }

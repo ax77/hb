@@ -1,6 +1,8 @@
 package njast.ast_nodes.stmt;
 
-import njast.ast_nodes.clazz.vars.VarDeclarationLocal;
+import java.util.List;
+
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
@@ -17,10 +19,10 @@ public class StmtBlockItem implements AstTraverser {
   //
   //  <statement> ::= <statement without trailing substatement> | <labeled statement> | <if then statement> | <if then else statement> | <while statement> | <for statement>
 
-  private VarDeclarationLocal localVars;
+  private List<VarDeclarator> localVars;
   private StmtStatement statement;
 
-  public StmtBlockItem(VarDeclarationLocal localVars) {
+  public StmtBlockItem(List<VarDeclarator> localVars) {
     this.localVars = localVars;
   }
 
@@ -28,11 +30,11 @@ public class StmtBlockItem implements AstTraverser {
     this.statement = statement;
   }
 
-  public VarDeclarationLocal getLocalVars() {
+  public List<VarDeclarator> getLocalVars() {
     return localVars;
   }
 
-  public void setLocalVars(VarDeclarationLocal localVars) {
+  public void setLocalVars(List<VarDeclarator> localVars) {
     this.localVars = localVars;
   }
 
