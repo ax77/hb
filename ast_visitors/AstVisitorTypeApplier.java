@@ -51,14 +51,14 @@ public class AstVisitorTypeApplier {
   // SYMTAB 
   //
   private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
-    System.out.println("param_name: " + paramName.getName());
   }
 
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
+    System.out.println("local: " + var.toString());
   }
 
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
-    System.out.println(m.getIdentifier().getName());
+    System.out.println(m.toString());
   }
 
   private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
@@ -95,9 +95,7 @@ public class AstVisitorTypeApplier {
 
       //body
       final StmtBlock body = method.getBody();
-      final List<StmtBlockItem> blockStatements = body.getBlockStatements();
-
-      for (StmtBlockItem block : blockStatements) {
+      for (StmtBlockItem block : body.getBlockStatements()) {
 
         // declarations
         final List<VarDeclarator> localVars = block.getLocalVars();

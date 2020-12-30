@@ -1,9 +1,12 @@
 package njast.ast_nodes.clazz.methods;
 
+import java.util.List;
+
 import jscan.symtab.Ident;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.parse.NullChecker;
 import njast.types.Type;
 
 public class ClassMethodDeclaration implements AstTraverser {
@@ -15,14 +18,16 @@ public class ClassMethodDeclaration implements AstTraverser {
   // header
   private Type resultType;
   private final Ident identifier;
-  private FormalParameterList formalParameterList;
-  private boolean isVoid;
+  private final FormalParameterList formalParameterList;
+  private final boolean isVoid;
 
   // body
   private StmtBlock body;
 
   public ClassMethodDeclaration(Type resultType, Ident identifier, FormalParameterList formalParameterList,
       StmtBlock body) {
+
+    NullChecker.check(identifier, formalParameterList, body);
 
     this.resultType = resultType;
     this.identifier = identifier;
@@ -34,10 +39,6 @@ public class ClassMethodDeclaration implements AstTraverser {
 
   public FormalParameterList getFormalParameterList() {
     return formalParameterList;
-  }
-
-  public void setFormalParameterList(FormalParameterList formalParameterList) {
-    this.formalParameterList = formalParameterList;
   }
 
   public Type getResultType() {
@@ -52,10 +53,6 @@ public class ClassMethodDeclaration implements AstTraverser {
     return isVoid;
   }
 
-  public void setVoid(boolean isVoid) {
-    this.isVoid = isVoid;
-  }
-
   public StmtBlock getBody() {
     return body;
   }
@@ -68,11 +65,40 @@ public class ClassMethodDeclaration implements AstTraverser {
     return identifier;
   }
 
-  public boolean isCorrectToOverloadWith(ClassMethodDeclaration another) {
-    if (formalParameterList.isEqualTo(another.getFormalParameterList())) {
-      return false;
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    if (isVoid) {
+      sb.append("VOID");
+    } else {
+      sb.append(resultType.toString());
     }
-    return true;
+    sb.append(" ");
+    sb.append(identifier.getName());
+    sb.append(fp());
+
+    return sb.toString();
+  }
+
+  private String fp() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("(");
+
+    final List<FormalParameter> parameters = formalParameterList.getParameters();
+    for (int i = 0; i < parameters.size(); i++) {
+      FormalParameter param = parameters.get(i);
+
+      sb.append(param.getName().getName());
+      sb.append(": ");
+      sb.append(param.getType().toString());
+
+      if (i + 1 < parameters.size()) {
+        sb.append(", ");
+      }
+    }
+
+    sb.append(")");
+    return sb.toString();
   }
 
 }

@@ -42,7 +42,7 @@ public class ParseMethodDeclaration {
 
     StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    return new ClassMethodDeclaration(null, ident, formalParameterList, block);
+    return new ClassMethodDeclaration(type, ident, formalParameterList, block);
   }
 
 }

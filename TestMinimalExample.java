@@ -27,17 +27,17 @@ public class TestMinimalExample {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class C { public int xxx=1, yyy, zzz=3;  \n");
-    sb.append(" /*002*/    void f_error_1() {                     \n");
+    sb.append(" /*002*/    void f_error_0(int a) {                     \n");
     sb.append(" /*003*/      a = 64;                              \n");
     sb.append(" /*004*/      int a = 32;                          \n");
     sb.append(" /*005*/    }                                      \n");
-    sb.append(" /*006*/    void f_error_2() {                     \n");
+    sb.append(" /*006*/    void f_error_0(int a, int b) {                     \n");
     sb.append(" /*007*/      int a = 32;                          \n");
     sb.append(" /*008*/      {                                    \n");
     sb.append(" /*009*/        int a = 64;                        \n");
     sb.append(" /*010*/      }                                    \n");
     sb.append(" /*011*/    }                                      \n");
-    sb.append(" /*012*/    void f_error_3(int a) {                \n");
+    sb.append(" /*012*/    void f_error_0() {                \n");
     sb.append(" /*013*/      int a = 32;                          \n");
     sb.append(" /*014*/    }                                      \n");
     sb.append(" /*015*/    void f_error_4() {                     \n");

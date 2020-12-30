@@ -48,8 +48,22 @@ public class VarDeclarator implements AstTraverser {
 
   @Override
   public String toString() {
-    return "VarDeclarator [type=" + type + ", identifier=" + identifier.getName() + ", initializer="
-        + ((initializer != null) ? initializer.getInitializer().toString() : "no_init") + "]";
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(identifier.getName());
+    sb.append(": ");
+    sb.append(type.toString());
+
+    if (initializer != null) {
+      sb.append(" = ");
+      sb.append(initializer.getInitializer().toString());
+    } else {
+      sb.append(" = <uninitialized>");
+    }
+
+    sb.append(";");
+    return sb.toString();
   }
 
 }

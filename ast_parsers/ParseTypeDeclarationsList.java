@@ -11,6 +11,7 @@ import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
@@ -97,6 +98,7 @@ public class ParseTypeDeclarationsList {
     boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(clazz);
     if (isConstructorDeclaration) {
       ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
+      checkRedefinition(clazz, constructorDeclaration);
       clazz.put(constructorDeclaration);
 
       return;
@@ -123,26 +125,33 @@ public class ParseTypeDeclarationsList {
 
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassConstructorDeclaration e) {
-    // TODO Auto-generated method stub
-
+  private void checkRedefinition(ClassDeclaration clazz, ClassConstructorDeclaration another) {
+    for (ClassConstructorDeclaration constructor : clazz.getConstructors()) {
+      final FormalParameterList fp1 = constructor.getFormalParameterList();
+      final FormalParameterList fp2 = another.getFormalParameterList();
+      if (fp1.isEqualTo(fp2)) {
+        parser.perror("duplicate constructor with the same formal parameters");
+      }
+    }
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassMethodDeclaration e) {
+  private void checkRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration method : clazz.getMethods()) {
-      if (method.getIdentifier().equals(e.getIdentifier())) {
-        if (!method.isCorrectToOverloadWith(e)) {
+      if (method.getIdentifier().equals(another.getIdentifier())) {
+        final FormalParameterList fp1 = method.getFormalParameterList();
+        final FormalParameterList fp2 = another.getFormalParameterList();
+        if (fp1.isEqualTo(fp2)) {
           parser.perror("duplicate methods with the same formal parameters");
         }
       }
     }
-
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassFieldDeclaration e) {
+  private void checkRedefinition(ClassDeclaration clazz, ClassFieldDeclaration another) {
     for (ClassFieldDeclaration field : clazz.getFields()) {
-      Ident fieldName = field.getField().getIdentifier();
-      if (e.getField().getIdentifier().equals(fieldName)) {
+      final Ident name1 = field.getField().getIdentifier();
+      final Ident name2 = another.getField().getIdentifier();
+      if (name1.equals(name2)) {
         parser.perror("duplicate field");
       }
     }
