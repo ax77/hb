@@ -68,4 +68,11 @@ public class ClassMethodDeclaration implements AstTraverser {
     return identifier;
   }
 
+  public boolean isCorrectToOverloadWith(ClassMethodDeclaration another) {
+    if (formalParameterList.isEqualTo(another.getFormalParameterList())) {
+      return false;
+    }
+    return true;
+  }
+
 }

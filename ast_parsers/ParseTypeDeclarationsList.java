@@ -78,7 +78,7 @@ public class ParseTypeDeclarationsList {
     return clazz;
   }
 
-  private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration classBody) {
+  private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
     // 0) static { <block> }
     //
@@ -87,17 +87,17 @@ public class ParseTypeDeclarationsList {
       Token kw = parser.checkedMove(IdentMap.static_ident);
 
       StmtBlock block = new ParseStatement(parser).parseBlock();
-      classBody.put(block);
+      clazz.put(block);
 
       return;
     }
 
     // 1) constructor
     // 
-    boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(classBody);
+    boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(clazz);
     if (isConstructorDeclaration) {
       ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
-      classBody.put(constructorDeclaration);
+      clazz.put(constructorDeclaration);
 
       return;
     }
@@ -108,17 +108,44 @@ public class ParseTypeDeclarationsList {
 
     if (isFunction) {
       ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();
-      classBody.put(methodDeclaration);
+      checkRedefinition(clazz, methodDeclaration);
+      clazz.put(methodDeclaration);
     }
 
     else {
 
       List<ClassFieldDeclaration> fieldDeclaration = new ParseFieldDeclaration(parser).parse();
       for (ClassFieldDeclaration field : fieldDeclaration) {
-        classBody.put(field);
+        checkRedefinition(clazz, field);
+        clazz.put(field);
       }
     }
 
+  }
+
+  private void checkRedefinition(ClassDeclaration clazz, ClassConstructorDeclaration e) {
+    // TODO Auto-generated method stub
+
+  }
+
+  private void checkRedefinition(ClassDeclaration clazz, ClassMethodDeclaration e) {
+    for (ClassMethodDeclaration method : clazz.getMethods()) {
+      if (method.getIdentifier().equals(e.getIdentifier())) {
+        if (!method.isCorrectToOverloadWith(e)) {
+          parser.perror("duplicate methods with the same formal parameters");
+        }
+      }
+    }
+
+  }
+
+  private void checkRedefinition(ClassDeclaration clazz, ClassFieldDeclaration e) {
+    for (ClassFieldDeclaration field : clazz.getFields()) {
+      Ident fieldName = field.getField().getIdentifier();
+      if (e.getField().getIdentifier().equals(fieldName)) {
+        parser.perror("duplicate field");
+      }
+    }
   }
 
 }

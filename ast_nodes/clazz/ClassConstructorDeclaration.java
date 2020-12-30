@@ -44,4 +44,11 @@ public class ClassConstructorDeclaration implements AstTraverser {
     return block;
   }
 
+  public boolean isCompatibleRedefinition(ClassConstructorDeclaration another) {
+    if (formalParameterList.isEqualTo(another.getFormalParameterList())) {
+      return false;
+    }
+    return true;
+  }
+
 }
