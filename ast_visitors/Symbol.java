@@ -9,6 +9,7 @@ public class Symbol {
   private final boolean isClassType;
 
   public Symbol(ClassDeclaration classType) {
+    System.out.println("class symbol created");
     this.isClassType = true;
     this.classType = classType;
   }

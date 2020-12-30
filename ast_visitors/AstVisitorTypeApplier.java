@@ -1,8 +1,6 @@
 package njast.ast_visitors;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jscan.symtab.Ident;
 import njast.ast_kinds.ExpressionBase;
@@ -174,9 +172,9 @@ public class AstVisitorTypeApplier {
       return var;
     }
 
-    Symbol classtype = typeNames.getsym(name);
-    if (classtype != null) {
-      return classtype;
+    var = typeNames.getsym(name);
+    if (var != null) {
+      return var;
     }
 
     else {
@@ -347,6 +345,11 @@ public class AstVisitorTypeApplier {
   }
 
   private void applyExpr(ExprExpression e) {
+
+    if (e == null) {
+      return;
+    }
+
     ExpressionBase base = e.getBase();
 
     if (base == ExpressionBase.EBINARY) {
@@ -372,6 +375,11 @@ public class AstVisitorTypeApplier {
       applyExpr(fieldAccess.getObject());
 
       //TODO:here
+      System.out.println();
+    }
+
+    else if (base == ExpressionBase.ETHIS) {
+      // this_expression is a marker, we'll expand it in field-access or method-call
     }
 
     else {
