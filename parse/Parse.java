@@ -5,7 +5,9 @@ import static jscan.tokenize.T.TOKEN_IDENT;
 import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jscan.Tokenlist;
 import jscan.symtab.Ident;
@@ -18,8 +20,6 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.ast_parsers.ParseTypeDeclarationsList;
 import njast.errors.EParseErrors;
 import njast.errors.EParseException;
-import njast.symtab.ScopeLevels;
-import njast.symtab.Symtab;
 
 public class Parse {
 
@@ -40,34 +40,14 @@ public class Parse {
 
   // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
   // class-type and simple types like int/char/etc.
-  private Symtab<Ident, ClassDeclaration> referenceTypes;
-
-  //  Types
-  //
-  //  <type> ::= <primitive type> | <reference type>
-  //
-  //  <primitive type> ::=  byte | short | int | long | char | boolean
-  //
-  //  <class or interface type> ::= <class type> | <interface type>
-  //
-  //  <class type> ::= <type name>
-  //
-  //  <interface type> ::= <type name>
-
-  public void pushscope(ScopeLevels level, String name) {
-    referenceTypes.pushscope(level, name);
-  }
-
-  public void popscope() {
-    referenceTypes.popscope();
-  }
+  private Map<Ident, ClassDeclaration> referenceTypes;
 
   public void defineClassName(ClassDeclaration cd) {
-    this.referenceTypes.addsym(cd.getIdentifier(), cd);
+    this.referenceTypes.put(cd.getIdentifier(), cd);
   }
 
   public boolean isClassName(Ident ident) {
-    final ClassDeclaration sym = referenceTypes.getsym(ident);
+    final ClassDeclaration sym = referenceTypes.get(ident);
     return sym != null;
   }
 
@@ -75,7 +55,7 @@ public class Parse {
     if (!isClassName(ident)) {
       perror("class not found: " + ident.getName());
     }
-    return referenceTypes.getsym(ident);
+    return referenceTypes.get(ident);
   }
 
   public boolean isClassName() {
@@ -115,7 +95,7 @@ public class Parse {
   }
 
   private void initScopes() {
-    this.referenceTypes = new Symtab<Ident, ClassDeclaration>();
+    this.referenceTypes = new HashMap<Ident, ClassDeclaration>();
   }
 
   public String getLastLoc() {
@@ -312,7 +292,6 @@ public class Parse {
 
   public TopLevelCompilationUnit parse() {
     TopLevelCompilationUnit tu = new TopLevelCompilationUnit();
-    pushscope(ScopeLevels.FILE_SCOPE, "unit");
 
     // top-level
     moveStraySemicolon();
@@ -326,7 +305,6 @@ public class Parse {
       tu.put(ed);
     }
 
-    popscope();
     return tu;
   }
 

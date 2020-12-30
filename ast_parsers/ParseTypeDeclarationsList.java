@@ -48,15 +48,14 @@ public class ParseTypeDeclarationsList {
     Ident ident = parser.getIdent();
     Token lbrace = parser.lbrace();
 
-    ClassDeclaration clazz = new ClassDeclaration(ident);
-
     // we'll register this name for type-handling
     // we can't register the whole class, because our compiler is not a one-pass one ;)
     // we'll resolve all methods, fields later, right now we need to know that this simple
     // identifier is a class name, and nothing more...
     // maybe I'm wrong here, and there is more clean and nice way, I'll think about it later.
     //
-    parser.defineClassName(clazz);
+
+    ClassDeclaration clazz = parser.getClassType(ident);
 
     // class C { }
     // ..........^

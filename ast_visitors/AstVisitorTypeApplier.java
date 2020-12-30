@@ -375,7 +375,6 @@ public class AstVisitorTypeApplier {
       applyExpr(fieldAccess.getObject());
 
       //TODO:here
-      System.out.println();
     }
 
     else if (base == ExpressionBase.ETHIS) {

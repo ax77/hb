@@ -28,7 +28,7 @@ public class TestMinimalExample {
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class Some {                                      \n");
     sb.append(" /*002*/    int fieldInSomeClass = 1;                       \n");
-    sb.append(" /*003*/    //Idn idn;                                        \n");
+    sb.append(" /*003*/    Idn idn;                                        \n");
     sb.append(" /*004*/    Some next;                                      \n");
     sb.append(" /*005*/    int funcInSomeClass() {                         \n");
     sb.append(" /*006*/      return fieldInSomeClass;                      \n");
@@ -62,6 +62,8 @@ public class TestMinimalExample {
 
     AstVisitorTypeApplier applier = new AstVisitorTypeApplier();
     applier.visit(unit);
+
+    System.out.println();
 
   }
 
