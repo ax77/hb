@@ -23,12 +23,14 @@ public class VarDeclarator implements AstTraverser, ILocation {
 
   private Modifiers modifiers; // later
 
+  private final VarBase base;
   private final SourceLocation location;
   private final Type type;
   private final Ident identifier; // njast:mark - symbol instead ident?
   private VarInitializer initializer;
 
-  public VarDeclarator(SourceLocation location, Type type, Ident identifier) {
+  public VarDeclarator(VarBase base, SourceLocation location, Type type, Ident identifier) {
+    this.base = base;
     this.location = location;
     this.type = type;
     this.identifier = identifier;
@@ -55,6 +57,8 @@ public class VarDeclarator implements AstTraverser, ILocation {
 
     StringBuilder sb = new StringBuilder();
 
+    sb.append(base.toString());
+    sb.append(": ");
     sb.append(identifier.getName());
     sb.append(": ");
     sb.append(type.toString());
@@ -93,6 +97,18 @@ public class VarDeclarator implements AstTraverser, ILocation {
   @Override
   public String getLocationFile() {
     return location.getFilename();
+  }
+
+  public Modifiers getModifiers() {
+    return modifiers;
+  }
+
+  public void setModifiers(Modifiers modifiers) {
+    this.modifiers = modifiers;
+  }
+
+  public VarBase getBase() {
+    return base;
   }
 
 }

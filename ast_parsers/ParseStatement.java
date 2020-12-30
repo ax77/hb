@@ -10,6 +10,7 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -63,7 +64,7 @@ public class ParseStatement {
   private StmtBlockItem parseOneBlock() {
 
     if (parser.isPrimitiveOrReferenceTypeBegin()) {
-      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse();
+      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
       return new StmtBlockItem(vars);
     }
 
@@ -115,7 +116,7 @@ public class ParseStatement {
       if (parser.tp() != T_SEMI_COLON) {
 
         if (parser.isPrimitiveOrReferenceTypeBegin()) {
-          decl = new ParseVarDeclaratorsList(parser).parse();
+          decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
         }
 
         else {

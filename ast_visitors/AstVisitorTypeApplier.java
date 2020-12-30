@@ -3,11 +3,13 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
+import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
@@ -105,7 +107,7 @@ public class AstVisitorTypeApplier {
   // SYMTAB 
   //
   private void defineFunctionParameter(ClassMethodDeclaration method, Type paramType, Ident paramName) {
-    VarDeclarator var = new VarDeclarator(method.getLocation(), paramType, paramName);
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, method.getLocation(), paramType, paramName);
     variablesMethod.addsym(paramName, var);
   }
 
@@ -139,7 +141,6 @@ public class AstVisitorTypeApplier {
   }
 
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
-    // System.out.println(m.toString());
   }
 
   private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
@@ -157,6 +158,14 @@ public class AstVisitorTypeApplier {
     VarDeclarator var = variablesMethod.getsym(name);
     if (var == null) {
       var = variablesClass.getsym(name);
+    }
+    return var;
+  }
+
+  private VarDeclarator findVarBlockMethod(Ident name) {
+    VarDeclarator var = variablesBlock.getsym(name);
+    if (var == null) {
+      var = variablesMethod.getsym(name);
     }
     return var;
   }
@@ -190,8 +199,6 @@ public class AstVisitorTypeApplier {
       final List<StmtBlockItem> blocks = body.getBlockStatements();
 
       for (StmtBlockItem block : blocks) {
-        String name = ((block.getLocalVars() == null) ? "stmt" : "decl");
-        // openBlockScope(name);
 
         // declarations
         final List<VarDeclarator> localVars = block.getLocalVars();
@@ -205,10 +212,9 @@ public class AstVisitorTypeApplier {
         // statements
         final StmtStatement statement = block.getStatement();
         if (statement != null) {
-          // block variables here ... 
+          applyStatement(statement);
         }
 
-        // closeBlockScope();
       }
 
       closeMethodScope();
@@ -220,6 +226,23 @@ public class AstVisitorTypeApplier {
     }
 
     closeClassScope();
+  }
+
+  private void applyStatement(final StmtStatement statement) {
+
+    StatementBase base = statement.getBase();
+    boolean hasItsOwnScope = (base == StatementBase.SBLOCK) || (base == StatementBase.SFOR);
+
+    if (hasItsOwnScope) {
+      openBlockScope(base.toString());
+    }
+
+    // process-statement
+
+    if (hasItsOwnScope) {
+      closeBlockScope();
+    }
+
   }
 
   public void visit(ExprBinary o) {

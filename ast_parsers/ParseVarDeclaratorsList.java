@@ -7,6 +7,7 @@ import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprExpression;
@@ -28,26 +29,26 @@ public class ParseVarDeclaratorsList {
     this.parser = parser;
   }
 
-  public List<VarDeclarator> parse() {
+  public List<VarDeclarator> parse(VarBase base) {
 
     Type type = new ParseType(parser).parse();
     List<VarDeclarator> variableDeclarators = new ArrayList<VarDeclarator>();
 
-    getOneVarAndOptInitializer(type, variableDeclarators);
+    getOneVarAndOptInitializer(base, type, variableDeclarators);
     while (parser.is(T.T_COMMA)) {
       parser.moveget();
-      getOneVarAndOptInitializer(type, variableDeclarators);
+      getOneVarAndOptInitializer(base, type, variableDeclarators);
     }
 
     parser.semicolon();
     return variableDeclarators;
   }
 
-  private void getOneVarAndOptInitializer(Type type, List<VarDeclarator> variableDeclarators) {
+  private void getOneVarAndOptInitializer(VarBase base, Type type, List<VarDeclarator> variableDeclarators) {
 
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
     Ident id = tok.getIdent();
-    VarDeclarator var = new VarDeclarator(new SourceLocation(tok), type, id);
+    VarDeclarator var = new VarDeclarator(base, new SourceLocation(tok), type, id);
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();
