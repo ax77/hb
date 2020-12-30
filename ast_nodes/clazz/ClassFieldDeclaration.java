@@ -1,6 +1,9 @@
 package njast.ast_nodes.clazz;
 
+import jscan.symtab.Ident;
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarDeclaratorsList;
+import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
@@ -25,28 +28,32 @@ public class ClassFieldDeclaration implements AstTraverser {
   //
   //  <variable initializer> ::= <expression> | <array initializer>
 
-  private Type type;
-  private VarDeclaratorsList variables;
+  private final Type type;
+  private final Ident identifier;
+  private final VarInitializer initializer;
 
-  public ClassFieldDeclaration(Type type, VarDeclaratorsList variables) {
+  public ClassFieldDeclaration(Type type, Ident identifier, VarInitializer initializer) {
     this.type = type;
-    this.variables = variables;
+    this.identifier = identifier;
+    this.initializer = initializer;
   }
 
   public Type getType() {
     return type;
   }
 
-  public void setType(Type type) {
-    this.type = type;
+  public Ident getIdentifier() {
+    return identifier;
   }
 
-  public VarDeclaratorsList getVariables() {
-    return variables;
+  public VarInitializer getInitializer() {
+    return initializer;
   }
 
-  public void setVariables(VarDeclaratorsList variables) {
-    this.variables = variables;
+  @Override
+  public String toString() {
+    return "Field [type=" + type + ", identifier=" + identifier.getName() + ", initializer="
+        + ((initializer != null) ? initializer.getInitializer().toString() : "no_init") + "]";
   }
 
 }

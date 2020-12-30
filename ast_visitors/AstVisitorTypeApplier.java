@@ -59,9 +59,6 @@ public class AstVisitorTypeApplier {
   private void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var, Type type) {
   }
 
-  private void defineClassField(ClassFieldDeclaration o, Type type, VarDeclarator var) {
-  }
-
   private void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
     System.out.println(m.getIdentifier().getName());
   }
@@ -72,28 +69,24 @@ public class AstVisitorTypeApplier {
   private void initVarZero(VarDeclarator var, Type type) {
   }
 
+  private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
+    System.out.println(field.toString());
+  }
+
   //
   //////////////////////////////////////////////////////////////////////
-
-  public void visit(ClassConstructorDeclaration o) {
-  }
 
   public void visit(ClassDeclaration object) {
 
     System.out.println(object.getIdentifier().getName());
 
     //fields
-    for (ClassFieldDeclaration field : object.getFieldDeclaration()) {
-      Type type = field.getType();
-      VarDeclaratorsList vars = field.getVariables();
-      for (VarDeclarator var : vars.getVariables()) {
-        initVarZero(var, type);
-        defineClassField(field, type, var); // check redefinition
-      }
+    for (ClassFieldDeclaration field : object.getFields()) {
+      defineClassField(object, field); // check redefinition
     }
 
     //methods
-    for (ClassMethodDeclaration method : object.getMethodDeclaration()) {
+    for (ClassMethodDeclaration method : object.getMethods()) {
       defineMethod(object, method); // check overloading/redefinition/etc
 
       for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
@@ -128,7 +121,7 @@ public class AstVisitorTypeApplier {
     }
 
     //constructors (the last, it works with methods and fields)
-    for (ClassConstructorDeclaration constructor : object.getConstructorDeclaration()) {
+    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
       defineConstructor(object, constructor); // check overloading/redefinition/etc
     }
   }

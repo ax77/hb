@@ -27,21 +27,33 @@ public class ParseVarDeclaratorsList {
 
     VarDeclaratorsList variableDeclarators = new VarDeclaratorsList();
 
-    // while(is comma) { rest }
+    getOneVarAndOptInitializer(variableDeclarators);
+    while (parser.is(T.T_COMMA)) {
+      parser.moveget();
+      getOneVarAndOptInitializer(variableDeclarators);
+    }
+
+    parser.semicolon();
+    return variableDeclarators;
+  }
+
+  private void getOneVarAndOptInitializer(VarDeclaratorsList variableDeclarators) {
 
     Ident id = parser.getIdent();
     VarDeclarator var = new VarDeclarator(id);
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();
-      ExprExpression init = new ParseExpression(parser).e_expression();
-      var.setInitializer(new VarInitializer(init));
+      var.setInitializer(parseInitializer());
     }
 
     variableDeclarators.put(var);
 
-    parser.semicolon();
-    return variableDeclarators;
+  }
+
+  private VarInitializer parseInitializer() {
+    ExprExpression init = new ParseExpression(parser).e_assign();
+    return new VarInitializer(init);
   }
 
 }

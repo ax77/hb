@@ -12,6 +12,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.ast_parsers.ParseTypeDeclarationsList;
@@ -39,7 +40,7 @@ public class Parse {
 
   // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
   // class-type and simple types like int/char/etc.
-  private Symtab<Ident, Integer> referenceTypes;
+  private Symtab<Ident, ClassDeclaration> referenceTypes;
 
   //  Types
   //
@@ -61,13 +62,13 @@ public class Parse {
     referenceTypes.popscope();
   }
 
-  public void defineClassName(Ident name) {
-    this.referenceTypes.addsym(name, 128);
+  public void defineClassName(ClassDeclaration cd) {
+    this.referenceTypes.addsym(cd.getIdentifier(), cd);
   }
 
   public boolean isClassName(Ident ident) {
-    final Integer sym = referenceTypes.getsym(ident);
-    return sym != null && sym == 128;
+    final ClassDeclaration sym = referenceTypes.getsym(ident);
+    return sym != null;
   }
 
   public boolean isClassName() {
@@ -107,7 +108,7 @@ public class Parse {
   }
 
   private void initScopes() {
-    this.referenceTypes = new Symtab<Ident, Integer>();
+    this.referenceTypes = new Symtab<Ident, ClassDeclaration>();
   }
 
   public String getLastLoc() {

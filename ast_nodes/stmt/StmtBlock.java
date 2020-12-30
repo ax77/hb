@@ -4,6 +4,7 @@ import java.util.List;
 
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.parse.NullChecker;
 
 public class StmtBlock implements AstTraverser {
   @Override
@@ -16,6 +17,8 @@ public class StmtBlock implements AstTraverser {
   private final List<StmtBlockItem> blockStatements;
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
+    NullChecker.check(blockStatements);
+
     this.blockStatements = blockStatements;
   }
 

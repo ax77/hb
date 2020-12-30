@@ -43,7 +43,7 @@ public class TestMinimalExample {
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
 
-    for (StmtBlockItem bs : unit.getTypeDeclarations().get(3).getClassDeclaration().getMethodDeclaration().get(0)
+    for (StmtBlockItem bs : unit.getTypeDeclarations().get(3).getClassDeclaration().getMethods().get(0)
         .getBody().getBlockStatements()) {
       if (bs.getStatement() != null) {
         final ExprExpression expr = bs.getStatement().getSreturn().getExpr();
@@ -72,7 +72,7 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class C {                                \n");
+    sb.append(" /*001*/  class C { public int xxx=1, yyy, zzz=3;  \n");
     sb.append(" /*002*/    void f_error_1() {                     \n");
     sb.append(" /*003*/      a = 64;                              \n");
     sb.append(" /*004*/      int a = 32;                          \n");

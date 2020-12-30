@@ -81,4 +81,12 @@ public class Type {
     return true;
   }
 
+  @Override
+  public String toString() {
+    if (isPrimitive) {
+      return primitiveType.toString();
+    }
+    return referenceType.getTypeName().getName();
+  }
+
 }

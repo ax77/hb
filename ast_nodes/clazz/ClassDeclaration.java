@@ -10,6 +10,7 @@ import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
 
 public class ClassDeclaration implements AstTraverser {
+
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);
@@ -17,14 +18,8 @@ public class ClassDeclaration implements AstTraverser {
   //<class body declaration> ::= <class member declaration> | <static initializer> | <constructor declaration>
 
   private final Ident identifier;
-
-  // constructors
   private List<ClassConstructorDeclaration> constructors;
-
-  // static { }
   private List<StmtBlock> staticInitializers;
-
-  // members
   private List<ClassFieldDeclaration> fields;
   private List<ClassMethodDeclaration> methods;
 
@@ -60,15 +55,15 @@ public class ClassDeclaration implements AstTraverser {
     this.staticInitializers.add(e);
   }
 
-  public List<ClassConstructorDeclaration> getConstructorDeclaration() {
+  public List<ClassConstructorDeclaration> getConstructors() {
     return constructors;
   }
 
-  public List<ClassFieldDeclaration> getFieldDeclaration() {
+  public List<ClassFieldDeclaration> getFields() {
     return fields;
   }
 
-  public List<ClassMethodDeclaration> getMethodDeclaration() {
+  public List<ClassMethodDeclaration> getMethods() {
     return methods;
   }
 
