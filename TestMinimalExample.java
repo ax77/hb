@@ -31,7 +31,7 @@ public class TestMinimalExample {
     sb.append(" /*003*/    Idn idn;                                        \n");
     sb.append(" /*004*/    Some next;                                      \n");
     sb.append(" /*005*/    int funcInSomeClass() {                         \n");
-    sb.append(" /*006*/      return fieldInSomeClass;                      \n");
+    sb.append(" /*006*/      return fieldInSomeClass + this.fieldInSomeClass;  \n");
     sb.append(" /*007*/    }                                               \n");
     sb.append(" /*008*/  }                                                 \n");
     sb.append(" /*009*/  class Idn {                                       \n");

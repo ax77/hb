@@ -17,6 +17,7 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
 import njast.ast_nodes.expr.ExprNumericConstant;
+import njast.ast_nodes.expr.ExprPrimaryIdent;
 import njast.ast_nodes.expr.ExprTernary;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -258,7 +259,7 @@ public class AstVisitorTypeApplier {
         // statements
         final StmtStatement statement = block.getStatement();
         if (statement != null) {
-          applyStatement(statement);
+          applyStatement(object, statement);
         }
 
       }
@@ -274,7 +275,7 @@ public class AstVisitorTypeApplier {
     closeClassScope();
   }
 
-  private void applyStatement(final StmtStatement statement) {
+  private void applyStatement(ClassDeclaration object, final StmtStatement statement) {
 
     StatementBase base = statement.getBase();
     boolean hasItsOwnScope = (base == StatementBase.SBLOCK) || (base == StatementBase.SFOR);
@@ -296,7 +297,7 @@ public class AstVisitorTypeApplier {
       }
       StmtStatement loop = forloop.getLoop();
       if (loop != null) {
-        applyStatement(loop);
+        applyStatement(object, loop);
       }
     }
 
@@ -319,7 +320,7 @@ public class AstVisitorTypeApplier {
         // statements
         final StmtStatement statementRest = block.getStatement();
         if (statementRest != null) {
-          applyStatement(statementRest);
+          applyStatement(object, statementRest);
         }
 
       }
@@ -330,7 +331,7 @@ public class AstVisitorTypeApplier {
       StmtReturn ret = statement.getSreturn();
       final ExprExpression retExpr = ret.getExpr();
       if (retExpr != null) {
-        applyExpr(retExpr);
+        applyExpr(object, retExpr);
       }
     }
 
@@ -344,7 +345,7 @@ public class AstVisitorTypeApplier {
 
   }
 
-  private void applyExpr(ExprExpression e) {
+  private void applyExpr(ClassDeclaration object, ExprExpression e) {
 
     if (e == null) {
       return;
@@ -354,27 +355,49 @@ public class AstVisitorTypeApplier {
 
     if (base == ExpressionBase.EBINARY) {
       ExprBinary node = e.getBinary();
-      applyExpr(node.getLhs());
-      applyExpr(node.getRhs());
+      applyExpr(object, node.getLhs());
+      applyExpr(object, node.getRhs());
     }
 
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
-      Symbol sym = findBindingFromIdentifierToTypename(e.getSymbol());
-      e.setBindings(sym);
+      ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
+
+      Symbol sym = findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
+      primaryIdent.setSym(sym);
     }
 
     else if (base == ExpressionBase.EMETHOD_INVOCATION) {
       ExprMethodInvocation methodInvocation = e.getMethodInvocation();
-      applyExpr(methodInvocation.getObject());
+      applyExpr(object, methodInvocation.getObject());
 
       //TODO:here
     }
 
     else if (base == ExpressionBase.EFIELD_ACCESS) {
       ExprFieldAccess fieldAccess = e.getFieldAccess();
-      applyExpr(fieldAccess.getObject());
+      applyExpr(object, fieldAccess.getObject());
 
-      //TODO:here
+      fieldAccess.setSymObject(new Symbol(object));
+
+      // this.FIELD_SELECTION
+      if (fieldAccess.getObject().is(ExpressionBase.ETHIS)) {
+        ClassFieldDeclaration field = object.getField(fieldAccess.getFieldName());
+        if (field == null) {
+          throw new EParseException("class has no field: " + fieldAccess.getFieldName().getName());
+        }
+        Symbol sym = new Symbol(field.getField());
+        fieldAccess.setSymField(sym);
+      }
+
+      else {
+        // class MyClass {
+        //     SomeClass field_in_current_class;
+        //     
+        //     int xxx = field_in_current_class.field_in_another_class;
+        //     ................................^
+        // }
+      }
+
     }
 
     else if (base == ExpressionBase.ETHIS) {

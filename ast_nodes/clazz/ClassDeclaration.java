@@ -67,6 +67,15 @@ public class ClassDeclaration implements AstTraverser {
     return methods;
   }
 
+  public ClassFieldDeclaration getField(Ident name) {
+    for (ClassFieldDeclaration field : fields) {
+      if (field.getField().getIdentifier().equals(name)) {
+        return field;
+      }
+    }
+    return null;
+  }
+
   @Override
   public String toString() {
     return identifier.getName() + ": class_type";

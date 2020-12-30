@@ -40,6 +40,7 @@ import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
+import njast.ast_nodes.expr.ExprPrimaryIdent;
 import njast.ast_nodes.expr.ExprTernary;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_utils.ExprUtil;
@@ -341,7 +342,7 @@ public class ParseExpression {
       }
 
       else if (parser.is(T_LEFT_PAREN)) {
-        Ident funcname = lhs.getSymbol();
+        Ident funcname = lhs.getLiteralIdentifier().getIdentifier();
         if (funcname == null) {
           parser.perror("expect function name");
         }
@@ -509,7 +510,7 @@ public class ParseExpression {
     // simple name
     if (IsIdent.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
-      return new ExprExpression(saved.getIdent());
+      return new ExprExpression(new ExprPrimaryIdent(saved.getIdent()));
     }
 
     // ( expression )

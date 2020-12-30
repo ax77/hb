@@ -3,26 +3,22 @@ package njast.ast_nodes.expr;
 import static njast.ast_kinds.ExpressionBase.ETERNARY;
 
 import jscan.cstrtox.C_strtox;
-import jscan.symtab.Ident;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
-import njast.ast_visitors.Symbol;
-import njast.types.Type;
 
 public class ExprExpression implements AstTraverser {
 
   // main
   private final ExpressionBase base; // what union contains
-  private Symbol bindings;
 
   // nodes
   private ExprUnary unary;
   private ExprBinary binary;
-  private ExprTernary eternary;
+  private ExprTernary ternary;
   private ExprNumericConstant literalNumber;
-  private Ident literalIdentifier;
+  private ExprPrimaryIdent literalIdentifier;
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
@@ -48,7 +44,7 @@ public class ExprExpression implements AstTraverser {
 
   public ExprExpression(ExprTernary eternary) {
     this.base = ETERNARY;
-    this.eternary = eternary;
+    this.ternary = eternary;
   }
 
   public ExprExpression(C_strtox e, Token token) {
@@ -76,7 +72,7 @@ public class ExprExpression implements AstTraverser {
     this.fieldAccess = fieldAccess;
   }
 
-  public ExprExpression(Ident symbol) {
+  public ExprExpression(ExprPrimaryIdent symbol) {
     this.base = ExpressionBase.EPRIMARY_IDENT;
     this.literalIdentifier = symbol;
   }
@@ -93,16 +89,16 @@ public class ExprExpression implements AstTraverser {
     return binary;
   }
 
-  public ExprTernary getEternary() {
-    return eternary;
-  }
-
-  public ExprNumericConstant getCnumber() {
-    return literalNumber;
-  }
-
-  public Ident getSymbol() {
+  public ExprPrimaryIdent getLiteralIdentifier() {
     return literalIdentifier;
+  }
+
+  public ExprTernary getTernary() {
+    return ternary;
+  }
+
+  public ExprNumericConstant getLiteralNumber() {
+    return literalNumber;
   }
 
   public ExprMethodInvocation getMethodInvocation() {
@@ -117,17 +113,13 @@ public class ExprExpression implements AstTraverser {
     return classInstanceCreation;
   }
 
+  public boolean is(ExpressionBase what) {
+    return base.equals(what);
+  }
+
   @Override
   public String toString() {
     return base.toString();
-  }
-
-  public Symbol getBindings() {
-    return bindings;
-  }
-
-  public void setBindings(Symbol bindings) {
-    this.bindings = bindings;
   }
 
   @Override
