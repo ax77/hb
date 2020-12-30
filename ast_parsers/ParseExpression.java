@@ -502,7 +502,7 @@ public class ParseExpression {
 
     if (parser.is(IdentMap.this_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(saved);
+      ExprExpression thisexpr = new ExprExpression(ExpressionBase.ETHIS);
       return thisexpr;
     }
 

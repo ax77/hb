@@ -1,5 +1,7 @@
 package njast.types;
 
+import jscan.symtab.Ident;
+
 public class Type {
 
   //  <type> ::= <primitive type> | <reference type>
@@ -25,6 +27,15 @@ public class Type {
   private PrimitiveType primitiveType;
   private ReferenceType referenceType;
   private boolean isPrimitive;
+
+  public final static Type BYTE_TYPE = new Type(PrimitiveType.TP_BYTE);
+  public final static Type SHORT_TYPE = new Type(PrimitiveType.TP_SHORT);
+  public final static Type CHAR_TYPE = new Type(PrimitiveType.TP_CHAR);
+  public final static Type INT_TYPE = new Type(PrimitiveType.TP_INT);
+  public final static Type LONG_TYPE = new Type(PrimitiveType.TP_LONG);
+  public final static Type FLOAT_TYPE = new Type(PrimitiveType.TP_FLOAT);
+  public final static Type DOUBLE_TYPE = new Type(PrimitiveType.TP_DOUBLE);
+  public final static Type BOOLEAN_TYPE = new Type(PrimitiveType.TP_BOOLEAN);
 
   public Type() {
   }
@@ -72,9 +83,9 @@ public class Type {
         return false;
       }
     } else {
-      final String thisStringName = referenceType.getTypeName().getName();
-      final String anotStringName = another.getReferenceType().getTypeName().getName();
-      if (!thisStringName.equals(anotStringName)) {
+      final Ident name1 = referenceType.getTypeName();
+      final Ident name2 = another.getReferenceType().getTypeName();
+      if (!name1.equals(name2)) {
         return false;
       }
     }

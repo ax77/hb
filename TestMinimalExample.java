@@ -27,7 +27,7 @@ public class TestMinimalExample {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class C { public int xxx=1, yyy, zzz=3;  \n");
-    sb.append(" /*002*/    void f_error_0(int a) {                     \n");
+    sb.append(" /*002*/    int f_error_0(int a) {                     \n");
     sb.append(" /*003*/      a = 64;                              \n");
     sb.append(" /*004*/      int a = 32;                          \n");
     sb.append(" /*005*/    }                                      \n");
@@ -37,7 +37,7 @@ public class TestMinimalExample {
     sb.append(" /*009*/        int a = 64;                        \n");
     sb.append(" /*010*/      }                                    \n");
     sb.append(" /*011*/    }                                      \n");
-    sb.append(" /*012*/    void f_error_0() {                \n");
+    sb.append(" /*012*/    char f_error_0() {                \n");
     sb.append(" /*013*/      int a = 32;                          \n");
     sb.append(" /*014*/    }                                      \n");
     sb.append(" /*015*/    void f_error_4() {                     \n");
@@ -45,7 +45,7 @@ public class TestMinimalExample {
     sb.append(" /*017*/      for (int i = 0; i < 8; i += 1) {     \n");
     sb.append(" /*018*/      }                                    \n");
     sb.append(" /*019*/    }                                      \n");
-    sb.append(" /*020*/    void f_error_5() {                     \n");
+    sb.append(" /*020*/    byte f_error_5() {                     \n");
     sb.append(" /*021*/      for (int i = 0; i < 8; i += 1) {     \n");
     sb.append(" /*022*/        int i = 32;                        \n");
     sb.append(" /*023*/      }                                    \n");

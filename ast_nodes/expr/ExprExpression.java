@@ -8,10 +8,15 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.types.Type;
 
 public class ExprExpression implements AstTraverser {
 
+  // main
   private final ExpressionBase base; // what union contains
+  private Type resultType; // which type holds expression after execution
+
+  // nodes
   private ExprUnary unary;
   private ExprBinary binary;
   private ExprTernary eternary;
@@ -20,11 +25,9 @@ public class ExprExpression implements AstTraverser {
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
-  private Token thisExpression; // actually we don't need the token here, for position maybe. 
 
-  public ExprExpression(Token thisExpression) {
-    this.base = ExpressionBase.ETHIS;
-    this.thisExpression = thisExpression;
+  public ExprExpression(ExpressionBase base) {
+    this.base = base;
   }
 
   public ExprExpression(ExprClassInstanceCreation classInstanceCreation) {
@@ -111,10 +114,6 @@ public class ExprExpression implements AstTraverser {
 
   public ExprClassInstanceCreation getClassInstanceCreation() {
     return classInstanceCreation;
-  }
-
-  public Token getThisExpression() {
-    return thisExpression;
   }
 
   @Override
