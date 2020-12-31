@@ -451,6 +451,8 @@ public class ParseExpression {
   }
 
   private ExprExpression methodInvocation(Ident funcname) {
+    // apply <this.> before function name, more convenient
+    // ExprExpression thisExpression = new ExprExpression(ExpressionBase.ETHIS);
     List<ExprExpression> arglist = parseArglist();
     return new ExprExpression(new ExprMethodInvocation(funcname, arglist));
   }

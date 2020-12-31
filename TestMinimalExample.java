@@ -43,14 +43,14 @@ public class TestMinimalExample {
     sb.append(" /*015*/    int y = 1;            \n");
     sb.append(" /*016*/    Some sc;              \n");
     sb.append(" /*017*/    int func() {          \n");
-    sb.append(" /*018*/      return zero()       \n");
+    sb.append(" /*018*/      return zero(1,2,3,4)       \n");
     sb.append(" /*019*/          + sc.fx()       \n");
     sb.append(" /*020*/          + y + this.y    \n");
     sb.append(" /*021*/          + sc.x          \n");
     sb.append(" /*022*/          + sc.th.z       \n");
     sb.append(" /*023*/          + sc.th.fz();   \n");
     sb.append(" /*024*/    }                     \n");
-    sb.append(" /*025*/    int zero() {          \n");
+    sb.append(" /*025*/    int zero(int fp1, int fp2, int fp3, int fp4) {          \n");
     sb.append(" /*026*/      return 0;           \n");
     sb.append(" /*027*/    }                     \n");
     sb.append(" /*028*/  }                       \n");

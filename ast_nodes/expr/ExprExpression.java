@@ -142,6 +142,9 @@ public class ExprExpression {
     if (base == ExpressionBase.EMETHOD_INVOCATION) {
       return methodInvocation.toString();
     }
+    if (base == ExpressionBase.EPRIMARY_NUMBER) {
+      return String.format("%d", literalNumber.getClong());
+    }
     return base.toString();
   }
 

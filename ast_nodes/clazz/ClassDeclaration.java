@@ -5,8 +5,11 @@ import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
+import njast.types.Type;
 
 public class ClassDeclaration {
 
@@ -69,11 +72,27 @@ public class ClassDeclaration {
     return null;
   }
 
-  // TODO: overloading, of course
-  public ClassMethodDeclaration getMethod(Ident name) {
+  private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<ExprExpression> arguments) {
+    List<FormalParameter> formalParameters = method.getFormalParameterList().getParameters();
+    if (formalParameters.size() != arguments.size()) {
+      return false;
+    }
+    for (int i = 0; i < formalParameters.size(); i++) {
+      Type tp1 = formalParameters.get(i).getType();
+      Type tp2 = arguments.get(i).getResultType();
+      if (!tp1.isEqualTo(tp2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public ClassMethodDeclaration getMethod(Ident name, List<ExprExpression> arguments) {
     for (ClassMethodDeclaration method : methods) {
       if (method.getIdentifier().equals(name)) {
-        return method;
+        if (isCompatibleByArguments(method, arguments)) {
+          return method;
+        }
       }
     }
     return null;

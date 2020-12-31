@@ -1,5 +1,7 @@
 package njast.ast_visitors;
 
+import java.util.List;
+
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.clazz.ClassDeclaration;
@@ -123,6 +125,11 @@ public class ApplyExpr {
     ExprMethodInvocation methodInvocation = e.getMethodInvocation();
     applyExpr(object, methodInvocation.getObject());
 
+    final List<ExprExpression> arguments = methodInvocation.getArguments();
+    for (ExprExpression arg : arguments) {
+      applyExpr(object, arg);
+    }
+
     if (methodInvocation.isMethodInvocation()) {
       // method: a.fn(1,2,3)
 
@@ -132,7 +139,8 @@ public class ApplyExpr {
       }
 
       final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getReferenceType().getTypeName();
-      final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname());
+      final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
+          arguments);
 
       if (method == null) {
         throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
@@ -142,7 +150,7 @@ public class ApplyExpr {
 
     } else {
       // function: fn(1,2,3)
-      ClassMethodDeclaration func = object.getMethod(methodInvocation.getFuncname());
+      ClassMethodDeclaration func = object.getMethod(methodInvocation.getFuncname(), arguments);
       if (func == null) {
         throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
       }

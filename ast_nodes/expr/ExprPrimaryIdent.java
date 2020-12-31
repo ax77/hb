@@ -25,7 +25,7 @@ public class ExprPrimaryIdent {
 
   @Override
   public String toString() {
-    return identifier.toString();
+    return identifier.getName();
   }
 
 }
