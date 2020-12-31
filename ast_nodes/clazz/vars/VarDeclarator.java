@@ -8,19 +8,11 @@ import njast.types.Type;
 
 public class VarDeclarator implements ILocation {
 
-  // var-declarator-list:
-  // type:[int] var-declarators:[a, b=1, c, d=2];
-  //
-  // we simplify this in a parse stage:
-  // parse type, and apply this type to each variable (i.e. name)
-  // and we have a list of variables with its types as a result
-
-  private Modifiers modifiers; // later
-
+  private Modifiers modifiers;
   private final VarBase base;
   private final SourceLocation location;
   private final Type type;
-  private final Ident identifier; // njast:mark - symbol instead ident?
+  private final Ident identifier;
   private VarInitializer initializer;
 
   public VarDeclarator(VarBase base, SourceLocation location, Type type, Ident identifier) {

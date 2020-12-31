@@ -3,7 +3,6 @@ package njast.ast_visitors;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
@@ -84,13 +83,13 @@ public class ApplyExpr {
       }
 
       final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getTypeName();
-      final ClassFieldDeclaration field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
+      final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
 
       if (field == null) {
         throw new EParseException("class has no field: " + fieldAccess.getFieldName().getName());
       }
 
-      e.setResultType(field.getField().getType());
+      e.setResultType(field.getType());
 
     }
 

@@ -9,9 +9,9 @@ import njast.ast_checkers.IsConstructor;
 import njast.ast_checkers.IsFunc;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
@@ -115,8 +115,8 @@ public class ParseTypeDeclarationsList {
 
     else {
 
-      List<ClassFieldDeclaration> fieldDeclaration = new ParseFieldDeclaration(parser).parse(clazz);
-      for (ClassFieldDeclaration field : fieldDeclaration) {
+      List<VarDeclarator> fieldDeclaration = new ParseFieldDeclaration(parser).parse(clazz);
+      for (VarDeclarator field : fieldDeclaration) {
         checkRedefinition(clazz, field);
         clazz.put(field);
       }
@@ -146,10 +146,10 @@ public class ParseTypeDeclarationsList {
     }
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassFieldDeclaration another) {
-    for (ClassFieldDeclaration field : clazz.getFields()) {
-      final Ident name1 = field.getField().getIdentifier();
-      final Ident name2 = another.getField().getIdentifier();
+  private void checkRedefinition(ClassDeclaration clazz, VarDeclarator another) {
+    for (VarDeclarator field : clazz.getFields()) {
+      final Ident name1 = field.getIdentifier();
+      final Ident name2 = another.getIdentifier();
       if (name1.equals(name2)) {
         parser.perror("duplicate field");
       }

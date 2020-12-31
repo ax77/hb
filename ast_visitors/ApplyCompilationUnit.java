@@ -5,7 +5,6 @@ import java.util.List;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.ClassFieldDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarBase;
@@ -181,9 +180,8 @@ public class ApplyCompilationUnit {
   public void initVarZero(VarDeclarator var) {
   }
 
-  private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
-    final VarDeclarator fieldVar = field.getField();
-    variablesClass.addsym(fieldVar.getIdentifier(), varsym(fieldVar));
+  private void defineClassField(ClassDeclaration object, VarDeclarator field) {
+    variablesClass.addsym(field.getIdentifier(), varsym(field));
   }
 
   private String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
@@ -213,7 +211,7 @@ public class ApplyCompilationUnit {
     openClassScope(object.getIdentifier().getName());
 
     //fields
-    for (ClassFieldDeclaration field : object.getFields()) {
+    for (VarDeclarator field : object.getFields()) {
       defineClassField(object, field); // check redefinition
     }
 

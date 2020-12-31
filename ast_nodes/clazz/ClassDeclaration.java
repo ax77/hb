@@ -5,6 +5,7 @@ import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
 
 public class ClassDeclaration {
@@ -12,7 +13,7 @@ public class ClassDeclaration {
   private final Ident identifier;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
-  private List<ClassFieldDeclaration> fields;
+  private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
 
   public ClassDeclaration(Ident identifier) {
@@ -22,7 +23,7 @@ public class ClassDeclaration {
 
   private void initLists() {
     this.constructors = new ArrayList<ClassConstructorDeclaration>();
-    this.fields = new ArrayList<ClassFieldDeclaration>();
+    this.fields = new ArrayList<VarDeclarator>();
     this.methods = new ArrayList<ClassMethodDeclaration>();
     this.staticInitializers = new ArrayList<StmtBlock>();
   }
@@ -35,7 +36,7 @@ public class ClassDeclaration {
     this.constructors.add(e);
   }
 
-  public void put(ClassFieldDeclaration e) {
+  public void put(VarDeclarator e) {
     this.fields.add(e);
   }
 
@@ -51,7 +52,7 @@ public class ClassDeclaration {
     return constructors;
   }
 
-  public List<ClassFieldDeclaration> getFields() {
+  public List<VarDeclarator> getFields() {
     return fields;
   }
 
@@ -59,9 +60,9 @@ public class ClassDeclaration {
     return methods;
   }
 
-  public ClassFieldDeclaration getField(Ident name) {
-    for (ClassFieldDeclaration field : fields) {
-      if (field.getField().getIdentifier().equals(name)) {
+  public VarDeclarator getField(Ident name) {
+    for (VarDeclarator field : fields) {
+      if (field.getIdentifier().equals(name)) {
         return field;
       }
     }
