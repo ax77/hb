@@ -69,6 +69,16 @@ public class ClassDeclaration {
     return null;
   }
 
+  // TODO: overloading, of course
+  public ClassMethodDeclaration getMethod(Ident name) {
+    for (ClassMethodDeclaration method : methods) {
+      if (method.getIdentifier().equals(name)) {
+        return method;
+      }
+    }
+    return null;
+  }
+
   @Override
   public String toString() {
     return identifier.getName() + ": class";

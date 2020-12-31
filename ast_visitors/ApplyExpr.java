@@ -3,6 +3,7 @@ package njast.ast_visitors;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
@@ -69,6 +70,33 @@ public class ApplyExpr {
       applyExpr(object, methodInvocation.getObject());
 
       //TODO:here
+
+      if (methodInvocation.isMethodInvocation()) {
+        // method: a.fn(1,2,3)
+
+        final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
+        if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
+          throw new EParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
+        }
+
+        final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getReferenceType().getTypeName();
+        final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname());
+
+        if (method == null) {
+          throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
+        }
+
+        e.setResultType(method.getResultType());
+
+      } else {
+        // function: fn(1,2,3)
+        ClassMethodDeclaration func = object.getMethod(methodInvocation.getFuncname());
+        if (func == null) {
+          throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
+        }
+        e.setResultType(func.getResultType());
+      }
+
     }
 
     else if (base == ExpressionBase.EFIELD_ACCESS) {
@@ -95,6 +123,11 @@ public class ApplyExpr {
 
     else if (base == ExpressionBase.ETHIS) {
       e.setResultType(new Type(new ReferenceType(object)));
+    }
+
+    else if (base == ExpressionBase.EPRIMARY_NUMBER) {
+      // TODO:
+      e.setResultType(Type.INT_TYPE);
     }
 
     else {

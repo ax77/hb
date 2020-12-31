@@ -26,20 +26,34 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class Thing {                             \n");
-    sb.append(" /*002*/    int z;                                  \n");
-    sb.append(" /*003*/  }                                         \n");
-    sb.append(" /*004*/  class Some {                              \n");
-    sb.append(" /*005*/    Thing th;                               \n");
-    sb.append(" /*006*/    int x = 1;                              \n");
-    sb.append(" /*007*/  }                                         \n");
-    sb.append(" /*008*/  class Idn {                               \n");
-    sb.append(" /*009*/    int y = 1;                              \n");
-    sb.append(" /*010*/    Some sc;                                \n");
-    sb.append(" /*011*/    int func() {                            \n");
-    sb.append(" /*012*/      return y + this.y + sc.x + sc.th.z;   \n");
-    sb.append(" /*013*/    }                                       \n");
-    sb.append(" /*014*/  }                                         \n");
+    sb.append(" /*001*/  class Thing {           \n");
+    sb.append(" /*002*/    int z;                \n");
+    sb.append(" /*003*/    int fz() {            \n");
+    sb.append(" /*004*/      return z;           \n");
+    sb.append(" /*005*/    }                     \n");
+    sb.append(" /*006*/  }                       \n");
+    sb.append(" /*007*/  class Some {            \n");
+    sb.append(" /*008*/    Thing th;             \n");
+    sb.append(" /*009*/    int x = 1;            \n");
+    sb.append(" /*010*/    int fx() {            \n");
+    sb.append(" /*011*/      return x;           \n");
+    sb.append(" /*012*/    }                     \n");
+    sb.append(" /*013*/  }                       \n");
+    sb.append(" /*014*/  class Idn {             \n");
+    sb.append(" /*015*/    int y = 1;            \n");
+    sb.append(" /*016*/    Some sc;              \n");
+    sb.append(" /*017*/    int func() {          \n");
+    sb.append(" /*018*/      return zero()       \n");
+    sb.append(" /*019*/          + sc.fx()       \n");
+    sb.append(" /*020*/          + y + this.y    \n");
+    sb.append(" /*021*/          + sc.x          \n");
+    sb.append(" /*022*/          + sc.th.z       \n");
+    sb.append(" /*023*/          + sc.th.fz();   \n");
+    sb.append(" /*024*/    }                     \n");
+    sb.append(" /*025*/    int zero() {          \n");
+    sb.append(" /*026*/      return 0;           \n");
+    sb.append(" /*027*/    }                     \n");
+    sb.append(" /*028*/  }                       \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();

@@ -139,6 +139,9 @@ public class ExprExpression {
     if (base == ExpressionBase.ETHIS) {
       return "this";
     }
+    if (base == ExpressionBase.EMETHOD_INVOCATION) {
+      return methodInvocation.toString();
+    }
     return base.toString();
   }
 
