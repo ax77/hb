@@ -3,17 +3,9 @@ package njast.ast_nodes.stmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 import njast.parse.NullChecker;
 
-public class StmtBlock implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
-  //  <block> ::= { <block statements>? }
-  //  <block statements> ::= <block statement> | <block statements> <block statement>
+public class StmtBlock {
 
   private final List<StmtBlockItem> blockStatements;
 

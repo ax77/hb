@@ -6,16 +6,8 @@ import java.util.List;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class ClassDeclaration implements AstTraverser {
-
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
-  //<class body declaration> ::= <class member declaration> | <static initializer> | <constructor declaration>
+public class ClassDeclaration {
 
   private final Ident identifier;
   private List<ClassConstructorDeclaration> constructors;

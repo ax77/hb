@@ -3,17 +3,11 @@ package njast.ast_nodes.clazz.methods;
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 import njast.parse.ILocation;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
-public class ClassMethodDeclaration implements AstTraverser, ILocation {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class ClassMethodDeclaration implements ILocation {
 
   private final SourceLocation location;
   private final Type resultType;

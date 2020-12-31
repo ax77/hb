@@ -3,6 +3,7 @@ package njast.ast_nodes.expr;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_utils.ExprUtil;
 
 public class ExprClassInstanceCreation {
   // <class instance creation expression> ::= new <class type> ( <argument list>? )
@@ -21,6 +22,11 @@ public class ExprClassInstanceCreation {
 
   public List<ExprExpression> getArguments() {
     return arguments;
+  }
+
+  @Override
+  public String toString() {
+    return "new " + classtype.getName() + "(" + ExprUtil.exprListCommaToString(arguments) + ")";
   }
 
 }

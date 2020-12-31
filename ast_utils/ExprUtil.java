@@ -22,10 +22,12 @@ import static jscan.tokenize.T.T_XOR;
 import static jscan.tokenize.T.T_XOR_EQUAL;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_nodes.expr.ExprExpression;
 
 public abstract class ExprUtil {
 
@@ -52,6 +54,20 @@ public abstract class ExprUtil {
 
   public static Token dotOperator(Token from) {
     return copyTokenAddNewType(from, T.T_DOT, ".");
+  }
+
+  public static String exprListCommaToString(List<ExprExpression> list) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < list.size(); i++) {
+      ExprExpression param = list.get(i);
+      sb.append(param.toString());
+      if (i + 1 < list.size()) {
+        sb.append(", ");
+      }
+    }
+
+    return sb.toString();
   }
 
   //  public static CExpression createNumericConst(Token from, Integer intValue) {

@@ -3,14 +3,8 @@ package njast.ast_nodes.clazz;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class ClassConstructorDeclaration implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class ClassConstructorDeclaration {
 
   //  <constructor declaration> ::= <constructor modifiers>? <constructor declarator> <throws>? <constructor body>
   //

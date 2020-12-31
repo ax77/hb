@@ -3,7 +3,7 @@ package njast;
 import org.junit.Test;
 
 import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.ast_visitors.AstVisitorTypeApplier;
+import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
 
@@ -45,7 +45,7 @@ public class TestMinimalExample {
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
 
-    AstVisitorTypeApplier applier = new AstVisitorTypeApplier();
+    ApplyCompilationUnit applier = new ApplyCompilationUnit();
     applier.visit(unit);
 
   }

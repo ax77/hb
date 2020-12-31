@@ -1,13 +1,6 @@
 package njast.ast_nodes.expr;
 
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
-
-public class ExprTernary implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class ExprTernary {
 
   private final ExprExpression cond;
   private final ExprExpression branchTrue;

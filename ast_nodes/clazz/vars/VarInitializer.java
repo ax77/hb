@@ -1,14 +1,8 @@
 package njast.ast_nodes.clazz.vars;
 
 import njast.ast_nodes.expr.ExprExpression;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class VarInitializer implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class VarInitializer {
 
   private ExprExpression initializer;
 

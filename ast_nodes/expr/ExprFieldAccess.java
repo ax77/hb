@@ -1,11 +1,8 @@
 package njast.ast_nodes.expr;
 
 import jscan.symtab.Ident;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
-import njast.ast_visitors.Symbol;
 
-public class ExprFieldAccess implements AstTraverser {
+public class ExprFieldAccess {
   private final Ident fieldName;
   private final ExprExpression object;
 
@@ -20,11 +17,6 @@ public class ExprFieldAccess implements AstTraverser {
 
   public ExprExpression getObject() {
     return object;
-  }
-
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
   }
 
   @Override

@@ -1,14 +1,8 @@
 package njast.ast_nodes.expr;
 
 import jscan.tokenize.Token;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class ExprUnary implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class ExprUnary {
 
   private final Token operator;
   private final ExprExpression operand;

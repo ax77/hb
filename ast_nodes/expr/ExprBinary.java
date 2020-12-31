@@ -1,14 +1,8 @@
 package njast.ast_nodes.expr;
 
 import jscan.tokenize.Token;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class ExprBinary implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class ExprBinary {
 
   private final Token operator;
   private final ExprExpression lhs;
@@ -34,7 +28,13 @@ public class ExprBinary implements AstTraverser {
 
   @Override
   public String toString() {
-    return lhs.toString() + " " + operator.getValue() + " " + rhs.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append(lhs.toString());
+    sb.append(" ");
+    sb.append(operator.getValue());
+    sb.append(" ");
+    sb.append(rhs.toString());
+    return sb.toString();
   }
 
 }

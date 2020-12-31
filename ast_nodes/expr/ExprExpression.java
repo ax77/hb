@@ -5,11 +5,9 @@ import static njast.ast_kinds.ExpressionBase.ETERNARY;
 import jscan.cstrtox.C_strtox;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
 
-public class ExprExpression implements AstTraverser {
+public class ExprExpression {
 
   // main
   private final ExpressionBase base; // what union contains
@@ -138,12 +136,10 @@ public class ExprExpression implements AstTraverser {
     if (base == ExpressionBase.EPRIMARY_IDENT) {
       return literalIdentifier.toString();
     }
+    if (base == ExpressionBase.ETHIS) {
+      return "this";
+    }
     return base.toString();
-  }
-
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
   }
 
 }

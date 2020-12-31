@@ -3,14 +3,7 @@ package njast.ast_nodes.top;
 import java.util.ArrayList;
 import java.util.List;
 
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
-
-public class TopLevelCompilationUnit implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class TopLevelCompilationUnit {
 
   private List<TopLevelTypeDeclaration> typeDeclarations;
 

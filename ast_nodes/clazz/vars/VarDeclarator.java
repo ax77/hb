@@ -2,17 +2,11 @@ package njast.ast_nodes.clazz.vars;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 import njast.modifiers.Modifiers;
 import njast.parse.ILocation;
 import njast.types.Type;
 
-public class VarDeclarator implements AstTraverser, ILocation {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class VarDeclarator implements ILocation {
 
   // var-declarator-list:
   // type:[int] var-declarators:[a, b=1, c, d=2];

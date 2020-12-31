@@ -3,11 +3,6 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
-import njast.ast_kinds.ExpressionBase;
-import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.ClassFieldDeclaration;
@@ -15,35 +10,24 @@ import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.expr.ExprBinary;
-import njast.ast_nodes.expr.ExprExpression;
-import njast.ast_nodes.expr.ExprFieldAccess;
-import njast.ast_nodes.expr.ExprMethodInvocation;
-import njast.ast_nodes.expr.ExprNumericConstant;
-import njast.ast_nodes.expr.ExprPrimaryIdent;
-import njast.ast_nodes.expr.ExprTernary;
-import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
-import njast.ast_nodes.stmt.StmtFor;
-import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.errors.EParseException;
 import njast.symtab.ScopeLevels;
 import njast.symtab.Symtab;
-import njast.types.ReferenceType;
 import njast.types.Type;
 
-public class AstVisitorTypeApplier {
+public class ApplyCompilationUnit {
 
   private Symtab<Ident, Symbol> typeNames;
   private Symtab<Ident, Symbol> variablesClass; // fields
   private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
   private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
-  public AstVisitorTypeApplier() {
+  public ApplyCompilationUnit() {
     this.typeNames = new Symtab<>();
     this.variablesClass = new Symtab<>();
     this.variablesMethod = new Symtab<>();
@@ -74,11 +58,11 @@ public class AstVisitorTypeApplier {
     this.variablesMethod.popscope();
   }
 
-  private void openBlockScope(String name) {
+  public void openBlockScope(String name) {
     this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, name);
   }
 
-  private void closeBlockScope() {
+  public void closeBlockScope() {
     this.variablesBlock.popscope();
   }
 
@@ -150,7 +134,7 @@ public class AstVisitorTypeApplier {
     return var;
   }
 
-  private void defineBlockVar(VarDeclarator var) {
+  public void defineBlockVar(VarDeclarator var) {
 
     Symbol maybeAlreadyDefined = findVarBlockMethod(var.getIdentifier());
     if (maybeAlreadyDefined != null) {
@@ -160,7 +144,7 @@ public class AstVisitorTypeApplier {
     variablesBlock.addsym(var.getIdentifier(), varsym(var));
   }
 
-  private Symbol findBindingFromIdentifierToTypename(Ident name) {
+  public Symbol findBindingFromIdentifierToTypename(Ident name) {
 
     Symbol var = variablesBlock.getsym(name);
     if (var != null) {
@@ -194,7 +178,7 @@ public class AstVisitorTypeApplier {
   private void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
   }
 
-  private void initVarZero(VarDeclarator var) {
+  public void initVarZero(VarDeclarator var) {
   }
 
   private void defineClassField(ClassDeclaration object, ClassFieldDeclaration field) {
@@ -263,7 +247,10 @@ public class AstVisitorTypeApplier {
         // statements
         final StmtStatement statement = block.getStatement();
         if (statement != null) {
-          applyStatement(object, statement);
+          boolean result = new ApplyStmt(this).applyStatement(object, statement);
+          if (!result) {
+            System.out.println("...??? stmt");
+          }
         }
 
       }
@@ -277,184 +264,6 @@ public class AstVisitorTypeApplier {
     }
 
     closeClassScope();
-  }
-
-  private void applyStatement(ClassDeclaration object, final StmtStatement statement) {
-
-    StatementBase base = statement.getBase();
-    boolean hasItsOwnScope = (base == StatementBase.SBLOCK) || (base == StatementBase.SFOR);
-
-    if (hasItsOwnScope) {
-      openBlockScope(base.toString());
-    }
-
-    // process-statement
-
-    if (base == StatementBase.SFOR) {
-      StmtFor forloop = statement.getSfor();
-      List<VarDeclarator> vars = forloop.getDecl();
-      if (vars != null) {
-        for (VarDeclarator var : vars) {
-          initVarZero(var);
-          defineBlockVar(var);
-        }
-      }
-      StmtStatement loop = forloop.getLoop();
-      if (loop != null) {
-        applyStatement(object, loop);
-      }
-    }
-
-    else if (base == StatementBase.SBLOCK) {
-
-      final StmtBlock body = statement.getCompound();
-      final List<StmtBlockItem> blocks = body.getBlockStatements();
-
-      for (StmtBlockItem block : blocks) {
-
-        // declarations
-        final List<VarDeclarator> localVars = block.getLocalVars();
-        if (localVars != null) {
-          for (VarDeclarator var : localVars) {
-            initVarZero(var);
-            defineBlockVar(var);
-          }
-        }
-
-        // statements
-        final StmtStatement statementRest = block.getStatement();
-        if (statementRest != null) {
-          applyStatement(object, statementRest);
-        }
-
-      }
-
-    }
-
-    else if (base == StatementBase.SRETURN) {
-      StmtReturn ret = statement.getSreturn();
-      final ExprExpression retExpr = ret.getExpr();
-      if (retExpr != null) {
-        applyExpr(object, retExpr);
-      }
-      // TODO:here
-    }
-
-    else {
-      throw new EParseException("unimpl. stmt.:" + base.toString());
-    }
-
-    if (hasItsOwnScope) {
-      closeBlockScope();
-    }
-
-  }
-
-  private void applyExpr(ClassDeclaration object, ExprExpression e) {
-
-    if (e == null) {
-      return;
-    }
-
-    ExpressionBase base = e.getBase();
-
-    if (base == ExpressionBase.EBINARY) {
-      ExprBinary node = e.getBinary();
-      Token operator = node.getOperator();
-
-      final ExprExpression LHS = node.getLhs();
-      final ExprExpression RHS = node.getRhs();
-
-      applyExpr(object, LHS);
-      applyExpr(object, RHS);
-
-      e.setResultType(node.getLhs().getResultType());
-
-    }
-
-    else if (base == ExpressionBase.EPRIMARY_IDENT) {
-      ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
-
-      Symbol sym = findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
-      if (sym.isClassType()) {
-        throw new EParseException("unimpl.");
-      }
-      e.setResultType(sym.getVariable().getType());
-
-    }
-
-    else if (base == ExpressionBase.EMETHOD_INVOCATION) {
-      ExprMethodInvocation methodInvocation = e.getMethodInvocation();
-      applyExpr(object, methodInvocation.getObject());
-
-      //TODO:here
-    }
-
-    else if (base == ExpressionBase.EFIELD_ACCESS) {
-      ExprFieldAccess fieldAccess = e.getFieldAccess();
-      applyExpr(object, fieldAccess.getObject());
-
-      // find the field, and get its type
-      //
-      final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
-      if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
-        throw new EParseException("expect reference for field access like [a.b] -> a must be a class.");
-      }
-
-      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getTypeName();
-      final ClassFieldDeclaration field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
-
-      if (field == null) {
-        throw new EParseException("class has no field: " + fieldAccess.getFieldName().getName());
-      }
-
-      e.setResultType(field.getField().getType());
-
-    }
-
-    else if (base == ExpressionBase.ETHIS) {
-      e.setResultType(new Type(new ReferenceType(object)));
-    }
-
-    else {
-      throw new EParseException("unimpl. expr.:" + base.toString());
-    }
-
-  }
-
-  public void visit(ExprBinary o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprExpression o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprFieldAccess o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprMethodInvocation o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprNumericConstant o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprTernary o) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void visit(ExprUnary o) {
-    // TODO Auto-generated method stub
-
   }
 
   public void visit(TopLevelCompilationUnit o) {

@@ -1,14 +1,8 @@
 package njast.ast_nodes.stmt;
 
 import njast.ast_nodes.expr.ExprExpression;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class StmtReturn implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
+public class StmtReturn {
 
   private final ExprExpression expr;
 

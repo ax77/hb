@@ -1,19 +1,9 @@
 package njast.ast_nodes.clazz.methods;
 
 import jscan.symtab.Ident;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 import njast.types.Type;
 
-public class FormalParameter implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
-
-  //  <formal parameter list> ::= <formal parameter> | <formal parameter list> , <formal parameter>
-  //
-  //  <formal parameter> ::= <type> <variable declarator id>
+public class FormalParameter {
 
   private final Type type;
   private final Ident name;

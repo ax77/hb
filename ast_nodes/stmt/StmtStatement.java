@@ -3,22 +3,8 @@ package njast.ast_nodes.stmt;
 import jscan.tokenize.Token;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.expr.ExprExpression;
-import njast.ast_visitors.AstTraverser;
-import njast.ast_visitors.AstVisitor;
 
-public class StmtStatement implements AstTraverser {
-  @Override
-  public void accept(AstVisitor visitor) {
-    visitor.visit(this);
-  }
-
-  //  <statement> ::= <statement without trailing substatement> | <labeled statement> | <if then statement> | <if then else statement> | <while statement> | <for statement>
-  //
-  //  <statement no short if> ::= <statement without trailing substatement> | <labeled statement no short if> | <if then else statement no short if> | <while statement no short if> | <for statement no short if>
-  //
-  //  <statement without trailing substatement> ::= <block> | <empty statement> | <expression statement> | <switch statement> | <do statement> | <break statement> | <continue statement> | <return statement> | <synchronized statement> | <throws statements> | <try statement>
-  //
-  //  <empty statement> ::= ;
+public class StmtStatement {
 
   private final StatementBase base;
   private StmtBlock compound;
