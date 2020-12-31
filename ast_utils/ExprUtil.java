@@ -32,7 +32,6 @@ import njast.ast_nodes.expr.ExprExpression;
 public abstract class ExprUtil {
 
   public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
-    //NullChecker.check(from, newtype, newvalue);
 
     Token ntoken = new Token(from);
     ntoken.setType(newtype);
@@ -40,20 +39,8 @@ public abstract class ExprUtil {
     return ntoken;
   }
 
-  public static Token plusOperator(Token from) {
-    return copyTokenAddNewType(from, T.T_PLUS, "+");
-  }
-
-  public static Token derefOperator(Token from) {
-    return copyTokenAddNewType(from, T.T_TIMES, "*");
-  }
-
   public static Token assignOperator(Token from) {
     return copyTokenAddNewType(from, T.T_ASSIGN, "=");
-  }
-
-  public static Token dotOperator(Token from) {
-    return copyTokenAddNewType(from, T.T_DOT, ".");
   }
 
   public static String exprListCommaToString(List<ExprExpression> list) {
@@ -69,31 +56,6 @@ public abstract class ExprUtil {
 
     return sb.toString();
   }
-
-  //  public static CExpression createNumericConst(Token from, Integer intValue) {
-  //    C_strtox e = new C_strtox(intValue.toString());
-  //    return new CExpression(e, from);
-  //  }
-  //
-  //  public static CExpression digitZero(Token from) {
-  //    NullChecker.check(from);
-  //
-  //    NumericConstant number = new NumericConstant(0, NumType.N_INT);
-  //    CExpression ret = new CExpression(number, copyTokenAddNewType(from, TOKEN_NUMBER, "0"));
-  //
-  //    ret.setResultType(CTypeImpl.TYPE_INT);
-  //    return ret;
-  //  }
-  //
-  //  public static CExpression digitOne(Token from) {
-  //    NullChecker.check(from);
-  //
-  //    NumericConstant number = new NumericConstant(1, NumType.N_INT);
-  //    CExpression ret = new CExpression(number, copyTokenAddNewType(from, TOKEN_NUMBER, "1"));
-  //
-  //    ret.setResultType(CTypeImpl.TYPE_INT);
-  //    return ret;
-  //  }
 
   private static Map<T, T> asopmap = new HashMap<T, T>();
   static {

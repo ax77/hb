@@ -1,4 +1,4 @@
-package njast.ast_visitors;
+package njast.main;
 
 import static jscan.tokenize.T.TOKEN_EOF;
 

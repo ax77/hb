@@ -33,4 +33,12 @@ public class StmtBlockItem {
     this.statement = statement;
   }
 
+  @Override
+  public String toString() {
+    if (localVars != null) {
+      return "LOC_VAR_DECL";
+    }
+    return "STMT";
+  }
+
 }

@@ -15,7 +15,6 @@ import jscan.tokenize.Stream;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.ast_visitors.BindAllClassTypes;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
 import njast.parse.Parse;

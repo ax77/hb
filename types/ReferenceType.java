@@ -13,4 +13,9 @@ public class ReferenceType {
     return classType;
   }
 
+  @Override
+  public String toString() {
+    return "REF: " + classType.toString();
+  }
+
 }

@@ -71,7 +71,7 @@ public class ClassDeclaration {
 
   @Override
   public String toString() {
-    return identifier.getName() + ": class_type";
+    return identifier.getName() + ": class";
   }
 
 }

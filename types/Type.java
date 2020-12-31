@@ -97,7 +97,7 @@ public class Type {
     if (isPrimitive) {
       return primitiveType.toString();
     }
-    return referenceType.getTypeName().getIdentifier().getName();
+    return referenceType.toString();
   }
 
 }
