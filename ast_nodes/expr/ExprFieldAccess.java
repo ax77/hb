@@ -9,9 +9,6 @@ public class ExprFieldAccess implements AstTraverser {
   private final Ident fieldName;
   private final ExprExpression object;
 
-  private Symbol symField; // MARK:HIR
-  private Symbol symObject; // MARK:HIR
-
   public ExprFieldAccess(Ident fieldName, ExprExpression object) {
     this.fieldName = fieldName;
     this.object = object;
@@ -25,25 +22,14 @@ public class ExprFieldAccess implements AstTraverser {
     return object;
   }
 
-  public Symbol getSymField() {
-    return symField;
-  }
-
-  public void setSymField(Symbol symField) {
-    this.symField = symField;
-  }
-
-  public Symbol getSymObject() {
-    return symObject;
-  }
-
-  public void setSymObject(Symbol symObject) {
-    this.symObject = symObject;
-  }
-
   @Override
   public void accept(AstVisitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public String toString() {
+    return object.toString() + "." + fieldName.getName();
   }
 
 }

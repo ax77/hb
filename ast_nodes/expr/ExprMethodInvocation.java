@@ -13,9 +13,6 @@ public class ExprMethodInvocation implements AstTraverser {
   private final Ident funcname;
   private final boolean isMethodInvocation;
 
-  private Symbol symMethod; // MARK:HIR
-  private Symbol symObject; // MARK:HIR
-
   // a.b()
   public ExprMethodInvocation(Ident funcname, ExprExpression object, List<ExprExpression> arguments) {
     this.funcname = funcname;
@@ -46,22 +43,6 @@ public class ExprMethodInvocation implements AstTraverser {
 
   public boolean isMethodInvocation() {
     return isMethodInvocation;
-  }
-
-  public Symbol getSymMethod() {
-    return symMethod;
-  }
-
-  public void setSymMethod(Symbol symMethod) {
-    this.symMethod = symMethod;
-  }
-
-  public Symbol getSymObject() {
-    return symObject;
-  }
-
-  public void setSymObject(Symbol symObject) {
-    this.symObject = symObject;
   }
 
   @Override

@@ -7,11 +7,13 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_visitors.AstTraverser;
 import njast.ast_visitors.AstVisitor;
+import njast.types.Type;
 
 public class ExprExpression implements AstTraverser {
 
   // main
   private final ExpressionBase base; // what union contains
+  private Type resultType;
 
   // nodes
   private ExprUnary unary;
@@ -25,6 +27,14 @@ public class ExprExpression implements AstTraverser {
 
   public ExprExpression(ExpressionBase base) {
     this.base = base;
+  }
+
+  public Type getResultType() {
+    return resultType;
+  }
+
+  public void setResultType(Type resultType) {
+    this.resultType = resultType;
   }
 
   public ExprExpression(ExprClassInstanceCreation classInstanceCreation) {
@@ -119,6 +129,15 @@ public class ExprExpression implements AstTraverser {
 
   @Override
   public String toString() {
+    if (base == ExpressionBase.EBINARY) {
+      return binary.toString();
+    }
+    if (base == ExpressionBase.EFIELD_ACCESS) {
+      return fieldAccess.toString();
+    }
+    if (base == ExpressionBase.EPRIMARY_IDENT) {
+      return literalIdentifier.toString();
+    }
     return base.toString();
   }
 

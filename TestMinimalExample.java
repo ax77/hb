@@ -26,35 +26,20 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class Some {                                      \n");
-    sb.append(" /*002*/    int fieldInSomeClass = 1;                       \n");
-    sb.append(" /*003*/    Idn idn;                                        \n");
-    sb.append(" /*004*/    Some next;                                      \n");
-    sb.append(" /*005*/    int funcInSomeClass() {                         \n");
-    sb.append(" /*006*/      return fieldInSomeClass + this.fieldInSomeClass;  \n");
-    sb.append(" /*007*/    }                                               \n");
-    sb.append(" /*008*/  }                                                 \n");
-    sb.append(" /*009*/  class Idn {                                       \n");
-    sb.append(" /*010*/    int fieldvar = 1;                               \n");
-    sb.append(" /*011*/    Some classTypeField = new Some();               \n");
-    sb.append(" /*012*/    Idn next;                                       \n");
-    sb.append(" /*013*/    int func(int fnparam) {                         \n");
-    sb.append(" /*014*/      int methodvar = 1;                            \n");
-    sb.append(" /*015*/      return methodvar                              \n");
-    sb.append(" /*016*/          + fieldvar                                \n");
-    sb.append(" /*017*/          + this.fieldvar                           \n");
-    sb.append(" /*018*/          + anotherFn()                             \n");
-    sb.append(" /*019*/          + this.anotherFn()                        \n");
-    sb.append(" /*020*/          + classTypeField.funcInSomeClass()        \n");
-    sb.append(" /*021*/          + this.classTypeField.funcInSomeClass()   \n");
-    sb.append(" /*022*/          + classTypeField.fieldInSomeClass         \n");
-    sb.append(" /*023*/          + this.classTypeField.fieldInSomeClass    \n");
-    sb.append(" /*024*/          + fnparam;                                \n");
-    sb.append(" /*025*/    }                                               \n");
-    sb.append(" /*026*/    int anotherFn() {                               \n");
-    sb.append(" /*027*/      return fieldvar;                              \n");
-    sb.append(" /*028*/    }                                               \n");
-    sb.append(" /*029*/  }                                                 \n");
+    sb.append(" /*001*/  class Thing {                             \n");
+    sb.append(" /*002*/    int z;                                  \n");
+    sb.append(" /*003*/  }                                         \n");
+    sb.append(" /*004*/  class Some {                              \n");
+    sb.append(" /*005*/    Thing th;                               \n");
+    sb.append(" /*006*/    int x = 1;                              \n");
+    sb.append(" /*007*/  }                                         \n");
+    sb.append(" /*008*/  class Idn {                               \n");
+    sb.append(" /*009*/    int y = 1;                              \n");
+    sb.append(" /*010*/    Some sc;                                \n");
+    sb.append(" /*011*/    int func() {                            \n");
+    sb.append(" /*012*/      return y + this.y + sc.x + sc.th.z;   \n");
+    sb.append(" /*013*/    }                                       \n");
+    sb.append(" /*014*/  }                                         \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
@@ -62,8 +47,6 @@ public class TestMinimalExample {
 
     AstVisitorTypeApplier applier = new AstVisitorTypeApplier();
     applier.visit(unit);
-
-    System.out.println();
 
   }
 

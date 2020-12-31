@@ -32,4 +32,9 @@ public class ExprBinary implements AstTraverser {
     return rhs;
   }
 
+  @Override
+  public String toString() {
+    return lhs.toString() + " " + operator.getValue() + " " + rhs.toString();
+  }
+
 }

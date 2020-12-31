@@ -3,6 +3,9 @@ package njast.ast_visitors;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
+import njast.ast_checkers.IsIdent;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
@@ -30,6 +33,7 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.errors.EParseException;
 import njast.symtab.ScopeLevels;
 import njast.symtab.Symtab;
+import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class AstVisitorTypeApplier {
@@ -333,6 +337,7 @@ public class AstVisitorTypeApplier {
       if (retExpr != null) {
         applyExpr(object, retExpr);
       }
+      // TODO:here
     }
 
     else {
@@ -355,15 +360,27 @@ public class AstVisitorTypeApplier {
 
     if (base == ExpressionBase.EBINARY) {
       ExprBinary node = e.getBinary();
-      applyExpr(object, node.getLhs());
-      applyExpr(object, node.getRhs());
+      Token operator = node.getOperator();
+
+      final ExprExpression LHS = node.getLhs();
+      final ExprExpression RHS = node.getRhs();
+
+      applyExpr(object, LHS);
+      applyExpr(object, RHS);
+
+      e.setResultType(node.getLhs().getResultType());
+
     }
 
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
       ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
 
       Symbol sym = findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
-      primaryIdent.setSym(sym);
+      if (sym.isClassType()) {
+        throw new EParseException("unimpl.");
+      }
+      e.setResultType(sym.getVariable().getType());
+
     }
 
     else if (base == ExpressionBase.EMETHOD_INVOCATION) {
@@ -377,31 +394,26 @@ public class AstVisitorTypeApplier {
       ExprFieldAccess fieldAccess = e.getFieldAccess();
       applyExpr(object, fieldAccess.getObject());
 
-      fieldAccess.setSymObject(new Symbol(object));
-
-      // this.FIELD_SELECTION
-      if (fieldAccess.getObject().is(ExpressionBase.ETHIS)) {
-        ClassFieldDeclaration field = object.getField(fieldAccess.getFieldName());
-        if (field == null) {
-          throw new EParseException("class has no field: " + fieldAccess.getFieldName().getName());
-        }
-        Symbol sym = new Symbol(field.getField());
-        fieldAccess.setSymField(sym);
+      // find the field, and get its type
+      //
+      final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
+      if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
+        throw new EParseException("expect reference for field access like [a.b] -> a must be a class.");
       }
 
-      else {
-        // class MyClass {
-        //     SomeClass field_in_current_class;
-        //     
-        //     int xxx = field_in_current_class.field_in_another_class;
-        //     ................................^
-        // }
+      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getTypeName();
+      final ClassFieldDeclaration field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
+
+      if (field == null) {
+        throw new EParseException("class has no field: " + fieldAccess.getFieldName().getName());
       }
+
+      e.setResultType(field.getField().getType());
 
     }
 
     else if (base == ExpressionBase.ETHIS) {
-      // this_expression is a marker, we'll expand it in field-access or method-call
+      e.setResultType(new Type(new ReferenceType(object)));
     }
 
     else {
