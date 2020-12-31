@@ -8,8 +8,7 @@ public class StmtStatement {
 
   private final StatementBase base;
   private StmtBlock compound;
-  private StmtReturn sreturn;
-  private ExprExpression sexpression;
+  private ExprExpression expr; // return expr or expr-stmt
   private StmtFor sfor;
 
   public StmtStatement(StmtFor sfor) {
@@ -17,14 +16,11 @@ public class StmtStatement {
     this.sfor = sfor;
   }
 
-  public StmtStatement(ExprExpression sexpression) {
-    this.base = StatementBase.SEXPR;
-    this.sexpression = sexpression;
-  }
-
-  public StmtStatement(StmtReturn sreturn) {
-    this.base = StatementBase.SRETURN;
-    this.sreturn = sreturn;
+  // return <expr> ;
+  // <expr> 
+  public StmtStatement(StatementBase base, ExprExpression expr) {
+    this.base = base;
+    this.expr = expr;
   }
 
   // {  }
@@ -45,12 +41,8 @@ public class StmtStatement {
     return base;
   }
 
-  public StmtReturn getSreturn() {
-    return sreturn;
-  }
-
   public ExprExpression getSexpression() {
-    return sexpression;
+    return expr;
   }
 
   public StmtFor getSfor() {

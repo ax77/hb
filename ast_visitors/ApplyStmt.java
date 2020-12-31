@@ -9,7 +9,6 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
-import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.errors.EParseException;
 
@@ -73,8 +72,7 @@ public class ApplyStmt {
     }
 
     else if (base == StatementBase.SRETURN) {
-      StmtReturn ret = statement.getSreturn();
-      final ExprExpression retExpr = ret.getExpr();
+      final ExprExpression retExpr = statement.getSexpression();
       if (retExpr != null) {
         boolean result = new ApplyExpr(typeApplier).applyExpr(object, retExpr);
         if (!result) {

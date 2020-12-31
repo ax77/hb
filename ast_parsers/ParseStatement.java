@@ -10,13 +10,13 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
-import njast.ast_nodes.stmt.StmtReturn;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.parse.Parse;
 
@@ -89,13 +89,13 @@ public class ParseStatement {
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new StmtStatement(new StmtReturn(null));
+        return new StmtStatement(StatementBase.SRETURN, null);
       }
 
       ExprExpression expr = e_expression();
 
       parser.checkedMove(T_SEMI_COLON);
-      return new StmtStatement(new StmtReturn(expr));
+      return new StmtStatement(StatementBase.SRETURN, expr);
     }
 
     // for( ;; )
@@ -154,7 +154,7 @@ public class ParseStatement {
 
     // expression-statement by default
     //
-    StmtStatement ret = new StmtStatement(e_expression());
+    StmtStatement ret = new StmtStatement(StatementBase.SEXPR, e_expression());
     parser.semicolon();
     return ret;
   }
