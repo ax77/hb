@@ -285,6 +285,9 @@ public class Parse {
   // ENTRY
 
   private void moveStraySemicolon() {
+    if (is(T.T_SEMI_COLON)) {
+      perror("stray semicolon [;] is deprecated by design.");
+    }
     while (tp() == T.T_SEMI_COLON) {
       move();
     }

@@ -2,8 +2,12 @@ package njast.ast_parsers;
 
 import static jscan.tokenize.T.T_RIGHT_PAREN;
 import static jscan.tokenize.T.T_SEMI_COLON;
+import static njast.symtab.IdentMap.do_ident;
 import static njast.symtab.IdentMap.for_ident;
+import static njast.symtab.IdentMap.goto_ident;
 import static njast.symtab.IdentMap.return_ident;
+import static njast.symtab.IdentMap.switch_ident;
+import static njast.symtab.IdentMap.while_ident;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +85,16 @@ public class ParseStatement {
 
   private StmtStatement parseStatement() {
 
+    if (parser.is(while_ident) || parser.is(do_ident)) {
+      parser.perror("while/do loops are deprecated by design. use for-loop instead.");
+    }
+    if (parser.is(switch_ident)) {
+      parser.perror("switch-statement deprecated by design. use [if(cond) { } else { }] instead.");
+    }
+    if (parser.is(goto_ident)) {
+      parser.perror("goto-statement deprecated by design. ");
+    }
+
     // return ... ;
     // return ;
 
@@ -138,6 +152,13 @@ public class ParseStatement {
         step = e_expression();
       }
       parser.rparen();
+
+      if (parser.is(T_SEMI_COLON)) {
+        parser.perror("stray semicolon");
+      }
+      if (!parser.is(T.T_LEFT_BRACE)) {
+        parser.perror("unbraced for-loop is deprecated by design.");
+      }
 
       loop = parseStatement();
 

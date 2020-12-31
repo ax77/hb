@@ -5,7 +5,6 @@ import static jscan.tokenize.T.TOKEN_NUMBER;
 import static jscan.tokenize.T.TOKEN_STRING;
 import static jscan.tokenize.T.T_AND;
 import static jscan.tokenize.T.T_AND_AND;
-import static jscan.tokenize.T.T_COLON;
 import static jscan.tokenize.T.T_DIVIDE;
 import static jscan.tokenize.T.T_EQ;
 import static jscan.tokenize.T.T_GE;
@@ -41,7 +40,6 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
 import njast.ast_nodes.expr.ExprPrimaryIdent;
-import njast.ast_nodes.expr.ExprTernary;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
@@ -61,10 +59,6 @@ public class ParseExpression {
 
   private ExprExpression build_binary(Token operator, ExprExpression lhs, ExprExpression rhs) {
     return new ExprExpression(new ExprBinary(operator, lhs, rhs));
-  }
-
-  private ExprExpression build_ternary(ExprExpression cnd, ExprExpression btrue, ExprExpression bfalse, Token tok) {
-    return new ExprExpression(new ExprTernary(cnd, btrue, bfalse));
   }
 
   private ExprExpression build_assign(Token tok, ExprExpression lvalue, ExprExpression rvalue) {
@@ -150,19 +144,28 @@ public class ParseExpression {
   }
 
   private ExprExpression e_cnd() {
+
+    // WAS:
+    // ExprExpression res = e_lor();
+    //
+    // if (parser.tp() != T_QUESTION) {
+    //   return res;
+    // }
+    //
+    // Token saved = parser.tok();
+    // parser.move();
+    //
+    // ExprExpression btrue = e_expression();
+    // parser.checkedMove(T_COLON);
+    //
+    // return build_ternary(res, btrue, e_cnd(), saved);
+
     ExprExpression res = e_lor();
-
-    if (parser.tp() != T_QUESTION) {
-      return res;
+    if (parser.is(T_QUESTION)) {
+      parser.perror(
+          "conditional expression [cond ? if_true : if_false;] is deprecated by design. use [if(cond) {} else {}] instead.");
     }
-
-    Token saved = parser.tok();
-    parser.move();
-
-    ExprExpression btrue = e_expression();
-    parser.checkedMove(T_COLON);
-
-    return build_ternary(res, btrue, e_cnd(), saved);
+    return res;
   }
 
   private ExprExpression e_lor() {
@@ -303,6 +306,10 @@ public class ParseExpression {
       return build_unary(operator, e_cast());
     }
 
+    if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
+      parser.perror("pre-increment/pre-decrement are deprecated by design.");
+    }
+
     return e_postfix();
   }
 
@@ -348,6 +355,10 @@ public class ParseExpression {
         }
 
         lhs = methodInvocation(funcname); // TODO: more clean, more precise.
+      }
+
+      else if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
+        parser.perror("post-increment/post-decrement are deprecated by design.");
       }
 
       else {

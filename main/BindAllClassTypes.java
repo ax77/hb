@@ -38,7 +38,7 @@ public class BindAllClassTypes {
       }
 
       int nest = 0;
-      while (!parser.isEof()) {
+      for (; !parser.isEof();) {
         Token next = parser.moveget();
 
         if (next.ofType(TOKEN_EOF)) {

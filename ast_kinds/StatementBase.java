@@ -4,17 +4,17 @@ public enum StatementBase {
   //@formatter:off
     SBLOCK
   , SIF
-  , SWHILE
-  , SDOWHILE
+//  , SWHILE
+//  , SDOWHILE
   , SEXPR
   , SBREAK
   , SCONTINUE
-  , SSEMICOLON
-  , SSWITCH
-  , SCASE
+//  , SSEMICOLON
+//  , SSWITCH
+//  , SCASE
   , SFOR
   , SRETURN
-  , SGOTO
-  , SLABEL
-  , SDEFAULT
+//  , SGOTO
+//  , SLABEL
+//  , SDEFAULT
 }

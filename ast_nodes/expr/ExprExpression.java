@@ -1,7 +1,5 @@
 package njast.ast_nodes.expr;
 
-import static njast.ast_kinds.ExpressionBase.ETERNARY;
-
 import jscan.cstrtox.C_strtox;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
@@ -16,7 +14,6 @@ public class ExprExpression {
   // nodes
   private ExprUnary unary;
   private ExprBinary binary;
-  private ExprTernary ternary;
   private ExprNumericConstant literalNumber;
   private ExprPrimaryIdent literalIdentifier;
   private ExprMethodInvocation methodInvocation;
@@ -48,11 +45,6 @@ public class ExprExpression {
   public ExprExpression(ExprBinary binary) {
     this.base = ExpressionBase.EBINARY;
     this.binary = binary;
-  }
-
-  public ExprExpression(ExprTernary eternary) {
-    this.base = ETERNARY;
-    this.ternary = eternary;
   }
 
   public ExprExpression(C_strtox e, Token token) {
@@ -99,10 +91,6 @@ public class ExprExpression {
 
   public ExprPrimaryIdent getLiteralIdentifier() {
     return literalIdentifier;
-  }
-
-  public ExprTernary getTernary() {
-    return ternary;
   }
 
   public ExprNumericConstant getLiteralNumber() {
