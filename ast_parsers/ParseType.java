@@ -7,6 +7,8 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
+import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.TypeParameters;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
 import njast.types.ReferenceType;
@@ -32,14 +34,36 @@ public class ParseType {
   }
 
   public Type parse() {
+
     final boolean isPrimitiveType = IsIdent.isBasicTypeIdent(parser.tok());
     final boolean isReferenceType = parser.isClassName();
-    final boolean typeWasFound = isPrimitiveType || isReferenceType;
+    boolean typeWasFound = isPrimitiveType || isReferenceType;
+
+    // class-type-parameters: class C<T> { T x; }
+    boolean isFromTypeParameters = false;
+    if (!typeWasFound) {
+      ClassDeclaration classDeclaration = parser.getCurrentClass();
+      if (classDeclaration == null) {
+        parser.unreachable("expect current class");
+      }
+      typeWasFound = classDeclaration.getTypeParameters().contains(parser.tok().getIdent());
+      isFromTypeParameters = true;
+    }
 
     if (!typeWasFound) {
       parser.perror("type is not recognized");
     }
 
+    // 1) generic-stub
+    if (isFromTypeParameters) {
+      Token tok = parser.checkedMove(T.TOKEN_IDENT);
+      if (!tok.ofType(T.TOKEN_IDENT)) {
+        parser.perror("expect identifier");
+      }
+      return new Type(tok.getIdent());
+    }
+
+    // 2) int/char/etc
     if (isPrimitiveType) {
       Token tok = parser.checkedMove(T.TOKEN_IDENT);
       Type tp = bindings.get(tok.getIdent());
@@ -49,9 +73,9 @@ public class ParseType {
       return tp;
     }
 
+    // 3) class-name
     Ident typeName = parser.getIdent();
     ReferenceType referenceType = new ReferenceType(parser.getClassType(typeName));
-
     return new Type(referenceType);
   }
 

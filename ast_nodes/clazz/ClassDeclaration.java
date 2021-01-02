@@ -13,7 +13,12 @@ import njast.types.Type;
 
 public class ClassDeclaration {
 
+  //  NormalClassDeclaration:
+  //    class Identifier [TypeParameters]
+  //    [extends Type] [implements TypeList] ClassBody
+
   private final Ident identifier;
+  private TypeParameters typeParameters;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
@@ -61,6 +66,14 @@ public class ClassDeclaration {
 
   public List<ClassMethodDeclaration> getMethods() {
     return methods;
+  }
+
+  public TypeParameters getTypeParameters() {
+    return typeParameters;
+  }
+
+  public void setTypeParameters(TypeParameters typeParameters) {
+    this.typeParameters = typeParameters;
   }
 
   public VarDeclarator getField(Ident name) {

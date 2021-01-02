@@ -24,9 +24,10 @@ public class Type {
   //
   //  <array type> ::= <type> [ ]
 
+  private final TypeBase base;
   private PrimitiveType primitiveType;
   private ReferenceType referenceType;
-  private boolean isPrimitive;
+  private Ident typeParameter;
 
   public final static Type BYTE_TYPE = new Type(PrimitiveType.TP_BYTE);
   public final static Type SHORT_TYPE = new Type(PrimitiveType.TP_SHORT);
@@ -37,17 +38,19 @@ public class Type {
   public final static Type DOUBLE_TYPE = new Type(PrimitiveType.TP_DOUBLE);
   public final static Type BOOLEAN_TYPE = new Type(PrimitiveType.TP_BOOLEAN);
 
-  public Type() {
-  }
-
   public Type(PrimitiveType primitiveType) {
+    this.base = TypeBase.PRIMITIVE;
     this.primitiveType = primitiveType;
-    this.isPrimitive = true;
   }
 
   public Type(ReferenceType referenceType) {
+    this.base = TypeBase.REFERENCE;
     this.referenceType = referenceType;
-    this.isPrimitive = false;
+  }
+
+  public Type(Ident typeParameter) {
+    this.base = TypeBase.TYPE_PARAMETER_STUB;
+    this.typeParameter = typeParameter;
   }
 
   public PrimitiveType getPrimitiveType() {
@@ -67,25 +70,37 @@ public class Type {
   }
 
   public boolean isPrimitive() {
-    return isPrimitive;
+    return base == TypeBase.PRIMITIVE;
   }
 
-  public void setPrimitive(boolean isPrimitive) {
-    this.isPrimitive = isPrimitive;
+  public boolean isReference() {
+    return base == TypeBase.REFERENCE;
+  }
+
+  public boolean isTypeParameterStub() {
+    return base == TypeBase.TYPE_PARAMETER_STUB;
+  }
+
+  public Ident getTypeParameter() {
+    return typeParameter;
   }
 
   public boolean isEqualTo(Type another) {
-    if (isPrimitive) {
+    if (isPrimitive()) {
       if (!another.isPrimitive()) {
         return false;
       }
       if (!primitiveType.equals(another.getPrimitiveType())) {
         return false;
       }
-    } else {
+    } else if (isReference()) {
       final Ident name1 = referenceType.getTypeName().getIdentifier();
       final Ident name2 = another.getReferenceType().getTypeName().getIdentifier();
       if (!name1.equals(name2)) {
+        return false;
+      }
+    } else {
+      if (!typeParameter.equals(another.getTypeParameter())) {
         return false;
       }
     }
@@ -94,10 +109,12 @@ public class Type {
 
   @Override
   public String toString() {
-    if (isPrimitive) {
+    if (isPrimitive()) {
       return primitiveType.toString();
+    } else if (isReference()) {
+      return referenceType.toString();
     }
-    return referenceType.toString();
+    return "T:" + typeParameter.getName();
   }
 
 }

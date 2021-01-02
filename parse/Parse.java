@@ -41,6 +41,15 @@ public class Parse {
   // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
   // class-type and simple types like int/char/etc.
   private Map<Ident, ClassDeclaration> referenceTypes;
+  private ClassDeclaration currentClass;
+
+  public ClassDeclaration getCurrentClass() {
+    return currentClass;
+  }
+
+  public void setCurrentClass(ClassDeclaration currentClass) {
+    this.currentClass = currentClass;
+  }
 
   public void defineClassName(ClassDeclaration cd) {
     this.referenceTypes.put(cd.getIdentifier(), cd);
@@ -279,6 +288,7 @@ public class Parse {
     this.ringBuffer = new ArrayList<Token>(parseState.getRingBuffer());
     this.lastloc = parseState.getLastloc();
     this.prevtok = parseState.getPrevtok();
+    this.currentClass = parseState.getCurrentClass();
   }
 
   ///////////////////////////////////////////////////////////////////

@@ -2,7 +2,9 @@ package njast.ast_parsers;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
+import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_nodes.clazz.TypeParameters;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -28,11 +30,17 @@ public class ParseMethodDeclaration {
     //    <method declarator> ::= <identifier> ( <formal parameter list>? )
     //    <method body> ::= <block> | ;
 
+    // public static <K, V> boolean compare(Pair<K, V> p1, Pair<K, V> p2) {
+
     Token location = parser.tok();
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
-    Type type = null;
 
+    if (parser.is(T.T_LT)) {
+      parser.unimplemented("generic methods");
+    }
+
+    Type type = null;
     if (parser.is(IdentMap.void_ident)) {
       Token saved = parser.moveget();
     } else {

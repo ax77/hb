@@ -9,6 +9,7 @@ import njast.ast_checkers.IsConstructor;
 import njast.ast_checkers.IsFunc;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.TypeParameters;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -46,6 +47,11 @@ public class ParseTypeDeclarationsList {
   private ClassDeclaration parseClassDeclaration() {
 
     Ident ident = parser.getIdent();
+
+    // class Thing<T> {
+    // ......^....^
+    TypeParameters tp = new ParseTypeParameters(parser).parse(); // maybe empty
+
     Token lbrace = parser.lbrace();
 
     // we'll register this name for type-handling
@@ -56,11 +62,14 @@ public class ParseTypeDeclarationsList {
     //
 
     ClassDeclaration clazz = parser.getClassType(ident);
+    clazz.setTypeParameters(tp);
+    parser.setCurrentClass(clazz);
 
     // class C { }
     // ..........^
     if (parser.is(T.T_RIGHT_BRACE)) {
       Token rbrace = parser.rbrace();
+      parser.setCurrentClass(null);
       return clazz;
     }
 
@@ -75,6 +84,7 @@ public class ParseTypeDeclarationsList {
 
     Token rbrace = parser.rbrace();
 
+    parser.setCurrentClass(null);
     return clazz;
   }
 

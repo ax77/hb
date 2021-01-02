@@ -6,7 +6,9 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.TypeParameters;
 import njast.ast_parsers.ParseModifiers;
+import njast.ast_parsers.ParseTypeParameters;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.parse.ParseState;
@@ -32,6 +34,8 @@ public class BindAllClassTypes {
 
       Ident classname = parser.getIdent();
       parser.defineClassName(new ClassDeclaration(classname));
+
+      TypeParameters tp = new ParseTypeParameters(parser).parse(); // maybe empty
 
       if (!parser.is(T.T_LEFT_BRACE)) {
         parser.perror("expect {");
