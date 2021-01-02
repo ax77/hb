@@ -23,6 +23,7 @@ public class ClassDeclaration {
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
+  private boolean isTemplate;
 
   public ClassDeclaration(Ident identifier) {
     this.identifier = identifier;
@@ -74,6 +75,7 @@ public class ClassDeclaration {
 
   public void setTypeParameters(TypeParameters typeParameters) {
     this.typeParameters = typeParameters;
+    this.isTemplate = !typeParameters.isEmpty();
   }
 
   public VarDeclarator getField(Ident name) {

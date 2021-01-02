@@ -26,9 +26,16 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class Thing<T> {     T xxx;      \n");
-    sb.append(" /*002*/   public int  z(T a) {}                \n");
-    sb.append(" /*006*/  }                       \n");
+    sb.append(" /*001*/  class Tree<T> {           \n");
+    sb.append(" /*002*/    T lhs;                  \n");
+    sb.append(" /*003*/    T rhs;                  \n");
+    sb.append(" /*004*/  }                         \n");
+    sb.append(" /*005*/  class Node {              \n");
+    sb.append(" /*006*/    int value;              \n");
+    sb.append(" /*007*/  }                         \n");
+    sb.append(" /*008*/  class UsageOfTemplate {   \n");
+    sb.append(" /*009*/    Tree<Node> root;        \n");
+    sb.append(" /*010*/  }                         \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();

@@ -28,6 +28,10 @@ public class TypeParameters {
   public boolean contains(Ident what) {
     return typeParameters.contains(what);
   }
+  
+  public boolean isEmpty() {
+    return typeParameters.isEmpty();
+  }
 
   public List<Ident> getTypeParameters() {
     return typeParameters;
