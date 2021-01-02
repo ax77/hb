@@ -1,8 +1,6 @@
 package njast.ast_parsers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import jscan.symtab.Ident;
@@ -10,7 +8,6 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IsIdent;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.TypeParameters;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
 import njast.types.ReferenceType;

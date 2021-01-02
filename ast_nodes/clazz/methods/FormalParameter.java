@@ -5,7 +5,7 @@ import java.io.Serializable;
 import jscan.symtab.Ident;
 import njast.types.Type;
 
-public class FormalParameter  implements Serializable  {
+public class FormalParameter implements Serializable {
 
   /**
    * 

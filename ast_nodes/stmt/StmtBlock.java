@@ -6,7 +6,7 @@ import java.util.List;
 
 import njast.parse.NullChecker;
 
-public class StmtBlock  implements Serializable  {
+public class StmtBlock implements Serializable {
 
   /**
    * 

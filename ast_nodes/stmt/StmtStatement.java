@@ -6,7 +6,7 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.expr.ExprExpression;
 
-public class StmtStatement  implements Serializable  {
+public class StmtStatement implements Serializable {
 
   /**
    * 

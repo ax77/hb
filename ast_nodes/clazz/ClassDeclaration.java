@@ -128,5 +128,4 @@ public class ClassDeclaration implements Serializable {
     return "class " + identifier.getName() + "{\n" + fields.toString() + "\n}\n";
   }
 
-
 }

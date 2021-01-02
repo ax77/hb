@@ -5,7 +5,7 @@ import java.util.List;
 
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 
-public class StmtBlockItem  implements Serializable  {
+public class StmtBlockItem implements Serializable {
 
   /**
    * 

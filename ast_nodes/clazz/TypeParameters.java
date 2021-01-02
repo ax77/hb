@@ -7,7 +7,7 @@ import java.util.List;
 import jscan.symtab.Ident;
 import njast.errors.EParseException;
 
-public class TypeParameters  implements Serializable  {
+public class TypeParameters implements Serializable {
   /**
    * 
    */
@@ -33,7 +33,7 @@ public class TypeParameters  implements Serializable  {
   public boolean contains(Ident what) {
     return typeParameters.contains(what);
   }
-  
+
   public boolean isEmpty() {
     return typeParameters.isEmpty();
   }

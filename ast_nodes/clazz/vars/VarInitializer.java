@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import njast.ast_nodes.expr.ExprExpression;
 
-public class VarInitializer  implements Serializable  {
+public class VarInitializer implements Serializable {
 
   /**
    * 

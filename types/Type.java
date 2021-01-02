@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import jscan.symtab.Ident;
 
-public class Type  implements Serializable  {
+public class Type implements Serializable {
 
   /**
    * 

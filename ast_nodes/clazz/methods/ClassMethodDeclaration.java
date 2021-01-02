@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.TypeParameters;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.parse.ILocation;
 import njast.parse.NullChecker;

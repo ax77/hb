@@ -6,7 +6,7 @@ import java.util.List;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 
-public class StmtFor  implements Serializable  {
+public class StmtFor implements Serializable {
 
   /**
    * 
