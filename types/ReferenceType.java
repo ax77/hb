@@ -26,6 +26,10 @@ public class ReferenceType {
     return !typeArguments.isEmpty();
   }
 
+  public List<ReferenceType> getTypeArguments() {
+    return typeArguments;
+  }
+
   @Override
   public String toString() {
     return "REF: " + classType.toString();

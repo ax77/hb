@@ -20,7 +20,7 @@ public class ClassDeclaration implements Serializable {
   //    class Identifier [TypeParameters]
   //    [extends Type] [implements TypeList] ClassBody
 
-  private final Ident identifier;
+  private /*final*/ Ident identifier;
   private TypeParameters typeParameters;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
@@ -89,6 +89,10 @@ public class ClassDeclaration implements Serializable {
     this.isTemplate = isTemplate;
   }
 
+  public void setIdentifier(Ident identifier) {
+    this.identifier = identifier;
+  }
+
   public VarDeclarator getField(Ident name) {
     for (VarDeclarator field : fields) {
       if (field.getIdentifier().equals(name)) {
@@ -126,7 +130,7 @@ public class ClassDeclaration implements Serializable {
 
   @Override
   public String toString() {
-    return "class " + identifier.getName() + "{\n" + fields.toString() + "\n}\n";
+    return "class " + identifier.getName();
   }
 
 }

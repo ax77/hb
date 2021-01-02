@@ -39,13 +39,12 @@ public class TestMinimalExample {
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class Tree<T> {           \n");
     sb.append(" /*002*/    T lhs;                  \n");
-    sb.append(" /*003*/    T rhs; T fn(T a, T b) {  }                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*005*/  class Node {              \n");
     sb.append(" /*006*/    int value;              \n");
     sb.append(" /*007*/  }                         \n");
     sb.append(" /*008*/  class UsageOfTemplate {   \n");
-    sb.append(" /*009*/    Tree<Tree<Node>> root;        \n");
+    sb.append(" /*009*/    Tree<Tree<Tree<Node>>> root;        \n");
     sb.append(" /*010*/  }                         \n");
     //@formatter:on
 
@@ -57,16 +56,16 @@ public class TestMinimalExample {
 
     //
 
-    ClassDeclaration cd = unit.getTypeDeclarations().get(0).getClassDeclaration();
+    ClassDeclaration cd = unit.getTypeDeclarations().get(2).getClassDeclaration()
+        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType().getTypeName();
 
-    List<Ident> fp = cd.getTypeParameters().getTypeParameters();
-    List<Type> ap = new ArrayList<Type>();
+    Ident fp = cd.getTypeParameters().getTypeParameters().get(0);
 
-    final Type reftype = new Type(new ReferenceType(unit.getTypeDeclarations().get(1).getClassDeclaration()));
-    ap.add(reftype);
+    ReferenceType ap = unit.getTypeDeclarations().get(2).getClassDeclaration()
+        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType().getTypeArguments().get(0);
 
     List<ClassDeclaration> generated = new ArrayList<>();
-    ClassDeclaration result = new TemplateCodegen().expandTemplate(cd, fp, ap, generated);
+    TemplateCodegen.expandTemplate(cd, fp, ap, generated);
     System.out.println();
   }
 
