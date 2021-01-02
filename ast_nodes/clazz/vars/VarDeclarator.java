@@ -9,11 +9,8 @@ import njast.parse.ILocation;
 import njast.types.Type;
 
 public class VarDeclarator implements ILocation, Serializable {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -364976996504280849L;
+
   private Modifiers modifiers;
   private final VarBase base;
   private final SourceLocation location;

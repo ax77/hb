@@ -7,10 +7,8 @@ import njast.types.Type;
 
 public class FormalParameter implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 8224274363196087023L;
+
   private /*final*/ Type type;
   private final Ident name;
 

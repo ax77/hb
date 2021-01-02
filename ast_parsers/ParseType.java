@@ -1,6 +1,8 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jscan.symtab.Ident;
@@ -81,30 +83,36 @@ public class ParseType {
     //    ReferenceType
 
     // 3) class-name
+    // hack: between '>' and '>>'
+    ReferenceType referenceType = getReftype();
+
+    return new Type(referenceType);
+  }
+
+  private ReferenceType getReftype() {
     Ident typeName = parser.getIdent();
     ReferenceType referenceType = new ReferenceType(parser.getClassType(typeName));
 
     if (parser.is(T.T_LT)) {
       Token begin = parser.checkedMove(T.T_LT);
 
-      ReferenceType rt = getOneReferenceTypeArgument();
+      ReferenceType rt = getReftype();
       referenceType.putTypeArgument(rt);
 
       while (parser.is(T.T_COMMA)) {
         parser.move();
-        ReferenceType rtrest = getOneReferenceTypeArgument();
+        ReferenceType rtrest = getReftype();
         referenceType.putTypeArgument(rtrest);
       }
 
-      Token end = parser.checkedMove(T.T_GT);
+      if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
+        parser.move();
+      } else {
+        //parser.perror("???");
+      }
+
     }
 
-    return new Type(referenceType);
-  }
-
-  private ReferenceType getOneReferenceTypeArgument() {
-    Ident typeName = parser.getIdent();
-    ReferenceType referenceType = new ReferenceType(parser.getClassType(typeName));
     return referenceType;
   }
 

@@ -5,11 +5,8 @@ import java.io.Serializable;
 import jscan.symtab.Ident;
 
 public class Type implements Serializable {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -4630043454712001308L;
+
   //  <type> ::= <primitive type> | <reference type>
   //  
   //  <primitive type> ::= <numeric type> | boolean

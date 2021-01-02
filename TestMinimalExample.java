@@ -1,6 +1,8 @@
 package njast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -13,6 +15,7 @@ import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
 import njast.types.PrimitiveType;
+import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class TestMinimalExample {
@@ -42,7 +45,7 @@ public class TestMinimalExample {
     sb.append(" /*006*/    int value;              \n");
     sb.append(" /*007*/  }                         \n");
     sb.append(" /*008*/  class UsageOfTemplate {   \n");
-    sb.append(" /*009*/    Tree<Node> root;        \n");
+    sb.append(" /*009*/    Tree<Tree<Node>> root;        \n");
     sb.append(" /*010*/  }                         \n");
     //@formatter:on
 
@@ -53,11 +56,17 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    Map<Ident, Type> bindings = new HashMap<>();
-    bindings.put(Hash_ident.getHashedIdent("T"), new Type(PrimitiveType.TP_INT));
 
     ClassDeclaration cd = unit.getTypeDeclarations().get(0).getClassDeclaration();
-    ClassDeclaration result = new TemplateCodegen().expandTemplate(cd, bindings);
+
+    List<Ident> fp = cd.getTypeParameters().getTypeParameters();
+    List<Type> ap = new ArrayList<Type>();
+
+    final Type reftype = new Type(new ReferenceType(unit.getTypeDeclarations().get(1).getClassDeclaration()));
+    ap.add(reftype);
+
+    List<ClassDeclaration> generated = new ArrayList<>();
+    ClassDeclaration result = new TemplateCodegen().expandTemplate(cd, fp, ap, generated);
     System.out.println();
   }
 

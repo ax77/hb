@@ -8,10 +8,8 @@ import jscan.symtab.Ident;
 import njast.errors.EParseException;
 
 public class TypeParameters implements Serializable {
-  /**
-   * 
-   */
   private static final long serialVersionUID = -3124209513520909512L;
+  
   //  TypeParameters:
   //    < TypeParameter { , TypeParameter } >
   //    TypeParameter:

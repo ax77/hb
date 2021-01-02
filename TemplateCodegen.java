@@ -1,7 +1,6 @@
 package njast;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -17,16 +16,35 @@ import njast.types.Type;
 
 public class TemplateCodegen {
 
-  public ClassDeclaration expandTemplate(ClassDeclaration given, Map<Ident, Type> bindings)
-      throws CloneNotSupportedException {
+  // TODO: check this and that...
+  private Type get(Ident id, List<Ident> fp, List<Type> ap) {
+    int index = -1;
+    for (int i = 0; i < fp.size(); i++) {
+      if (fp.get(i).equals(id)) {
+        index = i;
+        break;
+      }
+    }
+    return ap.get(index);
+  }
+
+  public ClassDeclaration expandTemplate(ClassDeclaration given, List<Ident> fp, List<Type> ap,
+      List<ClassDeclaration> generated) {
+
+    for (Type tp : ap) {
+      if (tp.isReference() && tp.getReferenceType().getTypeName().isTemplate()) {
+        expandTemplate(tp.getReferenceType().getTypeName(), fp, ap, generated);
+      }
+    }
 
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
+    object.setIsTemplate(false);
 
     //fields
     for (VarDeclarator field : object.getFields()) {
       if (field.getType().isTypeParameterStub()) {
         final Ident typeParameterName = field.getType().getTypeParameter();
-        field.setType(bindings.get(typeParameterName));
+        field.setType(get(typeParameterName, fp, ap));
       }
     }
 
@@ -36,14 +54,14 @@ public class TemplateCodegen {
       if (!method.isVoid()) {
         if (method.getResultType().isTypeParameterStub()) {
           final Ident typeParameterName = method.getResultType().getTypeParameter();
-          method.setResultType(bindings.get(typeParameterName));
+          method.setResultType(get(typeParameterName, fp, ap));
         }
       }
 
-      for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
-        if (fp.getType().isTypeParameterStub()) {
-          final Ident typeParameterName = fp.getType().getTypeParameter();
-          fp.setType(bindings.get(typeParameterName));
+      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
+        if (formal.getType().isTypeParameterStub()) {
+          final Ident typeParameterName = formal.getType().getTypeParameter();
+          formal.setType(get(typeParameterName, fp, ap));
         }
       }
 
@@ -59,7 +77,7 @@ public class TemplateCodegen {
           for (VarDeclarator var : localVars) {
             if (var.getType().isTypeParameterStub()) {
               final Ident typeParameterName = var.getType().getTypeParameter();
-              var.setType(bindings.get(typeParameterName));
+              var.setType(get(typeParameterName, fp, ap));
             }
           }
         }
@@ -81,6 +99,7 @@ public class TemplateCodegen {
     for (ClassConstructorDeclaration constructor : object.getConstructors()) {
     }
 
+    generated.add(object);
     return object;
 
   }

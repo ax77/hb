@@ -14,9 +14,6 @@ import njast.types.Type;
 
 public class ClassDeclaration implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 6225743252762855961L;
 
   //  NormalClassDeclaration:
@@ -86,6 +83,10 @@ public class ClassDeclaration implements Serializable {
 
   public boolean isTemplate() {
     return isTemplate;
+  }
+
+  public void setIsTemplate(boolean isTemplate) {
+    this.isTemplate = isTemplate;
   }
 
   public VarDeclarator getField(Ident name) {

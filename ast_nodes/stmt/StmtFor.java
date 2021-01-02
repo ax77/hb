@@ -7,12 +7,8 @@ import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 
 public class StmtFor implements Serializable {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 427234708626782894L;
-  // for
+
   private List<VarDeclarator> decl;
   private ExprExpression init;
   private ExprExpression test;

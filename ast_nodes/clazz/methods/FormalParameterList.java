@@ -6,10 +6,8 @@ import java.util.List;
 
 public class FormalParameterList implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 6989912396760951139L;
+
   private List<FormalParameter> parameters;
 
   public FormalParameterList() {
