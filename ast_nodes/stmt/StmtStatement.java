@@ -1,11 +1,17 @@
 package njast.ast_nodes.stmt;
 
+import java.io.Serializable;
+
 import jscan.tokenize.Token;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.expr.ExprExpression;
 
-public class StmtStatement {
+public class StmtStatement  implements Serializable  {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 2946438995245230886L;
   private final StatementBase base;
   private StmtBlock compound;
   private ExprExpression expr; // return expr or expr-stmt

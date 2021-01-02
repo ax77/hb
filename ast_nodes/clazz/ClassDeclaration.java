@@ -1,5 +1,6 @@
 package njast.ast_nodes.clazz;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,12 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.types.Type;
 
-public class ClassDeclaration {
+public class ClassDeclaration implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 6225743252762855961L;
 
   //  NormalClassDeclaration:
   //    class Identifier [TypeParameters]
@@ -78,6 +84,10 @@ public class ClassDeclaration {
     this.isTemplate = !typeParameters.isEmpty();
   }
 
+  public boolean isTemplate() {
+    return isTemplate;
+  }
+
   public VarDeclarator getField(Ident name) {
     for (VarDeclarator field : fields) {
       if (field.getIdentifier().equals(name)) {
@@ -115,7 +125,8 @@ public class ClassDeclaration {
 
   @Override
   public String toString() {
-    return identifier.getName() + ": class";
+    return "class " + identifier.getName() + "{\n" + fields.toString() + "\n}\n";
   }
+
 
 }

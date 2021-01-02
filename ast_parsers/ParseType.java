@@ -62,7 +62,8 @@ public class ParseType {
       if (!tok.ofType(T.TOKEN_IDENT)) {
         parser.perror("expect identifier");
       }
-      return new Type(tok.getIdent());
+      final Type resultType = new Type(tok.getIdent());
+      return resultType;
     }
 
     // 2) int/char/etc

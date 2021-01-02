@@ -1,5 +1,7 @@
 package njast.ast_nodes.clazz.methods;
 
+import java.io.Serializable;
+
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.TypeParameters;
@@ -8,10 +10,12 @@ import njast.parse.ILocation;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
-public class ClassMethodDeclaration implements ILocation {
+public class ClassMethodDeclaration implements ILocation, Serializable {
+
+  private static final long serialVersionUID = 2982374768194205119L;
 
   private final SourceLocation location;
-  private final Type resultType;
+  private /*final*/ Type resultType;
   private final Ident identifier;
   private final FormalParameterList formalParameterList;
   private final boolean isVoid;
@@ -29,6 +33,10 @@ public class ClassMethodDeclaration implements ILocation {
     this.body = body;
     this.location = location;
 
+  }
+
+  public void setResultType(Type resultType) {
+    this.resultType = resultType;
   }
 
   public FormalParameterList getFormalParameterList() {

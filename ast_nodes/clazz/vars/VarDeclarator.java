@@ -1,17 +1,23 @@
 package njast.ast_nodes.clazz.vars;
 
+import java.io.Serializable;
+
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.modifiers.Modifiers;
 import njast.parse.ILocation;
 import njast.types.Type;
 
-public class VarDeclarator implements ILocation {
+public class VarDeclarator implements ILocation, Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -364976996504280849L;
   private Modifiers modifiers;
   private final VarBase base;
   private final SourceLocation location;
-  private final Type type;
+  private /*final*/ Type type;
   private final Ident identifier;
   private VarInitializer initializer;
 
@@ -20,6 +26,10 @@ public class VarDeclarator implements ILocation {
     this.location = location;
     this.type = type;
     this.identifier = identifier;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
   }
 
   public VarInitializer getInitializer() {

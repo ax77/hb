@@ -1,11 +1,20 @@
 package njast;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 
+import jscan.hashed.Hash_ident;
+import jscan.symtab.Ident;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
+import njast.types.PrimitiveType;
+import njast.types.Type;
 
 public class TestMinimalExample {
 
@@ -28,7 +37,7 @@ public class TestMinimalExample {
     StringBuilder sb = new StringBuilder();
     sb.append(" /*001*/  class Tree<T> {           \n");
     sb.append(" /*002*/    T lhs;                  \n");
-    sb.append(" /*003*/    T rhs;                  \n");
+    sb.append(" /*003*/    T rhs; T fn(T a, T b) {  }                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*005*/  class Node {              \n");
     sb.append(" /*006*/    int value;              \n");
@@ -44,6 +53,13 @@ public class TestMinimalExample {
     ApplyCompilationUnit applier = new ApplyCompilationUnit();
     applier.visit(unit);
 
+    //
+    Map<Ident, Type> bindings = new HashMap<>();
+    bindings.put(Hash_ident.getHashedIdent("T"), new Type(PrimitiveType.TP_INT));
+
+    ClassDeclaration cd = unit.getTypeDeclarations().get(0).getClassDeclaration();
+    ClassDeclaration result = new TemplateCodegen().expandTemplate(cd, bindings);
+    System.out.println();
   }
 
 }

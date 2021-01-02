@@ -1,12 +1,17 @@
 package njast.ast_nodes.clazz;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.errors.EParseException;
 
-public class TypeParameters {
+public class TypeParameters  implements Serializable  {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3124209513520909512L;
   //  TypeParameters:
   //    < TypeParameter { , TypeParameter } >
   //    TypeParameter:

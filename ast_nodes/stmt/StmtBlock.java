@@ -1,12 +1,17 @@
 package njast.ast_nodes.stmt;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import njast.parse.NullChecker;
 
-public class StmtBlock {
+public class StmtBlock  implements Serializable  {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3746821242002590684L;
   private final List<StmtBlockItem> blockStatements;
 
   // empty: { }
