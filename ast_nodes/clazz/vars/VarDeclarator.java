@@ -47,21 +47,11 @@ public class VarDeclarator implements ILocation, Serializable {
 
   @Override
   public String toString() {
-
     StringBuilder sb = new StringBuilder();
 
-    sb.append(base.toString());
-    sb.append(": ");
-    sb.append(identifier.getName());
-    sb.append(": ");
     sb.append(type.toString());
-
-    if (initializer != null) {
-      sb.append(" = ");
-      sb.append(initializer.getInitializer().toString());
-    } else {
-      sb.append(" = <uninitialized>");
-    }
+    sb.append(" ");
+    sb.append(identifier.getName());
 
     sb.append(";");
     return sb.toString();

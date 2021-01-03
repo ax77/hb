@@ -130,7 +130,11 @@ public class ClassDeclaration implements Serializable {
 
   @Override
   public String toString() {
-    return "class " + identifier.getName();
+    StringBuilder sb = new StringBuilder();
+    for (VarDeclarator var : fields) {
+      sb.append("  " + var.toString() + "\n");
+    }
+    return "class " + identifier.getName() + " {\n" + sb.toString() + "}\n";
   }
 
 }
