@@ -7,7 +7,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarator;
 
 public class StmtBlockItem implements Serializable {
   private static final long serialVersionUID = -5769795901942280395L;
-  
+
   private List<VarDeclarator> localVars;
   private StmtStatement statement;
 

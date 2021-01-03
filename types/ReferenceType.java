@@ -32,7 +32,25 @@ public class ReferenceType {
 
   @Override
   public String toString() {
-    return "REF: " + classType.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append(classType.getIdentifier().getName());
+
+    final int bound = typeArguments.size();
+    if (bound > 0) {
+      sb.append("<");
+    }
+    for (int i = 0; i < bound; i++) {
+      ReferenceType ref = typeArguments.get(i);
+      sb.append(ref.toString());
+      if (i + 1 < bound) {
+        sb.append(", ");
+      }
+    }
+    if (bound > 0) {
+      sb.append(">");
+    }
+
+    return sb.toString();
   }
 
 }

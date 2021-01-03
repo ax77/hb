@@ -8,7 +8,7 @@ import njast.parse.NullChecker;
 
 public class StmtBlock implements Serializable {
   private static final long serialVersionUID = -3746821242002590684L;
-  
+
   private final List<StmtBlockItem> blockStatements;
 
   // empty: { }

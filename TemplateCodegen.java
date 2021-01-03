@@ -6,14 +6,9 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.TypeParameters;
-import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.types.ReferenceType;
 import njast.types.Type;
 

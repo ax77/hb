@@ -1,9 +1,7 @@
 package njast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -14,9 +12,7 @@ import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
-import njast.types.PrimitiveType;
 import njast.types.ReferenceType;
-import njast.types.Type;
 
 public class TestMinimalExample {
 
