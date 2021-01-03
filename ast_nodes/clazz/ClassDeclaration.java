@@ -1,5 +1,6 @@
 package njast.ast_nodes.clazz;
 
+import java.beans.MethodDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,6 +134,9 @@ public class ClassDeclaration implements Serializable {
     StringBuilder sb = new StringBuilder();
     for (VarDeclarator var : fields) {
       sb.append("  " + var.toString() + "\n");
+    }
+    for (ClassMethodDeclaration method : methods) {
+      sb.append("  " + method.toString() + "\n");
     }
     return "class " + identifier.getName() + " {\n" + sb.toString() + "}\n";
   }

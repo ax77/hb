@@ -113,6 +113,12 @@ public class Type implements Serializable {
   @Override
   public String toString() {
     if (isPrimitive()) {
+
+      // TP_BYTE, TP_SHORT, TP_CHAR, TP_INT, TP_LONG, TP_FLOAT, TP_DOUBLE, TP_BOOLEAN
+      if (primitiveType.equals(PrimitiveType.TP_INT)) {
+        return "int";
+      }
+
       return primitiveType.toString();
     } else if (isReference()) {
       return referenceType.toString();

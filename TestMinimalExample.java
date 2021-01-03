@@ -37,16 +37,16 @@ public class TestMinimalExample {
     sb.append(" /*002*/    K key; V value;                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*001*/  class Tree<T> {           \n");
-    sb.append(" /*002*/    T lhs; T rhs;                  \n");
+    sb.append(" /*002*/   int fn(T a, T b) {  } T lhs; T rhs;                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*005*/  class Node1<T> {              \n");
-    sb.append(" /*006*/    T value;              \n");
+    sb.append(" /*006*/   T fn(T xxx, T yyy) {}  T value;              \n");
     sb.append(" /*007*/  }                         \n");
     sb.append(" /*005*/  class Node2 {              \n");
     sb.append(" /*006*/    int value;              \n");
     sb.append(" /*007*/  }                         \n");
     sb.append(" /*008*/  class UsageOfTemplate {   \n");
-    sb.append(" /*009*/    Pair< Tree < Node1 < Node2 > >, Pair< Node1< Tree<Node2> >, Node2 > > root;        \n");
+    sb.append(" /*009*/    Pair<Tree<Node1<Node2> >, Pair<Node1<Tree<Node2> >, Node2> > root;        \n");
     sb.append(" /*010*/  }                         \n");
     //@formatter:on
 

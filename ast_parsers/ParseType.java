@@ -81,9 +81,7 @@ public class ParseType {
     //    ReferenceType
 
     // 3) class-name
-    // hack: between '>' and '>>'
     ReferenceType referenceType = getReftype();
-
     return new Type(referenceType);
   }
 
@@ -103,12 +101,9 @@ public class ParseType {
         referenceType.putTypeArgument(rtrest);
       }
 
-      if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
-        parser.move();
-      } else {
-        //parser.perror("???");
-      }
-
+      // TODO: ambiguous between '>' and '>>' in template arguments
+      // if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
+      Token end = parser.checkedMove(T.T_GT);
     }
 
     return referenceType;

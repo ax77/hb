@@ -8,13 +8,15 @@ import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.TypeParameters;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class TemplateCodegen {
-
-  static int cnt = 0;
 
   public static ReferenceType getType(ReferenceType from, List<ReferenceType> togen) {
     if (!from.isClassTemplate()) {
@@ -46,6 +48,7 @@ public class TemplateCodegen {
   }
 
   private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet) {
+
     //fields
     for (VarDeclarator field : object.getFields()) {
       if (field.getType().isTypeParameterStub()) {
@@ -55,61 +58,59 @@ public class TemplateCodegen {
         }
       }
     }
+
+    //methods
+    for (ClassMethodDeclaration method : object.getMethods()) {
+
+      if (!method.isVoid()) {
+        if (method.getResultType().isTypeParameterStub()) {
+          final Ident typeParameterName = method.getResultType().getTypeParameter();
+          if (typeParameterName.equals(typenameT)) {
+            method.setResultType(typeToSet);
+          }
+        }
+      }
+
+      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
+        if (formal.getType().isTypeParameterStub()) {
+          final Ident typeParameterName = formal.getType().getTypeParameter();
+          if (typeParameterName.equals(typenameT)) {
+            formal.setType(typeToSet);
+          }
+        }
+      }
+
+      //body
+      final StmtBlock body = method.getBody();
+      final List<StmtBlockItem> blocks = body.getBlockStatements();
+
+      for (StmtBlockItem block : blocks) {
+
+        // declarations
+        final List<VarDeclarator> localVars = block.getLocalVars();
+        if (localVars != null) {
+          for (VarDeclarator var : localVars) {
+            if (var.getType().isTypeParameterStub()) {
+              final Ident typeParameterName = var.getType().getTypeParameter();
+              if (typeParameterName.equals(typenameT)) {
+                var.setType(typeToSet);
+              }
+            }
+          }
+        }
+
+        // // statements
+        // final StmtStatement statement = block.getStatement();
+        // if (statement != null) {
+        //   boolean result = new ApplyStmt(this).applyStatement(object, statement);
+        //   if (!result) {
+        //     System.out.println("...??? stmt");
+        //   }
+        // }
+
+      }
+
+    }
   }
 
-  public static void expandTemplate(ClassDeclaration given, Ident fp, ReferenceType ap,
-      List<ClassDeclaration> generated) {
-
-    //    //methods
-    //    for (ClassMethodDeclaration method : object.getMethods()) {
-    //
-    //      if (!method.isVoid()) {
-    //        if (method.getResultType().isTypeParameterStub()) {
-    //          final Ident typeParameterName = method.getResultType().getTypeParameter();
-    //          method.setResultType(new Type(ap));
-    //        }
-    //      }
-    //
-    //      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
-    //        if (formal.getType().isTypeParameterStub()) {
-    //          final Ident typeParameterName = formal.getType().getTypeParameter();
-    //          formal.setType(new Type(ap));
-    //        }
-    //      }
-    //
-    //      //body
-    //      final StmtBlock body = method.getBody();
-    //      final List<StmtBlockItem> blocks = body.getBlockStatements();
-    //
-    //      for (StmtBlockItem block : blocks) {
-    //
-    //        // declarations
-    //        final List<VarDeclarator> localVars = block.getLocalVars();
-    //        if (localVars != null) {
-    //          for (VarDeclarator var : localVars) {
-    //            if (var.getType().isTypeParameterStub()) {
-    //              final Ident typeParameterName = var.getType().getTypeParameter();
-    //              var.setType(get(typeParameterName, fp, ap));
-    //            }
-    //          }
-    //        }
-    //
-    //        // statements
-    //        final StmtStatement statement = block.getStatement();
-    //        if (statement != null) {
-    //          boolean result = new ApplyStmt(this).applyStatement(object, statement);
-    //          if (!result) {
-    //            System.out.println("...??? stmt");
-    //          }
-    //        }
-    //
-    //      }
-    //
-    //    }
-
-    //    //constructors (the last, it works with methods and fields)
-    //    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
-    //    }
-
-  }
 }

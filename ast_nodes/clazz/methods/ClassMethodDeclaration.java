@@ -62,13 +62,14 @@ public class ClassMethodDeclaration implements ILocation, Serializable {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     if (isVoid) {
-      sb.append("VOID");
+      sb.append("void");
     } else {
       sb.append(resultType.toString());
     }
     sb.append(" ");
     sb.append(identifier.getName());
     sb.append(formalParameterList.toString());
+    sb.append(" { }");
 
     return sb.toString();
   }
