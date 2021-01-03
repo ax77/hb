@@ -16,47 +16,49 @@ public class TemplateCodegen {
 
   static int cnt = 0;
 
-  //  // TODO: check this and that...
-  //  private static Type get(Ident id, List<Ident> fp, List<ReferenceType> ap) {
-  //    int index = -1;
-  //    for (int i = 0; i < fp.size(); i++) {
-  //      if (fp.get(i).equals(id)) {
-  //        index = i;
-  //        break;
-  //      }
-  //    }
-  //    return new Type(ap.get(index));
-  //  }
-
-  public static void expandTemplate(ClassDeclaration given, Ident fp, ReferenceType ap,
-      List<ClassDeclaration> generated) {
-
-    final ClassDeclaration typeName = ap.getTypeName();
-    if (typeName.isTemplate()) {
-      ReferenceType reftype = ap.getTypeArguments().get(0);
-      final Ident typenameT = typeName.getTypeParameters().getTypeParameters().get(0);
-      expandTemplate(typeName, typenameT, reftype, generated);
+  public static ReferenceType getType(ReferenceType from, List<ReferenceType> togen) {
+    if (!from.isClassTemplate()) {
+      return from;
     }
 
+    final ClassDeclaration templateClass = copyClazz(from.getTypeName(), from.toString().trim());
+    final List<ReferenceType> typeArguments = from.getTypeArguments();
+    final List<Ident> typeParameters = from.getTypeParameters();
+
+    for (int i = 0; i < typeParameters.size(); i++) {
+      ReferenceType ref = typeArguments.get(i);
+      Ident typenameT = typeParameters.get(i);
+      Type typeToSet = new Type(getType(ref, togen));
+      replaceOneTypeParam(templateClass, typenameT, typeToSet);
+    }
+
+    final ReferenceType result = new ReferenceType(templateClass);
+    togen.add(result);
+    return result;
+  }
+
+  private static ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
     object.setTypeParameters(new TypeParameters());
     object.setIsTemplate(false);
-    String newname = String.format("%s_%d", object.getIdentifier().getName(), cnt++);
     object.setIdentifier(Hash_ident.getHashedIdent(newname));
+    return object;
+  }
 
+  private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet) {
     //fields
     for (VarDeclarator field : object.getFields()) {
       if (field.getType().isTypeParameterStub()) {
         final Ident typeParameterName = field.getType().getTypeParameter();
-
-        Type tp = new Type(ap);
-        if (!generated.isEmpty()) {
-          tp = new Type(new ReferenceType(generated.get(0)));
+        if (typeParameterName.equals(typenameT)) {
+          field.setType(typeToSet);
         }
-
-        field.setType(tp);
       }
     }
+  }
+
+  public static void expandTemplate(ClassDeclaration given, Ident fp, ReferenceType ap,
+      List<ClassDeclaration> generated) {
 
     //    //methods
     //    for (ClassMethodDeclaration method : object.getMethods()) {
@@ -108,8 +110,6 @@ public class TemplateCodegen {
     //    //constructors (the last, it works with methods and fields)
     //    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
     //    }
-
-    generated.add(0, object);
 
   }
 }

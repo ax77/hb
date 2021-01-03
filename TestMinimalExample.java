@@ -51,17 +51,11 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-
-    ClassDeclaration cd = unit.getTypeDeclarations().get(2).getClassDeclaration()
-        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType().getTypeName();
-
-    Ident fp = cd.getTypeParameters().getTypeParameters().get(0);
-
     ReferenceType ap = unit.getTypeDeclarations().get(2).getClassDeclaration()
-        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType().getTypeArguments().get(0);
+        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType();
 
-    List<ClassDeclaration> generated = new ArrayList<>();
-    TemplateCodegen.expandTemplate(cd, fp, ap, generated);
+    List<ReferenceType> togen = new ArrayList<>();
+    ReferenceType res = TemplateCodegen.getType(ap,togen);
     System.out.println();
   }
 
