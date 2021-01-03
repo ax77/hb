@@ -1,6 +1,5 @@
 package njast.ast_nodes.clazz;
 
-import java.beans.MethodDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

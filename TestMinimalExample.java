@@ -6,8 +6,6 @@ import java.util.List;
 import org.junit.Test;
 
 import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
@@ -37,7 +35,7 @@ public class TestMinimalExample {
     sb.append(" /*002*/    K key; V value;                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*001*/  class Tree<T> {           \n");
-    sb.append(" /*002*/   int fn(T a, T b) {  } T lhs; T rhs;                  \n");
+    sb.append(" /*002*/   int fn(T a, T b) { T zzzzz; } T lhs; T rhs;                  \n");
     sb.append(" /*004*/  }                         \n");
     sb.append(" /*005*/  class Node1<T> {              \n");
     sb.append(" /*006*/   T fn(T xxx, T yyy) {}  T value;              \n");

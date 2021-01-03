@@ -38,7 +38,11 @@ public class StmtBlockItem implements Serializable {
   @Override
   public String toString() {
     if (localVars != null) {
-      return "LOC_VAR_DECL";
+      StringBuilder sb = new StringBuilder();
+      for (VarDeclarator var : localVars) {
+        sb.append("    " + var.toString());
+      }
+      return sb.toString();
     }
     return "STMT";
   }

@@ -77,7 +77,17 @@ public class Parse {
   public boolean isPrimitiveOrReferenceTypeBegin() {
     final boolean isPrimitiveType = IsIdent.isBasicTypeIdent(tok());
     final boolean isReferenceType = isClassName();
-    return isPrimitiveType || isReferenceType;
+    boolean typeWasFound = isPrimitiveType || isReferenceType;
+
+    if (!typeWasFound) {
+      ClassDeclaration classDeclaration = getCurrentClass();
+      if (classDeclaration == null) {
+        unreachable("expect current class");
+      }
+      typeWasFound = classDeclaration.getTypeParameters().contains(tok().getIdent());
+    }
+
+    return typeWasFound;
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

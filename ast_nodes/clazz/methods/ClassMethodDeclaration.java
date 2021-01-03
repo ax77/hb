@@ -69,7 +69,9 @@ public class ClassMethodDeclaration implements ILocation, Serializable {
     sb.append(" ");
     sb.append(identifier.getName());
     sb.append(formalParameterList.toString());
-    sb.append(" { }");
+    sb.append(" {\n");
+    sb.append(body.toString() + "\n");
+    sb.append("  }");
 
     return sb.toString();
   }

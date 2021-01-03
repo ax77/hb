@@ -26,4 +26,13 @@ public class StmtBlock implements Serializable {
     return blockStatements;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (StmtBlockItem blockItem : blockStatements) {
+      sb.append(blockItem.toString());
+    }
+    return sb.toString();
+  }
+
 }
