@@ -14,6 +14,7 @@ import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
+import njast.errors.EParseException;
 import njast.types.ReferenceType;
 import njast.types.ReferenceTypeBase;
 import njast.types.Type;
@@ -31,16 +32,29 @@ public class TemplateCodegen {
       return ready;
     }
 
-    final ClassDeclaration templateClass = copyClazz(from.getClassType(), from.toString().trim());
+    final String origName = from.getClassType().getIdentifier().getName();
+
+    final ClassDeclaration templateClass = copyClazz(from.getClassType(), origName);
     final List<ReferenceType> typeArguments = from.getTypeArguments();
     final List<ReferenceType> typeParameters = templateClass.getTypeParametersT();
 
+    // I) fill all typename's with real types
+    for (int i = 0; i < typeParameters.size(); i++) {
+      ReferenceType ref = typeArguments.get(i);
+      //Ident typenameT = typeParameters.get(i).getTypeVariable();
+      //Type typeToSet = new Type(getType(ref, togen, temps));
+
+      templateClass.getTypeParametersT().get(i).fillPropValues(ref);
+      //replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
+    }
+
+    // II) replace
     for (int i = 0; i < typeParameters.size(); i++) {
       ReferenceType ref = typeArguments.get(i);
       Ident typenameT = typeParameters.get(i).getTypeVariable();
       Type typeToSet = new Type(getType(ref, togen, temps));
 
-      templateClass.getTypeParametersT().get(i).fillPropValues(ref);
+      //templateClass.getTypeParametersT().get(i).fillPropValues(ref);
       replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
     }
 
@@ -57,28 +71,51 @@ public class TemplateCodegen {
     if (temps.isEmpty()) {
       return null;
     }
-    String name = from.getClassType().getIdentifier().getName();
-    Dto dto = temps.get(name);
-    List<ReferenceType> args = dto.getTypeArguments();
+
+    if (from.getBase() != ReferenceTypeBase.CLASS_REF) {
+      throw new EParseException("expect class-type");
+    }
+
+    final String name = from.getClassType().getIdentifier().getName();
+
+    final Dto dto = temps.get(name);
+    if (dto == null) {
+      return null;
+    }
+
+    final ReferenceType result = dto.getResult();
+    if (result == null) {
+      throw new EParseException("empty result");
+    }
+
+    final List<ReferenceType> args = dto.getTypeArguments();
     if (args == null) {
       return null;
     }
-    if (from.getTypeArguments().size() != args.size()) {
+
+    final List<ReferenceType> typeArgumentsFrom = from.getTypeArguments();
+    if (typeArgumentsFrom == null) {
       return null;
     }
+
+    if (typeArgumentsFrom.size() != args.size()) {
+      return null;
+    }
+
     for (int i = 0; i < args.size(); i++) {
-      ReferenceType tp1 = from.getTypeArguments().get(i);
+      ReferenceType tp1 = typeArgumentsFrom.get(i);
       ReferenceType tp2 = args.get(i);
       if (tp1.equals(tp2)) {
-        return dto.getResult();
+        return result;
       }
     }
+
     return null;
   }
 
   private static ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setIdentifier(Hash_ident.getHashedIdent(String.format("t%d", temps++)));
+    object.setIdentifier(Hash_ident.getHashedIdent(String.format("t_%s_%d", newname, temps++)));
     return object;
   }
 

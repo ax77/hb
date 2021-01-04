@@ -88,6 +88,48 @@ public class ReferenceType implements Serializable {
   public List<ReferenceType> getTypeArguments() {
     return typeArguments;
   }
+  
+  
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((base == null) ? 0 : base.hashCode());
+    result = prime * result + ((classType == null) ? 0 : classType.hashCode());
+    result = prime * result + ((typeArguments == null) ? 0 : typeArguments.hashCode());
+    result = prime * result + ((typeVariable == null) ? 0 : typeVariable.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ReferenceType other = (ReferenceType) obj;
+    if (base != other.base)
+      return false;
+    if (classType == null) {
+      if (other.classType != null)
+        return false;
+    } else if (!classType.equals(other.classType))
+      return false;
+    if (typeArguments == null) {
+      if (other.typeArguments != null)
+        return false;
+    } else if (!typeArguments.equals(other.typeArguments))
+      return false;
+    if (typeVariable == null) {
+      if (other.typeVariable != null)
+        return false;
+    } else if (!typeVariable.equals(other.typeVariable))
+      return false;
+    return true;
+  }
 
   @Override
   public String toString() {

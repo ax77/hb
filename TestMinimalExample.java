@@ -37,12 +37,12 @@ public class TestMinimalExample {
    sb.append("   Node<E> next;          \n");
    sb.append("   Node<E> prev;          \n");
    sb.append(" }                        \n");
-   sb.append(" class LinkedList<E> {    \n");
+   sb.append(" class List<E> {    \n");
    sb.append("   Node<E> first;         \n");
-   sb.append("   Node<E> last;          \n");
-   sb.append(" }                        \n");
+   sb.append("   Node<E> last;  \n");
+   sb.append(" }    class Pair<K, V> { K key; V val; Pair<K,V> hash; }                     \n");
    sb.append(" class Idn{} class C {    \n");
-   sb.append("   LinkedList<Node<Idn> > list;  \n");
+   sb.append("   Pair<Node<Idn>, Idn> list;  \n");
    sb.append(" }                        \n");
    //@formatter:on
 
@@ -53,7 +53,7 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    ReferenceType ap = unit.getTypeDeclarations().get(3).getClassDeclaration()
+    ReferenceType ap = unit.getTypeDeclarations().get(4).getClassDeclaration()
         .getField(Hash_ident.getHashedIdent("list")).getType().getReferenceType();
 
     HashMap<String, Dto> temps=new HashMap<>();
