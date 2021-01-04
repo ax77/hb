@@ -1,6 +1,7 @@
 package njast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class TestMinimalExample {
    sb.append("   Node<E> last;          \n");
    sb.append(" }                        \n");
    sb.append(" class Idn{} class C {    \n");
-   sb.append("   Node<Idn> list;  \n");
+   sb.append("   LinkedList<Node<Idn> > list;  \n");
    sb.append(" }                        \n");
    //@formatter:on
 
@@ -55,8 +56,9 @@ public class TestMinimalExample {
     ReferenceType ap = unit.getTypeDeclarations().get(3).getClassDeclaration()
         .getField(Hash_ident.getHashedIdent("list")).getType().getReferenceType();
 
+    HashMap<String, Dto> temps=new HashMap<>();
     List<ReferenceType> togen = new ArrayList<>();
-    ReferenceType res = TemplateCodegen.getType(ap, togen);
+    ReferenceType res = TemplateCodegen.getType(ap, togen,temps);
     for (ReferenceType ref : togen) {
       System.out.println(ref.getClassType().toString());
     }

@@ -10,7 +10,8 @@ import njast.errors.EParseException;
 
 public class ReferenceType implements Serializable {
   private static final long serialVersionUID = -8581315731092130356L;
-  private final ReferenceTypeBase base;
+
+  private ReferenceTypeBase base;
   private ClassDeclaration classType;
   private List<ReferenceType> typeArguments;
   private Ident typeVariable;
@@ -19,6 +20,13 @@ public class ReferenceType implements Serializable {
     this.base = ReferenceTypeBase.CLASS_REF;
     this.classType = classType;
     this.typeArguments = new ArrayList<ReferenceType>(0);
+  }
+
+  public void fillPropValues(ReferenceType other) {
+    this.base = other.base;
+    this.classType = other.classType;
+    this.typeArguments = other.typeArguments;
+    this.typeVariable = other.typeVariable;
   }
 
   public ReferenceType(Ident typeVariable) {
@@ -60,7 +68,7 @@ public class ReferenceType implements Serializable {
   }
 
   public boolean isClassTemplate() {
-    return classType.isTemplate();
+    return base == ReferenceTypeBase.CLASS_REF && classType.isTemplate();
   }
 
   public List<ReferenceType> getTypeParameters() {
@@ -90,20 +98,20 @@ public class ReferenceType implements Serializable {
       sb.append(typeVariable.getName());
     }
 
-    final int bound = typeArguments.size();
-    if (bound > 0) {
-      sb.append("_");
-    }
-    for (int i = 0; i < bound; i++) {
-      ReferenceType ref = typeArguments.get(i);
-      sb.append(ref.toString());
-      if (i + 1 < bound) {
-        sb.append("_");
-      }
-    }
-    if (bound > 0) {
-      //sb.append(">");
-    }
+    //    final int bound = typeArguments.size();
+    //    if (bound > 0) {
+    //      sb.append("_");
+    //    }
+    //    for (int i = 0; i < bound; i++) {
+    //      ReferenceType ref = typeArguments.get(i);
+    //      sb.append(ref.toString());
+    //      if (i + 1 < bound) {
+    //        sb.append("_");
+    //      }
+    //    }
+    //    if (bound > 0) {
+    //      //sb.append(">");
+    //    }
 
     return sb.toString();
   }
