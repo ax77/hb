@@ -16,6 +16,40 @@ public class ReferenceType implements Serializable {
   private List<ReferenceType> typeArguments;
   private Ident typeVariable;
 
+  public boolean isEqualAsGeneric(ReferenceType another) {
+    if (this == another) {
+      return true;
+    }
+    if (!base.equals(another.getBase())) {
+      return false;
+    }
+
+    if (base == ReferenceTypeBase.CLASS_REF) {
+      if (!classType.isEqualAsGeneric(another.getClassType())) {
+        return false;
+      }
+      final List<ReferenceType> typeArgumentsAnother = another.getTypeArguments();
+      if (typeArguments.size() != typeArgumentsAnother.size()) {
+        return false;
+      }
+      for (int i = 0; i < typeArguments.size(); i++) {
+        ReferenceType tp1 = typeArguments.get(i);
+        ReferenceType tp2 = typeArgumentsAnother.get(i);
+        if (!tp1.isEqualAsGeneric(tp2)) {
+          return false;
+        }
+      }
+    } else if (base == ReferenceTypeBase.TYPE_VARIABLE_T) {
+      if (!typeVariable.equals(another.getTypeVariable())) {
+        return false;
+      }
+    } else {
+      throw new EParseException("unknown base");
+    }
+
+    return true;
+  }
+
   public ReferenceType(ClassDeclaration classType) {
     this.base = ReferenceTypeBase.CLASS_REF;
     this.classType = classType;
@@ -35,24 +69,12 @@ public class ReferenceType implements Serializable {
     this.typeArguments = new ArrayList<ReferenceType>(0);
   }
 
-  public void setClassType(ClassDeclaration classType) {
-    this.classType = classType;
-  }
-
   public Ident getTypeVariable() {
     return typeVariable;
   }
 
-  public void setTypeVariable(Ident typeVariable) {
-    this.typeVariable = typeVariable;
-  }
-
   public ReferenceTypeBase getBase() {
     return base;
-  }
-
-  public void setTypeArguments(List<ReferenceType> typeArguments) {
-    this.typeArguments = typeArguments;
   }
 
   public void putTypeArgument(ReferenceType e) {
@@ -71,64 +93,16 @@ public class ReferenceType implements Serializable {
     return base == ReferenceTypeBase.CLASS_REF && classType.isTemplate();
   }
 
-  public List<ReferenceType> getTypeParameters() {
-    if (!isClassTemplate()) {
-      throw new EParseException("it is not a class template.");
-    }
-    final List<ReferenceType> typeParameters = classType.getTypeParametersT();
-    if (!hasTypeArguments()) {
-      throw new EParseException("template class without arguments");
-    }
-    if (typeParameters.size() != typeArguments.size()) {
-      throw new EParseException("count of parameters and arguments should be equal.");
-    }
-    return typeParameters;
+  public boolean isTypeVarRef() {
+    return base == ReferenceTypeBase.TYPE_VARIABLE_T;
+  }
+
+  public boolean isClassRef() {
+    return base == ReferenceTypeBase.CLASS_REF;
   }
 
   public List<ReferenceType> getTypeArguments() {
     return typeArguments;
-  }
-  
-  
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((base == null) ? 0 : base.hashCode());
-    result = prime * result + ((classType == null) ? 0 : classType.hashCode());
-    result = prime * result + ((typeArguments == null) ? 0 : typeArguments.hashCode());
-    result = prime * result + ((typeVariable == null) ? 0 : typeVariable.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    ReferenceType other = (ReferenceType) obj;
-    if (base != other.base)
-      return false;
-    if (classType == null) {
-      if (other.classType != null)
-        return false;
-    } else if (!classType.equals(other.classType))
-      return false;
-    if (typeArguments == null) {
-      if (other.typeArguments != null)
-        return false;
-    } else if (!typeArguments.equals(other.typeArguments))
-      return false;
-    if (typeVariable == null) {
-      if (other.typeVariable != null)
-        return false;
-    } else if (!typeVariable.equals(other.typeVariable))
-      return false;
-    return true;
   }
 
   @Override
@@ -139,22 +113,6 @@ public class ReferenceType implements Serializable {
     } else {
       sb.append(typeVariable.getName());
     }
-
-    //    final int bound = typeArguments.size();
-    //    if (bound > 0) {
-    //      sb.append("_");
-    //    }
-    //    for (int i = 0; i < bound; i++) {
-    //      ReferenceType ref = typeArguments.get(i);
-    //      sb.append(ref.toString());
-    //      if (i + 1 < bound) {
-    //        sb.append("_");
-    //      }
-    //    }
-    //    if (bound > 0) {
-    //      //sb.append(">");
-    //    }
-
     return sb.toString();
   }
 

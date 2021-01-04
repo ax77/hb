@@ -52,11 +52,11 @@ public class Type implements Serializable {
   }
 
   public boolean isTypeVarRef() {
-    return base == TypeBase.REFERENCE && referenceType.getBase() == ReferenceTypeBase.TYPE_VARIABLE_T;
+    return base == TypeBase.REFERENCE && referenceType.isTypeVarRef();
   }
 
   public boolean isClassRef() {
-    return base == TypeBase.REFERENCE && referenceType.getBase() == ReferenceTypeBase.CLASS_REF;
+    return base == TypeBase.REFERENCE && referenceType.isClassRef();
   }
 
   public Ident getTypeParameter() {

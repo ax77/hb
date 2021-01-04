@@ -37,11 +37,7 @@ public class TemplateCodegen {
     // I) fill all typename's with real types
     for (int i = 0; i < typeParameters.size(); i++) {
       ReferenceType ref = typeArguments.get(i);
-      //Ident typenameT = typeParameters.get(i).getTypeVariable();
-      //Type typeToSet = new Type(getType(ref, togen, temps));
-
       templateClass.getTypeParametersT().get(i).fillPropValues(ref);
-      //replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
     }
 
     // II) replace
@@ -49,8 +45,6 @@ public class TemplateCodegen {
       ReferenceType ref = typeArguments.get(i);
       Ident typenameT = typeParameters.get(i).getTypeVariable();
       Type typeToSet = new Type(getType(ref, togen, temps));
-
-      //templateClass.getTypeParametersT().get(i).fillPropValues(ref);
       replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
     }
 
@@ -58,8 +52,8 @@ public class TemplateCodegen {
     final ReferenceType result = new ReferenceType(templateClass);
 
     temps.put(from.getClassType().getIdentifier().getName(), new Dto(typeArguments, result));
-
     togen.add(result);
+
     return result;
   }
 
@@ -101,7 +95,7 @@ public class TemplateCodegen {
     for (int i = 0; i < args.size(); i++) {
       ReferenceType tp1 = typeArgumentsFrom.get(i);
       ReferenceType tp2 = args.get(i);
-      if (!tp1.equals(tp2)) {
+      if (!tp1.isEqualAsGeneric(tp2)) {
         return null;
       }
     }
@@ -130,26 +124,6 @@ public class TemplateCodegen {
       maybeReplaceTypenameWithType(field, typenameT, typeToSet);
       maybeClearTypeParametersIfSelfReference(field, object);
       maybeSetNewType(field, togen, temps);
-
-      //      if (field.getType().isTypeVarRef()) {
-      //        final Ident typeParameterName = field.getType().getTypeParameter();
-      //        if (typeParameterName.equals(typenameT)) {
-      //          field.setType(typeToSet);
-      //        }
-      //      } else {
-      //        if (field.getType().isReference()) {
-      //          ReferenceType oldtype = field.getType().getReferenceType();
-      //          if (oldtype.getBase() == ReferenceTypeBase.CLASS_REF) {
-      //            ClassDeclaration nested = oldtype.getClassType();
-      //            if (nested.equals(object)) {
-      //              nested.getTypeParametersT().clear();
-      //            }
-      //          }
-      //          ReferenceType newtype = getType(oldtype, togen, temps);
-      //          field.setType(new Type(newtype));
-      //        }
-      //      }
-
     }
 
     //    //methods

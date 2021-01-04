@@ -31,20 +31,36 @@ public class TestMinimalExample {
   public void testSymtab() throws Exception {
 
     //@formatter:off
-   StringBuilder sb = new StringBuilder();
-   sb.append(" class Node<E> {          \n");
-   sb.append("   E item;                \n");
-   sb.append("   Node<E> next;          \n");
-   sb.append("   Node<E> prev;          \n");
-   sb.append(" }                        \n");
-   sb.append(" class List<E> {    \n");
-   sb.append("   Node<E> first;         \n");
-   sb.append("   Node<E> last;  \n");
-   sb.append(" }    class Pair<K, V> { K key; V val; Pair<K,V> hash; }                     \n");
-   sb.append(" class Idn{} class C {    \n");
-   sb.append("   List<Pair<Idn, Node<Idn> > > list;  \n");
-   sb.append(" }                        \n");
-   //@formatter:on
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*001*/    class Node<T> {              \n");
+    sb.append(" /*002*/      Node<T> prev;              \n");
+    sb.append(" /*003*/      Node<T> next;              \n");
+    sb.append(" /*004*/      T item;                    \n");
+    sb.append(" /*005*/    }                            \n");
+    sb.append(" /*006*/    class List<T> {              \n");
+    sb.append(" /*007*/      Node<T> first;             \n");
+    sb.append(" /*008*/      Node<T> last;              \n");
+    sb.append(" /*009*/      int size;                  \n");
+    sb.append(" /*010*/    }                            \n");
+    sb.append(" /*011*/    class Entry<K, V> {          \n");
+    sb.append(" /*012*/      K key;                     \n");
+    sb.append(" /*013*/      V value;                   \n");
+    sb.append(" /*014*/      Entry<K, V> next;          \n");
+    sb.append(" /*015*/    }                            \n");
+    sb.append(" /*016*/    class Map<K, V> {            \n");
+    sb.append(" /*017*/      List<Entry<K, V> > table;  \n");
+    sb.append(" /*018*/      int capacity;              \n");
+    sb.append(" /*019*/    }                            \n");
+    sb.append(" /*020*/    class idn {                  \n");
+    sb.append(" /*021*/      int stub;                  \n");
+    sb.append(" /*022*/    }                            \n");
+    sb.append(" /*023*/    class string {               \n");
+    sb.append(" /*024*/      int stub;                  \n");
+    sb.append(" /*025*/    }                            \n");
+    sb.append(" /*026*/    class C {                    \n");
+    sb.append(" /*027*/      Map<string, idn> table;    \n");
+    sb.append(" /*028*/    }                            \n");
+    //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
@@ -53,12 +69,12 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    ReferenceType ap = unit.getTypeDeclarations().get(4).getClassDeclaration()
-        .getField(Hash_ident.getHashedIdent("list")).getType().getReferenceType();
+    ReferenceType ap = unit.getTypeDeclarations().get(6).getClassDeclaration()
+        .getField(Hash_ident.getHashedIdent("table")).getType().getReferenceType();
 
-    HashMap<String, Dto> temps=new HashMap<>();
+    HashMap<String, Dto> temps = new HashMap<>();
     List<ReferenceType> togen = new ArrayList<>();
-    ReferenceType res = TemplateCodegen.getType(ap, togen,temps);
+    ReferenceType res = TemplateCodegen.getType(ap, togen, temps);
     for (ReferenceType ref : togen) {
       System.out.println(ref.getClassType().toString());
     }
