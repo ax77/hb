@@ -41,7 +41,7 @@ public class TestMinimalExample {
    sb.append("   Node<E> last;          \n");
    sb.append(" }                        \n");
    sb.append(" class Idn{} class C {    \n");
-   sb.append("   LinkedList<Idn> list;  \n");
+   sb.append("   Node<Idn> list;  \n");
    sb.append(" }                        \n");
    //@formatter:on
 

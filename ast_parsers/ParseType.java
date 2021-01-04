@@ -60,7 +60,10 @@ public class ParseType {
         parser.perror("expect identifier");
       }
       final ClassDeclaration classDeclaration = parser.getCurrentClass();
-      final ReferenceType refTypeParameter = classDeclaration.getTypeParameter(parser.tok().getIdent());
+      final ReferenceType refTypeParameter = classDeclaration.getTypeParameter(tok.getIdent());
+      if (refTypeParameter == null) {
+        parser.perror("unknown type parameter");
+      }
       return new Type(refTypeParameter);
     }
 
