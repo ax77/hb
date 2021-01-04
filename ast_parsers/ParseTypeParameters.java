@@ -1,9 +1,12 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_nodes.clazz.TypeParameters;
 import njast.parse.Parse;
+import njast.types.ReferenceType;
 
 public class ParseTypeParameters {
   private final Parse parser;
@@ -12,12 +15,12 @@ public class ParseTypeParameters {
     this.parser = parser;
   }
 
-  public TypeParameters parse() {
+  public List<ReferenceType> parse() {
 
     // class Thing<K, V> {
     // ...........^
 
-    TypeParameters tp = new TypeParameters();
+    List<ReferenceType> tp = new ArrayList<ReferenceType>();
 
     if (parser.is(T.T_LT)) {
       parseTypeParameters(tp);
@@ -26,13 +29,13 @@ public class ParseTypeParameters {
     return tp;
   }
 
-  private void parseTypeParameters(TypeParameters tp) {
+  private void parseTypeParameters(List<ReferenceType> tp) {
     Token open = parser.checkedMove(T.T_LT);
 
-    tp.put(parser.getIdent());
+    tp.add(new ReferenceType(parser.getIdent()));
     while (parser.is(T.T_COMMA)) {
       parser.move();
-      tp.put(parser.getIdent());
+      tp.add(new ReferenceType(parser.getIdent()));
     }
 
     Token close = parser.checkedMove(T.T_GT);

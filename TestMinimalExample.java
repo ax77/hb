@@ -30,23 +30,20 @@ public class TestMinimalExample {
   public void testSymtab() throws Exception {
 
     //@formatter:off
-    StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class Pair<K,V> {           \n");
-    sb.append(" /*002*/    K key; V value;                  \n");
-    sb.append(" /*004*/  }                         \n");
-    sb.append(" /*001*/  class Tree<T> {           \n");
-    sb.append(" /*002*/   int fn(T a, T b) { T zzzzz; } T lhs; T rhs;                  \n");
-    sb.append(" /*004*/  }                         \n");
-    sb.append(" /*005*/  class Node1<T> {              \n");
-    sb.append(" /*006*/   T fn(T xxx, T yyy) {}  T value;              \n");
-    sb.append(" /*007*/  }                         \n");
-    sb.append(" /*005*/  class Node2 {              \n");
-    sb.append(" /*006*/    int value;              \n");
-    sb.append(" /*007*/  }                         \n");
-    sb.append(" /*008*/  class UsageOfTemplate {   \n");
-    sb.append(" /*009*/    Pair<Tree<Node1<Node2> >, Pair<Node1<Tree<Node2> >, Node2> > root;        \n");
-    sb.append(" /*010*/  }                         \n");
-    //@formatter:on
+   StringBuilder sb = new StringBuilder();
+   sb.append(" class Node<E> {          \n");
+   sb.append("   E item;                \n");
+   sb.append("   Node<E> next;          \n");
+   sb.append("   Node<E> prev;          \n");
+   sb.append(" }                        \n");
+   sb.append(" class LinkedList<E> {    \n");
+   sb.append("   Node<E> first;         \n");
+   sb.append("   Node<E> last;          \n");
+   sb.append(" }                        \n");
+   sb.append(" class Idn{} class C {    \n");
+   sb.append("   LinkedList<Idn> list;  \n");
+   sb.append(" }                        \n");
+   //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
@@ -55,13 +52,13 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    ReferenceType ap = unit.getTypeDeclarations().get(4).getClassDeclaration()
-        .getField(Hash_ident.getHashedIdent("root")).getType().getReferenceType();
+    ReferenceType ap = unit.getTypeDeclarations().get(3).getClassDeclaration()
+        .getField(Hash_ident.getHashedIdent("list")).getType().getReferenceType();
 
     List<ReferenceType> togen = new ArrayList<>();
     ReferenceType res = TemplateCodegen.getType(ap, togen);
     for (ReferenceType ref : togen) {
-      System.out.println(ref.getTypeName().toString());
+      System.out.println(ref.getClassType().toString());
     }
   }
 

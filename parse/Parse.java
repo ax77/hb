@@ -84,7 +84,7 @@ public class Parse {
       if (classDeclaration == null) {
         unreachable("expect current class");
       }
-      typeWasFound = classDeclaration.getTypeParameters().contains(tok().getIdent());
+      typeWasFound = classDeclaration.getTypeParametersT().contains(tok().getIdent());
     }
 
     return typeWasFound;

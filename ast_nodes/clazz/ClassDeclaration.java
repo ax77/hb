@@ -10,6 +10,7 @@ import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
+import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class ClassDeclaration implements Serializable {
@@ -21,16 +22,19 @@ public class ClassDeclaration implements Serializable {
   //    [extends Type] [implements TypeList] ClassBody
 
   private /*final*/ Ident identifier;
-  private TypeParameters typeParameters;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
-  private boolean isTemplate;
+  private List<ReferenceType> typeParametersT;
 
   public ClassDeclaration(Ident identifier) {
     this.identifier = identifier;
     initLists();
+  }
+
+  public void putTypenameT(ReferenceType ref) {
+    typeParametersT.add(ref);
   }
 
   private void initLists() {
@@ -38,6 +42,7 @@ public class ClassDeclaration implements Serializable {
     this.fields = new ArrayList<VarDeclarator>();
     this.methods = new ArrayList<ClassMethodDeclaration>();
     this.staticInitializers = new ArrayList<StmtBlock>();
+    this.typeParametersT = new ArrayList<>();
   }
 
   public Ident getIdentifier() {
@@ -72,25 +77,29 @@ public class ClassDeclaration implements Serializable {
     return methods;
   }
 
-  public TypeParameters getTypeParameters() {
-    return typeParameters;
+  public List<ReferenceType> getTypeParametersT() {
+    return typeParametersT;
   }
 
-  public void setTypeParameters(TypeParameters typeParameters) {
-    this.typeParameters = typeParameters;
-    this.isTemplate = !typeParameters.isEmpty();
+  public boolean hasTypeParameter(Ident typenameT) {
+    for (ReferenceType ref : typeParametersT) {
+      if (ref.getTypeVariable().equals(typenameT)) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  public boolean isTemplate() {
-    return isTemplate;
-  }
-
-  public void setIsTemplate(boolean isTemplate) {
-    this.isTemplate = isTemplate;
+  public void setTypeParametersT(List<ReferenceType> typeParametersT) {
+    this.typeParametersT = typeParametersT;
   }
 
   public void setIdentifier(Ident identifier) {
     this.identifier = identifier;
+  }
+
+  public boolean isTemplate() {
+    return !typeParametersT.isEmpty();
   }
 
   public VarDeclarator getField(Ident name) {
@@ -138,6 +147,15 @@ public class ClassDeclaration implements Serializable {
       sb.append("  " + method.toString() + "\n");
     }
     return "class " + identifier.getName() + " {\n" + sb.toString() + "}\n";
+  }
+
+  public ReferenceType getTypeParameter(Ident ident) {
+    for (ReferenceType ref : typeParametersT) {
+      if (ref.getTypeVariable().equals(ident)) {
+        return ref;
+      }
+    }
+    return null;
   }
 
 }

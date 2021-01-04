@@ -3,6 +3,7 @@ package njast.types;
 import java.io.Serializable;
 
 import jscan.symtab.Ident;
+import njast.errors.EParseException;
 
 public class Type implements Serializable {
   private static final long serialVersionUID = -4630043454712001308L;
@@ -30,7 +31,6 @@ public class Type implements Serializable {
   private final TypeBase base;
   private PrimitiveType primitiveType;
   private ReferenceType referenceType;
-  private Ident typeParameter;
 
   public final static Type BYTE_TYPE = new Type(PrimitiveType.TP_BYTE);
   public final static Type SHORT_TYPE = new Type(PrimitiveType.TP_SHORT);
@@ -51,9 +51,15 @@ public class Type implements Serializable {
     this.referenceType = referenceType;
   }
 
-  public Type(Ident typeParameter) {
-    this.base = TypeBase.TYPE_PARAMETER_STUB;
-    this.typeParameter = typeParameter;
+  public boolean isTypeParameterStub() {
+    return base == TypeBase.REFERENCE && referenceType.getBase() == ReferenceTypeBase.TYPE_VARIABLE_T;
+  }
+
+  public Ident getTypeParameter() {
+    if (!isTypeParameterStub()) {
+      throw new EParseException("is not typename T");
+    }
+    return referenceType.getTypeVariable();
   }
 
   public PrimitiveType getPrimitiveType() {
@@ -80,14 +86,6 @@ public class Type implements Serializable {
     return base == TypeBase.REFERENCE;
   }
 
-  public boolean isTypeParameterStub() {
-    return base == TypeBase.TYPE_PARAMETER_STUB;
-  }
-
-  public Ident getTypeParameter() {
-    return typeParameter;
-  }
-
   public boolean isEqualTo(Type another) {
     if (isPrimitive()) {
       if (!another.isPrimitive()) {
@@ -97,13 +95,9 @@ public class Type implements Serializable {
         return false;
       }
     } else if (isReference()) {
-      final Ident name1 = referenceType.getTypeName().getIdentifier();
-      final Ident name2 = another.getReferenceType().getTypeName().getIdentifier();
+      final Ident name1 = referenceType.getClassType().getIdentifier();
+      final Ident name2 = another.getReferenceType().getClassType().getIdentifier();
       if (!name1.equals(name2)) {
-        return false;
-      }
-    } else {
-      if (!typeParameter.equals(another.getTypeParameter())) {
         return false;
       }
     }
@@ -120,10 +114,8 @@ public class Type implements Serializable {
       }
 
       return primitiveType.toString();
-    } else if (isReference()) {
-      return referenceType.toString();
     }
-    return "T:" + typeParameter.getName();
+    return referenceType.toString();
   }
 
 }

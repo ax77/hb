@@ -109,7 +109,7 @@ public class ApplyExpr {
       throw new EParseException("expect reference for field access like [a.b] -> a must be a class.");
     }
 
-    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getTypeName();
+    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getClassType();
     final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
 
     if (field == null) {
@@ -138,7 +138,7 @@ public class ApplyExpr {
         throw new EParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
       }
 
-      final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getReferenceType().getTypeName();
+      final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getReferenceType().getClassType();
       final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
           arguments);
 

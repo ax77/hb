@@ -1,5 +1,6 @@
 package njast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -7,7 +8,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.TypeParameters;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -23,13 +23,13 @@ public class TemplateCodegen {
       return from;
     }
 
-    final ClassDeclaration templateClass = copyClazz(from.getTypeName(), from.toString().trim());
+    final ClassDeclaration templateClass = copyClazz(from.getClassType(), from.toString().trim());
     final List<ReferenceType> typeArguments = from.getTypeArguments();
-    final List<Ident> typeParameters = from.getTypeParameters();
+    final List<ReferenceType> typeParameters = from.getTypeParameters();
 
     for (int i = 0; i < typeParameters.size(); i++) {
       ReferenceType ref = typeArguments.get(i);
-      Ident typenameT = typeParameters.get(i);
+      Ident typenameT = typeParameters.get(i).getTypeVariable();
       Type typeToSet = new Type(getType(ref, togen));
       replaceOneTypeParam(templateClass, typenameT, typeToSet);
     }
@@ -41,8 +41,7 @@ public class TemplateCodegen {
 
   private static ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setTypeParameters(new TypeParameters());
-    object.setIsTemplate(false);
+    object.setTypeParametersT(new ArrayList<ReferenceType>());
     object.setIdentifier(Hash_ident.getHashedIdent(newname));
     return object;
   }

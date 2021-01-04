@@ -1,5 +1,6 @@
 package njast.types;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,20 +8,50 @@ import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.errors.EParseException;
 
-public class ReferenceType {
-  private final ClassDeclaration classType;
+public class ReferenceType implements Serializable {
+  private static final long serialVersionUID = -8581315731092130356L;
+  private final ReferenceTypeBase base;
+  private ClassDeclaration classType;
   private List<ReferenceType> typeArguments;
+  private Ident typeVariable;
 
   public ReferenceType(ClassDeclaration classType) {
+    this.base = ReferenceTypeBase.CLASS_REF;
     this.classType = classType;
     this.typeArguments = new ArrayList<ReferenceType>(0);
+  }
+
+  public ReferenceType(Ident typeVariable) {
+    this.base = ReferenceTypeBase.TYPE_VARIABLE_T;
+    this.typeVariable = typeVariable;
+    this.typeArguments = new ArrayList<ReferenceType>(0);
+  }
+
+  public void setClassType(ClassDeclaration classType) {
+    this.classType = classType;
+  }
+
+  public Ident getTypeVariable() {
+    return typeVariable;
+  }
+
+  public void setTypeVariable(Ident typeVariable) {
+    this.typeVariable = typeVariable;
+  }
+
+  public ReferenceTypeBase getBase() {
+    return base;
+  }
+
+  public void setTypeArguments(List<ReferenceType> typeArguments) {
+    this.typeArguments = typeArguments;
   }
 
   public void putTypeArgument(ReferenceType e) {
     this.typeArguments.add(e);
   }
 
-  public ClassDeclaration getTypeName() {
+  public ClassDeclaration getClassType() {
     return classType;
   }
 
@@ -32,11 +63,11 @@ public class ReferenceType {
     return classType.isTemplate();
   }
 
-  public List<Ident> getTypeParameters() {
+  public List<ReferenceType> getTypeParameters() {
     if (!isClassTemplate()) {
       throw new EParseException("it is not a class template.");
     }
-    final List<Ident> typeParameters = classType.getTypeParameters().getTypeParameters();
+    final List<ReferenceType> typeParameters = classType.getTypeParametersT();
     if (!hasTypeArguments()) {
       throw new EParseException("template class without arguments");
     }
@@ -53,7 +84,11 @@ public class ReferenceType {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(classType.getIdentifier().getName());
+    if (base == ReferenceTypeBase.CLASS_REF) {
+      sb.append(classType.getIdentifier().getName());
+    } else {
+      sb.append(typeVariable.getName());
+    }
 
     final int bound = typeArguments.size();
     if (bound > 0) {

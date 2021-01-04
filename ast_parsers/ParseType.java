@@ -45,7 +45,7 @@ public class ParseType {
       if (classDeclaration == null) {
         parser.unreachable("expect current class");
       }
-      typeWasFound = classDeclaration.getTypeParameters().contains(parser.tok().getIdent());
+      typeWasFound = classDeclaration.hasTypeParameter(parser.tok().getIdent());
       isFromTypeParameters = true;
     }
 
@@ -59,8 +59,9 @@ public class ParseType {
       if (!tok.ofType(T.TOKEN_IDENT)) {
         parser.perror("expect identifier");
       }
-      final Type resultType = new Type(tok.getIdent());
-      return resultType;
+      final ClassDeclaration classDeclaration = parser.getCurrentClass();
+      final ReferenceType refTypeParameter = classDeclaration.getTypeParameter(parser.tok().getIdent());
+      return new Type(refTypeParameter);
     }
 
     // 2) int/char/etc
@@ -87,7 +88,14 @@ public class ParseType {
 
   private ReferenceType getReftype() {
     Ident typeName = parser.getIdent();
-    ReferenceType referenceType = new ReferenceType(parser.getClassType(typeName));
+    final ClassDeclaration classDeclaration = parser.getCurrentClass();
+
+    ReferenceType referenceType = null;
+    if (classDeclaration.hasTypeParameter(typeName)) {
+      referenceType = classDeclaration.getTypeParameter(typeName);
+    } else {
+      referenceType = new ReferenceType(parser.getClassType(typeName));
+    }
 
     if (parser.is(T.T_LT)) {
       Token begin = parser.checkedMove(T.T_LT);
