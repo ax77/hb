@@ -51,12 +51,16 @@ public class Type implements Serializable {
     this.referenceType = referenceType;
   }
 
-  public boolean isTypeParameterStub() {
+  public boolean isTypeVarRef() {
     return base == TypeBase.REFERENCE && referenceType.getBase() == ReferenceTypeBase.TYPE_VARIABLE_T;
   }
 
+  public boolean isClassRef() {
+    return base == TypeBase.REFERENCE && referenceType.getBase() == ReferenceTypeBase.CLASS_REF;
+  }
+
   public Ident getTypeParameter() {
-    if (!isTypeParameterStub()) {
+    if (!isTypeVarRef()) {
       throw new EParseException("is not typename T");
     }
     return referenceType.getTypeVariable();
@@ -82,10 +86,6 @@ public class Type implements Serializable {
     return base == TypeBase.PRIMITIVE;
   }
 
-  public boolean isReference() {
-    return base == TypeBase.REFERENCE;
-  }
-
   public boolean isEqualTo(Type another) {
     if (isPrimitive()) {
       if (!another.isPrimitive()) {
@@ -94,12 +94,14 @@ public class Type implements Serializable {
       if (!primitiveType.equals(another.getPrimitiveType())) {
         return false;
       }
-    } else if (isReference()) {
+    } else if (isClassRef()) {
       final Ident name1 = referenceType.getClassType().getIdentifier();
       final Ident name2 = another.getReferenceType().getClassType().getIdentifier();
       if (!name1.equals(name2)) {
         return false;
       }
+    } else {
+      throw new EParseException("unimpl...");
     }
     return true;
   }

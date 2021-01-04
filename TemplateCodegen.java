@@ -9,11 +9,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.errors.EParseException;
 import njast.types.ReferenceType;
 import njast.types.ReferenceTypeBase;
@@ -105,12 +101,12 @@ public class TemplateCodegen {
     for (int i = 0; i < args.size(); i++) {
       ReferenceType tp1 = typeArgumentsFrom.get(i);
       ReferenceType tp2 = args.get(i);
-      if (tp1.equals(tp2)) {
-        return result;
+      if (!tp1.equals(tp2)) {
+        return null;
       }
     }
 
-    return null;
+    return result;
   }
 
   private static ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
@@ -119,29 +115,41 @@ public class TemplateCodegen {
     return object;
   }
 
+  // is important to follow the order of expansion
+  // 1) replace all plain type-names: [T item -> int item]
+  // 2) replace all self-references: [ class Node<E> { Node<E> next; } ]
+  // 3) expand all references with real type
+
   private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet,
       List<ReferenceType> togen, HashMap<String, Dto> temps) {
 
     //fields
     for (VarDeclarator field : object.getFields()) {
-      if (field.getType().isTypeParameterStub()) {
-        final Ident typeParameterName = field.getType().getTypeParameter();
-        if (typeParameterName.equals(typenameT)) {
-          field.setType(typeToSet);
-        }
-      } else {
-        if (field.getType().isReference()) {
-          ReferenceType oldtype = field.getType().getReferenceType();
-          if (oldtype.getBase() == ReferenceTypeBase.CLASS_REF) {
-            ClassDeclaration nested = oldtype.getClassType();
-            if (nested.equals(object)) {
-              nested.getTypeParametersT().clear();
-            }
-          }
-          ReferenceType newtype = getType(oldtype, togen, temps);
-          field.setType(new Type(newtype));
-        }
-      }
+
+      // TODO: do this on types, and does not matter where (field, param, var, etc...)
+      maybeReplaceTypenameWithType(field, typenameT, typeToSet);
+      maybeClearTypeParametersIfSelfReference(field, object);
+      maybeSetNewType(field, togen, temps);
+
+      //      if (field.getType().isTypeVarRef()) {
+      //        final Ident typeParameterName = field.getType().getTypeParameter();
+      //        if (typeParameterName.equals(typenameT)) {
+      //          field.setType(typeToSet);
+      //        }
+      //      } else {
+      //        if (field.getType().isReference()) {
+      //          ReferenceType oldtype = field.getType().getReferenceType();
+      //          if (oldtype.getBase() == ReferenceTypeBase.CLASS_REF) {
+      //            ClassDeclaration nested = oldtype.getClassType();
+      //            if (nested.equals(object)) {
+      //              nested.getTypeParametersT().clear();
+      //            }
+      //          }
+      //          ReferenceType newtype = getType(oldtype, togen, temps);
+      //          field.setType(new Type(newtype));
+      //        }
+      //      }
+
     }
 
     //    //methods
@@ -196,6 +204,46 @@ public class TemplateCodegen {
     //      }
     //
     //    }
+  }
+
+  private static void maybeReplaceTypenameWithType(VarDeclarator field, Ident typenameT, Type typeToSet) {
+
+    if (!field.getType().isTypeVarRef()) {
+      return;
+    }
+
+    final Ident typeParameterName = field.getType().getTypeParameter();
+    if (typeParameterName.equals(typenameT)) {
+      field.setType(typeToSet);
+    }
+
+  }
+
+  private static void maybeClearTypeParametersIfSelfReference(VarDeclarator field, ClassDeclaration object) {
+
+    if (!field.getType().isClassRef()) {
+      return;
+    }
+
+    final ReferenceType oldtype = field.getType().getReferenceType();
+    final ClassDeclaration nested = oldtype.getClassType();
+
+    if (nested.equals(object)) {
+      nested.getTypeParametersT().clear();
+    }
+
+  }
+
+  private static void maybeSetNewType(VarDeclarator field, List<ReferenceType> togen, HashMap<String, Dto> temps) {
+
+    if (!field.getType().isClassRef()) {
+      return;
+    }
+
+    final ReferenceType oldtype = field.getType().getReferenceType();
+    final ReferenceType newtype = getType(oldtype, togen, temps);
+
+    field.setType(new Type(newtype));
   }
 
 }

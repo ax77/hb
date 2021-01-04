@@ -42,7 +42,7 @@ public class TestMinimalExample {
    sb.append("   Node<E> last;  \n");
    sb.append(" }    class Pair<K, V> { K key; V val; Pair<K,V> hash; }                     \n");
    sb.append(" class Idn{} class C {    \n");
-   sb.append("   Pair<Node<Idn>, Idn> list;  \n");
+   sb.append("   List<Pair<Idn, Node<Idn> > > list;  \n");
    sb.append(" }                        \n");
    //@formatter:on
 
