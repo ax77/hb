@@ -58,6 +58,10 @@ public class TemplateCodegen {
     final List<Type> typeArguments = from.getTypeArguments();
     final List<Type> typeParameters = templateClass.getTypeParametersT();
 
+    if (typeArguments.size() != typeParameters.size()) {
+      throw new EParseException("type parameters and type arguments are different by count.");
+    }
+
     // I) fill all typename's with real types
     for (int i = 0; i < typeParameters.size(); i++) {
       Type ref = typeArguments.get(i);

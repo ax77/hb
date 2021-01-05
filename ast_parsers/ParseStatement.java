@@ -1,10 +1,10 @@
 package njast.ast_parsers;
 
 import static jscan.tokenize.T.T_RIGHT_PAREN;
-import static jscan.tokenize.T.T_SEMI_COLON;
+import static jscan.tokenize.T.*;
 import static njast.symtab.IdentMap.do_ident;
 import static njast.symtab.IdentMap.for_ident;
-import static njast.symtab.IdentMap.goto_ident;
+import static njast.symtab.IdentMap.*;
 import static njast.symtab.IdentMap.return_ident;
 import static njast.symtab.IdentMap.switch_ident;
 import static njast.symtab.IdentMap.while_ident;
@@ -22,6 +22,7 @@ import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtStatement;
+import njast.ast_nodes.stmt.Stmt_if;
 import njast.parse.Parse;
 
 public class ParseStatement {
@@ -165,6 +166,24 @@ public class ParseStatement {
       //      popLoop();
       //      parser.popscope(); // TODO:
       return new StmtStatement(new StmtFor(decl, init, test, step, loop));
+    }
+
+    // if ( expr ) stmt else stmt
+
+    if (parser.is(if_ident)) {
+      Token from = parser.checkedMove(if_ident);
+
+      ExprExpression ifexpr = new ParseExpression(parser).getExprInParen();
+      StmtStatement ifstmt = parseStatement();
+      StmtStatement ifelse = null;
+
+      if (parser.is(else_ident)) {
+        Token elsekw = parser.checkedMove(else_ident);
+        ifelse = parseStatement();
+        return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+      }
+
+      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
     }
 
     // {  }

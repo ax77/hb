@@ -10,6 +10,7 @@ import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtStatement;
+import njast.ast_nodes.stmt.Stmt_if;
 import njast.errors.EParseException;
 
 public class ApplyStmt {
@@ -42,6 +43,32 @@ public class ApplyStmt {
       StmtStatement loop = forloop.getLoop();
       if (loop != null) {
         applyStatement(object, loop);
+      }
+    }
+
+    else if (base == StatementBase.SIF) {
+      Stmt_if sif = statement.getSif();
+
+      boolean result = new ApplyExpr(typeApplier).applyExpr(object, sif.getIfexpr());
+      if (!result) {
+        System.out.println("...??? expr");
+      }
+
+      final StmtStatement thenBlock = sif.getIfstmt();
+      if (thenBlock != null) {
+        applyStatement(object, thenBlock);
+      }
+
+      final StmtStatement elseBlock = sif.getIfelse();
+      if (elseBlock != null) {
+        applyStatement(object, elseBlock);
+      }
+    }
+
+    else if (base == StatementBase.SEXPR) {
+      boolean result = new ApplyExpr(typeApplier).applyExpr(object, statement.getSexpression());
+      if (!result) {
+        System.out.println("...??? expr");
       }
     }
 

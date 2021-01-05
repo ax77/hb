@@ -49,6 +49,7 @@ public final class IdentMap {
   public static final Ident long_ident           = g("long");
   public static final Ident native_ident         = g("native");
   public static final Ident new_ident            = g("new");
+  public static final Ident null_ident           = g("null");
   public static final Ident package_ident        = g("package");
   public static final Ident private_ident        = g("private");
   public static final Ident protected_ident      = g("protected");

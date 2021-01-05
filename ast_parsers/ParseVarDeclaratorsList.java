@@ -11,6 +11,7 @@ import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprExpression;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.types.Type;
 

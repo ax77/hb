@@ -227,12 +227,12 @@ public class ClassDeclaration implements Serializable {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (VarDeclarator var : fields) {
-      sb.append("  " + var.toString() + "\n");
+      sb.append(var.toString().trim() + "\n");
     }
     for (ClassMethodDeclaration method : methods) {
-      sb.append("  " + method.toString() + "\n");
+      sb.append(method.toString().trim() + "\n");
     }
-    return "class " + identifier.getName() + " {\n" + sb.toString() + "}\n";
+    return "class " + identifier.getName() + " \n{\n" + sb.toString() + "}\n";
   }
 
   public Type getTypeParameter(Ident ident) {

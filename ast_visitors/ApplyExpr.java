@@ -58,6 +58,10 @@ public class ApplyExpr {
       e.setResultType(Type.INT_TYPE); // TODO:
     }
 
+    else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
+      // TODO:
+    }
+
     else {
       throw new EParseException("unimpl. expr.:" + base.toString());
     }

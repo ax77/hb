@@ -13,10 +13,16 @@ public class StmtStatement implements Serializable {
   private StmtBlock compound;
   private ExprExpression expr; // return expr or expr-stmt
   private StmtFor sfor;
+  private Stmt_if sif;
 
   public StmtStatement(StmtFor sfor) {
     this.base = StatementBase.SFOR;
     this.sfor = sfor;
+  }
+
+  public StmtStatement(Stmt_if sif) {
+    this.base = StatementBase.SIF;
+    this.sif = sif;
   }
 
   // return <expr> ;
@@ -52,8 +58,21 @@ public class StmtStatement implements Serializable {
     return sfor;
   }
 
+  public Stmt_if getSif() {
+    return sif;
+  }
+
   @Override
   public String toString() {
+    if (base == StatementBase.SIF) {
+      return sif.toString();
+    }
+    if (base == StatementBase.SEXPR) {
+      return expr.toString() + ";\n";
+    }
+    if (base == StatementBase.SBLOCK) {
+      return compound.toString();
+    }
     return base.toString();
   }
 

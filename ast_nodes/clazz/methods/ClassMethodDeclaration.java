@@ -72,9 +72,9 @@ public class ClassMethodDeclaration implements ILocation, Serializable, TypeSett
     sb.append(" ");
     sb.append(identifier.getName());
     sb.append(formalParameterList.toString());
-    sb.append(" {\n");
-    sb.append(body.toString() + "\n");
-    sb.append("  }");
+    sb.append("\n{\n");
+    sb.append(body.toString());
+    sb.append("\n}\n");
 
     return sb.toString();
   }

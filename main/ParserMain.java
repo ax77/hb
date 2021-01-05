@@ -104,6 +104,7 @@ public class ParserMain implements ParserMainApi {
     g("long");
     g("native");
     g("new");
+    g("null");
     g("package");
     g("private");
     g("protected");

@@ -136,6 +136,9 @@ public class ExprExpression implements Serializable {
     if (base == ExpressionBase.EPRIMARY_NUMBER) {
       return String.format("%d", literalNumber.getClong());
     }
+    if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
+      return "null";
+    }
     return base.toString();
   }
 
