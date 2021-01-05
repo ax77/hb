@@ -10,7 +10,6 @@ import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
-import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class ClassDeclaration implements Serializable {
@@ -26,14 +25,14 @@ public class ClassDeclaration implements Serializable {
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
-  private List<ReferenceType> typeParametersT;
+  private List<Type> typeParametersT;
 
   public ClassDeclaration(Ident identifier) {
     this.identifier = identifier;
     initLists();
   }
 
-  public void putTypenameT(ReferenceType ref) {
+  public void putTypenameT(Type ref) {
     typeParametersT.add(ref);
   }
 
@@ -44,13 +43,13 @@ public class ClassDeclaration implements Serializable {
     if (!identifier.equals(another.getIdentifier())) {
       return false;
     }
-    final List<ReferenceType> typeParametersAnother = another.getTypeParametersT();
+    final List<Type> typeParametersAnother = another.getTypeParametersT();
     if (typeParametersT.size() != typeParametersAnother.size()) {
       return false;
     }
     for (int i = 0; i < typeParametersT.size(); i++) {
-      ReferenceType tp1 = typeParametersT.get(i);
-      ReferenceType tp2 = typeParametersAnother.get(i);
+      Type tp1 = typeParametersT.get(i);
+      Type tp2 = typeParametersAnother.get(i);
       if (!tp1.isEqualAsGeneric(tp2)) {
         return false;
       }
@@ -98,12 +97,12 @@ public class ClassDeclaration implements Serializable {
     return methods;
   }
 
-  public List<ReferenceType> getTypeParametersT() {
+  public List<Type> getTypeParametersT() {
     return typeParametersT;
   }
 
   public boolean hasTypeParameter(Ident typenameT) {
-    for (ReferenceType ref : typeParametersT) {
+    for (Type ref : typeParametersT) {
       if (ref.getTypeVariable().equals(typenameT)) {
         return true;
       }
@@ -111,7 +110,7 @@ public class ClassDeclaration implements Serializable {
     return false;
   }
 
-  public void setTypeParametersT(List<ReferenceType> typeParametersT) {
+  public void setTypeParametersT(List<Type> typeParametersT) {
     this.typeParametersT = typeParametersT;
   }
 
@@ -207,8 +206,8 @@ public class ClassDeclaration implements Serializable {
     return "class " + identifier.getName() + " {\n" + sb.toString() + "}\n";
   }
 
-  public ReferenceType getTypeParameter(Ident ident) {
-    for (ReferenceType ref : typeParametersT) {
+  public Type getTypeParameter(Ident ident) {
+    for (Type ref : typeParametersT) {
       if (ref.getTypeVariable().equals(ident)) {
         return ref;
       }

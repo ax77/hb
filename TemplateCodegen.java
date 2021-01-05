@@ -9,19 +9,17 @@ import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.errors.EParseException;
-import njast.types.ReferenceType;
-import njast.types.ReferenceTypeBase;
 import njast.types.Type;
 
 public class TemplateCodegen {
 
   private static int temps = 0;
 
-  public static ReferenceType getType(ReferenceType from, List<ReferenceType> togen, HashMap<String, Dto> temps) {
+  public static Type getType(Type from, List<Type> togen, HashMap<String, Dto> temps) {
     if (!from.isClassTemplate()) {
       return from;
     }
-    ReferenceType ready = generated(from, temps);
+    Type ready = generated(from, temps);
     if (ready != null) {
       return ready;
     }
@@ -29,25 +27,25 @@ public class TemplateCodegen {
     final String origName = from.getClassType().getIdentifier().getName();
 
     final ClassDeclaration templateClass = copyClazz(from.getClassType(), origName);
-    final List<ReferenceType> typeArguments = from.getTypeArguments();
-    final List<ReferenceType> typeParameters = templateClass.getTypeParametersT();
+    final List<Type> typeArguments = from.getTypeArguments();
+    final List<Type> typeParameters = templateClass.getTypeParametersT();
 
     // I) fill all typename's with real types
     for (int i = 0; i < typeParameters.size(); i++) {
-      ReferenceType ref = typeArguments.get(i);
+      Type ref = typeArguments.get(i);
       templateClass.getTypeParametersT().get(i).fillPropValues(ref);
     }
 
     // II) replace
     for (int i = 0; i < typeParameters.size(); i++) {
-      ReferenceType ref = typeArguments.get(i);
+      Type ref = typeArguments.get(i);
       Ident typenameT = typeParameters.get(i).getTypeVariable();
-      Type typeToSet = new Type(getType(ref, togen, temps));
+      Type typeToSet = getType(ref, togen, temps);
       replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
     }
 
-    templateClass.setTypeParametersT(new ArrayList<ReferenceType>());
-    final ReferenceType result = new ReferenceType(templateClass);
+    templateClass.setTypeParametersT(new ArrayList<Type>());
+    final Type result = new Type(templateClass);
 
     temps.put(from.getClassType().getIdentifier().getName(), new Dto(typeArguments, result));
     togen.add(result);
@@ -55,12 +53,12 @@ public class TemplateCodegen {
     return result;
   }
 
-  private static ReferenceType generated(ReferenceType from, HashMap<String, Dto> temps) {
+  private static Type generated(Type from, HashMap<String, Dto> temps) {
     if (temps.isEmpty()) {
       return null;
     }
 
-    if (from.getBase() != ReferenceTypeBase.CLASS_REF) {
+    if (!from.isClassRef()) {
       throw new EParseException("expect class-type");
     }
 
@@ -71,17 +69,17 @@ public class TemplateCodegen {
       return null;
     }
 
-    final ReferenceType result = dto.getResult();
+    final Type result = dto.getResult();
     if (result == null) {
       throw new EParseException("empty result");
     }
 
-    final List<ReferenceType> args = dto.getTypeArguments();
+    final List<Type> args = dto.getTypeArguments();
     if (args == null) {
       return null;
     }
 
-    final List<ReferenceType> typeArgumentsFrom = from.getTypeArguments();
+    final List<Type> typeArgumentsFrom = from.getTypeArguments();
     if (typeArgumentsFrom == null) {
       return null;
     }
@@ -91,8 +89,8 @@ public class TemplateCodegen {
     }
 
     for (int i = 0; i < args.size(); i++) {
-      ReferenceType tp1 = typeArgumentsFrom.get(i);
-      ReferenceType tp2 = args.get(i);
+      Type tp1 = typeArgumentsFrom.get(i);
+      Type tp2 = args.get(i);
       if (!tp1.isEqualAsGeneric(tp2)) {
         return null;
       }
@@ -112,8 +110,8 @@ public class TemplateCodegen {
   // 2) replace all self-references: [ class Node<E> { Node<E> next; } ]
   // 3) expand all references with real type
 
-  private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet,
-      List<ReferenceType> togen, HashMap<String, Dto> temps) {
+  private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet, List<Type> togen,
+      HashMap<String, Dto> temps) {
 
     //fields
     for (VarDeclarator field : object.getFields()) {
@@ -197,7 +195,7 @@ public class TemplateCodegen {
       return;
     }
 
-    final ReferenceType oldtype = field.getType().getReferenceType();
+    final Type oldtype = field.getType();
     final ClassDeclaration nested = oldtype.getClassType();
 
     if (nested.equals(object)) {
@@ -206,16 +204,16 @@ public class TemplateCodegen {
 
   }
 
-  private static void maybeSetNewType(VarDeclarator field, List<ReferenceType> togen, HashMap<String, Dto> temps) {
+  private static void maybeSetNewType(VarDeclarator field, List<Type> togen, HashMap<String, Dto> temps) {
 
     if (!field.getType().isClassRef()) {
       return;
     }
 
-    final ReferenceType oldtype = field.getType().getReferenceType();
-    final ReferenceType newtype = getType(oldtype, togen, temps);
+    final Type oldtype = field.getType();
+    final Type newtype = getType(oldtype, togen, temps);
 
-    field.setType(new Type(newtype));
+    field.setType(newtype);
   }
 
 }

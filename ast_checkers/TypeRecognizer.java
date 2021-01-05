@@ -9,7 +9,6 @@ import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
-import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class TypeRecognizer {
@@ -80,22 +79,26 @@ public class TypeRecognizer {
     }
 
     // 3) class-name
-    ReferenceType referenceType = getReftype();
-    return new Type(referenceType);
+    Type referenceType = getReftype();
+    if (!referenceType.isClassRef()) {
+      parser.perror("expect class-name, but was: " + referenceType.toString());
+    }
+
+    return referenceType;
   }
 
-  private ReferenceType getReftype() {
-    
+  private Type getReftype() {
+
     Ident typeName = parser.getIdent();
     final ClassDeclaration classDeclaration = parser.getCurrentClass();
 
     // 1) Node<String> - reference
     // 2) Node<T> - type-parameter (in template-class declaration)
-    ReferenceType referenceType = null;
+    Type referenceType = null;
     if (classDeclaration.hasTypeParameter(typeName)) {
       referenceType = classDeclaration.getTypeParameter(typeName);
     } else {
-      referenceType = new ReferenceType(parser.getClassType(typeName));
+      referenceType = new Type(parser.getClassType(typeName));
     }
     if (referenceType == null) {
       parser.perror("expect type-parameter or class-name for reference type");
@@ -104,13 +107,13 @@ public class TypeRecognizer {
     if (parser.is(T.T_LT)) {
       Token begin = parser.checkedMove(T.T_LT);
 
-      ReferenceType rt = getReftype();
-      referenceType.putTypeArgument(rt);
+      //Type rt = getReftype();
+      referenceType.putTypeArgument(getTypeArgument());
 
       while (parser.is(T.T_COMMA)) {
         parser.move();
-        ReferenceType rtrest = getReftype();
-        referenceType.putTypeArgument(rtrest);
+        //Type rtrest = getReftype();
+        referenceType.putTypeArgument(getTypeArgument());
       }
 
       // TODO: ambiguous between '>' and '>>' in template arguments
@@ -121,17 +124,22 @@ public class TypeRecognizer {
     return referenceType;
   }
 
+  private Type getTypeArgument() {
+    TypeRecognizer nested = new TypeRecognizer(parser);
+    return nested.getType();
+  }
+
   private Type getTypeParameter() {
     Token typenameT = parser.checkedMove(T.TOKEN_IDENT);
     if (!typenameT.ofType(T.TOKEN_IDENT)) {
       parser.perror("expect identifier");
     }
     final ClassDeclaration clazz = parser.getCurrentClass();
-    final ReferenceType refTypeParameter = clazz.getTypeParameter(typenameT.getIdent());
+    final Type refTypeParameter = clazz.getTypeParameter(typenameT.getIdent());
     if (refTypeParameter == null) {
       parser.perror("unknown type parameter");
     }
-    return new Type(refTypeParameter);
+    return refTypeParameter;
   }
 
   private Type getPrimitive() {

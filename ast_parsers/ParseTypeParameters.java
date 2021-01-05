@@ -6,7 +6,7 @@ import java.util.List;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.parse.Parse;
-import njast.types.ReferenceType;
+import njast.types.Type;
 
 public class ParseTypeParameters {
   private final Parse parser;
@@ -15,12 +15,12 @@ public class ParseTypeParameters {
     this.parser = parser;
   }
 
-  public List<ReferenceType> parse() {
+  public List<Type> parse() {
 
     // class Thing<K, V> {
     // ...........^
 
-    List<ReferenceType> tp = new ArrayList<ReferenceType>();
+    List<Type> tp = new ArrayList<>();
 
     if (parser.is(T.T_LT)) {
       parseTypeParameters(tp);
@@ -29,13 +29,13 @@ public class ParseTypeParameters {
     return tp;
   }
 
-  private void parseTypeParameters(List<ReferenceType> tp) {
+  private void parseTypeParameters(List<Type> tp) {
     Token open = parser.checkedMove(T.T_LT);
 
-    tp.add(new ReferenceType(parser.getIdent()));
+    tp.add(new Type(parser.getIdent()));
     while (parser.is(T.T_COMMA)) {
       parser.move();
-      tp.add(new ReferenceType(parser.getIdent()));
+      tp.add(new Type(parser.getIdent()));
     }
 
     Token close = parser.checkedMove(T.T_GT);

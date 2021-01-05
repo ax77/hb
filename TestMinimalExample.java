@@ -11,7 +11,7 @@ import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
-import njast.types.ReferenceType;
+import njast.types.Type;
 
 public class TestMinimalExample {
 
@@ -58,7 +58,7 @@ public class TestMinimalExample {
     sb.append(" /*024*/      int stub;                  \n");
     sb.append(" /*025*/    }                            \n");
     sb.append(" /*026*/    class C {                    \n");
-    sb.append(" /*027*/      Map<string, idn> table;    \n");
+    sb.append(" /*027*/      Map<List<idn>, Node<idn> > table;    \n");
     sb.append(" /*028*/    }                            \n");
     //@formatter:on
 
@@ -69,13 +69,13 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    ReferenceType ap = unit.getTypeDeclarations().get(6).getClassDeclaration()
-        .getField(Hash_ident.getHashedIdent("table")).getType().getReferenceType();
+    Type ap = unit.getTypeDeclarations().get(6).getClassDeclaration().getField(Hash_ident.getHashedIdent("table"))
+        .getType();
 
     HashMap<String, Dto> temps = new HashMap<>();
-    List<ReferenceType> togen = new ArrayList<>();
-    ReferenceType res = TemplateCodegen.getType(ap, togen, temps);
-    for (ReferenceType ref : togen) {
+    List<Type> togen = new ArrayList<>();
+    Type res = TemplateCodegen.getType(ap, togen, temps);
+    for (Type ref : togen) {
       System.out.println(ref.getClassType().toString());
     }
   }

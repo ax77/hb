@@ -17,7 +17,7 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
-import njast.types.ReferenceType;
+import njast.types.Type;
 
 public class ParseTypeDeclarationsList {
   private final Parse parser;
@@ -50,7 +50,7 @@ public class ParseTypeDeclarationsList {
 
     // class Thing<T> {
     // ......^....^
-    List<ReferenceType> tp = new ParseTypeParameters(parser).parse(); // maybe empty
+    List<Type> tp = new ParseTypeParameters(parser).parse(); // maybe empty
 
     Token lbrace = parser.lbrace();
 

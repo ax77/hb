@@ -13,7 +13,6 @@ import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
 import njast.ast_nodes.expr.ExprPrimaryIdent;
 import njast.errors.EParseException;
-import njast.types.ReferenceType;
 import njast.types.Type;
 
 public class ApplyExpr {
@@ -52,7 +51,7 @@ public class ApplyExpr {
     }
 
     else if (base == ExpressionBase.ETHIS) {
-      e.setResultType(new Type(new ReferenceType(object)));
+      e.setResultType(new Type(object));
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
@@ -109,7 +108,7 @@ public class ApplyExpr {
       throw new EParseException("expect reference for field access like [a.b] -> a must be a class.");
     }
 
-    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getReferenceType().getClassType();
+    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassType();
     final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
 
     if (field == null) {
@@ -138,7 +137,7 @@ public class ApplyExpr {
         throw new EParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
       }
 
-      final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getReferenceType().getClassType();
+      final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassType();
       final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
           arguments);
 

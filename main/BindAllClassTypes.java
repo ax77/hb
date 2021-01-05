@@ -14,7 +14,7 @@ import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 import njast.symtab.IdentMap;
-import njast.types.ReferenceType;
+import njast.types.Type;
 
 public class BindAllClassTypes {
 
@@ -37,7 +37,7 @@ public class BindAllClassTypes {
       Ident classname = parser.getIdent();
       parser.defineClassName(new ClassDeclaration(classname));
 
-      List<ReferenceType> tp = new ParseTypeParameters(parser).parse(); // maybe empty
+      List<Type> tp = new ParseTypeParameters(parser).parse(); // maybe empty
 
       if (!parser.is(T.T_LEFT_BRACE)) {
         parser.perror("expect {");
