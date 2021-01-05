@@ -1,4 +1,4 @@
-package njast;
+package njast.templates;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
+import njast.ast_utils.SerializationUtils;
 import njast.errors.EParseException;
 import njast.types.Type;
 
@@ -37,7 +38,7 @@ public class TemplateCodegen {
     return generatedClasses;
   }
 
-  private Type getTypeFromTemplate(Type from) {
+  private Type getTypeFromTemplate(final Type from) {
     if (!from.isClassTemplate()) {
       return from;
     }
@@ -47,8 +48,9 @@ public class TemplateCodegen {
     }
 
     final String origName = from.getClassType().getIdentifier().getName();
+    final String newName = buildNewName(origName, from.getTypeArguments());
 
-    final ClassDeclaration templateClass = copyClazz(from.getClassType(), origName);
+    final ClassDeclaration templateClass = copyClazz(from.getClassType(), newName);
     final List<Type> typeArguments = from.getTypeArguments();
     final List<Type> typeParameters = templateClass.getTypeParametersT();
 
@@ -69,13 +71,34 @@ public class TemplateCodegen {
     templateClass.setTypeParametersT(new ArrayList<Type>());
     final Type result = new Type(templateClass);
 
-    generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(typeArguments, result));
+    generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(from, typeArguments, result));
     generatedClasses.add(result);
 
     return result;
   }
 
+  private String buildNewName(String origNameOfTemplateClass, List<Type> typeArguments) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(origNameOfTemplateClass);
+    sb.append("_");
+    sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
+    return String.format("t_%s_%d", sb.toString(), temps_name++);
+  }
+
+  private String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < typeArguments.size(); i++) {
+      Type tp = typeArguments.get(i);
+      sb.append(tp.toString());
+      if (i + 1 < typeArguments.size()) {
+        sb.append("_");
+      }
+    }
+    return sb.toString();
+  }
+
   private Type generated(Type from) {
+
     if (generatedClassesForReuse.isEmpty()) {
       return null;
     }
@@ -85,45 +108,41 @@ public class TemplateCodegen {
     }
 
     final String name = from.getClassType().getIdentifier().getName();
+    final Dto storedResult = generatedClassesForReuse.get(name);
 
-    final Dto dto = generatedClassesForReuse.get(name);
-    if (dto == null) {
+    if (storedResult == null) {
       return null;
     }
 
-    final Type result = dto.getResult();
-    if (result == null) {
-      throw new EParseException("empty result");
-    }
-
-    final List<Type> args = dto.getTypeArguments();
-    if (args == null) {
+    final List<Type> previouslyExpandedArgs = storedResult.getTypeArguments();
+    final List<Type> currentGivenAgrs = from.getTypeArguments();
+    if (!typeArgumentListsAreEqualForTemplate(previouslyExpandedArgs, currentGivenAgrs)) {
       return null;
     }
 
-    final List<Type> typeArgumentsFrom = from.getTypeArguments();
-    if (typeArgumentsFrom == null) {
-      return null;
+    return storedResult.getResult();
+  }
+
+  private boolean typeArgumentListsAreEqualForTemplate(List<Type> first, List<Type> second) {
+
+    if (first.size() != second.size()) {
+      return false;
     }
 
-    if (typeArgumentsFrom.size() != args.size()) {
-      return null;
-    }
-
-    for (int i = 0; i < args.size(); i++) {
-      Type tp1 = typeArgumentsFrom.get(i);
-      Type tp2 = args.get(i);
+    for (int i = 0; i < first.size(); i++) {
+      Type tp1 = first.get(i);
+      Type tp2 = second.get(i);
       if (!tp1.isEqualAsGeneric(tp2)) {
-        return null;
+        return false;
       }
     }
 
-    return result;
+    return true;
   }
 
   private ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setIdentifier(Hash_ident.getHashedIdent(String.format("t_%s_%d", newname, temps_name++)));
+    object.setIdentifier(Hash_ident.getHashedIdent(newname));
     return object;
   }
 

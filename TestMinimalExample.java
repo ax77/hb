@@ -1,9 +1,5 @@
 package njast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.junit.Test;
 
 import jscan.hashed.Hash_ident;
@@ -11,6 +7,7 @@ import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
+import njast.templates.TemplateCodegen;
 import njast.types.Type;
 
 public class TestMinimalExample {
@@ -52,7 +49,7 @@ public class TestMinimalExample {
     sb.append(" /*025*/    }                                              \n");
     sb.append(" /*026*/  }                                                \n");
     sb.append(" /*027*/  class C {                                        \n");
-    sb.append(" /*028*/    LinkedList<LinkedList<LinkedList<int> > > table;                         \n");
+    sb.append(" /*028*/    LinkedList<LinkedList<int> > table;            \n");
     sb.append(" /*029*/  }                                                \n");
     //@formatter:on
 

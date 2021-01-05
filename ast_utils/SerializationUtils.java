@@ -1,4 +1,4 @@
-package njast;
+package njast.ast_utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

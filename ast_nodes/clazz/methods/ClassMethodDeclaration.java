@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
-import njast.TypeSetter;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.parse.ILocation;
 import njast.parse.NullChecker;
+import njast.templates.TypeSetter;
 import njast.types.Type;
 
 public class ClassMethodDeclaration implements ILocation, Serializable, TypeSetter {

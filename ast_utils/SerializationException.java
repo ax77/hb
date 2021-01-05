@@ -1,4 +1,4 @@
-package njast;
+package njast.ast_utils;
 
 public class SerializationException extends RuntimeException {
   private static final long serialVersionUID = 4029025366392702726L;

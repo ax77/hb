@@ -1,4 +1,4 @@
-package njast;
+package njast.templates;
 
 import njast.types.Type;
 

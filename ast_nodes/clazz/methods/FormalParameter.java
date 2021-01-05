@@ -3,7 +3,7 @@ package njast.ast_nodes.clazz.methods;
 import java.io.Serializable;
 
 import jscan.symtab.Ident;
-import njast.TypeSetter;
+import njast.templates.TypeSetter;
 import njast.types.Type;
 
 public class FormalParameter implements Serializable, TypeSetter {
