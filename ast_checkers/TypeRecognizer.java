@@ -1,15 +1,12 @@
 package njast.ast_checkers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.Parse;
-import njast.symtab.IdentMap;
 import njast.types.Type;
+import njast.types.TypeBindings;
 
 public class TypeRecognizer {
 
@@ -18,19 +15,6 @@ public class TypeRecognizer {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-
-  private static final Map<Ident, Type> bindings = new HashMap<Ident, Type>();
-
-  static {
-    bindings.put(IdentMap.byte_ident, Type.BYTE_TYPE);
-    bindings.put(IdentMap.short_ident, Type.SHORT_TYPE);
-    bindings.put(IdentMap.char_ident, Type.CHAR_TYPE);
-    bindings.put(IdentMap.int_ident, Type.INT_TYPE);
-    bindings.put(IdentMap.long_ident, Type.LONG_TYPE);
-    bindings.put(IdentMap.float_ident, Type.FLOAT_TYPE);
-    bindings.put(IdentMap.double_ident, Type.DOUBLE_TYPE);
-    bindings.put(IdentMap.boolean_ident, Type.BOOLEAN_TYPE);
-  }
 
   public TypeRecognizer(Parse parser) {
 
@@ -144,7 +128,7 @@ public class TypeRecognizer {
 
   private Type getPrimitive() {
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    Type tp = bindings.get(tok.getIdent());
+    Type tp = TypeBindings.BIND_IDENT_TO_TYPE.get(tok.getIdent());
     if (tp == null) {
       parser.perror("type not recognized");
     }

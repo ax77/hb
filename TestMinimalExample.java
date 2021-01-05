@@ -58,7 +58,7 @@ public class TestMinimalExample {
     sb.append(" /*024*/      int stub;                  \n");
     sb.append(" /*025*/    }                            \n");
     sb.append(" /*026*/    class C {                    \n");
-    sb.append(" /*027*/      Node<int> table;    \n");
+    sb.append(" /*027*/      Node<boolean> table;       \n");
     sb.append(" /*028*/    }                            \n");
     //@formatter:on
 

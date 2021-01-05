@@ -46,6 +46,8 @@ public class Type implements Serializable {
   }
 
   public Type(TypeBase primitiveType) {
+    NullChecker.check(primitiveType);
+
     if (!isPrimitive(primitiveType)) {
       throw new EParseException("expect primitive type");
     }
@@ -54,12 +56,16 @@ public class Type implements Serializable {
   }
 
   public Type(ClassDeclaration classType) {
+    NullChecker.check(classType);
+
     this.base = TypeBase.TP_CLASS;
     this.classType = classType;
     this.typeArguments = new ArrayList<Type>(0);
   }
 
   public Type(Ident typeVariable) {
+    NullChecker.check(typeVariable);
+
     this.base = TP_TYPE_VARIABLE_TYPENAME_T;
     this.typeVariable = typeVariable;
     this.typeArguments = new ArrayList<Type>(0);
@@ -70,6 +76,8 @@ public class Type implements Serializable {
   }
 
   public boolean isEqualAsGeneric(Type another) {
+    NullChecker.check(another);
+
     if (this == another) {
       return true;
     }
@@ -108,6 +116,8 @@ public class Type implements Serializable {
   }
 
   public void putTypeArgument(Type e) {
+    NullChecker.check(e);
+
     this.typeArguments.add(e);
   }
 
@@ -155,6 +165,8 @@ public class Type implements Serializable {
   }
 
   public boolean isEqualTo(Type another) {
+    NullChecker.check(another);
+
     if (this == another) {
       return true;
     }
@@ -176,22 +188,11 @@ public class Type implements Serializable {
   @Override
   public String toString() {
     if (isPrimitive()) {
-
-      // TP_BYTE, TP_SHORT, TP_CHAR, TP_INT, TP_LONG, TP_FLOAT, TP_DOUBLE, TP_BOOLEAN
-      if (base.equals(TP_INT)) {
-        return "int";
-      }
-      if (base.equals(TP_CHAR)) {
-        return "char";
-      }
-
-      return base.toString();
+      return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(base);
     }
-
     if (base == TP_TYPE_VARIABLE_TYPENAME_T) {
       return typeVariable.getName();
     }
-
     return classType.getIdentifier().getName();
   }
 
