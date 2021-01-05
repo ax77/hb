@@ -17,13 +17,31 @@ import njast.types.Type;
 
 public class TemplateCodegen {
 
-  private static int temps = 0;
+  private static int temps_name = 0;
 
-  public static Type getType(Type from, List<Type> togen, HashMap<String, Dto> temps) {
+  private final List<Type> generatedClasses;
+  private final HashMap<String, Dto> generatedClassesForReuse;
+  private final Type result;
+
+  public TemplateCodegen(Type from) {
+    this.generatedClasses = new ArrayList<>();
+    this.generatedClassesForReuse = new HashMap<>();
+    this.result = getTypeFromTemplate(from);
+  }
+
+  public Type getResult() {
+    return result;
+  }
+
+  public List<Type> getGeneratedClasses() {
+    return generatedClasses;
+  }
+
+  private Type getTypeFromTemplate(Type from) {
     if (!from.isClassTemplate()) {
       return from;
     }
-    Type ready = generated(from, temps);
+    Type ready = generated(from);
     if (ready != null) {
       return ready;
     }
@@ -44,21 +62,21 @@ public class TemplateCodegen {
     for (int i = 0; i < typeParameters.size(); i++) {
       Type ref = typeArguments.get(i);
       Ident typenameT = typeParameters.get(i).getTypeVariable();
-      Type typeToSet = getType(ref, togen, temps);
-      replaceOneTypeParam(templateClass, typenameT, typeToSet, togen, temps);
+      Type typeToSet = getTypeFromTemplate(ref);
+      replaceOneTypeParam(templateClass, typenameT, typeToSet);
     }
 
     templateClass.setTypeParametersT(new ArrayList<Type>());
     final Type result = new Type(templateClass);
 
-    temps.put(from.getClassType().getIdentifier().getName(), new Dto(typeArguments, result));
-    togen.add(result);
+    generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(typeArguments, result));
+    generatedClasses.add(result);
 
     return result;
   }
 
-  private static Type generated(Type from, HashMap<String, Dto> temps) {
-    if (temps.isEmpty()) {
+  private Type generated(Type from) {
+    if (generatedClassesForReuse.isEmpty()) {
       return null;
     }
 
@@ -68,7 +86,7 @@ public class TemplateCodegen {
 
     final String name = from.getClassType().getIdentifier().getName();
 
-    final Dto dto = temps.get(name);
+    final Dto dto = generatedClassesForReuse.get(name);
     if (dto == null) {
       return null;
     }
@@ -103,9 +121,9 @@ public class TemplateCodegen {
     return result;
   }
 
-  private static ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
+  private ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
     ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setIdentifier(Hash_ident.getHashedIdent(String.format("t_%s_%d", newname, temps++)));
+    object.setIdentifier(Hash_ident.getHashedIdent(String.format("t_%s_%d", newname, temps_name++)));
     return object;
   }
 
@@ -114,74 +132,22 @@ public class TemplateCodegen {
   // 2) replace all self-references: [ class Node<E> { Node<E> next; } ]
   // 3) expand all references with real type
 
-  private static void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet, List<Type> togen,
-      HashMap<String, Dto> temps) {
+  private void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet) {
 
     //fields
     for (VarDeclarator field : object.getFields()) {
-
-      fabric(field, object, typenameT, typeToSet, togen, temps);
-
-      // // 1)
-      // if (maybeReplaceTypenameWithType(field.getType(), typenameT)) {
-      //   field.setType(typeToSet);
-      // }
-      // 
-      // // 2)
-      // maybeClearTypeParametersIfSelfReference(field.getType(), object);
-      // 
-      // // 3)
-      // Type newTypeToSet = maybeExpandTypeToNewType(field.getType(), togen, temps);
-      // if (newTypeToSet != null) {
-      //   field.setType(newTypeToSet);
-      // }
+      fabric(field, object, typenameT, typeToSet);
     }
 
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
 
       if (!method.isVoid()) {
-
-        fabric(method, object, typenameT, typeToSet, togen, temps);
-
-        // Type resultType = method.getResultType();
-        // 
-        // // 1)
-        // if (maybeReplaceTypenameWithType(resultType, typenameT)) {
-        //   method.setResultType(typeToSet);
-        // }
-        // 
-        // // 2)
-        // maybeClearTypeParametersIfSelfReference(resultType, object);
-        // 
-        // // 3)
-        // Type newTypeToSet = maybeExpandTypeToNewType(resultType, togen, temps);
-        // if (newTypeToSet != null) {
-        //   method.setResultType(newTypeToSet);
-        // }
-
+        fabric(method, object, typenameT, typeToSet);
       }
 
       for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
-
-        fabric(formal, object, typenameT, typeToSet, togen, temps);
-
-        // Type paramType = formal.getType();
-        // 
-        // // 1)
-        // if (maybeReplaceTypenameWithType(paramType, typenameT)) {
-        //   formal.setType(typeToSet);
-        // }
-        // 
-        // // 2)
-        // maybeClearTypeParametersIfSelfReference(paramType, object);
-        // 
-        // // 3)
-        // Type newTypeToSet = maybeExpandTypeToNewType(paramType, togen, temps);
-        // if (newTypeToSet != null) {
-        //   formal.setType(newTypeToSet);
-        // }
-
+        fabric(formal, object, typenameT, typeToSet);
       }
 
       //body
@@ -193,29 +159,9 @@ public class TemplateCodegen {
         // declarations
         final List<VarDeclarator> localVars = block.getLocalVars();
         if (localVars != null) {
-
           for (VarDeclarator var : localVars) {
-
-            fabric(var, object, typenameT, typeToSet, togen, temps);
-
-            // Type varType = var.getType();
-            // 
-            // // 1)
-            // if (maybeReplaceTypenameWithType(varType, typenameT)) {
-            //   var.setType(typeToSet);
-            // }
-            // 
-            // // 2)
-            // maybeClearTypeParametersIfSelfReference(varType, object);
-            // 
-            // // 3)
-            // Type newTypeToSet = maybeExpandTypeToNewType(varType, togen, temps);
-            // if (newTypeToSet != null) {
-            //   var.setType(newTypeToSet);
-            // }
-
+            fabric(var, object, typenameT, typeToSet);
           }
-
         }
 
         // // statements
@@ -232,8 +178,7 @@ public class TemplateCodegen {
     }
   }
 
-  private static void fabric(TypeSetter typeSetter, ClassDeclaration object, Ident typenameT, Type typeToSet,
-      List<Type> togen, HashMap<String, Dto> temps) {
+  private void fabric(TypeSetter typeSetter, ClassDeclaration object, Ident typenameT, Type typeToSet) {
 
     Type typeToCheck = typeSetter.getType();
 
@@ -246,14 +191,14 @@ public class TemplateCodegen {
     maybeClearTypeParametersIfSelfReference(typeToCheck, object);
 
     // 3)
-    Type newTypeToSet = maybeExpandTypeToNewType(typeToCheck, togen, temps);
+    Type newTypeToSet = maybeExpandTypeToNewType(typeToCheck);
     if (newTypeToSet != null) {
       typeSetter.setType(newTypeToSet);
     }
 
   }
 
-  private static boolean maybeReplaceTypenameWithType(Type typeToCheck, Ident typenameT) {
+  private boolean maybeReplaceTypenameWithType(Type typeToCheck, Ident typenameT) {
 
     if (!typeToCheck.isTypeVarRef()) {
       return false;
@@ -267,7 +212,7 @@ public class TemplateCodegen {
     return false;
   }
 
-  private static void maybeClearTypeParametersIfSelfReference(Type typeToCheck, ClassDeclaration object) {
+  private void maybeClearTypeParametersIfSelfReference(Type typeToCheck, ClassDeclaration object) {
 
     if (!typeToCheck.isClassRef()) {
       return;
@@ -281,13 +226,13 @@ public class TemplateCodegen {
 
   }
 
-  private static Type maybeExpandTypeToNewType(Type typeToCheck, List<Type> togen, HashMap<String, Dto> temps) {
+  private Type maybeExpandTypeToNewType(Type typeToCheck) {
 
     if (!typeToCheck.isClassRef()) {
       return null;
     }
 
-    final Type newtype = getType(typeToCheck, togen, temps);
+    final Type newtype = getTypeFromTemplate(typeToCheck);
     return newtype;
 
   }

@@ -52,7 +52,7 @@ public class TestMinimalExample {
     sb.append(" /*025*/    }                                              \n");
     sb.append(" /*026*/  }                                                \n");
     sb.append(" /*027*/  class C {                                        \n");
-    sb.append(" /*028*/    LinkedList<int> table;                         \n");
+    sb.append(" /*028*/    LinkedList<LinkedList<LinkedList<int> > > table;                         \n");
     sb.append(" /*029*/  }                                                \n");
     //@formatter:on
 
@@ -66,10 +66,9 @@ public class TestMinimalExample {
     Type ap = unit.getTypeDeclarations().get(2).getClassDeclaration().getField(Hash_ident.getHashedIdent("table"))
         .getType();
 
-    HashMap<String, Dto> temps = new HashMap<>();
-    List<Type> togen = new ArrayList<>();
-    Type res = TemplateCodegen.getType(ap, togen, temps);
-    for (Type ref : togen) {
+    TemplateCodegen templateCodegen = new TemplateCodegen(ap);
+    Type res = templateCodegen.getResult();
+    for (Type ref : templateCodegen.getGeneratedClasses()) {
       System.out.println(ref.getClassType().toString());
     }
     // System.out.println(res.toString());
