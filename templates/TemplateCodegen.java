@@ -15,24 +15,22 @@ import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_utils.SerializationUtils;
 import njast.errors.EParseException;
 import njast.types.Type;
+import njast.types.TypeBindings;
 
 public class TemplateCodegen {
 
-  @SuppressWarnings("unused")
-  private static int temps_name = 0;
-
   private final List<Type> generatedClasses;
   private final HashMap<String, Dto> generatedClassesForReuse;
-  private final Type result;
+  private final Type resultType;
 
   public TemplateCodegen(Type from) {
     this.generatedClasses = new ArrayList<>();
     this.generatedClassesForReuse = new HashMap<>();
-    this.result = getTypeFromTemplate(from);
+    this.resultType = getTypeFromTemplate(from);
   }
 
   public Type getResult() {
-    return result;
+    return resultType;
   }
 
   public List<Type> getGeneratedClasses() {
@@ -43,13 +41,18 @@ public class TemplateCodegen {
     if (!from.isClassTemplate()) {
       return from;
     }
-    Type ready = generated(from);
+
+    // this means that we already generated class from given template with this name
+    // and these type-parameters list.
+    //
+    Type ready = presentedInGeneratedByOriginalClassName(from);
     if (ready != null) {
+      // System.out.println("hashed_1: " + from.toString());
       return ready;
     }
 
     final String origName = from.getClassType().getIdentifier().getName();
-    final String newName = buildNewName(origName, from.getTypeArguments());
+    final String newName = buildNewName(origName, from.getClassType().getUniqueIdStr(), from.getTypeArguments());
 
     final ClassDeclaration templateClass = copyClazz(from.getClassType(), newName);
     final List<Type> typeArguments = from.getTypeArguments();
@@ -77,8 +80,10 @@ public class TemplateCodegen {
     // we can find them by their names only.
     // can we guarantee that it is a proper way to do this?
     // need more tests with code-review.
+    //
     Type ready2 = presentedInGenerated2(result);
     if (ready2 != null) {
+      // System.out.println("hashed_2: " + result.toString());
       return ready2;
     }
 
@@ -88,19 +93,37 @@ public class TemplateCodegen {
     return result;
   }
 
-  private String buildNewName(String origNameOfTemplateClass, List<Type> typeArguments) {
+  private String buildNewName(String origNameOfTemplateClass, String classUniqueId, List<Type> typeArguments) {
     StringBuilder sb = new StringBuilder();
     sb.append(origNameOfTemplateClass);
     sb.append("_");
+    sb.append(classUniqueId);
+    sb.append("_");
     sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
-    return sb.toString(); // String.format("t_%s_%d", sb.toString(), temps_name++);
+    return sb.toString();
+  }
+
+  // move toString() here, to guarantee that all names for generated templates will be unique
+  // and not depends on general toString() which we may change one day or other.
+  //
+  private String typeToString(Type tp) {
+    if (tp.isPrimitive()) {
+      return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(tp.getBase());
+    }
+    if (tp.isTypeVarRef()) {
+      return tp.getTypeVariable().getName();
+    }
+    if (!tp.isClassRef()) {
+      throw new EParseException("expect class-name");
+    }
+    return tp.getClassType().getIdentifier().getName();
   }
 
   private String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < typeArguments.size(); i++) {
       Type tp = typeArguments.get(i);
-      sb.append(tp.toString());
+      sb.append(typeToString(tp));
       if (i + 1 < typeArguments.size()) {
         sb.append("_");
       }
@@ -114,17 +137,24 @@ public class TemplateCodegen {
       throw new EParseException("expect class-type");
     }
 
-    final String name = result.getClassType().getIdentifier().getName();
+    final ClassDeclaration classWeWantToFind = result.getClassType();
+    final String name = classWeWantToFind.getIdentifier().getName();
+
     for (Type tp : generatedClasses) {
-      if (tp.isClassRef() && tp.getClassType().getIdentifier().getName().equals(name)) {
-        return tp;
+      if (tp.isClassRef()) {
+        final ClassDeclaration classAlreadyGenerated = tp.getClassType();
+        final boolean first = classAlreadyGenerated.getIdentifier().getName().equals(name);
+        final boolean second = classAlreadyGenerated.getUniqueId() == classWeWantToFind.getUniqueId();
+        if (first && second) {
+          return tp;
+        }
       }
     }
 
     return null;
   }
 
-  private Type generated(Type from) {
+  private Type presentedInGeneratedByOriginalClassName(Type from) {
 
     if (generatedClassesForReuse.isEmpty()) {
       return null;

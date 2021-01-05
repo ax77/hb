@@ -22,11 +22,14 @@ public class ClassDeclaration implements Serializable {
   //    class Identifier [TypeParameters]
   //    [extends Type] [implements TypeList] ClassBody
 
+  private static int classIdCounter = 0;
+
   private Ident identifier;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
+  private final int uniqueId;
 
   // we store type-variables as original references to Type
   //
@@ -39,6 +42,7 @@ public class ClassDeclaration implements Serializable {
   private List<Type> typeParametersT;
 
   public ClassDeclaration(Ident identifier) {
+    this.uniqueId = classIdCounter++;
     this.identifier = identifier;
     initLists();
   }
@@ -161,6 +165,14 @@ public class ClassDeclaration implements Serializable {
       }
     }
     return true;
+  }
+
+  public String getUniqueIdStr() {
+    return String.format("%d", uniqueId);
+  }
+
+  public int getUniqueId() {
+    return uniqueId;
   }
 
   public ClassMethodDeclaration getMethod(Ident name, List<ExprExpression> arguments) {
