@@ -7,7 +7,11 @@ import java.util.List;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.errors.EParseException;
 import njast.types.Type;
 
@@ -116,87 +120,160 @@ public class TemplateCodegen {
     //fields
     for (VarDeclarator field : object.getFields()) {
 
-      // TODO: do this on types, and does not matter where (field, param, var, etc...)
-      maybeReplaceTypenameWithType(field, typenameT, typeToSet);
-      maybeClearTypeParametersIfSelfReference(field, object);
-      maybeSetNewType(field, togen, temps);
+      fabric(field, object, typenameT, typeToSet, togen, temps);
+
+      // // 1)
+      // if (maybeReplaceTypenameWithType(field.getType(), typenameT)) {
+      //   field.setType(typeToSet);
+      // }
+      // 
+      // // 2)
+      // maybeClearTypeParametersIfSelfReference(field.getType(), object);
+      // 
+      // // 3)
+      // Type newTypeToSet = maybeExpandTypeToNewType(field.getType(), togen, temps);
+      // if (newTypeToSet != null) {
+      //   field.setType(newTypeToSet);
+      // }
     }
 
-    //    //methods
-    //    for (ClassMethodDeclaration method : object.getMethods()) {
-    //
-    //      if (!method.isVoid()) {
-    //        if (method.getResultType().isTypeParameterStub()) {
-    //          final Ident typeParameterName = method.getResultType().getTypeParameter();
-    //          if (typeParameterName.equals(typenameT)) {
-    //            method.setResultType(typeToSet);
-    //          }
-    //        } 
-    //      }
-    //
-    //      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
-    //        if (formal.getType().isTypeParameterStub()) {
-    //          final Ident typeParameterName = formal.getType().getTypeParameter();
-    //          if (typeParameterName.equals(typenameT)) {
-    //            formal.setType(typeToSet);
-    //          }
-    //        }
-    //      }
-    //
-    //      //body
-    //      final StmtBlock body = method.getBody();
-    //      final List<StmtBlockItem> blocks = body.getBlockStatements();
-    //
-    //      for (StmtBlockItem block : blocks) {
-    //
-    //        // declarations
-    //        final List<VarDeclarator> localVars = block.getLocalVars();
-    //        if (localVars != null) {
-    //          for (VarDeclarator var : localVars) {
-    //            if (var.getType().isTypeParameterStub()) {
-    //              final Ident typeParameterName = var.getType().getTypeParameter();
-    //              if (typeParameterName.equals(typenameT)) {
-    //                var.setType(typeToSet);
-    //              }
-    //            }
-    //          }
-    //        }
-    //
-    //        // // statements
-    //        // final StmtStatement statement = block.getStatement();
-    //        // if (statement != null) {
-    //        //   boolean result = new ApplyStmt(this).applyStatement(object, statement);
-    //        //   if (!result) {
-    //        //     System.out.println("...??? stmt");
-    //        //   }
-    //        // }
-    //
-    //      }
-    //
-    //    }
+    //methods
+    for (ClassMethodDeclaration method : object.getMethods()) {
+
+      if (!method.isVoid()) {
+
+        fabric(method, object, typenameT, typeToSet, togen, temps);
+
+        // Type resultType = method.getResultType();
+        // 
+        // // 1)
+        // if (maybeReplaceTypenameWithType(resultType, typenameT)) {
+        //   method.setResultType(typeToSet);
+        // }
+        // 
+        // // 2)
+        // maybeClearTypeParametersIfSelfReference(resultType, object);
+        // 
+        // // 3)
+        // Type newTypeToSet = maybeExpandTypeToNewType(resultType, togen, temps);
+        // if (newTypeToSet != null) {
+        //   method.setResultType(newTypeToSet);
+        // }
+
+      }
+
+      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
+
+        fabric(formal, object, typenameT, typeToSet, togen, temps);
+
+        // Type paramType = formal.getType();
+        // 
+        // // 1)
+        // if (maybeReplaceTypenameWithType(paramType, typenameT)) {
+        //   formal.setType(typeToSet);
+        // }
+        // 
+        // // 2)
+        // maybeClearTypeParametersIfSelfReference(paramType, object);
+        // 
+        // // 3)
+        // Type newTypeToSet = maybeExpandTypeToNewType(paramType, togen, temps);
+        // if (newTypeToSet != null) {
+        //   formal.setType(newTypeToSet);
+        // }
+
+      }
+
+      //body
+      final StmtBlock body = method.getBody();
+      final List<StmtBlockItem> blocks = body.getBlockStatements();
+
+      for (StmtBlockItem block : blocks) {
+
+        // declarations
+        final List<VarDeclarator> localVars = block.getLocalVars();
+        if (localVars != null) {
+
+          for (VarDeclarator var : localVars) {
+
+            fabric(var, object, typenameT, typeToSet, togen, temps);
+
+            // Type varType = var.getType();
+            // 
+            // // 1)
+            // if (maybeReplaceTypenameWithType(varType, typenameT)) {
+            //   var.setType(typeToSet);
+            // }
+            // 
+            // // 2)
+            // maybeClearTypeParametersIfSelfReference(varType, object);
+            // 
+            // // 3)
+            // Type newTypeToSet = maybeExpandTypeToNewType(varType, togen, temps);
+            // if (newTypeToSet != null) {
+            //   var.setType(newTypeToSet);
+            // }
+
+          }
+
+        }
+
+        // // statements
+        // final StmtStatement statement = block.getStatement();
+        // if (statement != null) {
+        //   boolean result = new ApplyStmt(this).applyStatement(object, statement);
+        //   if (!result) {
+        //     System.out.println("...??? stmt");
+        //   }
+        // }
+
+      }
+
+    }
   }
 
-  private static void maybeReplaceTypenameWithType(VarDeclarator field, Ident typenameT, Type typeToSet) {
+  private static void fabric(TypeSetter typeSetter, ClassDeclaration object, Ident typenameT, Type typeToSet,
+      List<Type> togen, HashMap<String, Dto> temps) {
 
-    if (!field.getType().isTypeVarRef()) {
-      return;
+    Type typeToCheck = typeSetter.getType();
+
+    // 1)
+    if (maybeReplaceTypenameWithType(typeToCheck, typenameT)) {
+      typeSetter.setType(typeToSet);
     }
 
-    final Ident typeParameterName = field.getType().getTypeParameter();
+    // 2)
+    maybeClearTypeParametersIfSelfReference(typeToCheck, object);
+
+    // 3)
+    Type newTypeToSet = maybeExpandTypeToNewType(typeToCheck, togen, temps);
+    if (newTypeToSet != null) {
+      typeSetter.setType(newTypeToSet);
+    }
+
+  }
+
+  private static boolean maybeReplaceTypenameWithType(Type typeToCheck, Ident typenameT) {
+
+    if (!typeToCheck.isTypeVarRef()) {
+      return false;
+    }
+
+    final Ident typeParameterName = typeToCheck.getTypeParameter();
     if (typeParameterName.equals(typenameT)) {
-      field.setType(typeToSet);
+      return true;
     }
 
+    return false;
   }
 
-  private static void maybeClearTypeParametersIfSelfReference(VarDeclarator field, ClassDeclaration object) {
+  private static void maybeClearTypeParametersIfSelfReference(Type typeToCheck, ClassDeclaration object) {
 
-    if (!field.getType().isClassRef()) {
+    if (!typeToCheck.isClassRef()) {
       return;
     }
 
-    final Type oldtype = field.getType();
-    final ClassDeclaration nested = oldtype.getClassType();
+    final ClassDeclaration nested = typeToCheck.getClassType();
 
     if (nested.equals(object)) {
       nested.getTypeParametersT().clear();
@@ -204,16 +281,15 @@ public class TemplateCodegen {
 
   }
 
-  private static void maybeSetNewType(VarDeclarator field, List<Type> togen, HashMap<String, Dto> temps) {
+  private static Type maybeExpandTypeToNewType(Type typeToCheck, List<Type> togen, HashMap<String, Dto> temps) {
 
-    if (!field.getType().isClassRef()) {
-      return;
+    if (!typeToCheck.isClassRef()) {
+      return null;
     }
 
-    final Type oldtype = field.getType();
-    final Type newtype = getType(oldtype, togen, temps);
+    final Type newtype = getType(typeToCheck, togen, temps);
+    return newtype;
 
-    field.setType(newtype);
   }
 
 }

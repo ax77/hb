@@ -32,34 +32,28 @@ public class TestMinimalExample {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/    class Node<T> {              \n");
-    sb.append(" /*002*/      Node<T> prev;              \n");
-    sb.append(" /*003*/      Node<T> next;              \n");
-    sb.append(" /*004*/      T item;                    \n");
-    sb.append(" /*005*/    }                            \n");
-    sb.append(" /*006*/    class List<T> {              \n");
-    sb.append(" /*007*/      Node<T> first;             \n");
-    sb.append(" /*008*/      Node<T> last;              \n");
-    sb.append(" /*009*/      int size;                  \n");
-    sb.append(" /*010*/    }                            \n");
-    sb.append(" /*011*/    class Entry<K, V> {          \n");
-    sb.append(" /*012*/      K key;                     \n");
-    sb.append(" /*013*/      V value;                   \n");
-    sb.append(" /*014*/      Entry<K, V> next;          \n");
-    sb.append(" /*015*/    }                            \n");
-    sb.append(" /*016*/    class Map<K, V> {            \n");
-    sb.append(" /*017*/      List<Entry<K, V> > table;  \n");
-    sb.append(" /*018*/      int capacity;              \n");
-    sb.append(" /*019*/    }                            \n");
-    sb.append(" /*020*/    class idn {                  \n");
-    sb.append(" /*021*/      int stub;                  \n");
-    sb.append(" /*022*/    }                            \n");
-    sb.append(" /*023*/    class string {               \n");
-    sb.append(" /*024*/      int stub;                  \n");
-    sb.append(" /*025*/    }                            \n");
-    sb.append(" /*026*/    class C {                    \n");
-    sb.append(" /*027*/      Node<boolean> table;       \n");
-    sb.append(" /*028*/    }                            \n");
+    sb.append(" /*001*/  class Node<E> {                                  \n");
+    sb.append(" /*002*/    E item;                                        \n");
+    sb.append(" /*003*/    Node<E> next;                                  \n");
+    sb.append(" /*004*/    Node<E> prev;                                  \n");
+    sb.append(" /*005*/    Node(Node<E> prev, E element, Node<E> next) {  \n");
+    sb.append(" /*006*/      this.item = element;                         \n");
+    sb.append(" /*007*/      this.next = next;                            \n");
+    sb.append(" /*008*/      this.prev = prev;                            \n");
+    sb.append(" /*009*/    }                                              \n");
+    sb.append(" /*010*/  }                                                \n");
+    sb.append(" /*011*/  class LinkedList<E> {                            \n");
+    sb.append(" /*012*/    int size = 0;                                  \n");
+    sb.append(" /*013*/    Node<E> first;                                 \n");
+    sb.append(" /*014*/    Node<E> last;                                  \n");
+    sb.append(" /*015*/    void pushBack(E e) {                           \n");
+    sb.append(" /*016*/      Node<E> l = last;                            \n");
+    sb.append(" /*017*/      Node<E> newNode;                             \n");
+    sb.append(" /*025*/    }                                              \n");
+    sb.append(" /*026*/  }                                                \n");
+    sb.append(" /*027*/  class C {                                        \n");
+    sb.append(" /*028*/    LinkedList<int> table;                         \n");
+    sb.append(" /*029*/  }                                                \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
@@ -69,7 +63,7 @@ public class TestMinimalExample {
     applier.visit(unit);
 
     //
-    Type ap = unit.getTypeDeclarations().get(6).getClassDeclaration().getField(Hash_ident.getHashedIdent("table"))
+    Type ap = unit.getTypeDeclarations().get(2).getClassDeclaration().getField(Hash_ident.getHashedIdent("table"))
         .getType();
 
     HashMap<String, Dto> temps = new HashMap<>();

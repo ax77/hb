@@ -3,9 +3,10 @@ package njast.ast_nodes.clazz.methods;
 import java.io.Serializable;
 
 import jscan.symtab.Ident;
+import njast.TypeSetter;
 import njast.types.Type;
 
-public class FormalParameter implements Serializable {
+public class FormalParameter implements Serializable, TypeSetter {
 
   private static final long serialVersionUID = 8224274363196087023L;
 
@@ -17,6 +18,7 @@ public class FormalParameter implements Serializable {
     this.name = name;
   }
 
+  @Override
   public void setType(Type type) {
     this.type = type;
   }

@@ -40,7 +40,7 @@ public class StmtBlockItem implements Serializable {
     if (localVars != null) {
       StringBuilder sb = new StringBuilder();
       for (VarDeclarator var : localVars) {
-        sb.append("    " + var.toString());
+        sb.append("    " + var.toString() + "\n");
       }
       return sb.toString();
     }

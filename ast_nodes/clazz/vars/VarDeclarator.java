@@ -4,11 +4,12 @@ import java.io.Serializable;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
+import njast.TypeSetter;
 import njast.modifiers.Modifiers;
 import njast.parse.ILocation;
 import njast.types.Type;
 
-public class VarDeclarator implements ILocation, Serializable {
+public class VarDeclarator implements ILocation, Serializable, TypeSetter {
   private static final long serialVersionUID = -364976996504280849L;
 
   private Modifiers modifiers;
@@ -25,6 +26,7 @@ public class VarDeclarator implements ILocation, Serializable {
     this.identifier = identifier;
   }
 
+  @Override
   public void setType(Type type) {
     this.type = type;
   }

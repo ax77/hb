@@ -1,9 +1,11 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
+
 import jscan.tokenize.Token;
 
-public class ExprBinary {
-
+public class ExprBinary implements Serializable {
+  private static final long serialVersionUID = 7441206591539888580L;
   private final Token operator;
   private final ExprExpression lhs;
   private final ExprExpression rhs;

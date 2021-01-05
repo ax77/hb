@@ -4,12 +4,13 @@ import java.io.Serializable;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
+import njast.TypeSetter;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.parse.ILocation;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
-public class ClassMethodDeclaration implements ILocation, Serializable {
+public class ClassMethodDeclaration implements ILocation, Serializable, TypeSetter {
 
   private static final long serialVersionUID = 2982374768194205119L;
 
@@ -38,12 +39,22 @@ public class ClassMethodDeclaration implements ILocation, Serializable {
     this.resultType = resultType;
   }
 
+  @Override
+  public void setType(Type typeToSet) {
+    setResultType(typeToSet);
+  }
+
   public FormalParameterList getFormalParameterList() {
     return formalParameterList;
   }
 
   public Type getResultType() {
     return resultType;
+  }
+
+  @Override
+  public Type getType() {
+    return getResultType();
   }
 
   public boolean isVoid() {

@@ -1,8 +1,11 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
+
 import jscan.symtab.Ident;
 
-public class ExprFieldAccess {
+public class ExprFieldAccess implements Serializable {
+  private static final long serialVersionUID = -6528124385251141959L;
   private final Ident fieldName;
   private final ExprExpression object;
 

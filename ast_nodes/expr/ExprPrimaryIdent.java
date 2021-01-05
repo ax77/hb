@@ -1,9 +1,12 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
+
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 
-public class ExprPrimaryIdent {
+public class ExprPrimaryIdent implements Serializable {
+  private static final long serialVersionUID = 7777441284065170375L;
   private final Ident identifier;
   private VarDeclarator variable;
 

@@ -1,11 +1,13 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
+
 import jscan.cstrtox.NumType;
 
-public class ExprNumericConstant {
+public class ExprNumericConstant implements Serializable {
+  private static final long serialVersionUID = 4121213191687917298L;
 
   private final NumType numtype;
-
   private final long clong;
   private final double cdouble;
 

@@ -1,11 +1,14 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
+
 import jscan.cstrtox.C_strtox;
 import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.types.Type;
 
-public class ExprExpression {
+public class ExprExpression implements Serializable {
+  private static final long serialVersionUID = -2905880039842730533L;
 
   // main
   private final ExpressionBase base; // what union contains
