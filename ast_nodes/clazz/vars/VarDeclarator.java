@@ -15,7 +15,7 @@ public class VarDeclarator implements ILocation, Serializable, TypeSetter {
   private Modifiers modifiers;
   private final VarBase base;
   private final SourceLocation location;
-  private /*final*/ Type type;
+  private Type type;
   private final Ident identifier;
   private VarInitializer initializer;
 
@@ -31,6 +31,11 @@ public class VarDeclarator implements ILocation, Serializable, TypeSetter {
     this.type = type;
   }
 
+  @Override
+  public Type getType() {
+    return type;
+  }
+
   public VarInitializer getInitializer() {
     return initializer;
   }
@@ -41,10 +46,6 @@ public class VarDeclarator implements ILocation, Serializable, TypeSetter {
 
   public Ident getIdentifier() {
     return identifier;
-  }
-
-  public Type getType() {
-    return type;
   }
 
   @Override

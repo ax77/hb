@@ -51,7 +51,7 @@ public class FormalParameterList implements Serializable {
 
       sb.append(param.getType().toString());
       sb.append(" ");
-      sb.append(param.getName().getName());
+      sb.append(param.getIdentifier().getName());
 
       if (i + 1 < parameters.size()) {
         sb.append(", ");

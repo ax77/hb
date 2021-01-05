@@ -10,12 +10,12 @@ public class FormalParameter implements Serializable, TypeSetter {
 
   private static final long serialVersionUID = 8224274363196087023L;
 
-  private /*final*/ Type type;
-  private final Ident name;
+  private Type type;
+  private final Ident identifier;
 
-  public FormalParameter(Type type, Ident name) {
+  public FormalParameter(Type type, Ident identifier) {
     this.type = type;
-    this.name = name;
+    this.identifier = identifier;
   }
 
   @Override
@@ -23,17 +23,18 @@ public class FormalParameter implements Serializable, TypeSetter {
     this.type = type;
   }
 
+  @Override
   public Type getType() {
     return type;
   }
 
-  public Ident getName() {
-    return name;
+  public Ident getIdentifier() {
+    return identifier;
   }
 
   @Override
   public String toString() {
-    return name + ": " + type.toString();
+    return type.toString() + " " + identifier.getName();
   }
 
 }

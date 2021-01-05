@@ -18,6 +18,7 @@ import njast.types.Type;
 
 public class TemplateCodegen {
 
+  @SuppressWarnings("unused")
   private static int temps_name = 0;
 
   private final List<Type> generatedClasses;
@@ -71,6 +72,16 @@ public class TemplateCodegen {
     templateClass.setTypeParametersT(new ArrayList<Type>());
     final Type result = new Type(templateClass);
 
+    // TODO: how to do this more clean and precise?
+    // if deep-nested templates generated many times, and they are the same
+    // we can find them by their names only.
+    // can we guarantee that it is a proper way to do this?
+    // need more tests with code-review.
+    Type ready2 = presentedInGenerated2(result);
+    if (ready2 != null) {
+      return ready2;
+    }
+
     generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(from, typeArguments, result));
     generatedClasses.add(result);
 
@@ -82,7 +93,7 @@ public class TemplateCodegen {
     sb.append(origNameOfTemplateClass);
     sb.append("_");
     sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
-    return String.format("t_%s_%d", sb.toString(), temps_name++);
+    return sb.toString(); // String.format("t_%s_%d", sb.toString(), temps_name++);
   }
 
   private String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
@@ -95,6 +106,22 @@ public class TemplateCodegen {
       }
     }
     return sb.toString();
+  }
+
+  private Type presentedInGenerated2(Type result) {
+
+    if (!result.isClassRef()) {
+      throw new EParseException("expect class-type");
+    }
+
+    final String name = result.getClassType().getIdentifier().getName();
+    for (Type tp : generatedClasses) {
+      if (tp.isClassRef() && tp.getClassType().getIdentifier().getName().equals(name)) {
+        return tp;
+      }
+    }
+
+    return null;
   }
 
   private Type generated(Type from) {
@@ -161,10 +188,12 @@ public class TemplateCodegen {
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
 
+      // return type
       if (!method.isVoid()) {
         fabric(method, object, typenameT, typeToSet);
       }
 
+      // parameters
       for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
         fabric(formal, object, typenameT, typeToSet);
       }

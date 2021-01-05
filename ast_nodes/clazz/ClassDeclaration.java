@@ -22,7 +22,7 @@ public class ClassDeclaration implements Serializable {
   //    class Identifier [TypeParameters]
   //    [extends Type] [implements TypeList] ClassBody
 
-  private /*final*/ Ident identifier;
+  private Ident identifier;
   private List<ClassConstructorDeclaration> constructors;
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;

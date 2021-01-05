@@ -15,7 +15,7 @@ public class ClassMethodDeclaration implements ILocation, Serializable, TypeSett
   private static final long serialVersionUID = 2982374768194205119L;
 
   private final SourceLocation location;
-  private /*final*/ Type resultType;
+  private Type type;
   private final Ident identifier;
   private final FormalParameterList formalParameterList;
   private final boolean isVoid;
@@ -26,7 +26,7 @@ public class ClassMethodDeclaration implements ILocation, Serializable, TypeSett
 
     NullChecker.check(identifier, formalParameterList, body);
 
-    this.resultType = resultType;
+    this.type = resultType;
     this.identifier = identifier;
     this.formalParameterList = formalParameterList;
     this.isVoid = (resultType == null);
@@ -35,26 +35,18 @@ public class ClassMethodDeclaration implements ILocation, Serializable, TypeSett
 
   }
 
-  public void setResultType(Type resultType) {
-    this.resultType = resultType;
-  }
-
   @Override
   public void setType(Type typeToSet) {
-    setResultType(typeToSet);
-  }
-
-  public FormalParameterList getFormalParameterList() {
-    return formalParameterList;
-  }
-
-  public Type getResultType() {
-    return resultType;
+    this.type = typeToSet;
   }
 
   @Override
   public Type getType() {
-    return getResultType();
+    return type;
+  }
+
+  public FormalParameterList getFormalParameterList() {
+    return formalParameterList;
   }
 
   public boolean isVoid() {
@@ -75,7 +67,7 @@ public class ClassMethodDeclaration implements ILocation, Serializable, TypeSett
     if (isVoid) {
       sb.append("void");
     } else {
-      sb.append(resultType.toString());
+      sb.append(type.toString());
     }
     sb.append(" ");
     sb.append(identifier.getName());

@@ -145,7 +145,7 @@ public class ApplyExpr {
         throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
       }
 
-      e.setResultType(method.getResultType());
+      e.setResultType(method.getType());
 
     } else {
       // function: fn(1,2,3)
@@ -153,7 +153,7 @@ public class ApplyExpr {
       if (func == null) {
         throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
       }
-      e.setResultType(func.getResultType());
+      e.setResultType(func.getType());
     }
 
   }

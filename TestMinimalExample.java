@@ -49,7 +49,7 @@ public class TestMinimalExample {
     sb.append(" /*025*/    }                                              \n");
     sb.append(" /*026*/  }                                                \n");
     sb.append(" /*027*/  class C {                                        \n");
-    sb.append(" /*028*/    LinkedList<LinkedList<int> > table;            \n");
+    sb.append(" /*028*/    LinkedList<Node<int> > table;                  \n");
     sb.append(" /*029*/  }                                                \n");
     //@formatter:on
 

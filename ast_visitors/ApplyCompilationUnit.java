@@ -223,7 +223,7 @@ public class ApplyCompilationUnit {
 
       for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
         Type type = fp.getType();
-        Ident name = fp.getName();
+        Ident name = fp.getIdentifier();
         defineFunctionParameter(method, type, name);
       }
 
