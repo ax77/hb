@@ -9,10 +9,10 @@ import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 
-public class IsConstructor {
+public class ConstructorRecognizer {
   private final Parse parser;
 
-  public IsConstructor(Parse parser) {
+  public ConstructorRecognizer(Parse parser) {
     this.parser = parser;
   }
 
@@ -37,7 +37,7 @@ public class IsConstructor {
     final Ident className = classBody.getIdentifier();
     final Token nextTok = parser.peek();
 
-    return IsIdent.isUserDefinedIdentNoKeyword(currentTok) && currentTok.getIdent().equals(className)
+    return IdentRecognizer.isUserDefinedIdentNoKeyword(currentTok) && currentTok.getIdent().equals(className)
         && nextTok.ofType(T.T_LEFT_PAREN);
   }
 

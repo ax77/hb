@@ -1,7 +1,7 @@
 package njast.ast_parsers;
 
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
+import njast.ast_checkers.IdentRecognizer;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 
@@ -15,7 +15,7 @@ public class ParseModifiers {
   public Modifiers parse() {
     Modifiers res = new Modifiers();
 
-    while (IsIdent.is_any_modifier(parser.tok())) {
+    while (IdentRecognizer.is_any_modifier(parser.tok())) {
       Token tok = parser.moveget();
       res.put(tok);
     }

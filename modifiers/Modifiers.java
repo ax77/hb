@@ -5,7 +5,7 @@ import java.util.Set;
 
 import jscan.symtab.Ident;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
+import njast.ast_checkers.IdentRecognizer;
 import njast.errors.EParseException;
 import njast.symtab.IdentMap;
 
@@ -17,7 +17,7 @@ public class Modifiers {
   }
 
   public void put(Token tok) {
-    if (!IsIdent.is_any_modifier(tok)) {
+    if (!IdentRecognizer.is_any_modifier(tok)) {
       throw new EParseException("not modifier: " + tok.getValue());
     }
     modifiers.add(tok.getIdent());

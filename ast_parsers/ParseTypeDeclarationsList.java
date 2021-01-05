@@ -5,8 +5,8 @@ import java.util.List;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsConstructor;
-import njast.ast_checkers.IsFunc;
+import njast.ast_checkers.ConstructorRecognizer;
+import njast.ast_checkers.FunctionRecognizer;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
@@ -104,7 +104,7 @@ public class ParseTypeDeclarationsList {
 
     // 1) constructor
     // 
-    boolean isConstructorDeclaration = new IsConstructor(parser).isConstructorDeclaration(clazz);
+    boolean isConstructorDeclaration = new ConstructorRecognizer(parser).isConstructorDeclaration(clazz);
     if (isConstructorDeclaration) {
       ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
       checkRedefinition(clazz, constructorDeclaration);
@@ -115,7 +115,7 @@ public class ParseTypeDeclarationsList {
 
     // 2) function or field
     //
-    boolean isFunction = new IsFunc(parser).isFunc();
+    boolean isFunction = new FunctionRecognizer(parser).isFunc();
 
     if (isFunction) {
       ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();

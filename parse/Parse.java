@@ -13,7 +13,8 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
+import njast.ast_checkers.IdentRecognizer;
+import njast.ast_checkers.TypeRecognizer;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
@@ -68,26 +69,15 @@ public class Parse {
   }
 
   public boolean isClassName() {
-    if (IsIdent.isUserDefinedIdentNoKeyword(tok)) {
+    if (IdentRecognizer.isUserDefinedIdentNoKeyword(tok)) {
       return isClassName(tok.getIdent());
     }
     return false;
   }
 
   public boolean isPrimitiveOrReferenceTypeBegin() {
-    final boolean isPrimitiveType = IsIdent.isBasicTypeIdent(tok());
-    final boolean isReferenceType = isClassName();
-    boolean typeWasFound = isPrimitiveType || isReferenceType;
-
-    if (!typeWasFound) {
-      ClassDeclaration classDeclaration = getCurrentClass();
-      if (classDeclaration == null) {
-        unreachable("expect current class");
-      }
-      typeWasFound = classDeclaration.getTypeParametersT().contains(tok().getIdent());
-    }
-
-    return typeWasFound;
+    TypeRecognizer typeRecognizer = new TypeRecognizer(this);
+    return typeRecognizer.isType();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

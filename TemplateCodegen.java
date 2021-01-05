@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;

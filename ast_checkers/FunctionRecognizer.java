@@ -7,11 +7,11 @@ import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 
-public class IsFunc {
+public class FunctionRecognizer {
 
   private final Parse parser;
 
-  public IsFunc(Parse parser) {
+  public FunctionRecognizer(Parse parser) {
     this.parser = parser;
   }
 

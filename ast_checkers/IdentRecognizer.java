@@ -11,7 +11,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.symtab.IdentMap;
 
-public abstract class IsIdent {
+public abstract class IdentRecognizer {
 
   //@formatter:off
   
@@ -125,59 +125,5 @@ public abstract class IsIdent {
         || what.isIdent(IdentMap.synchronized_ident) 
         || what.isIdent(IdentMap.native_ident);
   }
-  
-//  // TODO: more clean and fast.
-//  public static boolean isKeyword(Token what) {
-//    return what.isIdent(IdentMap.abstract_ident            )
-//        || what.isIdent(IdentMap.boolean_ident             )
-//        || what.isIdent(IdentMap.break_ident               )
-//        || what.isIdent(IdentMap.byte_ident                )
-//        || what.isIdent(IdentMap.case_ident                )
-//        || what.isIdent(IdentMap.catch_ident               )
-//        || what.isIdent(IdentMap.char_ident                )
-//        || what.isIdent(IdentMap.class_ident               )
-//        || what.isIdent(IdentMap.const_ident               )
-//        || what.isIdent(IdentMap.continue_ident            )
-//        || what.isIdent(IdentMap.default_ident             )
-//        || what.isIdent(IdentMap.do_ident                  )
-//        || what.isIdent(IdentMap.double_ident              )
-//        || what.isIdent(IdentMap.else_ident                )
-//        || what.isIdent(IdentMap.enum_ident                )
-//        || what.isIdent(IdentMap.extends_ident             )
-//        || what.isIdent(IdentMap.final_ident               )
-//        || what.isIdent(IdentMap.finally_ident             )
-//        || what.isIdent(IdentMap.float_ident               )
-//        || what.isIdent(IdentMap.for_ident                 )
-//        || what.isIdent(IdentMap.goto_ident                )
-//        || what.isIdent(IdentMap.if_ident                  )
-//        || what.isIdent(IdentMap.implements_ident          )
-//        || what.isIdent(IdentMap.import_ident              )
-//        || what.isIdent(IdentMap.instanceof_ident          )
-//        || what.isIdent(IdentMap.int_ident                 )
-//        || what.isIdent(IdentMap.interface_ident           )
-//        || what.isIdent(IdentMap.long_ident                )
-//        || what.isIdent(IdentMap.native_ident              )
-//        || what.isIdent(IdentMap.new_ident                 )
-//        || what.isIdent(IdentMap.package_ident             )
-//        || what.isIdent(IdentMap.private_ident             )
-//        || what.isIdent(IdentMap.protected_ident           )
-//        || what.isIdent(IdentMap.public_ident              )
-//        || what.isIdent(IdentMap.return_ident              )
-//        || what.isIdent(IdentMap.short_ident               )
-//        || what.isIdent(IdentMap.static_ident              )
-//        || what.isIdent(IdentMap.super_ident               )
-//        || what.isIdent(IdentMap.switch_ident              )
-//        || what.isIdent(IdentMap.synchronized_ident        )
-//        || what.isIdent(IdentMap.this_ident                )
-//        || what.isIdent(IdentMap.throw_ident               )
-//        || what.isIdent(IdentMap.throws_ident              )
-//        || what.isIdent(IdentMap.transient_ident           )
-//        || what.isIdent(IdentMap.try_ident                 )
-//        || what.isIdent(IdentMap.void_ident                )
-//        || what.isIdent(IdentMap.volatile_ident            )
-//        || what.isIdent(IdentMap.while_ident               );
-//  }
-  
-  //@formatter:on
 
 }

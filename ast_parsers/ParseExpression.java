@@ -32,7 +32,7 @@ import jscan.cstrtox.C_strtox;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IsIdent;
+import njast.ast_checkers.IdentRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
@@ -97,7 +97,7 @@ public class ParseExpression {
   }
 
   private boolean isCompoundAssign(Token what) {
-    return IsIdent.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
+    return IdentRecognizer.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
   }
 
   public ExprExpression e_assign() {
@@ -112,7 +112,7 @@ public class ParseExpression {
     //      lhs = build_assign(saved, lhs, rhs);
     //    }
 
-    if (IsIdent.isAssignOperator(parser.tok())) {
+    if (IdentRecognizer.isAssignOperator(parser.tok())) {
 
       Token saved = parser.tok();
 
@@ -300,7 +300,7 @@ public class ParseExpression {
   private ExprExpression e_unary() {
 
     // [& * + - ~ !]
-    if (IsIdent.isUnaryOperator(parser.tok())) {
+    if (IdentRecognizer.isUnaryOperator(parser.tok())) {
       Token operator = parser.tok();
       parser.move();
       return build_unary(operator, e_cast());
@@ -325,7 +325,7 @@ public class ParseExpression {
         final Token dot = parser.moveget();
         final Token peek = parser.peek();
 
-        final boolean dot_ident_lparen = IsIdent.isUserDefinedIdentNoKeyword(parser.tok())
+        final boolean dot_ident_lparen = IdentRecognizer.isUserDefinedIdentNoKeyword(parser.tok())
             && peek.ofType(T.T_LEFT_PAREN);
 
         if (dot_ident_lparen) {
@@ -521,7 +521,7 @@ public class ParseExpression {
     }
 
     // simple name
-    if (IsIdent.isUserDefinedIdentNoKeyword(parser.tok())) {
+    if (IdentRecognizer.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
       return new ExprExpression(new ExprPrimaryIdent(saved.getIdent()));
     }
