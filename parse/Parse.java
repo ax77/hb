@@ -33,16 +33,51 @@ public class Parse {
   private List<Token> ringBuffer;
   private Token prevtok;
 
+  // symbol table for names, for classes only
+  private Map<Ident, ClassDeclaration> referenceTypes;
+  private ClassDeclaration currentClass;
+
+  public Parse(List<Token> tokens) {
+    this.tokenlist = new Tokenlist(tokens);
+    initParser();
+  }
+
+  public Parse(Tokenlist tokenlist) {
+    this.tokenlist = tokenlist;
+    initParser();
+  }
+
+  private void initParser() {
+    initDefaults();
+    initScopes();
+    move();
+  }
+
+  private void initDefaults() {
+    this.ringBuffer = new ArrayList<Token>(0);
+    this.lastloc = "";
+  }
+
+  private void initScopes() {
+    this.referenceTypes = new HashMap<Ident, ClassDeclaration>();
+  }
+
+  public void move() {
+
+    tok = tokenlist.next();
+    if (tok.ofType(T.TOKEN_STREAMBEGIN) || tok.ofType(T.TOKEN_STREAMEND)) {
+      tok = tokenlist.next();
+    }
+
+    addLoc();
+  }
+
   public Token tok() {
     return tok;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  // a simple and spupid symbol-table, where we'll put all classes we found, to distinct 
-  // class-type and simple types like int/char/etc.
-  private Map<Ident, ClassDeclaration> referenceTypes;
-  private ClassDeclaration currentClass;
+  //////////////////////////////////////////////////////////////////////
+  // PRE-SYMTAB
 
   public ClassDeclaration getCurrentClass() {
     return currentClass;
@@ -80,32 +115,8 @@ public class Parse {
     return typeRecognizer.isType();
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  public Parse(List<Token> tokens) {
-    this.tokenlist = new Tokenlist(tokens);
-
-    initDefaults();
-    initScopes();
-    move();
-  }
-
-  public Parse(Tokenlist tokenlist) {
-    this.tokenlist = tokenlist;
-
-    initDefaults();
-    initScopes();
-    move();
-  }
-
-  private void initDefaults() {
-    this.ringBuffer = new ArrayList<Token>(0);
-    this.lastloc = "";
-  }
-
-  private void initScopes() {
-    this.referenceTypes = new HashMap<Ident, ClassDeclaration>();
-  }
+  //////////////////////////////////////////////////////////////////////
+  // ROUTINE
 
   public String getLastLoc() {
     return lastloc;
@@ -123,32 +134,8 @@ public class Parse {
     return ringBuffer;
   }
 
-  public boolean is(T toktype) {
-    return tok.getType().equals(toktype);
-  }
-
-  public boolean is(Ident ident) {
-    return tok.ofType(T.TOKEN_IDENT) && ident.equals(tok.getIdent());
-  }
-
-  public T tp() {
-    return tok.getType();
-  }
-
-  public void move() {
-
-    tok = tokenlist.next();
-    if (tok.ofType(T.TOKEN_STREAMBEGIN) || tok.ofType(T.TOKEN_STREAMEND)) {
-      tok = tokenlist.next();
-    }
-
-    addLoc();
-  }
-
-  public Token moveget() {
-    Token tok = tok();
-    move();
-    return tok;
+  public Tokenlist getTokenlist() {
+    return tokenlist;
   }
 
   private void addLoc() {
@@ -163,6 +150,7 @@ public class Parse {
   }
 
   //////////////////////////////////////////////////////////////////////
+  // STATE
 
   public void perror(String m) {
 
@@ -185,6 +173,24 @@ public class Parse {
 
   public void perror(EParseErrors code) {
     perror(code.toString());
+  }
+
+  public boolean is(T toktype) {
+    return tok.getType().equals(toktype);
+  }
+
+  public boolean is(Ident ident) {
+    return tok.ofType(T.TOKEN_IDENT) && ident.equals(tok.getIdent());
+  }
+
+  public T tp() {
+    return tok.getType();
+  }
+
+  public Token moveget() {
+    Token tok = tok();
+    move();
+    return tok;
   }
 
   public Token checkedMove(Ident expect) {
@@ -278,10 +284,6 @@ public class Parse {
     return tok.ofType(T.TOKEN_EOF);
   }
 
-  public Tokenlist getTokenlist() {
-    return tokenlist;
-  }
-
   public void restoreState(ParseState parseState) {
     this.tokenlist.setOffset(parseState.getTokenlistOffset());
     this.tok = parseState.getTok();
@@ -291,7 +293,7 @@ public class Parse {
     this.currentClass = parseState.getCurrentClass();
   }
 
-  ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
   // ENTRY
 
   private void moveStraySemicolon() {
