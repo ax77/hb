@@ -58,7 +58,7 @@ public class TestMinimalExample {
     sb.append(" /*024*/      int stub;                  \n");
     sb.append(" /*025*/    }                            \n");
     sb.append(" /*026*/    class C {                    \n");
-    sb.append(" /*027*/      Map<List<idn>, Node<idn> > table;    \n");
+    sb.append(" /*027*/      Node<int> table;    \n");
     sb.append(" /*028*/    }                            \n");
     //@formatter:on
 
@@ -78,6 +78,7 @@ public class TestMinimalExample {
     for (Type ref : togen) {
       System.out.println(ref.getClassType().toString());
     }
+    // System.out.println(res.toString());
   }
 
 }

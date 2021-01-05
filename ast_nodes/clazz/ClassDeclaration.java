@@ -10,6 +10,8 @@ import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
+import njast.errors.EParseException;
+import njast.parse.NullChecker;
 import njast.types.Type;
 
 public class ClassDeclaration implements Serializable {
@@ -25,15 +27,20 @@ public class ClassDeclaration implements Serializable {
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
+
+  // we store type-variables as original references to Type
+  //
+  // each type-variable is an identifier like: class Pair<K, V> { K key; V value; Pair<K, V> hash; }
+  // where type-variables are: K and V in this example
+  //
+  // when we'll expand template, we'll replace each at once in every places it used by its pointer
+  // it is important to not screw this reference up before
+  //
   private List<Type> typeParametersT;
 
   public ClassDeclaration(Ident identifier) {
     this.identifier = identifier;
     initLists();
-  }
-
-  public void putTypenameT(Type ref) {
-    typeParametersT.add(ref);
   }
 
   public boolean isEqualAsGeneric(ClassDeclaration another) {
@@ -70,18 +77,22 @@ public class ClassDeclaration implements Serializable {
   }
 
   public void put(ClassConstructorDeclaration e) {
+    NullChecker.check(e);
     this.constructors.add(e);
   }
 
   public void put(VarDeclarator e) {
+    NullChecker.check(e);
     this.fields.add(e);
   }
 
   public void put(ClassMethodDeclaration e) {
+    NullChecker.check(e);
     this.methods.add(e);
   }
 
   public void put(StmtBlock e) {
+    NullChecker.check(e);
     this.staticInitializers.add(e);
   }
 
@@ -111,10 +122,16 @@ public class ClassDeclaration implements Serializable {
   }
 
   public void setTypeParametersT(List<Type> typeParametersT) {
+    for (Type tp : typeParametersT) {
+      if (!tp.isTypeVarRef()) {
+        throw new EParseException("expect type-parameter, but was: " + tp.toString());
+      }
+    }
     this.typeParametersT = typeParametersT;
   }
 
   public void setIdentifier(Ident identifier) {
+    NullChecker.check(identifier);
     this.identifier = identifier;
   }
 

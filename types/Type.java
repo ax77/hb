@@ -17,6 +17,7 @@ import java.util.List;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.errors.EParseException;
+import njast.parse.NullChecker;
 
 public class Type implements Serializable {
   private static final long serialVersionUID = -4630043454712001308L;
@@ -36,6 +37,8 @@ public class Type implements Serializable {
   public final static Type BOOLEAN_TYPE = new Type(TypeBase.TP_BOOLEAN);
 
   public void fillPropValues(Type another) {
+    NullChecker.check(another);
+
     this.base = another.base;
     this.classType = another.classType;
     this.typeArguments = another.typeArguments;
