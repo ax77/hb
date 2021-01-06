@@ -21,4 +21,9 @@ public class VarInitializer implements Serializable {
     this.initializer = initializer;
   }
 
+  @Override
+  public String toString() {
+    return initializer.toString();
+  }
+
 }

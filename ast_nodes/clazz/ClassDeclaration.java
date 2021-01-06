@@ -226,13 +226,22 @@ public class ClassDeclaration implements Serializable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    sb.append("class ");
+    sb.append(identifier.getName());
+
+    sb.append("\n{\n");
+
     for (VarDeclarator var : fields) {
-      sb.append(var.toString().trim() + "\n");
+      sb.append(var.toString() + "\n");
     }
+
     for (ClassMethodDeclaration method : methods) {
-      sb.append(method.toString().trim() + "\n");
+      sb.append(method.toString() + "\n");
     }
-    return "class " + identifier.getName() + " \n{\n" + sb.toString() + "}\n";
+
+    sb.append("\n}\n");
+
+    return sb.toString();
   }
 
   public Type getTypeParameter(Ident ident) {

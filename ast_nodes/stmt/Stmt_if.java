@@ -32,14 +32,23 @@ public class Stmt_if implements Serializable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("if(" + ifexpr.toString() + ") \n{\n");
+    sb.append("if(");
+    sb.append(ifexpr.toString());
+    sb.append(")");
+
+    sb.append("\n{\n");
     if (ifstmt != null) {
       sb.append(ifstmt.toString().trim());
     }
     sb.append("\n}\n");
+
     if (ifelse != null) {
-      sb.append("else \n{\n" + ifelse.toString().trim() + "\n}\n");
+      sb.append("else");
+      sb.append("\n{\n");
+      sb.append(ifelse.toString());
+      sb.append("\n}\n");
     }
+
     return sb.toString();
   }
 

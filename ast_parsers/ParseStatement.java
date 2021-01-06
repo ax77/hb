@@ -154,13 +154,7 @@ public class ParseStatement {
       }
       parser.rparen();
 
-      if (parser.is(T_SEMI_COLON)) {
-        parser.perror("stray semicolon");
-      }
-      if (!parser.is(T.T_LEFT_BRACE)) {
-        parser.perror("unbraced for-loop is deprecated by design.");
-      }
-
+      checkLbrace();
       loop = parseStatement();
 
       //      popLoop();
@@ -174,6 +168,8 @@ public class ParseStatement {
       Token from = parser.checkedMove(if_ident);
 
       ExprExpression ifexpr = new ParseExpression(parser).getExprInParen();
+      checkLbrace();
+
       StmtStatement ifstmt = parseStatement();
       StmtStatement ifelse = null;
 
@@ -197,6 +193,15 @@ public class ParseStatement {
     StmtStatement ret = new StmtStatement(StatementBase.SEXPR, e_expression());
     parser.semicolon();
     return ret;
+  }
+
+  private void checkLbrace() {
+    if (parser.is(T_SEMI_COLON)) {
+      parser.perror("stray semicolon");
+    }
+    if (!parser.is(T.T_LEFT_BRACE)) {
+      parser.perror("unbraced statements are deprecated by design.");
+    }
   }
 
 }

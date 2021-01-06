@@ -73,7 +73,7 @@ public class TestMinimalExample {
     TemplateCodegen templateCodegen = new TemplateCodegen(ap);
     Type res = templateCodegen.getResult();
     for (Type ref : templateCodegen.getGeneratedClasses()) {
-      System.out.println(ref.getClassType().toString());
+      System.out.println(UtilSrcToStringLevel.tos(ref.getClassType().toString()));
     }
     // System.out.println(res.toString());
   }
