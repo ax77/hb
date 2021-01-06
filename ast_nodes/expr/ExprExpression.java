@@ -139,6 +139,9 @@ public class ExprExpression implements Serializable {
     if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
       return "null";
     }
+    if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
+      return classInstanceCreation.toString();
+    }
     return base.toString();
   }
 

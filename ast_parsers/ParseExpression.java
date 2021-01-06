@@ -33,6 +33,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IdentRecognizer;
+import njast.ast_checkers.TypeRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
@@ -45,6 +46,7 @@ import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 import njast.symtab.IdentMap;
+import njast.types.Type;
 
 public class ParseExpression {
   private final Parse parser;
@@ -509,9 +511,16 @@ public class ParseExpression {
     // new ClassName(x, y, z)
     if (parser.is(IdentMap.new_ident)) {
       Token saved = parser.moveget();
-      Ident classname = parser.getIdent();
+      Type referenceType = new Type(parser.getClassType(parser.getIdent()));
+
+      // optional, but not null
+      List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
+      for (Type typeArg : typeArguments) {
+        referenceType.putTypeArgument(typeArg);
+      }
+
       List<ExprExpression> arguments = parseArglist();
-      return new ExprExpression(new ExprClassInstanceCreation(classname, arguments));
+      return new ExprExpression(new ExprClassInstanceCreation(referenceType, arguments));
     }
 
     if (parser.is(IdentMap.this_ident)) {

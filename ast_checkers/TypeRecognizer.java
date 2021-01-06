@@ -1,5 +1,8 @@
 package njast.ast_checkers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -88,16 +91,42 @@ public class TypeRecognizer {
       parser.perror("expect type-parameter or class-name for reference type");
     }
 
+    // optional, but not null
+    List<Type> typeArguments = getTypeArguments();
+    for (Type typeArg : typeArguments) {
+      referenceType.putTypeArgument(typeArg);
+    }
+
+    //    if (parser.is(T.T_LT)) {
+    //      Token begin = parser.checkedMove(T.T_LT);
+    //
+    //      //Type rt = getReftype();
+    //      referenceType.putTypeArgument(getTypeArgument());
+    //
+    //      while (parser.is(T.T_COMMA)) {
+    //        parser.move();
+    //        //Type rtrest = getReftype();
+    //        referenceType.putTypeArgument(getTypeArgument());
+    //      }
+    //
+    //      // TODO: ambiguous between '>' and '>>' in template arguments
+    //      // if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
+    //      Token end = parser.checkedMove(T.T_GT);
+    //    }
+
+    return referenceType;
+  }
+
+  public List<Type> getTypeArguments() {
+    List<Type> typeArguments = new ArrayList<Type>();
+
     if (parser.is(T.T_LT)) {
       Token begin = parser.checkedMove(T.T_LT);
 
-      //Type rt = getReftype();
-      referenceType.putTypeArgument(getTypeArgument());
-
+      typeArguments.add(getTypeArgument());
       while (parser.is(T.T_COMMA)) {
         parser.move();
-        //Type rtrest = getReftype();
-        referenceType.putTypeArgument(getTypeArgument());
+        typeArguments.add(getTypeArgument());
       }
 
       // TODO: ambiguous between '>' and '>>' in template arguments
@@ -105,7 +134,7 @@ public class TypeRecognizer {
       Token end = parser.checkedMove(T.T_GT);
     }
 
-    return referenceType;
+    return typeArguments;
   }
 
   private Type getTypeArgument() {

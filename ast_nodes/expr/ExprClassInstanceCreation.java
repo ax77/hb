@@ -1,22 +1,28 @@
 package njast.ast_nodes.expr;
 
+import java.io.Serializable;
 import java.util.List;
 
-import jscan.symtab.Ident;
 import njast.ast_utils.ExprUtil;
+import njast.parse.NullChecker;
+import njast.types.Type;
 
-public class ExprClassInstanceCreation {
-  // <class instance creation expression> ::= new <class type> ( <argument list>? )
+public class ExprClassInstanceCreation implements Serializable {
+  private static final long serialVersionUID = -8666532744723689317L;
 
-  private final Ident classtype;
+  // <class instance creation expression> ::= new <class type> < type-arguments > ( <argument list>? )
+
+  private final Type classtype;
   private final List<ExprExpression> arguments;
 
-  public ExprClassInstanceCreation(Ident classtype, List<ExprExpression> arguments) {
+  public ExprClassInstanceCreation(Type classtype, List<ExprExpression> arguments) {
+    NullChecker.check(classtype, arguments);
+
     this.classtype = classtype;
     this.arguments = arguments;
   }
 
-  public Ident getClasstype() {
+  public Type getClasstype() {
     return classtype;
   }
 
@@ -26,7 +32,7 @@ public class ExprClassInstanceCreation {
 
   @Override
   public String toString() {
-    return "new " + classtype.getName() + "(" + ExprUtil.exprListCommaToString(arguments) + ")";
+    return "new " + classtype.toString() + "(" + ExprUtil.exprListCommaToString(arguments) + ")";
   }
 
 }

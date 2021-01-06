@@ -45,7 +45,7 @@ public class TestMinimalExample {
     sb.append(" /*014*/    Node<E> last;                                 \n");
     sb.append(" /*015*/    void pushBack(E e) {                          \n");
     sb.append(" /*016*/      Node<E> l = last;                           \n");
-    sb.append(" /*017*/      Node<E> newNode;                            \n"); //  = new Node<E>(l, e, null)
+    sb.append(" /*017*/      Node<E> newNode = new Node<E>(l, e, null);  \n");  
     sb.append(" /*018*/      last = newNode;                             \n");
     sb.append(" /*019*/      if (l == null) {                            \n");
     sb.append(" /*020*/        first = newNode;                          \n");
