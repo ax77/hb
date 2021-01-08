@@ -81,11 +81,14 @@ public class Type implements Serializable {
     if (this == another) {
       return true;
     }
-    if (!base.equals(another.getBase())) {
-      return false;
+
+    if (isPrimitive()) {
+      if (!base.equals(another.getBase())) {
+        return false;
+      }
     }
 
-    if (base == TypeBase.TP_CLASS) {
+    else if (base == TypeBase.TP_CLASS) {
       if (!classType.isEqualAsGeneric(another.getClassType())) {
         return false;
       }

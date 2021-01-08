@@ -47,6 +47,7 @@ public class InstatantiationUnitBuilder {
       for (TypeSetter ts : typeSetters) {
         typeset(ts);
       }
+      templateCodegen.getInstantiationUnit().put(classDeclaration);
     }
   }
 

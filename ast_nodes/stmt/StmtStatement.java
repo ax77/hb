@@ -73,6 +73,13 @@ public class StmtStatement implements Serializable {
     if (base == StatementBase.SBLOCK) {
       return compound.toString();
     }
+    if (base == StatementBase.SRETURN) {
+      if (expr != null) {
+        return "return " + expr.toString() + ";\n";
+      } else {
+        return "return;\n";
+      }
+    }
     return base.toString();
   }
 
