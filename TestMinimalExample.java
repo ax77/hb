@@ -2,13 +2,13 @@ package njast;
 
 import org.junit.Test;
 
-import jscan.hashed.Hash_ident;
+import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.ast_visitors.ApplyCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
+import njast.templates.InstatantiationUnitBuilder;
 import njast.templates.TemplateCodegen;
-import njast.types.Type;
 
 public class TestMinimalExample {
 
@@ -39,7 +39,7 @@ public class TestMinimalExample {
     sb.append(" /*008*/      this.prev = prev;                           \n");
     sb.append(" /*009*/    }                                             \n");
     sb.append(" /*010*/  }                                               \n");
-    sb.append(" /*011*/  class LinkedList<E> {                           \n");
+    sb.append(" /*011*/  class LinkedList<E> {   LinkedList() {}                        \n");
     sb.append(" /*012*/    int size = 0;                                 \n");
     sb.append(" /*013*/    Node<E> first;                                \n");
     sb.append(" /*014*/    Node<E> last;                                 \n");
@@ -56,26 +56,21 @@ public class TestMinimalExample {
     sb.append(" /*025*/    }                                             \n");
     sb.append(" /*026*/  }                                               \n");
     sb.append(" /*027*/  class C {                                       \n");
-    sb.append(" /*028*/    LinkedList<int> table;                        \n");
+    sb.append(" /*028*/    LinkedList<int> table = new LinkedList<int>();                        \n");
     sb.append(" /*029*/  }                                               \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
 
-    ApplyCompilationUnit applier = new ApplyCompilationUnit();
-    applier.visit(unit);
+    TemplateCodegen codegen = new TemplateCodegen();
+    InstatantiationUnitBuilder builder = new InstatantiationUnitBuilder(unit, codegen);
 
-    //
-    Type ap = unit.getTypeDeclarations().get(2).getClassDeclaration().getField(Hash_ident.getHashedIdent("table"))
-        .getType();
-
-    TemplateCodegen templateCodegen = new TemplateCodegen(ap);
-    Type res = templateCodegen.getResult();
-    for (Type ref : templateCodegen.getGeneratedClasses()) {
-      System.out.println(UtilSrcToStringLevel.tos(ref.getClassType().toString()));
+    InstantiationUnit instantiationUnit = builder.getInstantiationUnit();
+    for (ClassDeclaration clazz : instantiationUnit.getClasses()) {
+      System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
     }
-    // System.out.println(res.toString());
+
   }
 
 }

@@ -2,6 +2,7 @@ package njast.ast_nodes.clazz;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jscan.symtab.Ident;
@@ -131,7 +132,7 @@ public class ClassDeclaration implements Serializable {
         throw new EParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
-    this.typeParametersT = typeParametersT;
+    this.typeParametersT = Collections.unmodifiableList(typeParametersT);
   }
 
   public void setIdentifier(Ident identifier) {
@@ -233,6 +234,10 @@ public class ClassDeclaration implements Serializable {
 
     for (VarDeclarator var : fields) {
       sb.append(var.toString() + "\n");
+    }
+
+    for (ClassConstructorDeclaration constructor : constructors) {
+      sb.append(constructor.toString() + "\n");
     }
 
     for (ClassMethodDeclaration method : methods) {

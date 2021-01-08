@@ -7,11 +7,7 @@ import java.util.List;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
-import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.stmt.StmtBlock;
-import njast.ast_nodes.stmt.StmtBlockItem;
+import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_utils.SerializationUtils;
 import njast.errors.EParseException;
 import njast.types.Type;
@@ -19,25 +15,24 @@ import njast.types.TypeBindings;
 
 public class TemplateCodegen {
 
+  // temporaries
   private final List<Type> generatedClasses;
   private final HashMap<String, Dto> generatedClassesForReuse;
-  private final Type resultType;
 
-  public TemplateCodegen(Type from) {
+  // output for generated
+  private final InstantiationUnit instantiationUnit;
+
+  public TemplateCodegen() {
     this.generatedClasses = new ArrayList<>();
     this.generatedClassesForReuse = new HashMap<>();
-    this.resultType = getTypeFromTemplate(from);
+    this.instantiationUnit = new InstantiationUnit();
   }
 
-  public Type getResult() {
-    return resultType;
+  public InstantiationUnit getInstantiationUnit() {
+    return instantiationUnit;
   }
 
-  public List<Type> getGeneratedClasses() {
-    return generatedClasses;
-  }
-
-  private Type getTypeFromTemplate(final Type from) {
+  public Type getTypeFromTemplate(final Type from) {
     if (!from.isClassTemplate()) {
       return from;
     }
@@ -93,6 +88,7 @@ public class TemplateCodegen {
 
     generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(from, typeArguments, result));
     generatedClasses.add(result);
+    instantiationUnit.put(result.getClassType());
 
     return result;
   }
@@ -214,50 +210,11 @@ public class TemplateCodegen {
 
   private void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet) {
 
-    //fields
-    for (VarDeclarator field : object.getFields()) {
-      fabric(field, object, typenameT, typeToSet);
+    final List<TypeSetter> typeSetters = new GetAllTypeSetters(object).getTypeSetters();
+    for (TypeSetter typeSetter : typeSetters) {
+      fabric(typeSetter, object, typenameT, typeToSet);
     }
 
-    //methods
-    for (ClassMethodDeclaration method : object.getMethods()) {
-
-      // return type
-      if (!method.isVoid()) {
-        fabric(method, object, typenameT, typeToSet);
-      }
-
-      // parameters
-      for (FormalParameter formal : method.getFormalParameterList().getParameters()) {
-        fabric(formal, object, typenameT, typeToSet);
-      }
-
-      //body
-      final StmtBlock body = method.getBody();
-      final List<StmtBlockItem> blocks = body.getBlockStatements();
-
-      for (StmtBlockItem block : blocks) {
-
-        // declarations
-        final List<VarDeclarator> localVars = block.getLocalVars();
-        if (localVars != null) {
-          for (VarDeclarator var : localVars) {
-            fabric(var, object, typenameT, typeToSet);
-          }
-        }
-
-        // // statements
-        // final StmtStatement statement = block.getStatement();
-        // if (statement != null) {
-        //   boolean result = new ApplyStmt(this).applyStatement(object, statement);
-        //   if (!result) {
-        //     System.out.println("...??? stmt");
-        //   }
-        // }
-
-      }
-
-    }
   }
 
   private void fabric(TypeSetter typeSetter, ClassDeclaration object, Ident typenameT, Type typeToSet) {
@@ -303,7 +260,8 @@ public class TemplateCodegen {
     final ClassDeclaration nested = typeToCheck.getClassType();
 
     if (nested.equals(object)) {
-      nested.getTypeParametersT().clear();
+      // nested.getTypeParametersT().clear();
+      nested.setTypeParametersT(new ArrayList<>());
     }
 
   }

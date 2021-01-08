@@ -39,4 +39,17 @@ public class ClassConstructorDeclaration implements Serializable {
     return true;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(identifier.getName());
+    sb.append(formalParameterList.toString());
+    sb.append("\n{\n");
+    sb.append(block.toString());
+    sb.append("\n}\n");
+
+    return sb.toString();
+  }
+
 }
