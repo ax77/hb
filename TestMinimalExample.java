@@ -8,7 +8,6 @@ import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.main.ParserMain;
 import njast.parse.Parse;
 import njast.templates.InstatantiationUnitBuilder;
-import njast.templates.TemplateCodegen;
 
 public class TestMinimalExample {
 
@@ -114,10 +113,7 @@ public class TestMinimalExample {
     Parse p = new ParserMain(sb).initiateParse();
     TopLevelCompilationUnit unit = p.parse();
 
-    TemplateCodegen codegen = new TemplateCodegen();
-    InstatantiationUnitBuilder builder = new InstatantiationUnitBuilder(unit, codegen);
-
-    InstantiationUnit instantiationUnit = builder.getInstantiationUnit();
+    InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
     for (ClassDeclaration clazz : instantiationUnit.getClasses()) {
       System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
     }

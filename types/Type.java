@@ -173,18 +173,25 @@ public class Type implements Serializable {
     if (this == another) {
       return true;
     }
-    if (!base.equals(another.getBase())) {
-      return false;
+
+    if (isPrimitive()) {
+      if (!base.equals(another.getBase())) {
+        return false;
+      }
     }
-    if (isClassRef()) {
+
+    else if (isClassRef()) {
       final Ident name1 = classType.getIdentifier();
       final Ident name2 = another.getClassType().getIdentifier();
       if (!name1.equals(name2)) {
         return false;
       }
-    } else {
+    }
+
+    else {
       throw new EParseException("unimpl...");
     }
+
     return true;
   }
 

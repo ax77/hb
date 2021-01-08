@@ -6,6 +6,7 @@ import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_nodes.top.TopLevelCompilationUnit;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
+import njast.ast_visitors.ApplyInstantiationUnit;
 
 public class InstatantiationUnitBuilder {
 
@@ -27,13 +28,18 @@ public class InstatantiationUnitBuilder {
 
   private final TemplateCodegen templateCodegen;
 
-  public InstatantiationUnitBuilder(TopLevelCompilationUnit compilationUnit, TemplateCodegen templateCodegen) {
-    this.templateCodegen = templateCodegen;
+  public InstatantiationUnitBuilder(TopLevelCompilationUnit compilationUnit) {
+    this.templateCodegen = new TemplateCodegen();
     visit(compilationUnit);
   }
 
   public InstantiationUnit getInstantiationUnit() {
-    return templateCodegen.getInstantiationUnit();
+    final InstantiationUnit instantiationUnit = templateCodegen.getInstantiationUnit();
+    
+    final ApplyInstantiationUnit applier = new ApplyInstantiationUnit();
+    applier.visit(instantiationUnit);
+    
+    return instantiationUnit;
   }
 
   private void visit(TopLevelCompilationUnit compilationUnit) {
