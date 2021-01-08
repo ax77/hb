@@ -1,9 +1,12 @@
 package njast.ast_visitors;
 
+import java.util.HashSet;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IdentRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
@@ -29,6 +32,11 @@ import njast.symtab.Symtab;
 import njast.types.Type;
 
 public class ApplyInstantiationUnit {
+
+  // here we build the symbol table, bind all identifiers to its types
+  // also we annotate each expression with its type too
+  // deep semantic check will be later.
+  // we need to build middle-level AST here...
 
   private Symtab<Ident, Symbol> typeNames;
   private Symtab<Ident, Symbol> variablesClass; // fields
@@ -238,9 +246,7 @@ public class ApplyInstantiationUnit {
 
       //body
       final StmtBlock body = method.getBody();
-      final List<StmtBlockItem> blocks = body.getBlockStatements();
-
-      for (StmtBlockItem block : blocks) {
+      for (StmtBlockItem block : body.getBlockStatements()) {
 
         // method variables
         final List<VarDeclarator> localVars = block.getLocalVars();
@@ -385,6 +391,33 @@ public class ApplyInstantiationUnit {
 
   }
 
+  private static HashSet<T> forLongType = new HashSet<>();
+  static {
+
+    // by now only:
+    // add, mul, sub, div
+
+    forLongType.add(T.T_PLUS);
+    forLongType.add(T.T_MINUS);
+    forLongType.add(T.T_TIMES);
+    forLongType.add(T.T_DIVIDE);
+  }
+
+  private static HashSet<T> forBooleanType = new HashSet<>();
+  static {
+
+    // == ` != ` > ` >= ` < ` <=
+
+    forBooleanType.add(T.T_EQ);
+    forBooleanType.add(T.T_NE);
+
+    forBooleanType.add(T.T_GT);
+    forBooleanType.add(T.T_GE);
+
+    forBooleanType.add(T.T_LT);
+    forBooleanType.add(T.T_LE);
+  }
+
   private void applyBinary(ClassDeclaration object, ExprExpression e) {
     ExprBinary node = e.getBinary();
     Token operator = node.getOperator();
@@ -395,13 +428,33 @@ public class ApplyInstantiationUnit {
     applyExpression(object, LHS);
     applyExpression(object, RHS);
 
-    e.setResultType(node.getLhs().getResultType());
+    // TODO: type checker, compatible, etc...
+
+    if (IdentRecognizer.isAssignOperator(operator)) {
+      e.setResultType(node.getLhs().getResultType());
+    }
+
+    else {
+      if (forLongType.contains(operator.getType())) {
+        e.setResultType(Type.LONG_TYPE);
+      }
+
+      else if (forBooleanType.contains(operator.getType())) {
+        e.setResultType(Type.BOOLEAN_TYPE);
+      }
+
+      else {
+        throw new EParseException("unimpl:[" + operator.getValue() + "]");
+      }
+    }
+
   }
 
   private void applyIdentifier(ExprExpression e) {
-    ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
 
-    Symbol sym = findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
+    final ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
+
+    final Symbol sym = findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
 
     if (sym.isClassType()) {
       throw new EParseException("unimpl.");
@@ -413,11 +466,12 @@ public class ApplyInstantiationUnit {
 
     // remember var
     primaryIdent.setVariable(variable);
+
   }
 
   private void applyFieldAccess(ClassDeclaration object, ExprExpression e) {
 
-    ExprFieldAccess fieldAccess = e.getFieldAccess();
+    final ExprFieldAccess fieldAccess = e.getFieldAccess();
     applyExpression(object, fieldAccess.getObject());
 
     // find the field, and get its type
@@ -436,11 +490,14 @@ public class ApplyInstantiationUnit {
 
     e.setResultType(field.getType());
 
+    // remember field
+    fieldAccess.setField(field);
+
   }
 
   private void applyMethodInvocation(ClassDeclaration object, ExprExpression e) {
 
-    ExprMethodInvocation methodInvocation = e.getMethodInvocation();
+    final ExprMethodInvocation methodInvocation = e.getMethodInvocation();
     applyExpression(object, methodInvocation.getObject());
 
     final List<ExprExpression> arguments = methodInvocation.getArguments();
@@ -466,13 +523,22 @@ public class ApplyInstantiationUnit {
 
       e.setResultType(method.getType());
 
-    } else {
+      // remember method
+      methodInvocation.setMethod(method);
+
+    }
+
+    else {
+
       // function: fn(1,2,3)
       ClassMethodDeclaration func = object.getMethod(methodInvocation.getFuncname(), arguments);
       if (func == null) {
         throw new EParseException("class has no method: " + methodInvocation.getFuncname().getName());
       }
       e.setResultType(func.getType());
+
+      // remember method
+      methodInvocation.setMethod(func);
     }
 
   }

@@ -10,7 +10,7 @@ public class ClassConstructorDeclaration implements Serializable {
 
   private static final long serialVersionUID = 921504026387262618L;
 
-  private final Ident identifier;
+  private Ident identifier;
   private final FormalParameterList formalParameterList;
   private final StmtBlock block;
 
@@ -37,6 +37,10 @@ public class ClassConstructorDeclaration implements Serializable {
       return false;
     }
     return true;
+  }
+
+  public void setIdentifier(Ident identifier) {
+    this.identifier = identifier;
   }
 
   @Override

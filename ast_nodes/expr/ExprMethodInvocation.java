@@ -3,6 +3,7 @@ package njast.ast_nodes.expr;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_utils.ExprUtil;
 
 public class ExprMethodInvocation {
@@ -10,6 +11,9 @@ public class ExprMethodInvocation {
   private final List<ExprExpression> arguments;
   private final Ident funcname;
   private final boolean isMethodInvocation;
+
+  //MIR:TREE
+  private ClassMethodDeclaration method;
 
   // a.b()
   public ExprMethodInvocation(Ident funcname, ExprExpression object, List<ExprExpression> arguments) {
@@ -41,6 +45,14 @@ public class ExprMethodInvocation {
 
   public boolean isMethodInvocation() {
     return isMethodInvocation;
+  }
+
+  public ClassMethodDeclaration getMethod() {
+    return method;
+  }
+
+  public void setMethod(ClassMethodDeclaration method) {
+    this.method = method;
   }
 
   @Override
