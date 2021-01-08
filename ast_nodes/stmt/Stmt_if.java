@@ -7,45 +7,45 @@ import njast.ast_nodes.expr.ExprExpression;
 public class Stmt_if implements Serializable {
   private static final long serialVersionUID = 8138015838549729527L;
 
-  private final ExprExpression ifexpr;
-  private final StmtStatement ifstmt;
-  private final StmtStatement ifelse;
+  private final ExprExpression condition;
+  private final StmtStatement trueStatement;
+  private final StmtStatement optionalElseStatement;
 
-  public Stmt_if(ExprExpression ifexpr, StmtStatement ifstmt, StmtStatement ifelse) {
-    this.ifexpr = ifexpr;
-    this.ifstmt = ifstmt;
-    this.ifelse = ifelse;
+  public Stmt_if(ExprExpression condition, StmtStatement trueStatement, StmtStatement optionalElseStatement) {
+    this.condition = condition;
+    this.trueStatement = trueStatement;
+    this.optionalElseStatement = optionalElseStatement;
   }
 
-  public ExprExpression getIfexpr() {
-    return ifexpr;
+  public ExprExpression getCondition() {
+    return condition;
   }
 
-  public StmtStatement getIfstmt() {
-    return ifstmt;
+  public StmtStatement getTrueStatement() {
+    return trueStatement;
   }
 
-  public StmtStatement getIfelse() {
-    return ifelse;
+  public StmtStatement getOptionalElseStatement() {
+    return optionalElseStatement;
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("if(");
-    sb.append(ifexpr.toString());
+    sb.append(condition.toString());
     sb.append(")");
 
     sb.append("\n{\n");
-    if (ifstmt != null) {
-      sb.append(ifstmt.toString().trim());
+    if (trueStatement != null) {
+      sb.append(trueStatement.toString());
     }
     sb.append("\n}\n");
 
-    if (ifelse != null) {
+    if (optionalElseStatement != null) {
       sb.append("else");
       sb.append("\n{\n");
-      sb.append(ifelse.toString());
+      sb.append(optionalElseStatement.toString());
       sb.append("\n}\n");
     }
 

@@ -118,9 +118,9 @@ public class GetAllTypeSetters {
 
     else if (base == StatementBase.SIF) {
       Stmt_if sif = statement.getSif();
-      visitExpression(object, sif.getIfexpr());
-      visitStatement(object, sif.getIfstmt());
-      visitStatement(object, sif.getIfelse());
+      visitExpression(object, sif.getCondition());
+      visitStatement(object, sif.getTrueStatement());
+      visitStatement(object, sif.getOptionalElseStatement());
     }
 
     else if (base == StatementBase.SEXPR) {

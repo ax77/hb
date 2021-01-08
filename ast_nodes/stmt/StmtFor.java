@@ -64,4 +64,36 @@ public class StmtFor implements Serializable {
     this.loop = loop;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("for(");
+
+    if (decl != null) {
+      for (VarDeclarator var : decl) {
+        sb.append(var.toString());
+      }
+    } else {
+      sb.append("; "); // because we already have semicolon in VAR
+    }
+
+    if (test != null) {
+      sb.append(test.toString());
+    }
+    sb.append("; ");
+
+    if (step != null) {
+      sb.append(step.toString());
+    }
+    sb.append(")");
+
+    sb.append("\n{\n");
+    if (loop != null) {
+      sb.append(loop.toString());
+    }
+    sb.append("\n}\n");
+
+    return sb.toString();
+  }
+
 }

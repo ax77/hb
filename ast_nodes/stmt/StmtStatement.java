@@ -80,6 +80,9 @@ public class StmtStatement implements Serializable {
         return "return;\n";
       }
     }
+    if (base == StatementBase.SFOR) {
+      return sfor.toString();
+    }
     return base.toString();
   }
 

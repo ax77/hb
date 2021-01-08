@@ -61,7 +61,7 @@ public class VarDeclarator implements ILocation, Serializable, TypeSetter {
       sb.append(initializer.toString());
     }
 
-    sb.append(";");
+    sb.append("; ");
     return sb.toString();
   }
 
