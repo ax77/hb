@@ -14,6 +14,7 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IdentRecognizer;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -68,7 +69,15 @@ public class ParseStatement {
 
   private StmtBlockItem parseOneBlock() {
 
-    if (parser.isPrimitiveOrReferenceTypeBegin()) {
+    //  BlockStatement:
+    //    LocalVariableDeclarationStatement
+    //    ClassOrInterfaceDeclaration
+    //    [Identifier :] Statement
+    //
+    //  LocalVariableDeclarationStatement:
+    //    { VariableModifier } Type VariableDeclarators ;
+
+    if (parser.isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.is_any_modifier(parser.tok())) {
       List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
       return new StmtBlockItem(vars);
     }

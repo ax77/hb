@@ -11,6 +11,7 @@ import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.top.TopLevelTypeDeclaration;
@@ -125,7 +126,7 @@ public class ParseTypeDeclarationsList {
 
     else {
 
-      List<VarDeclarator> fieldDeclaration = new ParseFieldDeclaration(parser).parse(clazz);
+      List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
       for (VarDeclarator field : fieldDeclaration) {
         checkRedefinition(clazz, field);
         clazz.put(field);

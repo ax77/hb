@@ -32,6 +32,8 @@ public class ParseVarDeclaratorsList {
 
   public List<VarDeclarator> parse(VarBase base) {
 
+    Modifiers modifiers = new ParseModifiers(parser).parse();
+    
     Type type = new ParseType(parser).parse();
     List<VarDeclarator> variableDeclarators = new ArrayList<VarDeclarator>();
 
