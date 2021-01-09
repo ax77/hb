@@ -42,7 +42,7 @@ public class TestMinimalExample {
     sb.append(" /*012*/      int size = 0;                                                    \n");
     sb.append(" /*013*/      Node<E> first;                                                   \n");
     sb.append(" /*014*/      Node<E> last;                                                    \n");
-    sb.append(" /*015*/      void pushBack(E e) {                                             \n");
+    sb.append(" /*015*/      void pushBack(final E e) {                                             \n");
     sb.append(" /*016*/        final Node<E> l = last;                                    \n");
     sb.append(" /*017*/        final Node<E> newNode = new Node<E>(l, e, null);           \n");
     sb.append(" /*018*/        last = newNode;                                                \n");
@@ -53,7 +53,7 @@ public class TestMinimalExample {
     sb.append(" /*023*/        }                                                              \n");
     sb.append(" /*024*/        size += 1;                                                     \n");
     sb.append(" /*025*/      }                                                                \n");
-    sb.append(" /*026*/      void pushFront(E e) {                                            \n");
+    sb.append(" /*026*/      void pushFront(final E e) {                                            \n");
     sb.append(" /*027*/        final Node<E> f = first;                                   \n");
     sb.append(" /*028*/        final Node<E> newNode = new Node<E>(null, e, f);           \n");
     sb.append(" /*029*/        first = newNode;                                               \n");

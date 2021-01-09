@@ -48,27 +48,6 @@ public class ClassDeclaration implements Serializable {
     initLists();
   }
 
-  public boolean isEqualAsGeneric(ClassDeclaration another) {
-    if (this == another) {
-      return true;
-    }
-    if (!identifier.equals(another.getIdentifier())) {
-      return false;
-    }
-    final List<Type> typeParametersAnother = another.getTypeParametersT();
-    if (typeParametersT.size() != typeParametersAnother.size()) {
-      return false;
-    }
-    for (int i = 0; i < typeParametersT.size(); i++) {
-      Type tp1 = typeParametersT.get(i);
-      Type tp2 = typeParametersAnother.get(i);
-      if (!tp1.isEqualAsGeneric(tp2)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   private void initLists() {
     this.constructors = new ArrayList<ClassConstructorDeclaration>();
     this.fields = new ArrayList<VarDeclarator>();

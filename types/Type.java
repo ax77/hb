@@ -75,49 +75,6 @@ public class Type implements Serializable {
     return isClassRef() && classType.isTemplate();
   }
 
-  public boolean isEqualAsGeneric(Type another) {
-    NullChecker.check(another);
-
-    if (this == another) {
-      return true;
-    }
-
-    if (isPrimitive()) {
-      if (!base.equals(another.getBase())) {
-        return false;
-      }
-    }
-
-    else if (base == TypeBase.TP_CLASS) {
-      if (!classType.isEqualAsGeneric(another.getClassType())) {
-        return false;
-      }
-      final List<Type> typeArgumentsAnother = another.getTypeArguments();
-      if (typeArguments.size() != typeArgumentsAnother.size()) {
-        return false;
-      }
-      for (int i = 0; i < typeArguments.size(); i++) {
-        Type tp1 = typeArguments.get(i);
-        Type tp2 = typeArgumentsAnother.get(i);
-        if (!tp1.isEqualAsGeneric(tp2)) {
-          return false;
-        }
-      }
-    }
-
-    else if (base == TypeBase.TP_TYPE_VARIABLE_TYPENAME_T) {
-      if (!typeVariable.equals(another.getTypeVariable())) {
-        return false;
-      }
-    }
-
-    else {
-      throw new EParseException("unknown base");
-    }
-
-    return true;
-  }
-
   public void putTypeArgument(Type e) {
     NullChecker.check(e);
 

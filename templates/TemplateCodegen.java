@@ -12,7 +12,6 @@ import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_utils.SerializationUtils;
 import njast.errors.EParseException;
 import njast.types.Type;
-import njast.types.TypeBindings;
 
 public class TemplateCodegen {
 
@@ -47,8 +46,7 @@ public class TemplateCodegen {
       return ready;
     }
 
-    final String origName = from.getClassType().getIdentifier().getName();
-    final String newName = buildNewName(origName, from.getClassType().getUniqueIdStr(), from.getTypeArguments());
+    final String newName = NameBuilder.buildNewName(from);
 
     final ClassDeclaration templateClass = copyClazz(from.getClassType(), newName);
     final List<Type> typeArguments = from.getTypeArguments();
@@ -94,44 +92,6 @@ public class TemplateCodegen {
     return result;
   }
 
-  private String buildNewName(String origNameOfTemplateClass, String classUniqueId, List<Type> typeArguments) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(origNameOfTemplateClass);
-    sb.append("_");
-    sb.append(classUniqueId);
-    sb.append("_");
-    sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
-    return sb.toString();
-  }
-
-  // move toString() here, to guarantee that all names for generated templates will be unique
-  // and not depends on general toString() which we may change one day or other.
-  //
-  private String typeToString(Type tp) {
-    if (tp.isPrimitive()) {
-      return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(tp.getBase());
-    }
-    if (tp.isTypeVarRef()) {
-      return tp.getTypeVariable().getName();
-    }
-    if (!tp.isClassRef()) {
-      throw new EParseException("expect class-name");
-    }
-    return tp.getClassType().getIdentifier().getName();
-  }
-
-  private String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < typeArguments.size(); i++) {
-      Type tp = typeArguments.get(i);
-      sb.append(typeToString(tp));
-      if (i + 1 < typeArguments.size()) {
-        sb.append("_");
-      }
-    }
-    return sb.toString();
-  }
-
   private Type presentedInGenerated2(Type result) {
 
     if (!result.isClassRef()) {
@@ -174,36 +134,21 @@ public class TemplateCodegen {
 
     final List<Type> previouslyExpandedArgs = storedResult.getTypeArguments();
     final List<Type> currentGivenAgrs = from.getTypeArguments();
-    if (!typeArgumentListsAreEqualForTemplate(previouslyExpandedArgs, currentGivenAgrs)) {
+    if (!TypeComparerForTemplates.typeArgumentListsAreEqualForTemplate(previouslyExpandedArgs, currentGivenAgrs)) {
       return null;
     }
 
     return storedResult.getResult();
   }
 
-  private boolean typeArgumentListsAreEqualForTemplate(List<Type> first, List<Type> second) {
-
-    if (first.size() != second.size()) {
-      return false;
-    }
-
-    for (int i = 0; i < first.size(); i++) {
-      Type tp1 = first.get(i);
-      Type tp2 = second.get(i);
-      if (!tp1.isEqualAsGeneric(tp2)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   private ClassDeclaration copyClazz(ClassDeclaration given, String newname) {
-    ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setIdentifier(Hash_ident.getHashedIdent(newname));
+    final Ident newIdentifier = Hash_ident.getHashedIdent(newname);
+
+    final ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
+    object.setIdentifier(newIdentifier);
 
     for (ClassConstructorDeclaration constructor : object.getConstructors()) {
-      constructor.setIdentifier(Hash_ident.getHashedIdent(newname));
+      constructor.setIdentifier(newIdentifier);
     }
 
     return object;

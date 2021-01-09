@@ -5,6 +5,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
+import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -45,6 +46,7 @@ public class ParseFormalParameterList {
   }
 
   private FormalParameter parseOneParam() {
+    Modifiers modifiers = new ParseModifiers(parser).parse();
     Type type = new ParseType(parser).parse();
     Ident name = parser.getIdent();
     return new FormalParameter(type, name);
