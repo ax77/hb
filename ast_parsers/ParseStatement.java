@@ -1,10 +1,12 @@
 package njast.ast_parsers;
 
 import static jscan.tokenize.T.T_RIGHT_PAREN;
-import static jscan.tokenize.T.*;
+import static jscan.tokenize.T.T_SEMI_COLON;
 import static njast.symtab.IdentMap.do_ident;
+import static njast.symtab.IdentMap.else_ident;
 import static njast.symtab.IdentMap.for_ident;
-import static njast.symtab.IdentMap.*;
+import static njast.symtab.IdentMap.goto_ident;
+import static njast.symtab.IdentMap.if_ident;
 import static njast.symtab.IdentMap.return_ident;
 import static njast.symtab.IdentMap.switch_ident;
 import static njast.symtab.IdentMap.while_ident;
@@ -14,7 +16,6 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IdentRecognizer;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -132,70 +133,13 @@ public class ParseStatement {
     // for( ;; )
 
     if (parser.is(for_ident)) {
-      List<VarDeclarator> decl = null;
-      ExprExpression init = null;
-      ExprExpression test = null;
-      ExprExpression step = null;
-      StmtStatement loop = null;
-
-      //      pushLoop("for");
-      //      parser.pushscope(); // TODO:
-
-      Token from = parser.checkedMove(for_ident);
-      parser.lparen();
-
-      if (parser.tp() != T_SEMI_COLON) {
-
-        if (parser.isTypeWithOptModifiersBegin()) {
-          decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR, ParseVariableState.STATE_FOR_LOOP);
-        }
-
-        else {
-          init = parseForLoopExpressions();
-          parser.semicolon();
-        }
-      }
-
-      else {
-        parser.semicolon();
-      }
-
-      if (parser.tp() != T_SEMI_COLON) {
-        test = parseForLoopExpressions();
-      }
-      parser.semicolon();
-
-      if (parser.tp() != T_RIGHT_PAREN) {
-        step = parseForLoopExpressions();
-      }
-      parser.rparen();
-
-      checkLbrace();
-      loop = parseStatement();
-
-      //      popLoop();
-      //      parser.popscope(); // TODO:
-      return new StmtStatement(new StmtFor(decl, init, test, step, loop));
+      return parseForLoop();
     }
 
     // if ( expr ) stmt else stmt
 
     if (parser.is(if_ident)) {
-      Token from = parser.checkedMove(if_ident);
-
-      ExprExpression ifexpr = new ParseExpression(parser, ParseVariableState.STATE_OTHER).getExprInParen();
-      checkLbrace();
-
-      StmtStatement ifstmt = parseStatement();
-      StmtStatement ifelse = null;
-
-      if (parser.is(else_ident)) {
-        Token elsekw = parser.checkedMove(else_ident);
-        ifelse = parseStatement();
-        return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
-      }
-
-      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+      return parse_if();
     }
 
     // {  }
@@ -211,7 +155,75 @@ public class ParseStatement {
     return ret;
   }
 
-  private void checkLbrace() {
+  private StmtStatement parse_if() {
+    Token from = parser.checkedMove(if_ident);
+
+    ExprExpression ifexpr = new ParseExpression(parser, ParseVariableState.STATE_OTHER).getExprInParen();
+    checkSemicolonAndLbrace();
+
+    StmtStatement ifstmt = parseStatement();
+    StmtStatement ifelse = null;
+
+    if (parser.is(else_ident)) {
+      Token elsekw = parser.checkedMove(else_ident);
+      checkSemicolonAndLbrace();
+
+      ifelse = parseStatement();
+      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+    }
+
+    return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+  }
+
+  private StmtStatement parseForLoop() {
+    List<VarDeclarator> decl = null;
+    ExprExpression init = null;
+    ExprExpression test = null;
+    ExprExpression step = null;
+    StmtStatement loop = null;
+
+    //      pushLoop("for");
+    //      parser.pushscope(); // TODO:
+
+    Token from = parser.checkedMove(for_ident);
+    parser.lparen();
+
+    if (parser.tp() != T_SEMI_COLON) {
+
+      if (parser.isTypeWithOptModifiersBegin()) {
+        // semicolon will be handled in declarations-list
+        decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR, ParseVariableState.STATE_FOR_LOOP);
+      }
+
+      else {
+        init = parseForLoopExpressions();
+        parser.semicolon();
+      }
+    }
+
+    else {
+      parser.semicolon();
+    }
+
+    if (parser.tp() != T_SEMI_COLON) {
+      test = e_expression(); // XXX: no comma in test
+    }
+    parser.semicolon();
+
+    if (parser.tp() != T_RIGHT_PAREN) {
+      step = parseForLoopExpressions();
+    }
+    parser.rparen();
+
+    checkSemicolonAndLbrace();
+    loop = parseStatement();
+
+    //      popLoop();
+    //      parser.popscope(); // TODO:
+    return new StmtStatement(new StmtFor(decl, init, test, step, loop));
+  }
+
+  private void checkSemicolonAndLbrace() {
     parser.errorStraySemicolon();
     if (!parser.is(T.T_LEFT_BRACE)) {
       parser.perror("unbraced statements are deprecated by design.");

@@ -8,7 +8,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarator;
 public class ExprPrimaryIdent implements Serializable {
   private static final long serialVersionUID = 7777441284065170375L;
   private final Ident identifier;
-  
+
   //MIR:TREE
   private VarDeclarator variable;
 

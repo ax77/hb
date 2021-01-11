@@ -6,7 +6,6 @@ import java.util.List;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IdentRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
@@ -126,6 +125,10 @@ public class ApplyInstantiationUnit {
       applyExpression(object, sif.getCondition());
       applyStatement(object, method, sif.getTrueStatement());
       applyStatement(object, method, sif.getOptionalElseStatement());
+
+      if (!sif.getCondition().getResultType().equals(Type.BOOLEAN_TYPE)) {
+        throw new EParseException("if condition must be only a boolean type");
+      }
     }
 
     else if (base == StatementBase.SEXPR) {

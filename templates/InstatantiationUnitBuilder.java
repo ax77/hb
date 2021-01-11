@@ -35,10 +35,10 @@ public class InstatantiationUnitBuilder {
 
   public InstantiationUnit getInstantiationUnit() {
     final InstantiationUnit instantiationUnit = templateCodegen.getInstantiationUnit();
-    
+
     final ApplyInstantiationUnit applier = new ApplyInstantiationUnit();
     applier.visit(instantiationUnit);
-    
+
     return instantiationUnit;
   }
 
