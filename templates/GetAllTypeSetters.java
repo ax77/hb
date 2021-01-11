@@ -155,6 +155,11 @@ public class GetAllTypeSetters {
       visitExpression(object, expression.getBinary().getRhs());
     }
 
+    else if (base == ExpressionBase.EASSIGN) {
+      visitExpression(object, expression.getAssign().getLvalue());
+      visitExpression(object, expression.getAssign().getRvalue());
+    }
+
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
     }
 

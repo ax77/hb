@@ -22,6 +22,16 @@ public class ExprExpression implements Serializable {
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
+  private ExprAssign assign;
+
+  public ExprExpression(ExprAssign assign) {
+    this.base = ExpressionBase.EASSIGN;
+    this.assign = assign;
+  }
+
+  public ExprAssign getAssign() {
+    return assign;
+  }
 
   public ExprExpression(ExpressionBase base) {
     this.base = base;
@@ -120,6 +130,9 @@ public class ExprExpression implements Serializable {
   public String toString() {
     if (base == ExpressionBase.EBINARY) {
       return binary.toString();
+    }
+    if (base == ExpressionBase.EASSIGN) {
+      return assign.toString();
     }
     if (base == ExpressionBase.EFIELD_ACCESS) {
       return fieldAccess.toString();

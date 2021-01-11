@@ -30,17 +30,24 @@ public class ParseVarDeclaratorsList {
     this.parser = parser;
   }
 
-  public List<VarDeclarator> parse(VarBase base) {
+  public List<VarDeclarator> parse(VarBase base, ParseVariableState state) {
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
-    
+
     Type type = new ParseType(parser).parse();
     List<VarDeclarator> variableDeclarators = new ArrayList<VarDeclarator>();
 
     getOneVarAndOptInitializer(base, type, variableDeclarators);
-    while (parser.is(T.T_COMMA)) {
-      parser.moveget();
-      getOneVarAndOptInitializer(base, type, variableDeclarators);
+
+    if (parser.is(T.T_COMMA)) {
+      if (!state.equals(ParseVariableState.STATE_FOR_LOOP)) {
+        parser.errorCommaExpression();
+      }
+
+      while (parser.is(T.T_COMMA)) {
+        parser.moveget();
+        getOneVarAndOptInitializer(base, type, variableDeclarators);
+      }
     }
 
     parser.semicolon();
@@ -63,7 +70,7 @@ public class ParseVarDeclaratorsList {
   }
 
   private VarInitializer parseInitializer() {
-    ExprExpression init = new ParseExpression(parser).e_assign();
+    ExprExpression init = new ParseExpression(parser, ParseVariableState.STATE_OTHER).e_assign();
     return new VarInitializer(init);
   }
 

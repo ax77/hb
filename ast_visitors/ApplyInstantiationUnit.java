@@ -14,6 +14,7 @@ import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
@@ -193,6 +194,20 @@ public class ApplyInstantiationUnit {
       applyBinary(object, e);
     }
 
+    else if (base == ExpressionBase.EASSIGN) {
+      ExprAssign node = e.getAssign();
+      Token operator = node.getOperator();
+
+      final ExprExpression LHS = node.getLvalue();
+      final ExprExpression RHS = node.getRvalue();
+
+      applyExpression(object, LHS);
+      applyExpression(object, RHS);
+
+      // TODO: type-checking
+      e.setResultType(node.getLvalue().getResultType());
+    }
+
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
       applyIdentifier(e);
     }
@@ -262,22 +277,22 @@ public class ApplyInstantiationUnit {
 
     // TODO: type checker, compatible, etc...
 
-    if (IdentRecognizer.isAssignOperator(operator)) {
-      e.setResultType(node.getLhs().getResultType());
+    if (forLongType.contains(operator.getType())) {
+      e.setResultType(Type.LONG_TYPE);
+    }
+
+    else if (forBooleanType.contains(operator.getType())) {
+      e.setResultType(Type.BOOLEAN_TYPE);
+    }
+
+    // TODO: 
+
+    else if (operator.ofType(T.T_COMMA)) {
+      e.setResultType(e.getBinary().getRhs().getResultType());
     }
 
     else {
-      if (forLongType.contains(operator.getType())) {
-        e.setResultType(Type.LONG_TYPE);
-      }
-
-      else if (forBooleanType.contains(operator.getType())) {
-        e.setResultType(Type.BOOLEAN_TYPE);
-      }
-
-      else {
-        throw new EParseException("unimpl:[" + operator.getValue() + "]");
-      }
+      throw new EParseException("unimpl:[" + operator.getValue() + "]");
     }
 
   }

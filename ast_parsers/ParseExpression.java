@@ -35,6 +35,7 @@ import jscan.tokenize.Token;
 import njast.ast_checkers.IdentRecognizer;
 import njast.ast_checkers.TypeRecognizer;
 import njast.ast_kinds.ExpressionBase;
+import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
@@ -50,9 +51,11 @@ import njast.types.Type;
 
 public class ParseExpression {
   private final Parse parser;
+  private final ParseVariableState state;
 
-  public ParseExpression(Parse parser) {
+  public ParseExpression(Parse parser, ParseVariableState state) {
     this.parser = parser;
+    this.state = state;
   }
 
   private ExprExpression build_unary(Token op, ExprExpression operand) {
@@ -64,7 +67,7 @@ public class ParseExpression {
   }
 
   private ExprExpression build_assign(Token tok, ExprExpression lvalue, ExprExpression rvalue) {
-    return new ExprExpression(new ExprBinary(tok, lvalue, rvalue));
+    return new ExprExpression(new ExprAssign(tok, lvalue, rvalue));
   }
 
   private ExprExpression build_comma(Token tok, ExprExpression lhs, ExprExpression rhs) {
@@ -79,9 +82,14 @@ public class ParseExpression {
   public ExprExpression e_expression() {
     ExprExpression e = e_assign();
 
-    while (parser.tp() == T.T_COMMA) {
-      Token saved = parser.checkedMove(T.T_COMMA);
-      e = build_comma(saved, e, e_expression());
+    if (parser.is(T.T_COMMA)) {
+      if (!state.equals(ParseVariableState.STATE_FOR_LOOP)) {
+        parser.errorCommaExpression();
+      }
+      while (parser.tp() == T.T_COMMA) {
+        Token saved = parser.checkedMove(T.T_COMMA);
+        e = build_comma(saved, e, e_expression());
+      }
     }
 
     return e;
@@ -119,6 +127,7 @@ public class ParseExpression {
       Token saved = parser.tok();
 
       if (isCompoundAssign(saved)) {
+
         parser.move();
 
         // linearize compound assign
@@ -142,7 +151,30 @@ public class ParseExpression {
 
     }
 
+    checkMultipleAssign(lhs);
     return lhs;
+  }
+
+  // we prevent assignment form like: a = b = c = d = e;
+  // it makes a mess in your code.
+  //
+  private void checkMultipleAssign(ExprExpression expression) {
+    if (expression.getBase() == ExpressionBase.EASSIGN) {
+      final ExprAssign assignExpr = expression.getAssign();
+
+      final ExprExpression lvalue = assignExpr.getLvalue();
+      if (lvalue.getBase() == ExpressionBase.EASSIGN) {
+        parser.perror("multiple assignment are deprecated: [a=b=c]");
+      }
+
+      final ExprExpression rvalue = assignExpr.getRvalue();
+      if (rvalue.getBase() == ExpressionBase.EASSIGN) {
+        parser.perror("multiple assignment are deprecated: [a=b=c]");
+      }
+
+      checkMultipleAssign(lvalue);
+      checkMultipleAssign(rvalue);
+    }
   }
 
   private ExprExpression e_cnd() {

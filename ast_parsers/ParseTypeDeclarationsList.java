@@ -126,7 +126,8 @@ public class ParseTypeDeclarationsList {
 
     else {
 
-      List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
+      List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD,
+          ParseVariableState.STATE_OTHER);
       for (VarDeclarator field : fieldDeclaration) {
         checkRedefinition(clazz, field);
         clazz.put(field);

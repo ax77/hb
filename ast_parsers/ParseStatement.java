@@ -77,8 +77,9 @@ public class ParseStatement {
     //  LocalVariableDeclarationStatement:
     //    { VariableModifier } Type VariableDeclarators ;
 
-    if (parser.isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.is_any_modifier(parser.tok())) {
-      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
+    if (parser.isTypeWithOptModifiersBegin()) {
+      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR,
+          ParseVariableState.STATE_OTHER);
       return new StmtBlockItem(vars);
     }
 
@@ -90,10 +91,16 @@ public class ParseStatement {
   }
 
   private ExprExpression e_expression() {
-    return new ParseExpression(parser).e_expression();
+    return new ParseExpression(parser, ParseVariableState.STATE_OTHER).e_expression();
+  }
+
+  private ExprExpression parseForLoopExpressions() {
+    return new ParseExpression(parser, ParseVariableState.STATE_FOR_LOOP).e_expression();
   }
 
   private StmtStatement parseStatement() {
+
+    parser.errorStraySemicolon();
 
     if (parser.is(while_ident) || parser.is(do_ident)) {
       parser.perror("while/do loops are deprecated by design. use for-loop instead.");
@@ -139,12 +146,12 @@ public class ParseStatement {
 
       if (parser.tp() != T_SEMI_COLON) {
 
-        if (parser.isPrimitiveOrReferenceTypeBegin()) {
-          decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
+        if (parser.isTypeWithOptModifiersBegin()) {
+          decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR, ParseVariableState.STATE_FOR_LOOP);
         }
 
         else {
-          init = e_expression();
+          init = parseForLoopExpressions();
           parser.semicolon();
         }
       }
@@ -154,12 +161,12 @@ public class ParseStatement {
       }
 
       if (parser.tp() != T_SEMI_COLON) {
-        test = e_expression();
+        test = parseForLoopExpressions();
       }
       parser.semicolon();
 
       if (parser.tp() != T_RIGHT_PAREN) {
-        step = e_expression();
+        step = parseForLoopExpressions();
       }
       parser.rparen();
 
@@ -176,7 +183,7 @@ public class ParseStatement {
     if (parser.is(if_ident)) {
       Token from = parser.checkedMove(if_ident);
 
-      ExprExpression ifexpr = new ParseExpression(parser).getExprInParen();
+      ExprExpression ifexpr = new ParseExpression(parser, ParseVariableState.STATE_OTHER).getExprInParen();
       checkLbrace();
 
       StmtStatement ifstmt = parseStatement();
@@ -205,9 +212,7 @@ public class ParseStatement {
   }
 
   private void checkLbrace() {
-    if (parser.is(T_SEMI_COLON)) {
-      parser.perror("stray semicolon");
-    }
+    parser.errorStraySemicolon();
     if (!parser.is(T.T_LEFT_BRACE)) {
       parser.perror("unbraced statements are deprecated by design.");
     }

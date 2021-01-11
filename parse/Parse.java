@@ -110,9 +110,13 @@ public class Parse {
     return false;
   }
 
-  public boolean isPrimitiveOrReferenceTypeBegin() {
+  private boolean isPrimitiveOrReferenceTypeBegin() {
     TypeRecognizer typeRecognizer = new TypeRecognizer(this);
     return typeRecognizer.isType();
+  }
+
+  public boolean isTypeWithOptModifiersBegin() {
+    return isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.is_any_modifier(tok());
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -296,25 +300,35 @@ public class Parse {
   //////////////////////////////////////////////////////////////////////
   // ENTRY
 
-  private void moveStraySemicolon() {
+  public void errorCommaExpression() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Comma-expression list is deprecated, cause it makes such a mess sometimes -> [a=1, b=a, c=b].");
+    sb.append("You may use comma-list only in for-loop -> for(int i=0, j=0; i<10; i+=1, j+=2)");
+
+    if (is(T.T_COMMA)) {
+      perror(sb.toString());
+    }
+  }
+
+  public void errorStraySemicolon() {
     if (is(T.T_SEMI_COLON)) {
-      perror("stray semicolon [;] is deprecated by design.");
+      perror("stray semicolons [;] are deprecated by design.");
     }
-    while (tp() == T.T_SEMI_COLON) {
-      move();
-    }
+    // while (tp() == T.T_SEMI_COLON) {
+    //   move();
+    // }
   }
 
   public TopLevelCompilationUnit parse() {
     TopLevelCompilationUnit tu = new TopLevelCompilationUnit();
 
     // top-level
-    moveStraySemicolon();
+    errorStraySemicolon();
 
     while (!tok.ofType(TOKEN_EOF)) {
 
       // before each function or global declaration
-      moveStraySemicolon();
+      errorStraySemicolon();
 
       TopLevelTypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
       tu.put(ed);
