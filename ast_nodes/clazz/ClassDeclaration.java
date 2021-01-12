@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ModTypeNameHeader;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -133,7 +133,7 @@ public class ClassDeclaration implements Serializable {
   }
 
   private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<ExprExpression> arguments) {
-    List<FormalParameter> formalParameters = method.getFormalParameterList().getParameters();
+    List<ModTypeNameHeader> formalParameters = method.getFormalParameterList().getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }

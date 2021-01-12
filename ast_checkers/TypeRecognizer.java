@@ -8,6 +8,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 import njast.types.Type;
 import njast.types.TypeBindings;
 
@@ -18,8 +19,9 @@ public class TypeRecognizer {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
+  private boolean isVoidStub;
 
-  public TypeRecognizer(Parse parser) {
+  public TypeRecognizer(Parse parser, boolean allowVoid) {
 
     this.parser = parser;
 
@@ -44,13 +46,32 @@ public class TypeRecognizer {
         if (classDeclaration == null) {
           parser.unreachable("expect current class");
         }
-        this.isTypeParameter = classDeclaration.hasTypeParameter(parser.tok().getIdent());
+        typeWasFound = classDeclaration.hasTypeParameter(parser.tok().getIdent());
+        if (typeWasFound) {
+          this.isTypeParameter = true;
+        }
+
+        else {
+          typeWasFound = parser.is(IdentMap.void_ident);
+          if (typeWasFound) {
+            if (!allowVoid) {
+              parser.perror("void is not allowed in this context");
+            }
+            this.isVoidStub = true;
+          }
+        }
       }
     }
 
   }
 
   public Type getType() {
+
+    if (isVoidStub) {
+      Token tok = parser.checkedMove(IdentMap.void_ident);
+      return new Type();
+    }
+
     if (!isType()) {
       parser.perror("type is not recognized");
     }
@@ -97,23 +118,6 @@ public class TypeRecognizer {
       referenceType.putTypeArgument(typeArg);
     }
 
-    //    if (parser.is(T.T_LT)) {
-    //      Token begin = parser.checkedMove(T.T_LT);
-    //
-    //      //Type rt = getReftype();
-    //      referenceType.putTypeArgument(getTypeArgument());
-    //
-    //      while (parser.is(T.T_COMMA)) {
-    //        parser.move();
-    //        //Type rtrest = getReftype();
-    //        referenceType.putTypeArgument(getTypeArgument());
-    //      }
-    //
-    //      // TODO: ambiguous between '>' and '>>' in template arguments
-    //      // if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
-    //      Token end = parser.checkedMove(T.T_GT);
-    //    }
-
     return referenceType;
   }
 
@@ -138,7 +142,7 @@ public class TypeRecognizer {
   }
 
   private Type getTypeArgument() {
-    TypeRecognizer nested = new TypeRecognizer(parser);
+    TypeRecognizer nested = new TypeRecognizer(parser, false);
     return nested.getType();
   }
 

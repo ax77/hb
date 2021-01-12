@@ -111,7 +111,7 @@ public class Parse {
   }
 
   private boolean isPrimitiveOrReferenceTypeBegin() {
-    TypeRecognizer typeRecognizer = new TypeRecognizer(this);
+    TypeRecognizer typeRecognizer = new TypeRecognizer(this, false);
     return typeRecognizer.isType();
   }
 

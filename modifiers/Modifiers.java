@@ -1,5 +1,6 @@
 package njast.modifiers;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -9,7 +10,9 @@ import njast.ast_checkers.IdentRecognizer;
 import njast.errors.EParseException;
 import njast.symtab.IdentMap;
 
-public class Modifiers {
+public class Modifiers implements Serializable {
+  private static final long serialVersionUID = -1005349552132021584L;
+
   private Set<Ident> modifiers;
 
   public Modifiers() {

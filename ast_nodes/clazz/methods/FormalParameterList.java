@@ -4,35 +4,37 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import njast.ModTypeNameHeader;
+
 public class FormalParameterList implements Serializable {
 
   private static final long serialVersionUID = 6989912396760951139L;
 
-  private List<FormalParameter> parameters;
+  private List<ModTypeNameHeader> parameters;
 
   public FormalParameterList() {
-    this.parameters = new ArrayList<FormalParameter>();
+    this.parameters = new ArrayList<ModTypeNameHeader>();
   }
 
-  public void put(FormalParameter e) {
+  public void put(ModTypeNameHeader e) {
     this.parameters.add(e);
   }
 
-  public List<FormalParameter> getParameters() {
+  public List<ModTypeNameHeader> getParameters() {
     return parameters;
   }
 
   public boolean isEqualTo(FormalParameterList another) {
     final int bound = parameters.size();
 
-    final List<FormalParameter> anotherParameters = another.getParameters();
+    final List<ModTypeNameHeader> anotherParameters = another.getParameters();
     if (bound != anotherParameters.size()) {
       return false;
     }
 
     for (int i = 0; i < bound; i++) {
-      FormalParameter fp1 = parameters.get(i);
-      FormalParameter fp2 = anotherParameters.get(i);
+      ModTypeNameHeader fp1 = parameters.get(i);
+      ModTypeNameHeader fp2 = anotherParameters.get(i);
       if (!fp1.getType().isEqualTo(fp2.getType())) {
         return false;
       }
@@ -47,7 +49,7 @@ public class FormalParameterList implements Serializable {
     sb.append("(");
 
     for (int i = 0; i < parameters.size(); i++) {
-      FormalParameter param = parameters.get(i);
+      ModTypeNameHeader param = parameters.get(i);
 
       sb.append(param.getType().toString());
       sb.append(" ");

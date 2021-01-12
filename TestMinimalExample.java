@@ -130,11 +130,7 @@ public class TestMinimalExample {
     sb.append(" /*100*/    }                                                                  \n");
     sb.append(" /*101*/    class C {                                                          \n");
     sb.append(" /*102*/      public void testList() {                                         \n");
-    sb.append(" /*103*/        LinkedList<int> table = new LinkedList<int>();                 \n");
-    sb.append(" /*104*/        table.pushFront(1);                                            \n");
-    sb.append(" /*105*/        table.pushFront(2);                                            \n");
-    sb.append(" /*106*/        for (Node<int> e = table.first; e != null; e = e.next) {       \n");
-    sb.append(" /*107*/        }                                                              \n");
+    sb.append(" /*103*/        LinkedList<LinkedList<int> > table = new LinkedList<LinkedList<int> >();                 \n");
     sb.append(" /*108*/      }                                                                \n");
     sb.append(" /*109*/    }                                                                  \n");
     //@formatter:on

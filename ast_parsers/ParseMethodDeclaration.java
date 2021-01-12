@@ -4,12 +4,13 @@ import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ModTypeNameHeader;
+import njast.ast_checkers.TypeRecognizer;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
-import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ParseMethodDeclaration {
@@ -32,27 +33,19 @@ public class ParseMethodDeclaration {
     // public static <K, V> boolean compare(Pair<K, V> p1, Pair<K, V> p2) {
 
     Token location = parser.tok();
-
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
     if (parser.is(T.T_LT)) {
       parser.unimplemented("generic methods");
     }
 
-    Type type = null;
-    if (parser.is(IdentMap.void_ident)) {
-      Token saved = parser.moveget();
-    } else {
-      type = new ParseType(parser).parse();
-    }
+    final Type type = new TypeRecognizer(parser, true).getType();
+    final Ident ident = parser.getIdent();
+    final ModTypeNameHeader header = new ModTypeNameHeader(modifiers, type, ident, new SourceLocation(location));
+    final FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
+    final StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    Ident ident = parser.getIdent();
-
-    FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
-
-    StmtBlock block = new ParseStatement(parser).parseBlock();
-
-    return new ClassMethodDeclaration(type, ident, formalParameterList, block, new SourceLocation(location));
+    return new ClassMethodDeclaration(header, formalParameterList, block);
   }
 
 }

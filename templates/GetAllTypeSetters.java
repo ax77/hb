@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
@@ -50,11 +50,11 @@ public class GetAllTypeSetters {
 
       //return
       if (!method.isVoid()) {
-        push(method);
+        push(method.getHeader());
       }
 
       //parameters
-      for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
+      for (ModTypeNameHeader fp : method.getFormalParameterList().getParameters()) {
         push(fp);
       }
 
@@ -91,7 +91,7 @@ public class GetAllTypeSetters {
     }
 
     for (VarDeclarator var : vars) {
-      push(var);
+      push(var.getHeader());
       if (var.getInitializer() != null) {
         visitExpression(object, var.getInitializer().getInitializer());
       }

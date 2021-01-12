@@ -3,15 +3,14 @@ package njast.ast_visitors;
 import java.util.HashSet;
 import java.util.List;
 
-import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
@@ -62,10 +61,8 @@ public class ApplyInstantiationUnit {
 
       symtabApplier.defineMethod(object, method); // check overloading/redefinition/etc
 
-      for (FormalParameter fp : method.getFormalParameterList().getParameters()) {
-        Type type = fp.getType();
-        Ident name = fp.getIdentifier();
-        symtabApplier.defineFunctionParameter(method, type, name);
+      for (ModTypeNameHeader fp : method.getFormalParameterList().getParameters()) {
+        symtabApplier.defineFunctionParameter(method, fp);
       }
 
       //body

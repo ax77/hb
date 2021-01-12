@@ -546,7 +546,7 @@ public class ParseExpression {
       Type referenceType = new Type(parser.getClassType(parser.getIdent()));
 
       // optional, but not null
-      List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
+      List<Type> typeArguments = new TypeRecognizer(parser, false).getTypeArguments();
       for (Type typeArg : typeArguments) {
         referenceType.putTypeArgument(typeArg);
       }

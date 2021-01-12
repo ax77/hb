@@ -45,6 +45,10 @@ public class Type implements Serializable {
     this.typeVariable = another.typeVariable;
   }
 
+  public Type() {
+    this.base = TypeBase.TP_VOID_STUB;
+  }
+
   public Type(TypeBase primitiveType) {
     NullChecker.check(primitiveType);
 
@@ -145,11 +149,21 @@ public class Type implements Serializable {
       }
     }
 
+    else if (isVoidStub()) {
+      if (!another.isVoidStub()) {
+        return false;
+      }
+    }
+
     else {
       throw new EParseException("unimpl...");
     }
 
     return true;
+  }
+
+  public boolean isVoidStub() {
+    return base == TypeBase.TP_VOID_STUB;
   }
 
   @Override
@@ -159,6 +173,9 @@ public class Type implements Serializable {
     }
     if (base == TP_TYPE_VARIABLE_TYPENAME_T) {
       return typeVariable.getName();
+    }
+    if (base == TypeBase.TP_VOID_STUB) {
+      return "void";
     }
     return classType.getIdentifier().getName();
   }

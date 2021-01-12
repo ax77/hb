@@ -1,9 +1,11 @@
 package njast.ast_parsers;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_nodes.clazz.methods.FormalParameter;
+import njast.ModTypeNameHeader;
+import njast.ast_checkers.TypeRecognizer;
 import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
@@ -30,13 +32,13 @@ public class ParseFormalParameterList {
       return parameters;
     }
 
-    FormalParameter oneparam = parseOneParam();
+    ModTypeNameHeader oneparam = parseOneParam();
     parameters.put(oneparam);
 
     while (parser.is(T.T_COMMA)) {
       Token comma = parser.moveget();
 
-      FormalParameter oneparamRest = parseOneParam();
+      ModTypeNameHeader oneparamRest = parseOneParam();
       parameters.put(oneparamRest);
     }
 
@@ -45,11 +47,12 @@ public class ParseFormalParameterList {
     return parameters;
   }
 
-  private FormalParameter parseOneParam() {
-    Modifiers modifiers = new ParseModifiers(parser).parse();
-    Type type = new ParseType(parser).parse();
-    Ident name = parser.getIdent();
-    return new FormalParameter(type, name);
+  private ModTypeNameHeader parseOneParam() {
+    final Modifiers modifiers = new ParseModifiers(parser).parse();
+    final Type type = new TypeRecognizer(parser, false).getType();
+    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident name = tok.getIdent();
+    return new njast.ModTypeNameHeader(modifiers, type, name, new SourceLocation(tok));
   }
 
 }
