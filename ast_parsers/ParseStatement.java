@@ -81,7 +81,7 @@ public class ParseStatement {
 
     if (parser.isTypeWithOptModifiersBegin()) {
       VarDeclarator localVar = new ParseVarDeclarator(parser).parse(VarBase.METHOD_VAR);
-      
+
       ClassDeclaration currentClass = parser.getCurrentClass(true);
       currentClass.registerTypeSetter(localVar.getHeader());
 

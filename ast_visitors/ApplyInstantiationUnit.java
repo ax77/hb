@@ -44,12 +44,12 @@ public class ApplyInstantiationUnit {
   public void visit(InstantiationUnit o) {
     symtabApplier.openFileScope();
     for (ClassDeclaration td : o.getClasses()) {
-      visit(td);
+      applyClazz(td);
     }
     symtabApplier.closeFileScope();
   }
 
-  private void visit(ClassDeclaration object) {
+  private void applyClazz(ClassDeclaration object) {
 
     symtabApplier.openClassScope(object.getIdentifier().getName());
 
@@ -60,37 +60,54 @@ public class ApplyInstantiationUnit {
 
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
-      symtabApplier.openMethodScope(method.getIdentifier().getName());
-
-      symtabApplier.defineMethod(object, method); // check overloading/redefinition/etc
-
-      for (ModTypeNameHeader fp : method.getParameters()) {
-        symtabApplier.defineFunctionParameter(method, fp);
-      }
-
-      //body
-      final StmtBlock body = method.getBlock();
-      for (StmtBlockItem block : body.getBlockStatements()) {
-
-        // method variables
-        final VarDeclarator localVars = block.getLocalVariable();
-        if (localVars != null) {
-          symtabApplier.initVarZero(localVars);
-          symtabApplier.defineMethodVariable(method, localVars);
-        }
-
-        applyStatement(object, method, block.getStatement());
-      }
-
-      symtabApplier.closeMethodScope();
+      applyMethod(object, method);
     }
 
-    //constructors (the last, it works with methods and fields)
+    //constructors 
     for (ClassMethodDeclaration constructor : object.getConstructors()) {
-      symtabApplier.defineConstructor(object, constructor); // check overloading/redefinition/etc
+      applyMethod(object, constructor);
+    }
+
+    //destructor
+    if (object.getDestructor() != null) {
+      applyMethod(object, object.getDestructor());
     }
 
     symtabApplier.closeClassScope();
+  }
+
+  private void applyMethod(ClassDeclaration object, ClassMethodDeclaration method) {
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(object.getIdentifier().getName());
+    sb.append("_");
+    sb.append(method.getBase().toString());
+    sb.append("_");
+    sb.append(method.getUniqueIdToString());
+
+    symtabApplier.openMethodScope(sb.toString());
+
+    if (!method.isDestructor()) {
+      for (ModTypeNameHeader fp : method.getParameters()) {
+        symtabApplier.defineFunctionParameter(method, fp);
+      }
+    }
+
+    //body
+    final StmtBlock body = method.getBlock();
+    for (StmtBlockItem block : body.getBlockStatements()) {
+
+      // method variables
+      final VarDeclarator localVars = block.getLocalVariable();
+      if (localVars != null) {
+        symtabApplier.initVarZero(localVars);
+        symtabApplier.defineMethodVariable(method, localVars);
+      }
+
+      applyStatement(object, method, block.getStatement());
+    }
+
+    symtabApplier.closeMethodScope();
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -138,13 +155,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == StatementBase.SRETURN) {
-
       final ExprExpression retExpression = statement.getSexpression();
-
-      if (method.isVoid() && retExpression != null) {
-        throw new EParseException("method returning void...");
-      }
-
       applyExpression(object, retExpression);
     }
 
@@ -165,13 +176,14 @@ public class ApplyInstantiationUnit {
     }
   }
 
-  private void visitLocalVar(final ClassDeclaration object, VarDeclarator vars) {
-    if (vars == null) {
+  private void visitLocalVar(final ClassDeclaration object, VarDeclarator var) {
+
+    if (var == null) {
       return;
     }
 
-    symtabApplier.initVarZero(vars);
-    symtabApplier.defineBlockVar(vars);
+    symtabApplier.initVarZero(var);
+    symtabApplier.defineBlockVar(var);
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -193,17 +205,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EASSIGN) {
-      ExprAssign node = e.getAssign();
-      Token operator = node.getOperator();
-
-      final ExprExpression LHS = node.getLvalue();
-      final ExprExpression RHS = node.getRvalue();
-
-      applyExpression(object, LHS);
-      applyExpression(object, RHS);
-
-      // TODO: type-checking
-      e.setResultType(node.getLvalue().getResultType());
+      applyAssign(object, e);
     }
 
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
@@ -231,19 +233,36 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
-      ExprClassInstanceCreation classInstanceCreation = e.getClassInstanceCreation();
-
-      for (FuncArg arg : classInstanceCreation.getArguments()) {
-        applyExpression(object, arg.getExpression());
-      }
-
-      e.setResultType(classInstanceCreation.getType());
+      applyClassInstanceCreation(object, e);
     }
 
     else {
       throw new EParseException("unimpl. expr.:" + base.toString());
     }
 
+  }
+
+  public void applyClassInstanceCreation(ClassDeclaration object, ExprExpression e) {
+    ExprClassInstanceCreation classInstanceCreation = e.getClassInstanceCreation();
+
+    for (FuncArg arg : classInstanceCreation.getArguments()) {
+      applyExpression(object, arg.getExpression());
+    }
+
+    e.setResultType(classInstanceCreation.getType());
+  }
+
+  public void applyAssign(ClassDeclaration object, ExprExpression e) {
+    ExprAssign node = e.getAssign();
+
+    final ExprExpression lvalue = node.getLvalue();
+    final ExprExpression rvalue = node.getRvalue();
+
+    applyExpression(object, lvalue);
+    applyExpression(object, rvalue);
+
+    // TODO: type-checking, is assignable, etc...
+    e.setResultType(node.getLvalue().getResultType());
   }
 
   private static HashSet<T> forLongType = new HashSet<>();
@@ -291,12 +310,6 @@ public class ApplyInstantiationUnit {
 
     else if (forBooleanType.contains(operator.getType())) {
       e.setResultType(Type.BOOLEAN_TYPE);
-    }
-
-    // TODO: 
-
-    else if (operator.ofType(T.T_COMMA)) {
-      e.setResultType(e.getBinary().getRhs().getResultType());
     }
 
     else {

@@ -83,10 +83,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   public void addConstructor(ClassMethodDeclaration e) {
     NullChecker.check(e);
 
-    for (ModTypeNameHeader hdr : e.getParameters()) {
-      registerTypeSetter(hdr);
-    }
-
+    registerMethodParameters(e);
     this.constructors.add(e);
   }
 
@@ -103,11 +100,15 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     if (!e.isVoid()) {
       registerTypeSetter(e.getHeader());
     }
+
+    registerMethodParameters(e);
+    this.methods.add(e);
+  }
+
+  public void registerMethodParameters(ClassMethodDeclaration e) {
     for (ModTypeNameHeader hdr : e.getParameters()) {
       registerTypeSetter(hdr);
     }
-
-    this.methods.add(e);
   }
 
   public List<ClassMethodDeclaration> getConstructors() {

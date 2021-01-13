@@ -165,12 +165,6 @@ public class SymtabApplier {
 
   }
 
-  public void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
-  }
-
-  public void defineConstructor(ClassDeclaration object, ClassMethodDeclaration constructor) {
-  }
-
   public void initVarZero(VarDeclarator var) {
   }
 

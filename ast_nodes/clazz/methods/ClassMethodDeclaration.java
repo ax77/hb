@@ -76,6 +76,10 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
     this.uniqueId = UniqueCounter.getUniqueId();
   }
 
+  public ClassMethodBase getBase() {
+    return base;
+  }
+
   public ClassDeclaration getClazz() {
     return clazz;
   }
