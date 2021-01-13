@@ -8,7 +8,6 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.Parse;
-import njast.symtab.IdentMap;
 import njast.types.Type;
 import njast.types.TypeBindings;
 
@@ -19,9 +18,8 @@ public class TypeRecognizer {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isVoidStub;
 
-  public TypeRecognizer(Parse parser, boolean allowVoid) {
+  public TypeRecognizer(Parse parser) {
 
     this.parser = parser;
 
@@ -31,16 +29,19 @@ public class TypeRecognizer {
 
     boolean typeWasFound = IdentRecognizer.isBasicTypeIdent(parser.tok());
 
+    // I
     if (typeWasFound) {
       this.isPrimitive = true;
     }
 
+    // II
     else {
       typeWasFound = parser.isClassName();
       if (typeWasFound) {
         this.isReference = true;
       }
 
+      // III
       else {
         ClassDeclaration classDeclaration = parser.getCurrentClass();
         if (classDeclaration == null) {
@@ -51,14 +52,8 @@ public class TypeRecognizer {
           this.isTypeParameter = true;
         }
 
+        // ???
         else {
-          typeWasFound = parser.is(IdentMap.void_ident);
-          if (typeWasFound) {
-            if (!allowVoid) {
-              parser.perror("void is not allowed in this context");
-            }
-            this.isVoidStub = true;
-          }
         }
       }
     }
@@ -66,11 +61,6 @@ public class TypeRecognizer {
   }
 
   public Type getType() {
-
-    if (isVoidStub) {
-      Token tok = parser.checkedMove(IdentMap.void_ident);
-      return new Type();
-    }
 
     if (!isType()) {
       parser.perror("type is not recognized");
@@ -142,7 +132,7 @@ public class TypeRecognizer {
   }
 
   private Type getTypeArgument() {
-    TypeRecognizer nested = new TypeRecognizer(parser, false);
+    TypeRecognizer nested = new TypeRecognizer(parser);
     return nested.getType();
   }
 

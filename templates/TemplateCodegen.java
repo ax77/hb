@@ -6,7 +6,6 @@ import java.util.List;
 
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_utils.SerializationUtils;
@@ -146,10 +145,6 @@ public class TemplateCodegen {
 
     final ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
     object.setIdentifier(newIdentifier);
-
-    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
-      constructor.setIdentifier(newIdentifier);
-    }
 
     return object;
   }

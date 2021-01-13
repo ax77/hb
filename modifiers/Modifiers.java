@@ -30,6 +30,16 @@ public class Modifiers implements Serializable {
     return modifiers;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Ident id : modifiers) {
+      sb.append(id.getName());
+      sb.append(" ");
+    }
+    return sb.toString().trim();
+  }
+
   //@formatter:off
   public boolean hasPublic() { return modifiers.contains(IdentMap.public_ident); }
   public boolean hasAbstract() { return modifiers.contains(IdentMap.abstract_ident); }

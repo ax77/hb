@@ -171,10 +171,10 @@ public class Type implements Serializable {
     if (isPrimitive()) {
       return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(base);
     }
-    if (base == TP_TYPE_VARIABLE_TYPENAME_T) {
+    if (isTypeVarRef()) {
       return typeVariable.getName();
     }
-    if (base == TypeBase.TP_VOID_STUB) {
+    if (isVoidStub()) {
       return "void";
     }
     return classType.getIdentifier().getName();

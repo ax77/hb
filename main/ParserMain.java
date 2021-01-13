@@ -123,6 +123,14 @@ public class ParserMain implements ParserMainApi {
     g("void");
     g("volatile");
     g("while");
+    //
+    g("var");
+    g("let");
+    g("func");
+    g("weak");
+    g("init");
+    g("deinit");
+    g("self");
   }
 
   // details.

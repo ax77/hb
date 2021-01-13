@@ -18,6 +18,10 @@ public class ModTypeNameHeader implements Serializable, TypeSetter, IModTypeName
   // variable header
   // method header
 
+  // var counter: int = 0;
+  // let counter: int = 0;
+  // weak var prev: Node<T>;
+
   private final Modifiers modifiers;
   private Type type; // we'll set new type in template expansion
   private final Ident identifier;
@@ -58,7 +62,19 @@ public class ModTypeNameHeader implements Serializable, TypeSetter, IModTypeName
 
   @Override
   public String toString() {
-    return type.toString() + " " + identifier.getName();
+    StringBuilder sb = new StringBuilder();
+
+    final String mods = modifiers.toString();
+    if (!mods.isEmpty()) {
+      sb.append(mods);
+      sb.append(" ");
+    }
+
+    sb.append(identifier.getName());
+    sb.append(": ");
+    sb.append(type.toString());
+
+    return sb.toString();
   }
 
 }

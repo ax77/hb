@@ -9,5 +9,5 @@ public interface IModTypeNameHeader {
   Ident getIdentifier();
 
   String getLocationToString();
-  
+
 }

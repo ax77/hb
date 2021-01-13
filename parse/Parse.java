@@ -2,6 +2,7 @@ package njast.parse;
 
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_IDENT;
+import static jscan.tokenize.T.T_COLON;
 import static jscan.tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class Parse {
   }
 
   private boolean isPrimitiveOrReferenceTypeBegin() {
-    TypeRecognizer typeRecognizer = new TypeRecognizer(this, false);
+    TypeRecognizer typeRecognizer = new TypeRecognizer(this);
     return typeRecognizer.isType();
   }
 
@@ -280,6 +281,10 @@ public class Parse {
 
   public Token semicolon() {
     return checkedMove(T_SEMI_COLON);
+  }
+
+  public Token colon() {
+    return checkedMove(T_COLON);
   }
 
   //////////////////////////////////////////////////////////////////////

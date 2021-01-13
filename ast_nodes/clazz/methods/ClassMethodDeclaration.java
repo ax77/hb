@@ -43,10 +43,15 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader 
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(getType().toString());
-    sb.append(" ");
+    sb.append("func ");
     sb.append(getIdentifier().getName());
     sb.append(parameters.toString());
+
+    if (!isVoid()) {
+      sb.append(" -> ");
+      sb.append(getType().toString());
+    }
+
     sb.append("\n{\n");
     sb.append(body.toString());
     sb.append("\n}\n");

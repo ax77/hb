@@ -18,13 +18,10 @@ public class ParseFormalParameterList {
     this.parser = parser;
   }
 
-  //  <formal parameter list> ::= <formal parameter> | <formal parameter list> , <formal parameter>
-  //
-  //  <formal parameter> ::= <type> <variable declarator id>
+  // func name(param: int) -> int {  }
 
   public FormalParameterList parse() {
     FormalParameterList parameters = new FormalParameterList();
-
     Token lparen = parser.lparen();
 
     if (parser.is(T.T_RIGHT_PAREN)) {
@@ -32,27 +29,22 @@ public class ParseFormalParameterList {
       return parameters;
     }
 
-    ModTypeNameHeader oneparam = parseOneParam();
-    parameters.put(oneparam);
-
+    parameters.put(parseOneParam());
     while (parser.is(T.T_COMMA)) {
       Token comma = parser.moveget();
-
-      ModTypeNameHeader oneparamRest = parseOneParam();
-      parameters.put(oneparamRest);
+      parameters.put(parseOneParam());
     }
 
     Token rparen = parser.rparen();
-
     return parameters;
   }
 
   private ModTypeNameHeader parseOneParam() {
-    final Modifiers modifiers = new ParseModifiers(parser).parse();
-    final Type type = new TypeRecognizer(parser, false).getType();
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    final Ident name = tok.getIdent();
-    return new njast.ModTypeNameHeader(modifiers, type, name, new SourceLocation(tok));
+    final Ident id = tok.getIdent();
+    final Token colon = parser.colon();
+    final Type type = new TypeRecognizer(parser).getType();
+    return new ModTypeNameHeader(new Modifiers(), type, id, new SourceLocation(tok));
   }
 
 }

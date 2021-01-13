@@ -17,5 +17,5 @@ public enum ExpressionBase {
 // , EPOSTINCDEC
  , EFIELD_ACCESS
  , ECLASS_INSTANCE_CREATION
- , ETHIS
+ , ESELF
 }

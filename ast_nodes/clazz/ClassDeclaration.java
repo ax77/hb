@@ -7,9 +7,9 @@ import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ModTypeNameHeader;
+import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
@@ -30,6 +30,7 @@ public class ClassDeclaration implements Serializable {
   private List<StmtBlock> staticInitializers;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
+  private StmtBlock destructor;
   private final int uniqueId;
 
   // we store type-variables as original references to Type
@@ -46,6 +47,17 @@ public class ClassDeclaration implements Serializable {
     this.uniqueId = classIdCounter++;
     this.identifier = identifier;
     initLists();
+  }
+
+  public StmtBlock getDestructor() {
+    return destructor;
+  }
+
+  public void setDestructor(StmtBlock destructor) {
+    if (this.destructor != null) {
+      throw new EParseException("duplicate destructor");
+    }
+    this.destructor = destructor;
   }
 
   private void initLists() {
@@ -132,14 +144,15 @@ public class ClassDeclaration implements Serializable {
     return null;
   }
 
-  private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<ExprExpression> arguments) {
+  // TODO:
+  private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<FuncArg> arguments) {
     List<ModTypeNameHeader> formalParameters = method.getFormalParameterList().getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }
     for (int i = 0; i < formalParameters.size(); i++) {
       Type tp1 = formalParameters.get(i).getType();
-      Type tp2 = arguments.get(i).getResultType();
+      Type tp2 = arguments.get(i).getExpression().getResultType();
       if (!tp1.isEqualTo(tp2)) {
         return false;
       }
@@ -155,7 +168,7 @@ public class ClassDeclaration implements Serializable {
     return uniqueId;
   }
 
-  public ClassMethodDeclaration getMethod(Ident name, List<ExprExpression> arguments) {
+  public ClassMethodDeclaration getMethod(Ident name, List<FuncArg> arguments) {
     for (ClassMethodDeclaration method : methods) {
       if (method.getIdentifier().equals(name)) {
         if (isCompatibleByArguments(method, arguments)) {

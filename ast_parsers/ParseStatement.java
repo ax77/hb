@@ -79,8 +79,7 @@ public class ParseStatement {
     //    { VariableModifier } Type VariableDeclarators ;
 
     if (parser.isTypeWithOptModifiersBegin()) {
-      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR,
-          ParseVariableState.STATE_OTHER);
+      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
       return new StmtBlockItem(vars);
     }
 
@@ -92,11 +91,11 @@ public class ParseStatement {
   }
 
   private ExprExpression e_expression() {
-    return new ParseExpression(parser, ParseVariableState.STATE_OTHER).e_expression();
+    return new ParseExpression(parser).e_expression();
   }
 
   private ExprExpression parseForLoopExpressions() {
-    return new ParseExpression(parser, ParseVariableState.STATE_FOR_LOOP).e_expression();
+    return new ParseExpression(parser).e_expression();
   }
 
   private StmtStatement parseStatement() {
@@ -158,7 +157,7 @@ public class ParseStatement {
   private StmtStatement parse_if() {
     Token from = parser.checkedMove(if_ident);
 
-    ExprExpression ifexpr = new ParseExpression(parser, ParseVariableState.STATE_OTHER).getExprInParen();
+    ExprExpression ifexpr = new ParseExpression(parser).e_expression();
     checkSemicolonAndLbrace();
 
     StmtStatement ifstmt = parseStatement();
@@ -192,7 +191,7 @@ public class ParseStatement {
 
       if (parser.isTypeWithOptModifiersBegin()) {
         // semicolon will be handled in declarations-list
-        decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR, ParseVariableState.STATE_FOR_LOOP);
+        decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
       }
 
       else {

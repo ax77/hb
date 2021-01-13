@@ -32,37 +32,23 @@ public class ParseVarDeclaratorsList {
     this.parser = parser;
   }
 
-  public List<VarDeclarator> parse(VarBase base, ParseVariableState state) {
+  public List<VarDeclarator> parse(VarBase base) {
 
+    // weak only by now.
     Modifiers modifiers = new ParseModifiers(parser).parse();
-
-    Type type = new TypeRecognizer(parser, false).getType();
     List<VarDeclarator> variableDeclarators = new ArrayList<VarDeclarator>();
 
-    getOneVarAndOptInitializer(base, type, variableDeclarators, modifiers);
-
-    if (parser.is(T.T_COMMA)) {
-      if (!state.equals(ParseVariableState.STATE_FOR_LOOP)) {
-        parser.errorCommaExpression();
-      }
-
-      while (parser.is(T.T_COMMA)) {
-        parser.moveget();
-        getOneVarAndOptInitializer(base, type, variableDeclarators, modifiers);
-      }
-    }
-
-    parser.semicolon();
-    return variableDeclarators;
-  }
-
-  private void getOneVarAndOptInitializer(VarBase base, Type type, List<VarDeclarator> variableDeclarators,
-      Modifiers modifiers) {
+    // var counter: int = 0;
+    // let counter: int = 0;
 
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
     Ident id = tok.getIdent();
+    SourceLocation location = new SourceLocation(tok);
 
-    ModTypeNameHeader header = new ModTypeNameHeader(modifiers, type, id, new SourceLocation(tok));
+    Token colon = parser.colon();
+    Type type = new TypeRecognizer(parser).getType();
+
+    ModTypeNameHeader header = new ModTypeNameHeader(modifiers, type, id, location);
     VarDeclarator var = new VarDeclarator(base, header);
 
     if (parser.is(T.T_ASSIGN)) {
@@ -72,10 +58,12 @@ public class ParseVarDeclaratorsList {
 
     variableDeclarators.add(var);
 
+    parser.semicolon();
+    return variableDeclarators;
   }
 
   private VarInitializer parseInitializer() {
-    ExprExpression init = new ParseExpression(parser, ParseVariableState.STATE_OTHER).e_assign();
+    ExprExpression init = new ParseExpression(parser).e_assign();
     return new VarInitializer(init);
   }
 

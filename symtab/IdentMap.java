@@ -68,6 +68,15 @@ public final class IdentMap {
   public static final Ident void_ident           = g("void");
   public static final Ident volatile_ident       = g("volatile");
   public static final Ident while_ident          = g("while");
+  
+  //
+  public static final Ident var_ident    = g("var");
+  public static final Ident let_ident    = g("let");
+  public static final Ident func_ident   = g("func");
+  public static final Ident weak_ident   = g("weak");
+  public static final Ident init_ident   = g("init");
+  public static final Ident deinit_ident = g("deinit");
+  public static final Ident self_ident   = g("self");
   //@formatter:on
 
 }

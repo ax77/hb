@@ -5,8 +5,6 @@ import java.util.List;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.ConstructorRecognizer;
-import njast.ast_checkers.FunctionRecognizer;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
@@ -91,47 +89,43 @@ public class ParseTypeDeclarationsList {
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
-    // 0) static { <block> }
-    //
-    boolean isStaticInitializer = parser.is(IdentMap.static_ident) && parser.peek().ofType(T.T_LEFT_BRACE);
-    if (isStaticInitializer) {
-      Token kw = parser.checkedMove(IdentMap.static_ident);
-
-      StmtBlock block = new ParseStatement(parser).parseBlock();
-      clazz.put(block);
-
-      return;
-    }
-
-    // 1) constructor
+    // init
     // 
-    boolean isConstructorDeclaration = new ConstructorRecognizer(parser).isConstructorDeclaration(clazz);
+    boolean isConstructorDeclaration = parser.is(IdentMap.init_ident);
     if (isConstructorDeclaration) {
       ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
       checkRedefinition(clazz, constructorDeclaration);
       clazz.put(constructorDeclaration);
-
       return;
     }
 
-    // 2) function or field
+    // function
     //
-    boolean isFunction = new FunctionRecognizer(parser).isFunc();
-
+    boolean isFunction = parser.is(IdentMap.func_ident);
     if (isFunction) {
       ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();
       checkRedefinition(clazz, methodDeclaration);
       clazz.put(methodDeclaration);
+      return;
     }
 
-    else {
+    // deinit
+    //
+    boolean isDestructor = parser.is(IdentMap.deinit_ident);
+    if (isDestructor) {
+      parser.checkedMove(IdentMap.deinit_ident);
+      StmtBlock destructor = new ParseStatement(parser).parseBlock();
+      clazz.setDestructor(destructor);
+      return;
+    }
 
-      List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD,
-          ParseVariableState.STATE_OTHER);
-      for (VarDeclarator field : fieldDeclaration) {
-        checkRedefinition(clazz, field);
-        clazz.put(field);
-      }
+    // var
+    // let
+    // weak var
+    List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
+    for (VarDeclarator field : fieldDeclaration) {
+      checkRedefinition(clazz, field);
+      clazz.put(field);
     }
 
   }

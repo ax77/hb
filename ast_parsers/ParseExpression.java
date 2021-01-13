@@ -35,6 +35,7 @@ import jscan.tokenize.Token;
 import njast.ast_checkers.IdentRecognizer;
 import njast.ast_checkers.TypeRecognizer;
 import njast.ast_kinds.ExpressionBase;
+import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
@@ -51,11 +52,9 @@ import njast.types.Type;
 
 public class ParseExpression {
   private final Parse parser;
-  private final ParseVariableState state;
 
-  public ParseExpression(Parse parser, ParseVariableState state) {
+  public ParseExpression(Parse parser) {
     this.parser = parser;
-    this.state = state;
   }
 
   private ExprExpression build_unary(Token op, ExprExpression operand) {
@@ -83,13 +82,7 @@ public class ParseExpression {
     ExprExpression e = e_assign();
 
     if (parser.is(T.T_COMMA)) {
-      if (!state.equals(ParseVariableState.STATE_FOR_LOOP)) {
-        parser.errorCommaExpression();
-      }
-      while (parser.tp() == T.T_COMMA) {
-        Token saved = parser.checkedMove(T.T_COMMA);
-        e = build_comma(saved, e, e_expression());
-      }
+      parser.errorCommaExpression();
     }
 
     return e;
@@ -498,35 +491,40 @@ public class ParseExpression {
   private ExprExpression methodInvocation(Ident funcname) {
     // apply <this.> before function name, more convenient
     // ExprExpression thisExpression = new ExprExpression(ExpressionBase.ETHIS);
-    List<ExprExpression> arglist = parseArglist();
+    List<FuncArg> arglist = parseArglist();
     return new ExprExpression(new ExprMethodInvocation(funcname, arglist));
   }
 
   private ExprExpression methodInvocation(Ident funcname, ExprExpression lhs) {
-    List<ExprExpression> arglist = parseArglist();
+    List<FuncArg> arglist = parseArglist();
     lhs = new ExprExpression(new ExprMethodInvocation(funcname, lhs, arglist));
     return lhs;
   }
 
-  private List<ExprExpression> parseArglist() {
+  private List<FuncArg> parseArglist() {
 
     Token lparen = parser.lparen();
-    List<ExprExpression> arglist = new ArrayList<ExprExpression>();
+    List<FuncArg> arglist = new ArrayList<>();
 
     if (parser.tp() != T_RIGHT_PAREN) {
-      ExprExpression onearg = e_assign();
-      arglist.add(onearg);
+      arglist.add(getOneArg());
 
       while (parser.tp() == T.T_COMMA) {
         parser.move();
-
-        ExprExpression oneargSeq = e_assign();
-        arglist.add(oneargSeq);
+        arglist.add(getOneArg());
       }
     }
 
     Token rparen = parser.rparen();
     return arglist;
+  }
+
+  private FuncArg getOneArg() {
+    Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    Token colon = parser.colon();
+
+    ExprExpression onearg = e_assign();
+    return new FuncArg(tok.getIdent(), onearg);
   }
 
   private ExprExpression e_prim() {
@@ -546,18 +544,18 @@ public class ParseExpression {
       Type referenceType = new Type(parser.getClassType(parser.getIdent()));
 
       // optional, but not null
-      List<Type> typeArguments = new TypeRecognizer(parser, false).getTypeArguments();
+      List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
       for (Type typeArg : typeArguments) {
         referenceType.putTypeArgument(typeArg);
       }
 
-      List<ExprExpression> arguments = parseArglist();
+      List<FuncArg> arguments = parseArglist();
       return new ExprExpression(new ExprClassInstanceCreation(referenceType, arguments));
     }
 
-    if (parser.is(IdentMap.this_ident)) {
+    if (parser.is(IdentMap.self_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(ExpressionBase.ETHIS);
+      ExprExpression thisexpr = new ExprExpression(ExpressionBase.ESELF);
       return thisexpr;
     }
 

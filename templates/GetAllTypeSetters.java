@@ -7,6 +7,7 @@ import java.util.List;
 import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
+import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
@@ -167,8 +168,8 @@ public class GetAllTypeSetters {
       final ExprMethodInvocation methodInvocation = expression.getMethodInvocation();
       visitExpression(object, methodInvocation.getObject());
 
-      for (ExprExpression arg : methodInvocation.getArguments()) {
-        visitExpression(object, arg);
+      for (FuncArg arg : methodInvocation.getArguments()) {
+        visitExpression(object, arg.getExpression());
       }
     }
 
@@ -176,7 +177,7 @@ public class GetAllTypeSetters {
       visitExpression(object, expression.getFieldAccess().getObject());
     }
 
-    else if (base == ExpressionBase.ETHIS) {
+    else if (base == ExpressionBase.ESELF) {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
@@ -190,8 +191,8 @@ public class GetAllTypeSetters {
       final ExprClassInstanceCreation classInstanceCreation = expression.getClassInstanceCreation();
       push(classInstanceCreation);
 
-      for (ExprExpression arg : classInstanceCreation.getArguments()) {
-        visitExpression(object, arg);
+      for (FuncArg arg : classInstanceCreation.getArguments()) {
+        visitExpression(object, arg.getExpression());
       }
     }
 

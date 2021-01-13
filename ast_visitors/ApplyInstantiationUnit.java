@@ -8,6 +8,7 @@ import jscan.tokenize.Token;
 import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
+import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.clazz.ClassConstructorDeclaration;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
@@ -220,7 +221,7 @@ public class ApplyInstantiationUnit {
       applyFieldAccess(object, e);
     }
 
-    else if (base == ExpressionBase.ETHIS) {
+    else if (base == ExpressionBase.ESELF) {
       e.setResultType(new Type(object));
     }
 
@@ -347,9 +348,9 @@ public class ApplyInstantiationUnit {
     final ExprMethodInvocation methodInvocation = e.getMethodInvocation();
     applyExpression(object, methodInvocation.getObject());
 
-    final List<ExprExpression> arguments = methodInvocation.getArguments();
-    for (ExprExpression arg : arguments) {
-      applyExpression(object, arg);
+    final List<FuncArg> arguments = methodInvocation.getArguments();
+    for (FuncArg arg : arguments) {
+      applyExpression(object, arg.getExpression());
     }
 
     if (methodInvocation.isMethodInvocation()) {

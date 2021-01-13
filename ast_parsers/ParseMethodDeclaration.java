@@ -11,6 +11,7 @@ import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ParseMethodDeclaration {
@@ -22,30 +23,35 @@ public class ParseMethodDeclaration {
 
   public ClassMethodDeclaration parse() {
 
-    //    <method declaration> ::= <method header> <method body>
-    //    <method header> ::= <method modifiers>? <result type> <method declarator> <throws>?
-    //    <result type> ::= <type> | void
-    //    <method modifiers> ::= <method modifier> | <method modifiers> <method modifier>
-    //    <method modifier> ::= public | protected | private | static | abstract | final | synchronized | native
-    //    <method declarator> ::= <identifier> ( <formal parameter list>? )
-    //    <method body> ::= <block> | ;
+    // func name(param: int) -> int {  }
 
-    // public static <K, V> boolean compare(Pair<K, V> p1, Pair<K, V> p2) {
+    //1)
+    final Token tok = parser.checkedMove(IdentMap.func_ident);
+    final SourceLocation location = new SourceLocation(tok);
 
-    Token location = parser.tok();
-    Modifiers modifiers = new ParseModifiers(parser).parse();
+    //2)
+    final Ident ident = parser.getIdent();
 
-    if (parser.is(T.T_LT)) {
-      parser.unimplemented("generic methods");
+    //3)
+    final FormalParameterList parameters = new ParseFormalParameterList(parser).parse();
+
+    //4)
+    Type type = null;
+    if (parser.is(T.T_ARROW)) {
+      parser.checkedMove(T.T_ARROW);
+      type = new TypeRecognizer(parser).getType();
+    } else {
+      type = new Type(); // void stub
+    }
+    if (type == null) {
+      parser.perror("type is not recognized for function");
     }
 
-    final Type type = new TypeRecognizer(parser, true).getType();
-    final Ident ident = parser.getIdent();
-    final ModTypeNameHeader header = new ModTypeNameHeader(modifiers, type, ident, new SourceLocation(location));
-    final FormalParameterList formalParameterList = new ParseFormalParameterList(parser).parse();
+    //5)
     final StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    return new ClassMethodDeclaration(header, formalParameterList, block);
+    final ModTypeNameHeader header = new ModTypeNameHeader(new Modifiers(), type, ident, location);
+    return new ClassMethodDeclaration(header, parameters, block);
   }
 
 }
