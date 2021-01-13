@@ -36,6 +36,7 @@ import njast.ast_checkers.IdentRecognizer;
 import njast.ast_checkers.TypeRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.FuncArg;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
@@ -48,6 +49,7 @@ import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 import njast.symtab.IdentMap;
+import njast.types.Ref;
 import njast.types.Type;
 
 public class ParseExpression {
@@ -67,10 +69,6 @@ public class ParseExpression {
 
   private ExprExpression build_assign(Token tok, ExprExpression lvalue, ExprExpression rvalue) {
     return new ExprExpression(new ExprAssign(tok, lvalue, rvalue));
-  }
-
-  private ExprExpression build_comma(Token tok, ExprExpression lhs, ExprExpression rhs) {
-    return new ExprExpression(new ExprBinary(tok, lhs, rhs));
   }
 
   // numeric-char-constants
@@ -541,16 +539,17 @@ public class ParseExpression {
     // new ClassName(x, y, z)
     if (parser.is(IdentMap.new_ident)) {
       Token saved = parser.moveget();
-      Type referenceType = new Type(parser.getClassType(parser.getIdent()));
 
-      // optional, but not null
-      List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
-      for (Type typeArg : typeArguments) {
-        referenceType.putTypeArgument(typeArg);
-      }
+      final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
+      final List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
+      final Ref ref = new Ref(instantiatedClass, typeArguments);
+      final List<FuncArg> arguments = parseArglist();
+      final ExprClassInstanceCreation classInstanceCreation = new ExprClassInstanceCreation(new Type(ref), arguments);
 
-      List<FuncArg> arguments = parseArglist();
-      return new ExprExpression(new ExprClassInstanceCreation(referenceType, arguments));
+      // it is important to register type-setter for `current` class
+      // not for the class is created in `new` expression 
+      parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
+      return new ExprExpression(classInstanceCreation);
     }
 
     if (parser.is(IdentMap.self_ident)) {

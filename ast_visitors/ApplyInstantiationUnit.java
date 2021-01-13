@@ -1,5 +1,6 @@
 package njast.ast_visitors;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
+import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
@@ -25,6 +27,7 @@ import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.stmt.Stmt_if;
 import njast.ast_nodes.top.InstantiationUnit;
 import njast.errors.EParseException;
+import njast.types.Ref;
 import njast.types.Type;
 
 public class ApplyInstantiationUnit {
@@ -157,19 +160,18 @@ public class ApplyInstantiationUnit {
 
   private void visitBlock(final ClassDeclaration object, ClassMethodDeclaration method, final StmtBlock body) {
     for (StmtBlockItem block : body.getBlockStatements()) {
-      visitLocalVars(object, block.getLocalVariable());
+      visitLocalVar(object, block.getLocalVariable());
       applyStatement(object, method, block.getStatement());
     }
   }
 
-  private void visitLocalVars(final ClassDeclaration object, VarDeclarator vars) {
+  private void visitLocalVar(final ClassDeclaration object, VarDeclarator vars) {
     if (vars == null) {
       return;
     }
 
     symtabApplier.initVarZero(vars);
     symtabApplier.defineBlockVar(vars);
-
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -205,7 +207,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EPRIMARY_IDENT) {
-      applyIdentifier(e);
+      applyIdentifier(object, e);
     }
 
     else if (base == ExpressionBase.EMETHOD_INVOCATION) {
@@ -217,7 +219,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.ESELF) {
-      e.setResultType(new Type(object));
+      e.setResultType(new Type(new Ref(object, new ArrayList<>())));
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
@@ -226,6 +228,16 @@ public class ApplyInstantiationUnit {
 
     else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
       // TODO:
+    }
+
+    else if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
+      ExprClassInstanceCreation classInstanceCreation = e.getClassInstanceCreation();
+
+      for (FuncArg arg : classInstanceCreation.getArguments()) {
+        applyExpression(object, arg.getExpression());
+      }
+
+      e.setResultType(classInstanceCreation.getType());
     }
 
     else {
@@ -293,7 +305,7 @@ public class ApplyInstantiationUnit {
 
   }
 
-  private void applyIdentifier(ExprExpression e) {
+  private void applyIdentifier(ClassDeclaration object, ExprExpression e) {
 
     final ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
 
@@ -306,6 +318,10 @@ public class ApplyInstantiationUnit {
     // set type to expression
     final VarDeclarator variable = sym.getVariable();
     e.setResultType(variable.getType());
+
+    if (variable.getInitializer() != null) {
+      applyExpression(object, variable.getInitializer().getInitializer());
+    }
 
     // remember var
     primaryIdent.setVariable(variable);

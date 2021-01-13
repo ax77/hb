@@ -140,7 +140,7 @@ public class ParseTypeDeclarationsList {
       parser.perror("expect variable - declaration");
     }
 
-    VarDeclarator field = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
+    VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD);
     checkFieldRedefinition(clazz, field);
     clazz.addField(field);
 

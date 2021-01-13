@@ -11,7 +11,6 @@ import static njast.types.TypeBase.TP_SHORT;
 import static njast.types.TypeBase.TP_TYPE_VARIABLE_TYPENAME_T;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import jscan.symtab.Ident;
@@ -23,8 +22,7 @@ public class Type implements Serializable {
   private static final long serialVersionUID = -4630043454712001308L;
 
   private TypeBase base;
-  private ClassDeclaration classType;
-  private List<Type> typeArguments;
+  private Ref ref;
   private Ident typeVariable;
 
   public final static Type BYTE_TYPE = new Type(TypeBase.TP_BYTE);
@@ -40,8 +38,7 @@ public class Type implements Serializable {
     NullChecker.check(another);
 
     this.base = another.base;
-    this.classType = another.classType;
-    this.typeArguments = another.typeArguments;
+    this.ref = another.ref;
     this.typeVariable = another.typeVariable;
   }
 
@@ -56,15 +53,13 @@ public class Type implements Serializable {
       throw new EParseException("expect primitive type");
     }
     this.base = primitiveType;
-    this.typeArguments = new ArrayList<Type>(0);
   }
 
-  public Type(ClassDeclaration classType) {
-    NullChecker.check(classType);
+  public Type(Ref ref) {
+    NullChecker.check(ref);
 
     this.base = TypeBase.TP_CLASS;
-    this.classType = classType;
-    this.typeArguments = new ArrayList<Type>(0);
+    this.ref = ref;
   }
 
   public Type(Ident typeVariable) {
@@ -72,28 +67,24 @@ public class Type implements Serializable {
 
     this.base = TP_TYPE_VARIABLE_TYPENAME_T;
     this.typeVariable = typeVariable;
-    this.typeArguments = new ArrayList<Type>(0);
   }
 
   public boolean isClassTemplate() {
-    return isClassRef() && classType.isTemplate();
-  }
-
-  public void putTypeArgument(Type e) {
-    NullChecker.check(e);
-
-    this.typeArguments.add(e);
+    return isClassRef() && ref.isTemplate();
   }
 
   public ClassDeclaration getClassType() {
     if (!isClassRef()) {
       throw new EParseException("is not a class");
     }
-    return classType;
+    return ref.getClazz();
   }
 
   public List<Type> getTypeArguments() {
-    return typeArguments;
+    if (!isClassRef()) {
+      throw new EParseException("is not a class");
+    }
+    return ref.getTypeArguments();
   }
 
   public Ident getTypeVariable() {
@@ -142,7 +133,7 @@ public class Type implements Serializable {
     }
 
     else if (isClassRef()) {
-      final Ident name1 = classType.getIdentifier();
+      final Ident name1 = ref.getClazz().getIdentifier();
       final Ident name2 = another.getClassType().getIdentifier();
       if (!name1.equals(name2)) {
         return false;
@@ -177,7 +168,7 @@ public class Type implements Serializable {
     if (isVoidStub()) {
       return "void";
     }
-    return classType.getIdentifier().getName();
+    return ref.toString();
   }
 
 }

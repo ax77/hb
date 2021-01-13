@@ -20,7 +20,7 @@ public class ParseState {
     this.ringBuffer = new ArrayList<Token>(parser.getRingBuffer());
     this.lastloc = parser.getLastLoc();
     this.prevtok = parser.getPrevtok();
-    this.currentClass = parser.getCurrentClass();
+    this.currentClass = parser.getCurrentClass(false);
   }
 
   public ClassDeclaration getCurrentClass() {

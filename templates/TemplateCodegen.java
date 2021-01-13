@@ -10,6 +10,7 @@ import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.top.InstantiationUnit;
 import njast.ast_utils.SerializationUtils;
 import njast.errors.EParseException;
+import njast.types.Ref;
 import njast.types.Type;
 
 public class TemplateCodegen {
@@ -70,7 +71,7 @@ public class TemplateCodegen {
     }
 
     templateClass.setTypeParametersT(new ArrayList<Type>());
-    final Type result = new Type(templateClass);
+    final Type result = new Type(new Ref(templateClass, new ArrayList<>()));
 
     // TODO: how to do this more clean and precise?
     // if deep-nested templates generated many times, and they are the same
@@ -156,7 +157,7 @@ public class TemplateCodegen {
 
   private void replaceOneTypeParam(ClassDeclaration object, Ident typenameT, Type typeToSet) {
 
-    final List<TypeSetter> typeSetters = new GetAllTypeSetters(object).getTypeSetters();
+    final List<TypeSetter> typeSetters = object.getTypeSetters();
     for (TypeSetter typeSetter : typeSetters) {
       fabric(typeSetter, object, typenameT, typeToSet);
     }

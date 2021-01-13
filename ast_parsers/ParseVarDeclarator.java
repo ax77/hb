@@ -14,10 +14,10 @@ import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.types.Type;
 
-public class ParseVarDeclaratorsList {
+public class ParseVarDeclarator {
   private final Parse parser;
 
-  public ParseVarDeclaratorsList(Parse parser) {
+  public ParseVarDeclarator(Parse parser) {
     this.parser = parser;
   }
 

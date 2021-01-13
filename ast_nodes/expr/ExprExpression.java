@@ -141,7 +141,7 @@ public class ExprExpression implements Serializable {
       return literalIdentifier.toString();
     }
     if (base == ExpressionBase.ESELF) {
-      return "this";
+      return "self";
     }
     if (base == ExpressionBase.EMETHOD_INVOCATION) {
       return methodInvocation.toString();

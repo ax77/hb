@@ -13,6 +13,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_utils.UniqueCounter;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
+import njast.templates.TypeSetter;
 import njast.types.Type;
 
 public class ClassDeclaration implements Serializable, IUniqueId {
@@ -40,6 +41,9 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   //
   private List<Type> typeParametersT;
 
+  // we'll collect all type-setters here, to fast restore
+  private List<TypeSetter> typeSetters;
+
   public ClassDeclaration(Ident identifier) {
     this.uniqueId = UniqueCounter.getUniqueId();
     this.identifier = identifier;
@@ -60,6 +64,16 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     this.fields = new ArrayList<>();
     this.methods = new ArrayList<>();
     this.typeParametersT = new ArrayList<>();
+    this.typeSetters = new ArrayList<>();
+  }
+
+  public void registerTypeSetter(TypeSetter ts) {
+    NullChecker.check(ts);
+    this.typeSetters.add(ts);
+  }
+
+  public List<TypeSetter> getTypeSetters() {
+    return typeSetters;
   }
 
   public Ident getIdentifier() {
@@ -68,16 +82,31 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   public void addConstructor(ClassMethodDeclaration e) {
     NullChecker.check(e);
+
+    for (ModTypeNameHeader hdr : e.getParameters()) {
+      registerTypeSetter(hdr);
+    }
+
     this.constructors.add(e);
   }
 
   public void addField(VarDeclarator e) {
     NullChecker.check(e);
+
+    registerTypeSetter(e.getHeader());
     this.fields.add(e);
   }
 
   public void addMethod(ClassMethodDeclaration e) {
     NullChecker.check(e);
+
+    if (!e.isVoid()) {
+      registerTypeSetter(e.getHeader());
+    }
+    for (ModTypeNameHeader hdr : e.getParameters()) {
+      registerTypeSetter(hdr);
+    }
+
     this.methods.add(e);
   }
 
@@ -242,7 +271,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
         return ref;
       }
     }
-    return null;
+    throw new EParseException("unknown typename: " + ident.getName());
   }
 
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import jscan.symtab.Ident;
 import njast.ast_nodes.expr.ExprExpression;
+import njast.parse.NullChecker;
 
 public class FuncArg implements Serializable {
   private static final long serialVersionUID = 5950072201175054473L;
@@ -12,6 +13,7 @@ public class FuncArg implements Serializable {
   private final ExprExpression expression;
 
   public FuncArg(Ident label, ExprExpression expression) {
+    NullChecker.check(label, expression);
     this.label = label;
     this.expression = expression;
   }

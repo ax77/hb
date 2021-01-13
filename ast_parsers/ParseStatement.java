@@ -17,6 +17,7 @@ import java.util.List;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_kinds.StatementBase;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprExpression;
@@ -79,7 +80,11 @@ public class ParseStatement {
     //    { VariableModifier } Type VariableDeclarators ;
 
     if (parser.isTypeWithOptModifiersBegin()) {
-      VarDeclarator localVar = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
+      VarDeclarator localVar = new ParseVarDeclarator(parser).parse(VarBase.METHOD_VAR);
+      
+      ClassDeclaration currentClass = parser.getCurrentClass(true);
+      currentClass.registerTypeSetter(localVar.getHeader());
+
       return new StmtBlockItem(localVar);
     }
 

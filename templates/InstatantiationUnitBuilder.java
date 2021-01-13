@@ -49,7 +49,7 @@ public class InstatantiationUnitBuilder {
         continue;
       }
 
-      List<TypeSetter> typeSetters = new GetAllTypeSetters(classDeclaration).getTypeSetters();
+      List<TypeSetter> typeSetters = classDeclaration.getTypeSetters();
       for (TypeSetter ts : typeSetters) {
         typeset(ts);
       }

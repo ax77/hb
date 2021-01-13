@@ -9,12 +9,8 @@ public enum StatementBase {
   , SEXPR
   , SBREAK
   , SCONTINUE
-//  , SSEMICOLON
-//  , SSWITCH
-//  , SCASE
   , SFOR
   , SRETURN
 //  , SGOTO
 //  , SLABEL
-//  , SDEFAULT
 }

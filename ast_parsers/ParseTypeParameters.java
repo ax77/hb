@@ -23,21 +23,17 @@ public class ParseTypeParameters {
     List<Type> tp = new ArrayList<>();
 
     if (parser.is(T.T_LT)) {
-      parseTypeParameters(tp);
+      Token open = parser.checkedMove(T.T_LT);
+      
+      tp.add(new Type(parser.getIdent()));
+      while (parser.is(T.T_COMMA)) {
+        parser.move();
+        tp.add(new Type(parser.getIdent()));
+      }
+      
+      Token close = parser.checkedMove(T.T_GT);
     }
 
     return tp;
-  }
-
-  private void parseTypeParameters(List<Type> tp) {
-    Token open = parser.checkedMove(T.T_LT);
-
-    tp.add(new Type(parser.getIdent()));
-    while (parser.is(T.T_COMMA)) {
-      parser.move();
-      tp.add(new Type(parser.getIdent()));
-    }
-
-    Token close = parser.checkedMove(T.T_GT);
   }
 }

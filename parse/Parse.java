@@ -80,7 +80,10 @@ public class Parse {
   //////////////////////////////////////////////////////////////////////
   // PRE-SYMTAB
 
-  public ClassDeclaration getCurrentClass() {
+  public ClassDeclaration getCurrentClass(boolean shouldBe) {
+    if (shouldBe && currentClass == null) {
+      perror("current class was not be set");
+    }
     return currentClass;
   }
 

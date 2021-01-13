@@ -8,6 +8,7 @@ import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.Parse;
+import njast.types.Ref;
 import njast.types.Type;
 import njast.types.TypeBindings;
 
@@ -43,10 +44,7 @@ public class TypeRecognizer {
 
       // III
       else {
-        ClassDeclaration classDeclaration = parser.getCurrentClass();
-        if (classDeclaration == null) {
-          parser.unreachable("expect current class");
-        }
+        ClassDeclaration classDeclaration = parser.getCurrentClass(true);
         typeWasFound = classDeclaration.hasTypeParameter(parser.tok().getIdent());
         if (typeWasFound) {
           this.isTypeParameter = true;
@@ -85,30 +83,26 @@ public class TypeRecognizer {
     return referenceType;
   }
 
-  private Type getReftype() {
+  private boolean isRefTypenameT(Ident typeName) {
+    final ClassDeclaration currentClass = parser.getCurrentClass(true);
+    return currentClass.hasTypeParameter(typeName);
+  }
 
-    Ident typeName = parser.getIdent();
-    final ClassDeclaration classDeclaration = parser.getCurrentClass();
+  private Type getReftype() {
 
     // 1) Node<String> - reference
     // 2) Node<T> - type-parameter (in template-class declaration)
-    Type referenceType = null;
-    if (classDeclaration.hasTypeParameter(typeName)) {
-      referenceType = classDeclaration.getTypeParameter(typeName);
-    } else {
-      referenceType = new Type(parser.getClassType(typeName));
-    }
-    if (referenceType == null) {
-      parser.perror("expect type-parameter or class-name for reference type");
+
+    Ident typeName = parser.getIdent();
+
+    if (isRefTypenameT(typeName)) {
+      final ClassDeclaration currentClass = parser.getCurrentClass(true);
+      return currentClass.getTypeParameter(typeName);
     }
 
-    // optional, but not null
-    List<Type> typeArguments = getTypeArguments();
-    for (Type typeArg : typeArguments) {
-      referenceType.putTypeArgument(typeArg);
-    }
-
-    return referenceType;
+    final List<Type> typeArguments = getTypeArguments();
+    final Ref ref = new Ref(parser.getClassType(typeName), typeArguments);
+    return new Type(ref);
   }
 
   public List<Type> getTypeArguments() {
@@ -137,23 +131,16 @@ public class TypeRecognizer {
   }
 
   private Type getTypeParameter() {
-    Token typenameT = parser.checkedMove(T.TOKEN_IDENT);
-    if (!typenameT.ofType(T.TOKEN_IDENT)) {
-      parser.perror("expect identifier");
-    }
-    final ClassDeclaration clazz = parser.getCurrentClass();
-    final Type refTypeParameter = clazz.getTypeParameter(typenameT.getIdent());
-    if (refTypeParameter == null) {
-      parser.perror("unknown type parameter");
-    }
-    return refTypeParameter;
+    final Token typenameT = parser.checkedMove(T.TOKEN_IDENT);
+    final ClassDeclaration clazz = parser.getCurrentClass(true);
+    return clazz.getTypeParameter(typenameT.getIdent());
   }
 
   private Type getPrimitive() {
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
     Type tp = TypeBindings.BIND_IDENT_TO_TYPE.get(tok.getIdent());
     if (tp == null) {
-      parser.perror("type not recognized");
+      parser.perror("type is not recognized");
     }
     return tp;
   }

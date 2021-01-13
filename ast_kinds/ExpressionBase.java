@@ -4,8 +4,6 @@ package njast.ast_kinds;
 public enum ExpressionBase {
    EASSIGN
  , EBINARY
- , ECOMMA
-// , ETERNARY
  , EUNARY
  , EPRIMARY_IDENT
  , EPRIMARY_STRING
@@ -13,8 +11,6 @@ public enum ExpressionBase {
  , EPRIMARY_NULL_LITERAL
  , ECAST
  , EMETHOD_INVOCATION
-// , EPREINCDEC
-// , EPOSTINCDEC
  , EFIELD_ACCESS
  , ECLASS_INSTANCE_CREATION
  , ESELF

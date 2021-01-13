@@ -27,15 +27,18 @@ public abstract class NameBuilder {
   // and not depends on general toString() which we may change one day or other.
   //
   private static String typeToString(Type tp) {
-    if (tp.isPrimitive()) {
+    boolean isPrimitive = tp.isPrimitive();
+    boolean isReference = tp.isClassRef();
+    boolean isOk = isPrimitive || isReference;
+
+    if (!isOk) {
+      throw new EParseException("expect primitive or reference type for name-generator");
+    }
+
+    if (isPrimitive) {
       return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(tp.getBase());
     }
-    if (tp.isTypeVarRef()) {
-      return tp.getTypeVariable().getName();
-    }
-    if (!tp.isClassRef()) {
-      throw new EParseException("expect class-name");
-    }
+
     return tp.getClassType().getIdentifier().getName();
   }
 
