@@ -79,8 +79,8 @@ public class ParseStatement {
     //    { VariableModifier } Type VariableDeclarators ;
 
     if (parser.isTypeWithOptModifiersBegin()) {
-      List<VarDeclarator> vars = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
-      return new StmtBlockItem(vars);
+      VarDeclarator localVar = new ParseVarDeclaratorsList(parser).parse(VarBase.METHOD_VAR);
+      return new StmtBlockItem(localVar);
     }
 
     StmtStatement stmt = parseStatement();
@@ -132,6 +132,7 @@ public class ParseStatement {
     // for( ;; )
 
     if (parser.is(for_ident)) {
+      parser.unimplemented("for loop");
       return parseForLoop();
     }
 
@@ -191,7 +192,7 @@ public class ParseStatement {
 
       if (parser.isTypeWithOptModifiersBegin()) {
         // semicolon will be handled in declarations-list
-        decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
+        // decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
       }
 
       else {

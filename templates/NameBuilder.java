@@ -11,7 +11,7 @@ public abstract class NameBuilder {
   public static String buildNewName(final Type from) {
 
     final String origNameOfTemplateClass = from.getClassType().getIdentifier().getName();
-    final String classUniqueId = from.getClassType().getUniqueIdStr();
+    final String classUniqueId = from.getClassType().getUniqueIdToString();
     final List<Type> typeArguments = from.getTypeArguments();
 
     StringBuilder sb = new StringBuilder();

@@ -5,11 +5,10 @@ import java.util.List;
 
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.FuncArg;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -62,21 +61,19 @@ public class ApplyInstantiationUnit {
 
       symtabApplier.defineMethod(object, method); // check overloading/redefinition/etc
 
-      for (ModTypeNameHeader fp : method.getFormalParameterList().getParameters()) {
+      for (ModTypeNameHeader fp : method.getParameters()) {
         symtabApplier.defineFunctionParameter(method, fp);
       }
 
       //body
-      final StmtBlock body = method.getBody();
+      final StmtBlock body = method.getBlock();
       for (StmtBlockItem block : body.getBlockStatements()) {
 
         // method variables
-        final List<VarDeclarator> localVars = block.getLocalVars();
+        final VarDeclarator localVars = block.getLocalVariable();
         if (localVars != null) {
-          for (VarDeclarator var : localVars) {
-            symtabApplier.initVarZero(var);
-            symtabApplier.defineMethodVariable(method, var);
-          }
+          symtabApplier.initVarZero(localVars);
+          symtabApplier.defineMethodVariable(method, localVars);
         }
 
         applyStatement(object, method, block.getStatement());
@@ -86,7 +83,7 @@ public class ApplyInstantiationUnit {
     }
 
     //constructors (the last, it works with methods and fields)
-    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
+    for (ClassMethodDeclaration constructor : object.getConstructors()) {
       symtabApplier.defineConstructor(object, constructor); // check overloading/redefinition/etc
     }
 
@@ -112,7 +109,7 @@ public class ApplyInstantiationUnit {
 
     if (base == StatementBase.SFOR) {
       StmtFor forloop = statement.getSfor();
-      visitLocalVars(object, forloop.getDecl());
+      //visitLocalVars(object, forloop.getDecl());
       applyExpression(object, forloop.getTest());
       applyExpression(object, forloop.getStep());
       applyStatement(object, method, forloop.getLoop());
@@ -160,20 +157,18 @@ public class ApplyInstantiationUnit {
 
   private void visitBlock(final ClassDeclaration object, ClassMethodDeclaration method, final StmtBlock body) {
     for (StmtBlockItem block : body.getBlockStatements()) {
-      visitLocalVars(object, block.getLocalVars());
+      visitLocalVars(object, block.getLocalVariable());
       applyStatement(object, method, block.getStatement());
     }
   }
 
-  private void visitLocalVars(final ClassDeclaration object, List<VarDeclarator> vars) {
+  private void visitLocalVars(final ClassDeclaration object, VarDeclarator vars) {
     if (vars == null) {
       return;
     }
 
-    for (VarDeclarator var : vars) {
-      symtabApplier.initVarZero(var);
-      symtabApplier.defineBlockVar(var);
-    }
+    symtabApplier.initVarZero(vars);
+    symtabApplier.defineBlockVar(vars);
 
   }
 

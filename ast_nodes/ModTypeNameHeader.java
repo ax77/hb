@@ -1,8 +1,7 @@
-package njast;
+package njast.ast_nodes;
 
 import java.io.Serializable;
 
-import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import njast.modifiers.Modifiers;
 import njast.parse.NullChecker;
@@ -25,15 +24,13 @@ public class ModTypeNameHeader implements Serializable, TypeSetter, IModTypeName
   private final Modifiers modifiers;
   private Type type; // we'll set new type in template expansion
   private final Ident identifier;
-  private final SourceLocation location;
 
-  public ModTypeNameHeader(Modifiers modifiers, Type type, Ident identifier, SourceLocation location) {
-    NullChecker.check(modifiers, type, identifier, location);
+  public ModTypeNameHeader(Modifiers modifiers, Type type, Ident identifier) {
+    NullChecker.check(modifiers, type, identifier);
 
     this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
-    this.location = location;
   }
 
   @Override
@@ -49,11 +46,6 @@ public class ModTypeNameHeader implements Serializable, TypeSetter, IModTypeName
   @Override
   public Ident getIdentifier() {
     return identifier;
-  }
-
-  @Override
-  public String getLocationToString() {
-    return location.toString();
   }
 
   public Modifiers getModifiers() {

@@ -6,10 +6,4 @@ public interface ILocation {
   public SourceLocation getLocation();
 
   public String getLocationToString();
-
-  public int getLocationLine();
-
-  public int getLocationColumn();
-
-  public String getLocationFile();
 }

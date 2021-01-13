@@ -1,13 +1,15 @@
 package njast.ast_parsers;
 
+import java.util.List;
+
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ModTypeNameHeader;
 import njast.ast_checkers.TypeRecognizer;
+import njast.ast_nodes.ModTypeNameHeader;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
@@ -21,7 +23,7 @@ public class ParseMethodDeclaration {
     this.parser = parser;
   }
 
-  public ClassMethodDeclaration parse() {
+  public ClassMethodDeclaration parse(ClassDeclaration clazz) {
 
     // func name(param: int) -> int {  }
 
@@ -33,25 +35,20 @@ public class ParseMethodDeclaration {
     final Ident ident = parser.getIdent();
 
     //3)
-    final FormalParameterList parameters = new ParseFormalParameterList(parser).parse();
+    final List<ModTypeNameHeader> parameters = new ParseFormalParameterList(parser).parse();
 
     //4)
-    Type type = null;
+    Type type = new Type(); // void stub
     if (parser.is(T.T_ARROW)) {
       parser.checkedMove(T.T_ARROW);
       type = new TypeRecognizer(parser).getType();
-    } else {
-      type = new Type(); // void stub
-    }
-    if (type == null) {
-      parser.perror("type is not recognized for function");
     }
 
     //5)
     final StmtBlock block = new ParseStatement(parser).parseBlock();
 
-    final ModTypeNameHeader header = new ModTypeNameHeader(new Modifiers(), type, ident, location);
-    return new ClassMethodDeclaration(header, parameters, block);
+    final ModTypeNameHeader header = new ModTypeNameHeader(new Modifiers(), type, ident);
+    return new ClassMethodDeclaration(clazz, header, parameters, block, location);
   }
 
 }

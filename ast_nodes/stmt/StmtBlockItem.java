@@ -1,30 +1,25 @@
 package njast.ast_nodes.stmt;
 
 import java.io.Serializable;
-import java.util.List;
 
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 
 public class StmtBlockItem implements Serializable {
   private static final long serialVersionUID = -5769795901942280395L;
 
-  private List<VarDeclarator> localVars;
+  private VarDeclarator localVariable;
   private StmtStatement statement;
 
-  public StmtBlockItem(List<VarDeclarator> localVars) {
-    this.localVars = localVars;
+  public StmtBlockItem(VarDeclarator localVariable) {
+    this.localVariable = localVariable;
   }
 
   public StmtBlockItem(StmtStatement statement) {
     this.statement = statement;
   }
 
-  public List<VarDeclarator> getLocalVars() {
-    return localVars;
-  }
-
-  public void setLocalVars(List<VarDeclarator> localVars) {
-    this.localVars = localVars;
+  public VarDeclarator getLocalVariable() {
+    return localVariable;
   }
 
   public StmtStatement getStatement() {
@@ -37,11 +32,9 @@ public class StmtBlockItem implements Serializable {
 
   @Override
   public String toString() {
-    if (localVars != null) {
+    if (localVariable != null) {
       StringBuilder sb = new StringBuilder();
-      for (VarDeclarator var : localVars) {
-        sb.append(var.toString() + "\n");
-      }
+      sb.append(localVariable.toString() + "\n");
       return sb.toString();
     }
     if (statement != null) {

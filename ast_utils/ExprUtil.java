@@ -28,7 +28,6 @@ import java.util.Map;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_nodes.FuncArg;
-import njast.ast_nodes.expr.ExprExpression;
 
 public abstract class ExprUtil {
 
@@ -42,20 +41,6 @@ public abstract class ExprUtil {
 
   public static Token assignOperator(Token from) {
     return copyTokenAddNewType(from, T.T_ASSIGN, "=");
-  }
-
-  public static String exprListCommaToString(List<ExprExpression> list) {
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < list.size(); i++) {
-      ExprExpression param = list.get(i);
-      sb.append(param.toString());
-      if (i + 1 < list.size()) {
-        sb.append(", ");
-      }
-    }
-
-    return sb.toString();
   }
 
   public static String exprListCommaToString1(List<FuncArg> list) {

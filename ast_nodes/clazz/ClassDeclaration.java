@@ -6,16 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import njast.ModTypeNameHeader;
 import njast.ast_nodes.FuncArg;
+import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.stmt.StmtBlock;
+import njast.ast_utils.UniqueCounter;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
-public class ClassDeclaration implements Serializable {
+public class ClassDeclaration implements Serializable, IUniqueId {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
@@ -23,14 +23,11 @@ public class ClassDeclaration implements Serializable {
   //    class Identifier [TypeParameters]
   //    [extends Type] [implements TypeList] ClassBody
 
-  private static int classIdCounter = 0;
-
   private Ident identifier;
-  private List<ClassConstructorDeclaration> constructors;
-  private List<StmtBlock> staticInitializers;
+  private List<ClassMethodDeclaration> constructors;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
-  private StmtBlock destructor;
+  private ClassMethodDeclaration destructor;
   private final int uniqueId;
 
   // we store type-variables as original references to Type
@@ -44,27 +41,24 @@ public class ClassDeclaration implements Serializable {
   private List<Type> typeParametersT;
 
   public ClassDeclaration(Ident identifier) {
-    this.uniqueId = classIdCounter++;
+    this.uniqueId = UniqueCounter.getUniqueId();
     this.identifier = identifier;
     initLists();
   }
 
-  public StmtBlock getDestructor() {
+  public ClassMethodDeclaration getDestructor() {
     return destructor;
   }
 
-  public void setDestructor(StmtBlock destructor) {
-    if (this.destructor != null) {
-      throw new EParseException("duplicate destructor");
-    }
+  public void setDestructor(ClassMethodDeclaration destructor) {
+    NullChecker.check(destructor);
     this.destructor = destructor;
   }
 
   private void initLists() {
-    this.constructors = new ArrayList<ClassConstructorDeclaration>();
-    this.fields = new ArrayList<VarDeclarator>();
-    this.methods = new ArrayList<ClassMethodDeclaration>();
-    this.staticInitializers = new ArrayList<StmtBlock>();
+    this.constructors = new ArrayList<>();
+    this.fields = new ArrayList<>();
+    this.methods = new ArrayList<>();
     this.typeParametersT = new ArrayList<>();
   }
 
@@ -72,27 +66,22 @@ public class ClassDeclaration implements Serializable {
     return identifier;
   }
 
-  public void put(ClassConstructorDeclaration e) {
+  public void addConstructor(ClassMethodDeclaration e) {
     NullChecker.check(e);
     this.constructors.add(e);
   }
 
-  public void put(VarDeclarator e) {
+  public void addField(VarDeclarator e) {
     NullChecker.check(e);
     this.fields.add(e);
   }
 
-  public void put(ClassMethodDeclaration e) {
+  public void addMethod(ClassMethodDeclaration e) {
     NullChecker.check(e);
     this.methods.add(e);
   }
 
-  public void put(StmtBlock e) {
-    NullChecker.check(e);
-    this.staticInitializers.add(e);
-  }
-
-  public List<ClassConstructorDeclaration> getConstructors() {
+  public List<ClassMethodDeclaration> getConstructors() {
     return constructors;
   }
 
@@ -146,7 +135,7 @@ public class ClassDeclaration implements Serializable {
 
   // TODO:
   private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<FuncArg> arguments) {
-    List<ModTypeNameHeader> formalParameters = method.getFormalParameterList().getParameters();
+    List<ModTypeNameHeader> formalParameters = method.getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }
@@ -160,10 +149,12 @@ public class ClassDeclaration implements Serializable {
     return true;
   }
 
-  public String getUniqueIdStr() {
+  @Override
+  public String getUniqueIdToString() {
     return String.format("%d", uniqueId);
   }
 
+  @Override
   public int getUniqueId() {
     return uniqueId;
   }
@@ -228,8 +219,12 @@ public class ClassDeclaration implements Serializable {
       sb.append(var.toString() + "\n");
     }
 
-    for (ClassConstructorDeclaration constructor : constructors) {
+    for (ClassMethodDeclaration constructor : constructors) {
       sb.append(constructor.toString() + "\n");
+    }
+
+    if (destructor != null) {
+      sb.append(destructor.toString() + "\n");
     }
 
     for (ClassMethodDeclaration method : methods) {

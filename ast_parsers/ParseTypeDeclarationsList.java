@@ -2,13 +2,14 @@ package njast.ast_parsers;
 
 import java.util.List;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_checkers.IdentRecognizer;
+import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
-import njast.ast_nodes.clazz.methods.FormalParameterList;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -93,19 +94,14 @@ public class ParseTypeDeclarationsList {
     // 
     boolean isConstructorDeclaration = parser.is(IdentMap.init_ident);
     if (isConstructorDeclaration) {
-      ClassConstructorDeclaration constructorDeclaration = new ParseConstructorDeclaration(parser).parse();
-      checkRedefinition(clazz, constructorDeclaration);
-      clazz.put(constructorDeclaration);
-      return;
-    }
+      final Token tok = parser.checkedMove(IdentMap.init_ident);
+      final List<ModTypeNameHeader> parameters = new ParseFormalParameterList(parser).parse();
+      final StmtBlock block = new ParseStatement(parser).parseBlock();
+      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(clazz, parameters, block,
+          new SourceLocation(tok));
 
-    // function
-    //
-    boolean isFunction = parser.is(IdentMap.func_ident);
-    if (isFunction) {
-      ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse();
-      checkRedefinition(clazz, methodDeclaration);
-      clazz.put(methodDeclaration);
+      checkConstructorRedefinition(clazz, constructor);
+      clazz.addConstructor(constructor);
       return;
     }
 
@@ -113,46 +109,72 @@ public class ParseTypeDeclarationsList {
     //
     boolean isDestructor = parser.is(IdentMap.deinit_ident);
     if (isDestructor) {
-      parser.checkedMove(IdentMap.deinit_ident);
-      StmtBlock destructor = new ParseStatement(parser).parseBlock();
+      final Token tok = parser.checkedMove(IdentMap.deinit_ident);
+      final StmtBlock block = new ParseStatement(parser).parseBlock();
+      final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, new SourceLocation(tok));
+
+      checkDestructorRedefinition(clazz);
       clazz.setDestructor(destructor);
+      return;
+    }
+
+    // function
+    //
+    boolean isFunction = parser.is(IdentMap.func_ident);
+    if (isFunction) {
+      ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse(clazz);
+      checkMethodRedefinition(clazz, methodDeclaration);
+      clazz.addMethod(methodDeclaration);
       return;
     }
 
     // var
     // let
     // weak var
-    List<VarDeclarator> fieldDeclaration = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
-    for (VarDeclarator field : fieldDeclaration) {
-      checkRedefinition(clazz, field);
-      clazz.put(field);
+    // private var
+    // ...
+
+    boolean isCorrectVarBegin = IdentRecognizer.is_any_modifier(parser.tok()) || parser.is(IdentMap.var_ident)
+        || parser.is(IdentMap.let_ident);
+    if (!isCorrectVarBegin) {
+      parser.perror("expect variable - declaration");
     }
+
+    VarDeclarator field = new ParseVarDeclaratorsList(parser).parse(VarBase.CLASS_FIELD);
+    checkFieldRedefinition(clazz, field);
+    clazz.addField(field);
 
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassConstructorDeclaration another) {
-    for (ClassConstructorDeclaration constructor : clazz.getConstructors()) {
-      final FormalParameterList fp1 = constructor.getFormalParameterList();
-      final FormalParameterList fp2 = another.getFormalParameterList();
-      if (fp1.isEqualTo(fp2)) {
+  private void checkDestructorRedefinition(ClassDeclaration clazz) {
+    if (clazz.getDestructor() != null) {
+      parser.perror("duplicate destructor");
+    }
+  }
+
+  private void checkConstructorRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
+    for (ClassMethodDeclaration constructor : clazz.getConstructors()) {
+      final List<ModTypeNameHeader> fp1 = constructor.getParameters();
+      final List<ModTypeNameHeader> fp2 = another.getParameters();
+      if (parametersListsAreEqualByTypes(fp1, fp2)) {
         parser.perror("duplicate constructor with the same formal parameters");
       }
     }
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
+  private void checkMethodRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration method : clazz.getMethods()) {
       if (method.getIdentifier().equals(another.getIdentifier())) {
-        final FormalParameterList fp1 = method.getFormalParameterList();
-        final FormalParameterList fp2 = another.getFormalParameterList();
-        if (fp1.isEqualTo(fp2)) {
+        final List<ModTypeNameHeader> fp1 = method.getParameters();
+        final List<ModTypeNameHeader> fp2 = another.getParameters();
+        if (parametersListsAreEqualByTypes(fp1, fp2)) {
           parser.perror("duplicate methods with the same formal parameters");
         }
       }
     }
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, VarDeclarator another) {
+  private void checkFieldRedefinition(ClassDeclaration clazz, VarDeclarator another) {
     for (VarDeclarator field : clazz.getFields()) {
       final Ident name1 = field.getIdentifier();
       final Ident name2 = another.getIdentifier();
@@ -160,6 +182,21 @@ public class ParseTypeDeclarationsList {
         parser.perror("duplicate field");
       }
     }
+  }
+
+  private boolean parametersListsAreEqualByTypes(List<ModTypeNameHeader> first, List<ModTypeNameHeader> another) {
+    final int bound = first.size();
+    if (bound != another.size()) {
+      return false;
+    }
+    for (int i = 0; i < bound; i++) {
+      Type tp1 = first.get(i).getType();
+      Type tp2 = another.get(i).getType();
+      if (!tp1.isEqualTo(tp2)) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

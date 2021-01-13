@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import njast.ModTypeNameHeader;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.FuncArg;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
@@ -44,7 +43,9 @@ public class GetAllTypeSetters {
   private void visit(ClassDeclaration object) {
 
     //fields
-    visitVariables(object, object.getFields());
+    for (VarDeclarator var : object.getFields()) {
+      visitVariable(object, var);
+    }
 
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
@@ -55,17 +56,17 @@ public class GetAllTypeSetters {
       }
 
       //parameters
-      for (ModTypeNameHeader fp : method.getFormalParameterList().getParameters()) {
+      for (ModTypeNameHeader fp : method.getParameters()) {
         push(fp);
       }
 
       //body
-      visitBlock(method.getBody(), object);
+      visitBlock(method.getBlock(), object);
 
     }
 
     //constructors
-    for (ClassConstructorDeclaration constructor : object.getConstructors()) {
+    for (ClassMethodDeclaration constructor : object.getConstructors()) {
       visitBlock(constructor.getBlock(), object);
     }
 
@@ -76,7 +77,7 @@ public class GetAllTypeSetters {
     for (StmtBlockItem block : body.getBlockStatements()) {
 
       // locals
-      visitVariables(object, block.getLocalVars());
+      visitVariable(object, block.getLocalVariable());
 
       // or statements
       visitStatement(object, block.getStatement());
@@ -84,18 +85,16 @@ public class GetAllTypeSetters {
     }
   }
 
-  private void visitVariables(ClassDeclaration object, List<VarDeclarator> vars) {
+  private void visitVariable(ClassDeclaration object, VarDeclarator var) {
 
     // that's ok
-    if (vars == null) {
+    if (var == null) {
       return;
     }
 
-    for (VarDeclarator var : vars) {
-      push(var.getHeader());
-      if (var.getInitializer() != null) {
-        visitExpression(object, var.getInitializer().getInitializer());
-      }
+    push(var.getHeader());
+    if (var.getInitializer() != null) {
+      visitExpression(object, var.getInitializer().getInitializer());
     }
 
   }
@@ -111,7 +110,7 @@ public class GetAllTypeSetters {
 
     if (base == StatementBase.SFOR) {
       StmtFor forloop = statement.getSfor();
-      visitVariables(object, forloop.getDecl());
+      // visitVariables(object, forloop.getDecl());
       visitExpression(object, forloop.getTest());
       visitExpression(object, forloop.getStep());
       visitStatement(object, forloop.getLoop());

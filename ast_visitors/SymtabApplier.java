@@ -1,8 +1,7 @@
 package njast.ast_visitors;
 
 import jscan.symtab.Ident;
-import njast.ModTypeNameHeader;
-import njast.ast_nodes.clazz.ClassConstructorDeclaration;
+import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.vars.VarBase;
@@ -98,7 +97,7 @@ public class SymtabApplier {
   // SYMTAB
 
   public void defineFunctionParameter(ClassMethodDeclaration method, ModTypeNameHeader header) {
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, header);
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, header, method.getLocation());
     variablesMethod.addsym(header.getIdentifier(), varsym(var));
   }
 
@@ -169,7 +168,7 @@ public class SymtabApplier {
   public void defineMethod(ClassDeclaration o, ClassMethodDeclaration m) {
   }
 
-  public void defineConstructor(ClassDeclaration object, ClassConstructorDeclaration constructor) {
+  public void defineConstructor(ClassDeclaration object, ClassMethodDeclaration constructor) {
   }
 
   public void initVarZero(VarDeclarator var) {
