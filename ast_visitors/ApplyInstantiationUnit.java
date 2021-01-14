@@ -333,7 +333,7 @@ public class ApplyInstantiationUnit {
     e.setResultType(variable.getType());
 
     if (variable.getInitializer() != null) {
-      applyExpression(object, variable.getInitializer().getInitializer());
+      //applyExpression(object, variable.getInitializer().getInitializer());
     }
 
     // remember var

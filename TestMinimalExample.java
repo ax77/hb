@@ -71,11 +71,11 @@ public class TestMinimalExample {
     sb.append(" /*041*/      }                                                        \n");
     sb.append(" /*042*/  }                                                            \n");
     sb.append(" /*043*/  class C {                                                    \n");
-    sb.append(" /*044*/      func test() {                                            \n");
-    sb.append(" /*045*/          let list: List<int> = new List<int>();               \n");
-    sb.append(" /*046*/          list.append(value: 1);                               \n");
-    sb.append(" /*047*/          list.append(value: 2);                               \n");
-    sb.append(" /*048*/          list.append(value: 3);                               \n");
+    sb.append(" /*044*/      func test() { var matrix: [2:[3:int]] = [ [1,0,7], [3,2,3]  ];                                            \n");
+//    sb.append(" /*045*/          let list: List<int> = new List<int>();               \n");
+//    sb.append(" /*046*/          list.append(value: 1);                               \n");
+//    sb.append(" /*047*/          list.append(value: 2);                               \n");
+//    sb.append(" /*048*/          list.append(value: 3);                               \n");
     sb.append(" /*049*/      }                                                        \n");
     sb.append(" /*050*/  }                                                            \n");
     //@formatter:on

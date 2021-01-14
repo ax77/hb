@@ -5,25 +5,26 @@ import java.io.Serializable;
 import njast.ast_nodes.expr.ExprExpression;
 
 public class VarInitializer implements Serializable {
-  private static final long serialVersionUID = 6217182193092395111L;
+  private static final long serialVersionUID = -794305928505278466L;
 
-  private ExprExpression initializer;
+  private final ExprExpression init;
+  private final int offset;
 
-  public VarInitializer(ExprExpression initializer) {
-    this.initializer = initializer;
+  public VarInitializer(ExprExpression init, int offset) {
+    this.init = init;
+    this.offset = offset;
   }
 
-  public ExprExpression getInitializer() {
-    return initializer;
+  public ExprExpression getInit() {
+    return init;
   }
 
-  public void setInitializer(ExprExpression initializer) {
-    this.initializer = initializer;
+  public int getOffset() {
+    return offset;
   }
 
   @Override
   public String toString() {
-    return initializer.toString();
+    return String.format("%d", offset) + " = " + init.toString();
   }
-
 }

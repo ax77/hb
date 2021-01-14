@@ -3,11 +3,17 @@ package njast.ast_checkers;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.cstrtox.NumType;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.expr.ExprExpression;
+import njast.ast_nodes.expr.ExprNumericConstant;
+import njast.ast_parsers.ParseExpression;
 import njast.parse.Parse;
+import njast.types.ArrayType;
 import njast.types.Ref;
 import njast.types.Type;
 import njast.types.TypeBindings;
@@ -19,6 +25,7 @@ public class TypeRecognizer {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
+  private boolean isArray;
 
   public TypeRecognizer(Parse parser) {
 
@@ -50,8 +57,17 @@ public class TypeRecognizer {
           this.isTypeParameter = true;
         }
 
-        // ???
+        // IV
         else {
+          typeWasFound = parser.is(T.T_LEFT_BRACKET);
+          if (typeWasFound) {
+            this.isArray = true;
+          }
+
+          // V?
+          else {
+
+          }
         }
       }
     }
@@ -62,6 +78,11 @@ public class TypeRecognizer {
 
     if (!isType()) {
       parser.perror("type is not recognized");
+    }
+
+    // 0)
+    if (isArray()) {
+      return getArray();
     }
 
     // 1)
@@ -81,6 +102,35 @@ public class TypeRecognizer {
     }
 
     return referenceType;
+  }
+
+  private Type getArray() {
+    // [2:[2:int]]
+
+    parser.checkedMove(T.T_LEFT_BRACKET);
+
+    long count = getArrayCount();
+    parser.colon();
+    
+    Type arrayOf = new TypeRecognizer(parser).getType();
+    parser.checkedMove(T.T_RIGHT_BRACKET);
+
+    return new Type(new ArrayType(arrayOf, count));
+  }
+
+  public long getArrayCount() {
+    ExprExpression count = new ParseExpression(parser).e_const_expr();
+    if (count.getBase() != ExpressionBase.EPRIMARY_NUMBER) {
+      parser.perror("expect array size.");
+    }
+    ExprNumericConstant num = count.getLiteralNumber();
+    if (!num.isInteger()) {
+      parser.perror("expect array size integer.");
+    }
+    if (num.getClong() <= 0) {
+      parser.perror("zero or negative array size are not supported");
+    }
+    return num.getClong();
   }
 
   private boolean isRefTypenameT(Ident typeName) {
@@ -146,7 +196,7 @@ public class TypeRecognizer {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter;
+    return isPrimitive || isReference || isTypeParameter || isArray;
   }
 
   public boolean isPrimitive() {
@@ -159,6 +209,10 @@ public class TypeRecognizer {
 
   public boolean isTypeParameter() {
     return isTypeParameter;
+  }
+
+  public boolean isArray() {
+    return isArray;
   }
 
 }

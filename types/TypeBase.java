@@ -12,4 +12,5 @@ public enum TypeBase {
       TP_CLASS,
       TP_TYPE_VARIABLE_TYPENAME_T,
       TP_VOID_STUB,
+      TP_ARRAY,
 }

@@ -1,6 +1,7 @@
 package njast.ast_nodes.clazz.vars;
 
 import java.io.Serializable;
+import java.util.List;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
@@ -14,7 +15,7 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private final VarBase base;
   private /*final*/ Type type;
   private final Ident identifier;
-  private VarInitializer initializer;
+  private List<VarInitializer> initializer;
   private final SourceLocation location;
 
   public VarDeclarator(VarBase base, Type type, Ident identifier, SourceLocation location) {
@@ -34,11 +35,11 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     this.type = typeToSet;
   }
 
-  public VarInitializer getInitializer() {
+  public List<VarInitializer> getInitializer() {
     return initializer;
   }
 
-  public void setInitializer(VarInitializer initializer) {
+  public void setInitializer(List<VarInitializer> initializer) {
     this.initializer = initializer;
   }
 
@@ -54,9 +55,23 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     sb.append(type.toString());
     if (initializer != null) {
       sb.append(" = ");
-      sb.append(initializer.getInitializer().toString());
+      sb.append(inits(initializer));
     }
     sb.append("; ");
+    return sb.toString();
+  }
+
+  private String inits(List<VarInitializer> inits) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[ ");
+    for (int i = 0; i < inits.size(); i++) {
+      VarInitializer init = inits.get(i);
+      sb.append(init.toString());
+      if (i + 1 < inits.size()) {
+        sb.append(", ");
+      }
+    }
+    sb.append("]");
     return sb.toString();
   }
 

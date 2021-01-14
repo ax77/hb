@@ -24,6 +24,7 @@ public class Type implements Serializable {
   private TypeBase base;
   private Ref ref;
   private Ident typeVariable;
+  private ArrayType array;
 
   public final static Type BYTE_TYPE = new Type(TypeBase.TP_BYTE);
   public final static Type SHORT_TYPE = new Type(TypeBase.TP_SHORT);
@@ -44,6 +45,11 @@ public class Type implements Serializable {
 
   public Type() {
     this.base = TypeBase.TP_VOID_STUB;
+  }
+
+  public Type(ArrayType array) {
+    this.base = TypeBase.TP_ARRAY;
+    this.array = array;
   }
 
   public Type(TypeBase primitiveType) {
@@ -71,6 +77,10 @@ public class Type implements Serializable {
 
   public boolean isClassTemplate() {
     return isClassRef() && ref.isTemplate();
+  }
+
+  public ArrayType getArray() {
+    return array;
   }
 
   public ClassDeclaration getClassType() {
@@ -146,6 +156,21 @@ public class Type implements Serializable {
       }
     }
 
+    else if (isArray()) {
+      if (!another.isArray()) {
+        return false;
+      }
+      final ArrayType anotherArray = another.getArray();
+      if (array.getCount() != anotherArray.getCount()) {
+        return false;
+      }
+      final Type sub1 = array.getArrayOf();
+      final Type sub2 = anotherArray.getArrayOf();
+      if (!sub1.isEqualTo(sub2)) {
+        return false;
+      }
+    }
+
     else {
       throw new EParseException("unimpl...");
     }
@@ -168,7 +193,14 @@ public class Type implements Serializable {
     if (isVoidStub()) {
       return "void";
     }
+    if (isArray()) {
+      return array.toString();
+    }
     return ref.toString();
+  }
+
+  public boolean isArray() {
+    return base == TypeBase.TP_ARRAY;
   }
 
 }
