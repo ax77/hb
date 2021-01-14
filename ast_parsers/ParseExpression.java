@@ -37,6 +37,7 @@ import njast.ast_checkers.TypeRecognizer;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.expr.ExprArrayCreation;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
@@ -49,7 +50,7 @@ import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
 import njast.parse.ParseState;
 import njast.symtab.IdentMap;
-import njast.types.Ref;
+import njast.types.ClassType;
 import njast.types.Type;
 
 public class ParseExpression {
@@ -540,16 +541,31 @@ public class ParseExpression {
     if (parser.is(IdentMap.new_ident)) {
       Token saved = parser.moveget();
 
-      final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
-      final List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
-      final Ref ref = new Ref(instantiatedClass, typeArguments);
-      final List<FuncArg> arguments = parseArglist();
-      final ExprClassInstanceCreation classInstanceCreation = new ExprClassInstanceCreation(new Type(ref), arguments);
+      // new [2:int] ;
+      if (parser.is(T.T_LEFT_BRACKET)) {
+        final Type arrayCreator = new TypeRecognizer(parser).getType();
+        final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
 
-      // it is important to register type-setter for `current` class
-      // not for the class is created in `new` expression 
-      parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
-      return new ExprExpression(classInstanceCreation);
+        // it is important to register type-setter for `current` class
+        // not for the class is created in `new` expression 
+        parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
+        return new ExprExpression(arrayCreation);
+      }
+
+      else {
+
+        final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
+        final List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
+        final ClassType ref = new ClassType(instantiatedClass, typeArguments);
+        final List<FuncArg> arguments = parseArglist();
+        final ExprClassInstanceCreation classInstanceCreation = new ExprClassInstanceCreation(new Type(ref), arguments);
+
+        // it is important to register type-setter for `current` class
+        // not for the class is created in `new` expression 
+        parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
+        return new ExprExpression(classInstanceCreation);
+      }
+
     }
 
     if (parser.is(IdentMap.self_ident)) {

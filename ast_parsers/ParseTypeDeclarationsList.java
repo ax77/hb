@@ -20,7 +20,7 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
-import njast.types.Ref;
+import njast.types.ClassType;
 import njast.types.Type;
 
 public class ParseTypeDeclarationsList {
@@ -102,7 +102,7 @@ public class ParseTypeDeclarationsList {
       final List<MethodParameter> parameters = new ParseFormalParameterList(parser).parse();
       final StmtBlock block = new ParseStatement(parser).parseBlock();
       final MethodSignature signature = new MethodSignature(IdentMap.init_ident, parameters);
-      final Type returnType = new Type(new Ref(clazz, new ArrayList<>()));
+      final Type returnType = new Type(new ClassType(clazz, new ArrayList<>()));
       final SourceLocation location = new SourceLocation(tok);
       final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
           signature, returnType, block, location);

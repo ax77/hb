@@ -6,13 +6,13 @@ import java.util.List;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.NullChecker;
 
-public class Ref implements Serializable {
+public class ClassType implements Serializable {
   private static final long serialVersionUID = 7267823355463707870L;
 
   private final ClassDeclaration clazz;
   private final List<Type> typeArguments;
 
-  public Ref(ClassDeclaration clazz, List<Type> typeArguments) {
+  public ClassType(ClassDeclaration clazz, List<Type> typeArguments) {
     NullChecker.check(clazz, typeArguments);
 
     this.clazz = clazz;

@@ -14,7 +14,7 @@ import njast.ast_nodes.expr.ExprNumericConstant;
 import njast.ast_parsers.ParseExpression;
 import njast.parse.Parse;
 import njast.types.ArrayType;
-import njast.types.Ref;
+import njast.types.ClassType;
 import njast.types.Type;
 import njast.types.TypeBindings;
 
@@ -151,7 +151,7 @@ public class TypeRecognizer {
     }
 
     final List<Type> typeArguments = getTypeArguments();
-    final Ref ref = new Ref(parser.getClassType(typeName), typeArguments);
+    final ClassType ref = new ClassType(parser.getClassType(typeName), typeArguments);
     return new Type(ref);
   }
 

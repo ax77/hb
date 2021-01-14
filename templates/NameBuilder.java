@@ -3,6 +3,7 @@ package njast.templates;
 import java.util.List;
 
 import njast.errors.EParseException;
+import njast.types.ArrayType;
 import njast.types.Type;
 import njast.types.TypeBindings;
 
@@ -29,7 +30,8 @@ public abstract class NameBuilder {
   private static String typeToString(Type tp) {
     boolean isPrimitive = tp.isPrimitive();
     boolean isReference = tp.isClassRef();
-    boolean isOk = isPrimitive || isReference;
+    boolean isArray = tp.isArray();
+    boolean isOk = isPrimitive || isReference || isArray;
 
     if (!isOk) {
       throw new EParseException("expect primitive or reference type for name-generator");
@@ -37,6 +39,11 @@ public abstract class NameBuilder {
 
     if (isPrimitive) {
       return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(tp.getBase());
+    }
+
+    if (isArray) {
+      ArrayType array = tp.getArrayType();
+      return String.format("%d", array.getCount()) + "_arr"; // TODO:
     }
 
     return tp.getClassType().getIdentifier().getName();

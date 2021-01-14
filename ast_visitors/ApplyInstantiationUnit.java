@@ -27,7 +27,7 @@ import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.stmt.Stmt_if;
 import njast.ast_nodes.top.InstantiationUnit;
 import njast.errors.EParseException;
-import njast.types.Ref;
+import njast.types.ClassType;
 import njast.types.Type;
 
 public class ApplyInstantiationUnit {
@@ -221,7 +221,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.ESELF) {
-      e.setResultType(new Type(new Ref(object, new ArrayList<>())));
+      e.setResultType(new Type(new ClassType(object, new ArrayList<>())));
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {

@@ -22,9 +22,9 @@ public class Type implements Serializable {
   private static final long serialVersionUID = -4630043454712001308L;
 
   private TypeBase base;
-  private Ref ref;
+  private ClassType classType;
   private Ident typeVariable;
-  private ArrayType array;
+  private ArrayType arrayType;
 
   public final static Type BYTE_TYPE = new Type(TypeBase.TP_BYTE);
   public final static Type SHORT_TYPE = new Type(TypeBase.TP_SHORT);
@@ -39,8 +39,9 @@ public class Type implements Serializable {
     NullChecker.check(another);
 
     this.base = another.base;
-    this.ref = another.ref;
+    this.classType = another.classType;
     this.typeVariable = another.typeVariable;
+    this.arrayType = another.arrayType;
   }
 
   public Type() {
@@ -48,8 +49,10 @@ public class Type implements Serializable {
   }
 
   public Type(ArrayType array) {
+    NullChecker.check(array);
+    
     this.base = TypeBase.TP_ARRAY;
-    this.array = array;
+    this.arrayType = array;
   }
 
   public Type(TypeBase primitiveType) {
@@ -61,11 +64,11 @@ public class Type implements Serializable {
     this.base = primitiveType;
   }
 
-  public Type(Ref ref) {
+  public Type(ClassType ref) {
     NullChecker.check(ref);
 
     this.base = TypeBase.TP_CLASS;
-    this.ref = ref;
+    this.classType = ref;
   }
 
   public Type(Ident typeVariable) {
@@ -76,25 +79,25 @@ public class Type implements Serializable {
   }
 
   public boolean isClassTemplate() {
-    return isClassRef() && ref.isTemplate();
+    return isClassRef() && classType.isTemplate();
   }
 
-  public ArrayType getArray() {
-    return array;
+  public ArrayType getArrayType() {
+    return arrayType;
   }
 
   public ClassDeclaration getClassType() {
     if (!isClassRef()) {
       throw new EParseException("is not a class");
     }
-    return ref.getClazz();
+    return classType.getClazz();
   }
 
   public List<Type> getTypeArguments() {
     if (!isClassRef()) {
       throw new EParseException("is not a class");
     }
-    return ref.getTypeArguments();
+    return classType.getTypeArguments();
   }
 
   public Ident getTypeVariable() {
@@ -143,7 +146,7 @@ public class Type implements Serializable {
     }
 
     else if (isClassRef()) {
-      final Ident name1 = ref.getClazz().getIdentifier();
+      final Ident name1 = classType.getClazz().getIdentifier();
       final Ident name2 = another.getClassType().getIdentifier();
       if (!name1.equals(name2)) {
         return false;
@@ -160,11 +163,11 @@ public class Type implements Serializable {
       if (!another.isArray()) {
         return false;
       }
-      final ArrayType anotherArray = another.getArray();
-      if (array.getCount() != anotherArray.getCount()) {
+      final ArrayType anotherArray = another.getArrayType();
+      if (arrayType.getCount() != anotherArray.getCount()) {
         return false;
       }
-      final Type sub1 = array.getArrayOf();
+      final Type sub1 = arrayType.getArrayOf();
       final Type sub2 = anotherArray.getArrayOf();
       if (!sub1.isEqualTo(sub2)) {
         return false;
@@ -194,9 +197,12 @@ public class Type implements Serializable {
       return "void";
     }
     if (isArray()) {
-      return array.toString();
+      if (arrayType == null) {
+        return "[???]";
+      }
+      return arrayType.toString();
     }
-    return ref.toString();
+    return classType.toString();
   }
 
   public boolean isArray() {

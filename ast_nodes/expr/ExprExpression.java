@@ -23,10 +23,20 @@ public class ExprExpression implements Serializable {
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
   private ExprAssign assign;
+  private ExprArrayCreation arrayInstanceCreation;
 
   public ExprExpression(ExprAssign assign) {
     this.base = ExpressionBase.EASSIGN;
     this.assign = assign;
+  }
+
+  public ExprExpression(ExprArrayCreation arrayInstanceCreation) {
+    this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
+    this.arrayInstanceCreation = arrayInstanceCreation;
+  }
+
+  public ExprArrayCreation getArrayInstanceCreation() {
+    return arrayInstanceCreation;
   }
 
   public ExprAssign getAssign() {
@@ -154,6 +164,9 @@ public class ExprExpression implements Serializable {
     }
     if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
       return classInstanceCreation.toString();
+    }
+    if (base == ExpressionBase.EARRAY_INSTANCE_CREATION) {
+      return arrayInstanceCreation.toString();
     }
     return base.toString();
   }

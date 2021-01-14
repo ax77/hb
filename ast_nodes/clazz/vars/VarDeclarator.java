@@ -63,15 +63,21 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
 
   private String inits(List<VarInitializer> inits) {
     StringBuilder sb = new StringBuilder();
-    sb.append("[ ");
-    for (int i = 0; i < inits.size(); i++) {
-      VarInitializer init = inits.get(i);
-      sb.append(init.toString());
-      if (i + 1 < inits.size()) {
-        sb.append(", ");
+    if (inits.size() > 1) {
+      sb.append("[");
+      for (int i = 0; i < inits.size(); i++) {
+        VarInitializer init = inits.get(i);
+        sb.append(init.toString());
+        if (i + 1 < inits.size()) {
+          sb.append(", ");
+        }
       }
+      sb.append("]");
+    } else if (inits.size() == 1) {
+      sb.append(inits.get(0).getInit().toString());
+    } else {
+      System.out.println("[???-inits-printer]");
     }
-    sb.append("]");
     return sb.toString();
   }
 

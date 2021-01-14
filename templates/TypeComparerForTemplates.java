@@ -6,6 +6,7 @@ import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.errors.EParseException;
 import njast.parse.NullChecker;
+import njast.types.ArrayType;
 import njast.types.Type;
 import njast.types.TypeBase;
 
@@ -95,6 +96,24 @@ public abstract class TypeComparerForTemplates {
       final Ident typename1 = first.getTypeVariable();
       final Ident typename2 = another.getTypeVariable();
       if (!typename1.equals(typename2)) {
+        return false;
+      }
+    }
+
+    else if (base1 == TypeBase.TP_ARRAY) {
+      if (!another.isArray()) {
+        return false;
+      }
+
+      final ArrayType array1 = first.getArrayType();
+      final ArrayType array2 = another.getArrayType();
+
+      if (array1.getCount() != array2.getCount()) {
+        return false;
+      }
+      final Type sub1 = array1.getArrayOf();
+      final Type sub2 = array2.getArrayOf();
+      if (!typesAreEqualAsGenerics(sub1, sub2)) {
         return false;
       }
     }

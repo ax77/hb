@@ -14,6 +14,7 @@ import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ParseVarDeclarator {
@@ -45,9 +46,17 @@ public class ParseVarDeclarator {
       Token assignTok = parser.moveget();
 
       if (type.isArray()) {
-        List<VarInitializer> inits = new ArrayList<>();
-        readInitializerListInternal(inits, type, 0);
-        var.setInitializer(inits);
+
+        if (parser.is(IdentMap.new_ident)) {
+          var.setInitializer(parseInitializer());
+        }
+
+        else {
+          List<VarInitializer> inits = new ArrayList<>();
+          readInitializerListInternal(inits, type, 0);
+          var.setInitializer(inits);
+        }
+
       }
 
       else {
@@ -71,9 +80,9 @@ public class ParseVarDeclarator {
     if (ty.isArray()) {
 
       parser.checkedMove(T.T_LEFT_BRACKET);
-      long arlen = ty.getArray().getCount();
+      long arlen = ty.getArrayType().getCount();
 
-      Type sub = ty.getArray().getArrayOf();
+      Type sub = ty.getArrayType().getArrayOf();
       int elsize = 0; // TODO :) sub.getSize();
 
       // recursion implement nested loop
@@ -117,7 +126,7 @@ public class ParseVarDeclarator {
       warningExcessElements("array");
       parser.checkedMove(T.T_RIGHT_BRACKET);
 
-      if (ty.getArray().getCount() <= 0) {
+      if (ty.getArrayType().getCount() <= 0) {
         //ty.getTpArray().setArrayLen(count);
         //ty.setSize(elsize * count);
       }
