@@ -1,24 +1,27 @@
 package njast.ast_nodes.clazz.methods;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
-import njast.ast_nodes.IModTypeNameHeader;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.IUniqueId;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_utils.UniqueCounter;
-import njast.errors.EParseException;
 import njast.parse.ILocation;
 import njast.parse.NullChecker;
+import njast.symtab.IdentMap;
+import njast.templates.TypeSetter;
 import njast.types.Type;
 
-public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader, ILocation, IUniqueId {
+public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocation, IUniqueId {
 
   private static final long serialVersionUID = 2982374768194205119L;
+
+  /// Definition: 
+  /// Two of the components of a method declaration comprise the method signature—the method's name and the parameter types.
 
   // init: clazz, parameters, body
   // deinit: clazz, body
@@ -26,40 +29,26 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
 
   private final ClassMethodBase base;
   private final ClassDeclaration clazz;
-  private final ModTypeNameHeader header;
-  private final List<ModTypeNameHeader> parameters;
+  private final MethodSignature signature;
+  private /*final*/ Type returnType;
   private final StmtBlock block;
   private final SourceLocation location;
   private final int uniqueId;
 
-  // function
-  public ClassMethodDeclaration(ClassDeclaration clazz, ModTypeNameHeader header, List<ModTypeNameHeader> parameters,
-      StmtBlock block, SourceLocation location) {
+  // function/init
+  public ClassMethodDeclaration(ClassMethodBase base, ClassDeclaration clazz, MethodSignature signature,
+      Type returnType, StmtBlock block, SourceLocation location) {
 
-    NullChecker.check(clazz, header, parameters, block, location);
+    NullChecker.check(clazz, signature, block, location);
 
-    this.base = ClassMethodBase.IS_FUNC;
+    this.base = base;
     this.clazz = clazz;
-    this.header = header;
-    this.parameters = parameters;
+    this.signature = signature;
+    this.returnType = returnType;
     this.block = block;
     this.location = location;
     this.uniqueId = UniqueCounter.getUniqueId();
-  }
 
-  // init
-  public ClassMethodDeclaration(ClassDeclaration clazz, List<ModTypeNameHeader> parameters, StmtBlock block,
-      SourceLocation location) {
-
-    NullChecker.check(clazz, parameters, block, location);
-
-    this.base = ClassMethodBase.IS_CONSTRUCTOR;
-    this.clazz = clazz;
-    this.header = null;
-    this.parameters = parameters;
-    this.block = block;
-    this.location = location;
-    this.uniqueId = UniqueCounter.getUniqueId();
   }
 
   // deinit
@@ -69,11 +58,25 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
     this.clazz = clazz;
-    this.header = null;
-    this.parameters = null;
+    this.signature = new MethodSignature(IdentMap.deinit_ident, new ArrayList<>());
+    this.returnType = new Type();
     this.block = block;
     this.location = location;
     this.uniqueId = UniqueCounter.getUniqueId();
+  }
+
+  @Override
+  public Type getType() {
+    return returnType;
+  }
+
+  @Override
+  public void setType(Type typeToSet) {
+    this.returnType = typeToSet;
+  }
+
+  public MethodSignature getSignature() {
+    return signature;
   }
 
   public ClassMethodBase getBase() {
@@ -84,8 +87,8 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
     return clazz;
   }
 
-  public List<ModTypeNameHeader> getParameters() {
-    return parameters;
+  public List<MethodParameter> getParameters() {
+    return signature.getParameters();
   }
 
   public boolean isVoid() {
@@ -96,36 +99,17 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
     return block;
   }
 
-  public String parametersToString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("(");
-
-    for (int i = 0; i < parameters.size(); i++) {
-      ModTypeNameHeader param = parameters.get(i);
-      sb.append(param.toString());
-
-      if (i + 1 < parameters.size()) {
-        sb.append(", ");
-      }
-    }
-
-    sb.append(")");
-    return sb.toString();
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
     if (isFunction()) {
       sb.append("func ");
-      sb.append(getIdentifier().getName());
-      sb.append(parametersToString());
+      sb.append(signature.toString());
     }
 
     if (isConstructor()) {
-      sb.append("init");
-      sb.append(parametersToString());
+      sb.append(signature.toString());
     }
 
     if (isDestructor()) {
@@ -156,27 +140,8 @@ public class ClassMethodDeclaration implements Serializable, IModTypeNameHeader,
     return base == ClassMethodBase.IS_CONSTRUCTOR;
   }
 
-  @Override
-  public Type getType() {
-    if (!isFunction()) {
-      throw new EParseException("constructor/destructor have no types");
-    }
-    return header.getType();
-  }
-
-  @Override
   public Ident getIdentifier() {
-    if (!isFunction()) {
-      throw new EParseException("constructor/destructor have no identifiers");
-    }
-    return header.getIdentifier();
-  }
-
-  public ModTypeNameHeader getHeader() {
-    if (!isFunction()) {
-      throw new EParseException("constructor/destructor have no headers");
-    }
-    return header;
+    return signature.getMethodName();
   }
 
   @Override

@@ -9,9 +9,9 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.FuncArg;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.MethodParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
@@ -88,7 +88,7 @@ public class ApplyInstantiationUnit {
     symtabApplier.openMethodScope(sb.toString());
 
     if (!method.isDestructor()) {
-      for (ModTypeNameHeader fp : method.getParameters()) {
+      for (MethodParameter fp : method.getParameters()) {
         symtabApplier.defineFunctionParameter(method, fp);
       }
     }

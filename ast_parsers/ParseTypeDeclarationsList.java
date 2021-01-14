@@ -1,5 +1,6 @@
 package njast.ast_parsers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jscan.sourceloc.SourceLocation;
@@ -7,9 +8,11 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IdentRecognizer;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast_nodes.clazz.methods.ClassMethodBase;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.MethodParameter;
+import njast.ast_nodes.clazz.methods.MethodSignature;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.stmt.StmtBlock;
@@ -17,6 +20,7 @@ import njast.ast_nodes.top.TopLevelTypeDeclaration;
 import njast.modifiers.Modifiers;
 import njast.parse.Parse;
 import njast.symtab.IdentMap;
+import njast.types.Ref;
 import njast.types.Type;
 
 public class ParseTypeDeclarationsList {
@@ -95,10 +99,13 @@ public class ParseTypeDeclarationsList {
     boolean isConstructorDeclaration = parser.is(IdentMap.init_ident);
     if (isConstructorDeclaration) {
       final Token tok = parser.checkedMove(IdentMap.init_ident);
-      final List<ModTypeNameHeader> parameters = new ParseFormalParameterList(parser).parse();
+      final List<MethodParameter> parameters = new ParseFormalParameterList(parser).parse();
       final StmtBlock block = new ParseStatement(parser).parseBlock();
-      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(clazz, parameters, block,
-          new SourceLocation(tok));
+      final MethodSignature signature = new MethodSignature(IdentMap.init_ident, parameters);
+      final Type returnType = new Type(new Ref(clazz, new ArrayList<>()));
+      final SourceLocation location = new SourceLocation(tok);
+      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
+          signature, returnType, block, location);
 
       checkConstructorRedefinition(clazz, constructor);
       clazz.addConstructor(constructor);
@@ -154,8 +161,8 @@ public class ParseTypeDeclarationsList {
 
   private void checkConstructorRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration constructor : clazz.getConstructors()) {
-      final List<ModTypeNameHeader> fp1 = constructor.getParameters();
-      final List<ModTypeNameHeader> fp2 = another.getParameters();
+      final List<MethodParameter> fp1 = constructor.getParameters();
+      final List<MethodParameter> fp2 = another.getParameters();
       if (parametersListsAreEqualByTypes(fp1, fp2)) {
         parser.perror("duplicate constructor with the same formal parameters");
       }
@@ -165,8 +172,8 @@ public class ParseTypeDeclarationsList {
   private void checkMethodRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration method : clazz.getMethods()) {
       if (method.getIdentifier().equals(another.getIdentifier())) {
-        final List<ModTypeNameHeader> fp1 = method.getParameters();
-        final List<ModTypeNameHeader> fp2 = another.getParameters();
+        final List<MethodParameter> fp1 = method.getParameters();
+        final List<MethodParameter> fp2 = another.getParameters();
         if (parametersListsAreEqualByTypes(fp1, fp2)) {
           parser.perror("duplicate methods with the same formal parameters");
         }
@@ -184,7 +191,7 @@ public class ParseTypeDeclarationsList {
     }
   }
 
-  private boolean parametersListsAreEqualByTypes(List<ModTypeNameHeader> first, List<ModTypeNameHeader> another) {
+  private boolean parametersListsAreEqualByTypes(List<MethodParameter> first, List<MethodParameter> another) {
     final int bound = first.size();
     if (bound != another.size()) {
       return false;

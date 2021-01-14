@@ -83,7 +83,7 @@ public class ParseStatement {
       VarDeclarator localVar = new ParseVarDeclarator(parser).parse(VarBase.METHOD_VAR);
 
       ClassDeclaration currentClass = parser.getCurrentClass(true);
-      currentClass.registerTypeSetter(localVar.getHeader());
+      currentClass.registerTypeSetter(localVar);
 
       return new StmtBlockItem(localVar);
     }

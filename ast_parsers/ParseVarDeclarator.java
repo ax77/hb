@@ -5,7 +5,6 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.TypeRecognizer;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarInitializer;
@@ -37,9 +36,7 @@ public class ParseVarDeclarator {
 
     final Token colon = parser.colon();
     final Type type = new TypeRecognizer(parser).getType();
-
-    final ModTypeNameHeader header = new ModTypeNameHeader(modifiers, type, id);
-    final VarDeclarator var = new VarDeclarator(base, header, location);
+    final VarDeclarator var = new VarDeclarator(base, type, id, location);
 
     if (parser.is(T.T_ASSIGN)) {
       parser.moveget();

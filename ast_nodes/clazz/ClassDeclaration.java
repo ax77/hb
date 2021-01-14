@@ -7,8 +7,8 @@ import java.util.List;
 
 import jscan.symtab.Ident;
 import njast.ast_nodes.FuncArg;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
+import njast.ast_nodes.clazz.methods.MethodParameter;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_utils.UniqueCounter;
 import njast.errors.EParseException;
@@ -90,7 +90,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   public void addField(VarDeclarator e) {
     NullChecker.check(e);
 
-    registerTypeSetter(e.getHeader());
+    registerTypeSetter(e);
     this.fields.add(e);
   }
 
@@ -98,7 +98,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     NullChecker.check(e);
 
     if (!e.isVoid()) {
-      registerTypeSetter(e.getHeader());
+      registerTypeSetter(e);
     }
 
     registerMethodParameters(e);
@@ -106,8 +106,8 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   }
 
   public void registerMethodParameters(ClassMethodDeclaration e) {
-    for (ModTypeNameHeader hdr : e.getParameters()) {
-      registerTypeSetter(hdr);
+    for (MethodParameter param : e.getParameters()) {
+      registerTypeSetter(param);
     }
   }
 
@@ -165,7 +165,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   // TODO:
   private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<FuncArg> arguments) {
-    List<ModTypeNameHeader> formalParameters = method.getParameters();
+    List<MethodParameter> formalParameters = method.getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }

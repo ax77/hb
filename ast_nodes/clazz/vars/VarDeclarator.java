@@ -4,23 +4,34 @@ import java.io.Serializable;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
-import njast.ast_nodes.IModTypeNameHeader;
-import njast.ast_nodes.ModTypeNameHeader;
 import njast.parse.ILocation;
+import njast.templates.TypeSetter;
 import njast.types.Type;
 
-public class VarDeclarator implements Serializable, IModTypeNameHeader, ILocation {
+public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private static final long serialVersionUID = -364976996504280849L;
 
   private final VarBase base;
-  private final ModTypeNameHeader header;
+  private /*final*/ Type type;
+  private final Ident identifier;
   private VarInitializer initializer;
   private final SourceLocation location;
 
-  public VarDeclarator(VarBase base, ModTypeNameHeader header, SourceLocation location) {
+  public VarDeclarator(VarBase base, Type type, Ident identifier, SourceLocation location) {
     this.base = base;
-    this.header = header;
+    this.type = type;
+    this.identifier = identifier;
     this.location = location;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public void setType(Type typeToSet) {
+    this.type = typeToSet;
   }
 
   public VarInitializer getInitializer() {
@@ -31,10 +42,16 @@ public class VarDeclarator implements Serializable, IModTypeNameHeader, ILocatio
     this.initializer = initializer;
   }
 
+  public Ident getIdentifier() {
+    return identifier;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(header.toString());
+    sb.append(identifier.getName());
+    sb.append(": ");
+    sb.append(type.toString());
     if (initializer != null) {
       sb.append(" = ");
       sb.append(initializer.getInitializer().toString());
@@ -45,20 +62,6 @@ public class VarDeclarator implements Serializable, IModTypeNameHeader, ILocatio
 
   public VarBase getBase() {
     return base;
-  }
-
-  @Override
-  public Type getType() {
-    return header.getType();
-  }
-
-  @Override
-  public Ident getIdentifier() {
-    return header.getIdentifier();
-  }
-
-  public ModTypeNameHeader getHeader() {
-    return header;
   }
 
   @Override

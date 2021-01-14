@@ -7,8 +7,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.TypeRecognizer;
-import njast.ast_nodes.ModTypeNameHeader;
-import njast.modifiers.Modifiers;
+import njast.ast_nodes.clazz.methods.MethodParameter;
 import njast.parse.Parse;
 import njast.types.Type;
 
@@ -21,8 +20,8 @@ public class ParseFormalParameterList {
 
   // func name(param: int) -> int {  }
 
-  public List<ModTypeNameHeader> parse() {
-    List<ModTypeNameHeader> parameters = new ArrayList<>();
+  public List<MethodParameter> parse() {
+    List<MethodParameter> parameters = new ArrayList<>();
     Token lparen = parser.lparen();
 
     if (parser.is(T.T_RIGHT_PAREN)) {
@@ -40,12 +39,12 @@ public class ParseFormalParameterList {
     return parameters;
   }
 
-  private ModTypeNameHeader parseOneParam() {
+  private MethodParameter parseOneParam() {
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = tok.getIdent();
     final Token colon = parser.colon();
     final Type type = new TypeRecognizer(parser).getType();
-    return new ModTypeNameHeader(new Modifiers(), type, id);
+    return new MethodParameter(id, type);
   }
 
 }
