@@ -148,6 +148,7 @@ public class ParseTypeDeclarationsList {
     }
 
     VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD);
+    field.setClazz(clazz);
     checkFieldRedefinition(clazz, field);
     clazz.addField(field);
 

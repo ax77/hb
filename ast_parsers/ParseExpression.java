@@ -45,6 +45,7 @@ import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
 import njast.ast_nodes.expr.ExprPrimaryIdent;
+import njast.ast_nodes.expr.ExprSelf;
 import njast.ast_nodes.expr.ExprUnary;
 import njast.ast_utils.ExprUtil;
 import njast.parse.Parse;
@@ -489,7 +490,7 @@ public class ParseExpression {
 
   private ExprExpression methodInvocation(Ident funcname) {
     // apply <this.> before function name, more convenient
-    // ExprExpression thisExpression = new ExprExpression(ExpressionBase.ETHIS);
+    //ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
     List<FuncArg> arglist = parseArglist();
     return new ExprExpression(new ExprMethodInvocation(funcname, arglist));
   }
@@ -570,7 +571,7 @@ public class ParseExpression {
 
     if (parser.is(IdentMap.self_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(ExpressionBase.ESELF);
+      ExprExpression thisexpr = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
       return thisexpr;
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
+import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.parse.ILocation;
 import njast.templates.TypeSetter;
 import njast.types.Type;
@@ -17,6 +18,7 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private final Ident identifier;
   private List<VarInitializer> initializer;
   private final SourceLocation location;
+  private ClassDeclaration clazz; // is it is a field
 
   public VarDeclarator(VarBase base, Type type, Ident identifier, SourceLocation location) {
     this.base = base;
@@ -79,6 +81,14 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
       System.out.println("[???-inits-printer]");
     }
     return sb.toString();
+  }
+
+  public ClassDeclaration getClazz() {
+    return clazz;
+  }
+
+  public void setClazz(ClassDeclaration clazz) {
+    this.clazz = clazz;
   }
 
   public VarBase getBase() {

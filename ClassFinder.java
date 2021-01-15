@@ -1,6 +1,7 @@
 package njast;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,25 +80,41 @@ public class ClassFinder {
     return lines;
   }
 
-  @Ignore
+  //  @Ignore
   @Test
   public void test() {
 
-    List<Class<?>> classes = ClassFinder.find("njast.ast_nodes");
-    List<String> names = new ArrayList<>();
+    List<Class<?>> classes = ClassFinder.find("njast.ast_nodes.expr");
     for (Class c : classes) {
-      names.add(c.getSimpleName());
+      if (c.getSimpleName().startsWith("ExprExpr")) {
+        continue;
+      }
+      System.out.println(c.getSimpleName() + ":::");
+      Field fields[] = c.getDeclaredFields();
+      for (Field f : fields) {
+        final String fieldName = f.getName();
+        if (fieldName.startsWith("serialVersion")) {
+          continue;
+        }
+
+        //String s1 = name.charAt(0).toUppercase());
+        //System.out.println(s1 + name.substring(1));
+        String name = "";
+        name += fieldName.charAt(0);
+        String name1 = name.toUpperCase() + fieldName.substring(1);
+
+        System.out.println("get" + name1 + "(): " + f.getType().getSimpleName());
+      }
     }
-    Collections.sort(names);
 
     // njast.ast_nodes.clazz.ClassConstructorDeclaration
 
-    // void visit(ExpressionNode o);
-    System.out.println("//@formatter:off");
-    for (String classname : names) {
-      System.out.println("void visit(" + classname + " o);");
-    }
-    System.out.println("//@formatter:on");
+    //    // void visit(ExpressionNode o);
+//    System.out.println("//@formatter:off");
+//    for (String classname : names) {
+//      System.out.println("void visit(" + classname + " o);");
+//    }
+//    System.out.println("//@formatter:on");
 
   }
 

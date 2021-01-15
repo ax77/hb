@@ -24,6 +24,16 @@ public class ExprExpression implements Serializable {
   private ExprClassInstanceCreation classInstanceCreation;
   private ExprAssign assign;
   private ExprArrayCreation arrayInstanceCreation;
+  private ExprSelf selfExpression;
+
+  public ExprExpression(ExprSelf selfExpression) {
+    this.base = ExpressionBase.ESELF;
+    this.selfExpression = selfExpression;
+  }
+
+  public ExprSelf getSelfExpression() {
+    return selfExpression;
+  }
 
   public ExprExpression(ExprAssign assign) {
     this.base = ExpressionBase.EASSIGN;
@@ -151,7 +161,7 @@ public class ExprExpression implements Serializable {
       return literalIdentifier.toString();
     }
     if (base == ExpressionBase.ESELF) {
-      return "self";
+      return selfExpression.toString();
     }
     if (base == ExpressionBase.EMETHOD_INVOCATION) {
       return methodInvocation.toString();

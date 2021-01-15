@@ -221,7 +221,10 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.ESELF) {
-      e.setResultType(new Type(new ClassType(object, new ArrayList<>())));
+      final ClassDeclaration clazz = e.getSelfExpression().getClazz();
+      final ArrayList<Type> typeArguments = new ArrayList<>();
+      final ClassType ref = new ClassType(clazz, typeArguments);
+      e.setResultType(new Type(ref));
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
