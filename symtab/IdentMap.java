@@ -8,6 +8,10 @@ public final class IdentMap {
   private static Ident g(String name) {
     return Hash_ident.getHashedIdent(name, 32);
   }
+  
+  private static Ident g1(String name) {
+    return Hash_ident.getHashedIdent(name, 0);
+  }
 
   // <class modifier>           ::= public | abstract | final
   // <field modifier>           ::= public | protected | private | static | final | transient | volatile
@@ -78,6 +82,13 @@ public final class IdentMap {
   public static final Ident deinit_ident = g("deinit");
   public static final Ident self_ident   = g("self");
   public static final Ident in_ident     = g("in");
+  
+  //
+  public static final Ident get_iterator_ident = g1("get_iterator");
+  public static final Ident get_current_ident  = g1("get_current");
+  public static final Ident has_next_ident     = g1("has_next");
+  public static final Ident get_next_ident     = g1("get_next");
+  
   //@formatter:on
 
 }

@@ -1,5 +1,10 @@
 package njast.ast.mir;
 
+import static njast.ast.mir.Renamer.GET_ITERATOR_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_GET_CURRENT_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_GET_NEXT_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_HAS_NEXT_METHOD_NAME;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +24,6 @@ import njast.ast.nodes.stmt.StmtFor;
 import njast.ast.nodes.vars.VarBase;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.ast.nodes.vars.VarInitializer;
-import njast.parse.AstParseException;
 import njast.types.Type;
 
 public class ForLoopRewriter {
@@ -27,57 +31,64 @@ public class ForLoopRewriter {
   private static int var_counter = 0;
 
   public static void rewriteForLoop(ClassDeclaration object, StmtFor forloop) {
-    // we'll rewrite short form to its full form
-    // for item in collection {} 
-    // ->
-    // let iter: iterator<TYPE> = collection.get_iterator();
-    // for(TYPE item = iter.current(); iter.has_next(); item = iter.get_next()) {}
-    //
 
     // collection
-    final ExprExpression collection = forloop.getAuxCollection();
-
-    IteratorChecker checker = new IteratorChecker(collection.getIdent().getVariable());
-    if (!checker.isIterable()) {
-      throw new AstParseException("collection is not iterable: " + collection.toString());
-    }
-    Type elemType = checker.getElemType();
-    Type iteratorType = checker.getIteratorType();
+    final ExprExpression collectionAux = forloop.getAuxCollection();
+    final VarDeclarator collectionObjectVar = collectionAux.getIdent().getVariable();
+    final Ident collectionObjectName = collectionObjectVar.getIdentifier();
+    final IteratorChecker checker = new IteratorChecker(collectionObjectVar);
+    final Type elemType = checker.getElemType(); // we checked that collection is 'iterable' here.
+    final Type iteratorType = checker.getIteratorType();
 
     // iter
-    final ExprExpression iter = forloop.getAuxIter();
-    iter.setResultType(elemType);
+    final ExprExpression iterAux = forloop.getAuxIter();
+    iterAux.setResultType(elemType);
 
-    final Ident declIdent = iter.getIdent().getIdentifier();
+    final Ident item = iterAux.getIdent().getIdentifier();
 
-    // 1) init iterator: 
-    //    let iter: iterator<TYPE> = collection.get_iterator();
-    final Ident iteratorVarName = Hash_ident.getHashedIdent("__iterator__" + String.format("%d", var_counter++));
+    // 1) let iter: iterator<TYPE> = collection.get_iterator();
+    final Ident iteratorVarName = createNameForIteratorItself();
+    final VarDeclarator iteratorVar = genMethodGetIterator(collectionObjectName, iteratorType, iteratorVarName);
 
     final List<VarDeclarator> decl = new ArrayList<>();
-
-    final VarDeclarator iteratorVar = getIteratorVar(collection, iteratorType, iteratorVarName);
     decl.add(iteratorVar);
 
-    //2 ) for(TYPE item = iter.current(); iter.has_next(); item = iter.get_next()) {}
-    //    rewrite loop header
-    final VarDeclarator itemVar = getItemVar(elemType, declIdent, iteratorVarName);
+    //2 ) TYPE item = iter.current()
+    final VarDeclarator itemVar = genMethodInitItemVar(elemType, item, iteratorVarName);
     decl.add(itemVar);
-
     forloop.setDecl(decl);
 
-    // 3) iter.has_next();
-    forloop.setTest(getTestExpression(iteratorVarName));
+    setTest(forloop, iteratorVarName);
+    setStep(forloop, item, iteratorVarName);
+  }
 
+  private static void setTest(StmtFor forloop, final Ident iteratorVarName) {
+    // 3) iter.has_next();
+    final ExprExpression testExpression = call(ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName);
+    forloop.setTest(testExpression);
+  }
+
+  private static void setStep(StmtFor forloop, final Ident item, final Ident iteratorVarName) {
     // 4) item = iter.get_net()
-    final ExprExpression lhs = new ExprExpression(new ExprIdent(declIdent));
-    final ExprExpression rhs = new ExprExpression(new ExprMethodInvocation(Hash_ident.getHashedIdent("get_next"),
-        new ExprExpression(new ExprIdent(iteratorVarName)), new ArrayList<>()));
+    final ExprExpression lhs = id(item);
+    final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName);
 
     final ExprExpression stepExpression = new ExprExpression(new ExprAssign(getAssignTok(), lhs, rhs));
-
     forloop.setStep(stepExpression);
+  }
 
+  private static ExprExpression id(Ident iteratorVarName) {
+    return new ExprExpression(new ExprIdent(iteratorVarName));
+  }
+
+  private static ExprExpression call(final Ident funcname, final Ident objectName) {
+    final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
+    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName), emptyArgs));
+  }
+
+  private static Ident createNameForIteratorItself() {
+    final String nextCount = String.format("%d", var_counter++);
+    return Hash_ident.getHashedIdent("__it" + nextCount + "__");
   }
 
   private static Token getAssignTok() {
@@ -87,50 +98,31 @@ public class ForLoopRewriter {
     return tok;
   }
 
-  private static ExprExpression getTestExpression(Ident iteratorVarName) {
-    final Ident hasNextIdent = Hash_ident.getHashedIdent("has_next");
-    final ExprMethodInvocation invocation = new ExprMethodInvocation(hasNextIdent,
-        new ExprExpression(new ExprIdent(iteratorVarName)), new ArrayList<>());
-    final ExprExpression testExpression = new ExprExpression(invocation);
-    return testExpression;
-  }
+  private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName) {
 
-  private static VarDeclarator getItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName) {
     final SourceLocation loc = new SourceLocation("for...", -1, -1);
-    final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-
-    final Ident currIdent = Hash_ident.getHashedIdent("current");
-
-    final ExprMethodInvocation iterCurrent = new ExprMethodInvocation(currIdent,
-        new ExprExpression(new ExprIdent(iteratorVarName)), emptyArgs);
-
     final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, elemType, declIdent, loc);
+
     final List<VarInitializer> inits = new ArrayList<>();
+    inits.add(new VarInitializer(call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName), 0));
 
-    inits.add(new VarInitializer(new ExprExpression(iterCurrent), 0));
     itemVar.setInitializer(inits);
-
     return itemVar;
+
   }
 
-  private static VarDeclarator getIteratorVar(final ExprExpression collection, final Type iteratorType,
+  private static VarDeclarator genMethodGetIterator(final Ident collectionObjectName, final Type iteratorType,
       final Ident iteratorVarName) {
 
-    final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
     final SourceLocation loc = new SourceLocation("for...", -1, -1);
 
-    final Ident getIteratorIdent = Hash_ident.getHashedIdent("get_iterator");
-    final Ident collectionNameIdent = collection.getIdent().getIdentifier();
-    final ExprMethodInvocation methodInvocation = new ExprMethodInvocation(getIteratorIdent,
-        new ExprExpression(new ExprIdent(collectionNameIdent)), emptyArgs);
-    final ExprExpression iteratorVarInitializer = new ExprExpression(methodInvocation);
-
     final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, iteratorType, iteratorVarName, loc);
+    final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName);
+
     final List<VarInitializer> inits = new ArrayList<>();
-
     inits.add(new VarInitializer(iteratorVarInitializer, 0));
-    iteratorVar.setInitializer(inits);
 
+    iteratorVar.setInitializer(inits);
     return iteratorVar;
 
   }

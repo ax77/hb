@@ -11,6 +11,7 @@ import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.AstParseException;
 import njast.types.Type;
 import njast.types.TypeBase;
+import static njast.ast.mir.Renamer.*;
 
 public class IteratorChecker {
 
@@ -56,11 +57,6 @@ public class IteratorChecker {
     /// 5) these methods shouldn't have parameters
 
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-    final Ident getIteratorIdent = Hash_ident.getHashedIdent("get_iterator");
-    final Ident getCurrentIdent = Hash_ident.getHashedIdent("current");
-    final Ident hasNextIdent = Hash_ident.getHashedIdent("has_next");
-    final Ident getNextIdent = Hash_ident.getHashedIdent("get_next");
-
     final Type type = var.getType();
     if (!type.isClassRef()) {
       return false; // TODO: arrays
@@ -69,7 +65,7 @@ public class IteratorChecker {
     // check that we have a method which will return the iterator
     //
     final ClassDeclaration clazz = type.getClassType();
-    final ClassMethodDeclaration mGetIterator = clazz.getMethod(getIteratorIdent, emptyArgs);
+    final ClassMethodDeclaration mGetIterator = clazz.getMethod(GET_ITERATOR_METHOD_NAME, emptyArgs);
     if (mGetIterator == null) {
       return false;
     }
@@ -85,9 +81,9 @@ public class IteratorChecker {
     }
 
     final ClassDeclaration iteratorClazz = returnTypeOfGetIteratorMethod.getClassType();
-    final ClassMethodDeclaration mCurrent = iteratorClazz.getMethod(getCurrentIdent, emptyArgs);
-    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(hasNextIdent, emptyArgs);
-    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(getNextIdent, emptyArgs);
+    final ClassMethodDeclaration mCurrent = iteratorClazz.getMethod(ITERATOR_GET_CURRENT_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(ITERATOR_HAS_NEXT_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(ITERATOR_GET_NEXT_METHOD_NAME, emptyArgs);
     if (mCurrent == null || mHasNext == null || mGetNext == null) {
       return false;
     }

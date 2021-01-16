@@ -77,7 +77,7 @@ public class TestIteratorRecognizer {
     sb.append(" /*052*/          self.next = collection.first;            \n");
     sb.append(" /*053*/          self.next_index = 0;                     \n");
     sb.append(" /*054*/      }                                            \n");
-    sb.append(" /*055*/      func current() -> T                          \n");
+    sb.append(" /*055*/      func get_current() -> T                      \n");
     sb.append(" /*056*/      {                                            \n");
     sb.append(" /*057*/          return last_returned.item;               \n");
     sb.append(" /*058*/      }                                            \n");

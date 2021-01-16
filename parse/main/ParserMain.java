@@ -72,6 +72,10 @@ public class ParserMain implements ParserMainApi {
     return Hash_ident.getHashedIdent(name, 32);
   }
 
+  private static Ident g1(String name) {
+    return Hash_ident.getHashedIdent(name, 0);
+  }
+
   // TODO: more clean, fast, precise...
   private void initIdents() {
     g("abstract");
@@ -132,6 +136,11 @@ public class ParserMain implements ParserMainApi {
     g("deinit");
     g("self");
     g("in");
+    //
+    g1("get_iterator");
+    g1("get_current");
+    g1("has_next");
+    g1("get_next");
   }
 
   // details.

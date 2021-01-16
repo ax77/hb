@@ -26,6 +26,7 @@ import njast.ast.nodes.stmt.StmtStatement;
 import njast.ast.nodes.stmt.Stmt_if;
 import njast.ast.nodes.unit.InstantiationUnit;
 import njast.ast.nodes.vars.VarDeclarator;
+import njast.ast.nodes.vars.VarInitializer;
 import njast.parse.AstParseException;
 import njast.types.ClassType;
 import njast.types.Type;
@@ -98,16 +99,27 @@ public class ApplyInstantiationUnit {
     for (StmtBlockItem block : body.getBlockStatements()) {
 
       // method variables
-      final VarDeclarator localVars = block.getLocalVariable();
-      if (localVars != null) {
-        symtabApplier.initVarZero(localVars);
-        symtabApplier.defineMethodVariable(method, localVars);
+      final VarDeclarator var = block.getLocalVariable();
+      if (var != null) {
+        symtabApplier.initVarZero(var);
+        symtabApplier.defineMethodVariable(method, var);
+
+        initVarInitializer(var, var.getInitializer());
       }
 
       applyStatement(object, method, block.getStatement());
     }
 
     symtabApplier.closeMethodScope();
+  }
+
+  private void initVarInitializer(VarDeclarator var, List<VarInitializer> initializer) {
+
+    if (initializer == null) {
+      return;
+    }
+
+    // TODO Auto-generated method stub
   }
 
   //////////////////////////////////////////////////////////////////////
