@@ -131,6 +131,7 @@ public class ParserMain implements ParserMainApi {
     g("init");
     g("deinit");
     g("self");
+    g("in");
   }
 
   // details.

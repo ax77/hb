@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import jscan.sourceloc.SourceLocation;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
+import njast.ast_checkers.IteratorChecker;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_kinds.StatementBase;
 import njast.ast_nodes.FuncArg;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.MethodParameter;
+import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
@@ -129,9 +132,37 @@ public class ApplyInstantiationUnit {
 
     if (base == StatementBase.SFOR) {
       StmtFor forloop = statement.getSfor();
-      //visitLocalVars(object, forloop.getDecl());
-      applyExpression(object, forloop.getTest());
-      applyExpression(object, forloop.getStep());
+
+      // collection
+      final ExprExpression collection = forloop.getCollection();
+      applyExpression(object, collection);
+      IteratorChecker checker = new IteratorChecker(collection.getLiteralIdentifier().getVariable());
+      if (!checker.isIterable()) {
+        throw new EParseException("collection is not iterable: " + collection.toString());
+      }
+      Type elemType = checker.getElemType();
+
+      // iterator
+      final ExprExpression iter = forloop.getIter();
+      iter.setResultType(elemType);
+
+      // TODO: init iterator:
+      //
+      // for s in x {
+      //   
+      // }
+      //
+      // ...->
+      //
+      // let iter: list_iterator<int> = x.get_iterator();
+      // for(int s = iter.current(); iter.has_next(); s = iter.get_next()) {
+      //   
+      // }
+      //
+      symtabApplier.defineBlockVar(new VarDeclarator(VarBase.LOCAL_VAR, elemType,
+          iter.getLiteralIdentifier().getIdentifier(), new SourceLocation("TODO:for", -1, -1)));
+
+      // loop
       applyStatement(object, method, forloop.getLoop());
     }
 

@@ -77,6 +77,7 @@ public final class IdentMap {
   public static final Ident init_ident   = g("init");
   public static final Ident deinit_ident = g("deinit");
   public static final Ident self_ident   = g("self");
+  public static final Ident in_ident     = g("in");
   //@formatter:on
 
 }

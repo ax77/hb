@@ -14,6 +14,7 @@ import static njast.symtab.IdentMap.while_ident;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_kinds.StatementBase;
@@ -27,6 +28,7 @@ import njast.ast_nodes.stmt.StmtFor;
 import njast.ast_nodes.stmt.StmtStatement;
 import njast.ast_nodes.stmt.Stmt_if;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 
 public class ParseStatement {
   private final Parse parser;
@@ -137,7 +139,6 @@ public class ParseStatement {
     // for( ;; )
 
     if (parser.is(for_ident)) {
-      parser.unimplemented("for loop");
       return parseForLoop();
     }
 
@@ -181,51 +182,19 @@ public class ParseStatement {
   }
 
   private StmtStatement parseForLoop() {
-    List<VarDeclarator> decl = null;
-    ExprExpression init = null;
-    ExprExpression test = null;
-    ExprExpression step = null;
-    StmtStatement loop = null;
 
-    //      pushLoop("for");
-    //      parser.pushscope(); // TODO:
+    // for item in list {}
 
     Token from = parser.checkedMove(for_ident);
-    parser.lparen();
+    Ident iter = parser.getIdent();
 
-    if (parser.tp() != T_SEMI_COLON) {
-
-      if (parser.isTypeWithOptModifiersBegin()) {
-        // semicolon will be handled in declarations-list
-        // decl = new ParseVarDeclaratorsList(parser).parse(VarBase.LOCAL_VAR);
-      }
-
-      else {
-        init = parseForLoopExpressions();
-        parser.semicolon();
-      }
-    }
-
-    else {
-      parser.semicolon();
-    }
-
-    if (parser.tp() != T_SEMI_COLON) {
-      test = e_expression(); // XXX: no comma in test
-    }
-    parser.semicolon();
-
-    if (parser.tp() != T_RIGHT_PAREN) {
-      step = parseForLoopExpressions();
-    }
-    parser.rparen();
+    parser.checkedMove(IdentMap.in_ident);
+    Ident collection = parser.getIdent();
 
     checkSemicolonAndLbrace();
-    loop = parseStatement();
+    StmtStatement loop = parseStatement();
 
-    //      popLoop();
-    //      parser.popscope(); // TODO:
-    return new StmtStatement(new StmtFor(decl, init, test, step, loop));
+    return new StmtStatement(new StmtFor(iter, collection, loop));
   }
 
   private void checkSemicolonAndLbrace() {

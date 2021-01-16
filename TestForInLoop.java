@@ -9,22 +9,10 @@ import njast.main.ParserMain;
 import njast.parse.Parse;
 import njast.templates.InstatantiationUnitBuilder;
 
-public class TestMinimalExample {
-
-  //to define a symbol in a function or nested block and check redefinition
-  //1) check the whole function scope
-  //2) check the current block
-  //
-  //to bind a symbol in a expression - 
-  //1) block scope
-  //2) function scope
-  //3) class scope
-  //4) file scope
-  //
-  //note: function parameters also a variables in a function scope
+public class TestForInLoop {
 
   @Test
-  public void testSymtab() throws Exception {
+  public void testForInLoop() throws Exception {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
@@ -101,7 +89,13 @@ public class TestMinimalExample {
     sb.append(" /*071*/  class test                                       \n");
     sb.append(" /*072*/  {                                                \n");
     sb.append(" /*073*/      var list: list<int>;                         \n");
-    sb.append(" /*074*/  }                                                \n");
+    sb.append(" /*074*/      var counter: int;                            \n");
+    sb.append(" /*075*/      func fn() {                                  \n");
+    sb.append(" /*076*/          for item in list {                       \n");
+    sb.append(" /*077*/            counter += item;                       \n");
+    sb.append(" /*078*/          }                                        \n");
+    sb.append(" /*079*/      }                                            \n");
+    sb.append(" /*080*/  }                                                \n");
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
