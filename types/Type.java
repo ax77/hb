@@ -14,8 +14,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.errors.EParseException;
+import njast.ast.nodes.ClassDeclaration;
+import njast.parse.AstParseException;
 import njast.parse.NullChecker;
 
 public class Type implements Serializable {
@@ -50,7 +50,7 @@ public class Type implements Serializable {
 
   public Type(ArrayType array) {
     NullChecker.check(array);
-    
+
     this.base = TypeBase.TP_ARRAY;
     this.arrayType = array;
   }
@@ -59,7 +59,7 @@ public class Type implements Serializable {
     NullChecker.check(primitiveType);
 
     if (!isPrimitive(primitiveType)) {
-      throw new EParseException("expect primitive type");
+      throw new AstParseException("expect primitive type");
     }
     this.base = primitiveType;
   }
@@ -88,14 +88,14 @@ public class Type implements Serializable {
 
   public ClassDeclaration getClassType() {
     if (!isClassRef()) {
-      throw new EParseException("is not a class");
+      throw new AstParseException("is not a class");
     }
     return classType.getClazz();
   }
 
   public List<Type> getTypeArguments() {
     if (!isClassRef()) {
-      throw new EParseException("is not a class");
+      throw new AstParseException("is not a class");
     }
     return classType.getTypeArguments();
   }
@@ -118,7 +118,7 @@ public class Type implements Serializable {
 
   public Ident getTypeParameter() {
     if (!isTypeVarRef()) {
-      throw new EParseException("is not typename T");
+      throw new AstParseException("is not typename T");
     }
     return typeVariable;
   }
@@ -175,7 +175,7 @@ public class Type implements Serializable {
     }
 
     else {
-      throw new EParseException("unimpl...");
+      throw new AstParseException("unimpl...");
     }
 
     return true;

@@ -14,14 +14,12 @@ import jscan.Tokenlist;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
-import njast.ast_checkers.IdentRecognizer;
-import njast.ast_checkers.TypeRecognizer;
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.ast_nodes.top.TopLevelTypeDeclaration;
-import njast.ast_parsers.ParseTypeDeclarationsList;
-import njast.errors.EParseErrors;
-import njast.errors.EParseException;
+import njast.ast.checkers.IdentRecognizer;
+import njast.ast.checkers.TypeRecognizer;
+import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.unit.CompilationUnit;
+import njast.ast.nodes.unit.TypeDeclaration;
+import njast.ast.parsers.ParseTypeDeclarationsList;
 
 public class Parse {
 
@@ -167,7 +165,7 @@ public class Parse {
     sb.append("  --> " + lastloc + "\n\n");
     sb.append(RingBuf.ringBufferToStringLines(ringBuffer) + "\n");
 
-    throw new EParseException(sb.toString());
+    throw new AstParseException(sb.toString());
   }
 
   public void pwarning(String m) {
@@ -177,10 +175,6 @@ public class Parse {
     sb.append("  --> " + lastloc + "\n\n");
     sb.append(RingBuf.ringBufferToStringLines(ringBuffer) + "\n");
 
-  }
-
-  public void perror(EParseErrors code) {
-    perror(code.toString());
   }
 
   public boolean is(T toktype) {
@@ -327,8 +321,8 @@ public class Parse {
     // }
   }
 
-  public TopLevelCompilationUnit parse() {
-    TopLevelCompilationUnit tu = new TopLevelCompilationUnit();
+  public CompilationUnit parse() {
+    CompilationUnit tu = new CompilationUnit();
 
     // top-level
     errorStraySemicolon();
@@ -338,7 +332,7 @@ public class Parse {
       // before each function or global declaration
       errorStraySemicolon();
 
-      TopLevelTypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
+      TypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
       tu.put(ed);
     }
 

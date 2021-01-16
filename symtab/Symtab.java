@@ -3,7 +3,7 @@ package njast.symtab;
 import java.util.ArrayList;
 import java.util.List;
 
-import njast.errors.EParseException;
+import njast.parse.AstParseException;
 
 public class Symtab<K, V> {
 
@@ -23,7 +23,7 @@ public class Symtab<K, V> {
 
   public void popscope() {
     if (scopes.isEmpty()) {
-      throw new EParseException("empty symbol table. no scopes are available");
+      throw new AstParseException("empty symbol table. no scopes are available");
     }
     this.scopes.remove(0);
   }
@@ -60,10 +60,10 @@ public class Symtab<K, V> {
 
   public void addsym(K key, V sym) {
     if (scopes.isEmpty()) {
-      throw new EParseException("empty symbol table. no scopes are available");
+      throw new AstParseException("empty symbol table. no scopes are available");
     }
     if (key == null) {
-      throw new EParseException("null key for symbol entry...");
+      throw new AstParseException("null key for symbol entry...");
     }
     Scope<K, V> scope = scopes.get(0);
     scope.put(key, sym);

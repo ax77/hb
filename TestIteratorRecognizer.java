@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import jscan.hashed.Hash_ident;
-import njast.ast_checkers.IteratorChecker;
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.clazz.vars.VarDeclarator;
-import njast.ast_nodes.top.InstantiationUnit;
-import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.main.ParserMain;
+import njast.ast.checkers.IteratorChecker;
+import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.unit.CompilationUnit;
+import njast.ast.nodes.unit.InstantiationUnit;
+import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.Parse;
+import njast.parse.main.ParserMain;
 import njast.templates.InstatantiationUnitBuilder;
 import njast.types.TypeBase;
 
@@ -100,7 +100,7 @@ public class TestIteratorRecognizer {
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
-    TopLevelCompilationUnit unit = p.parse();
+    CompilationUnit unit = p.parse();
 
     InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
     for (ClassDeclaration clazz : instantiationUnit.getClasses()) {

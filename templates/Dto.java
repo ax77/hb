@@ -2,7 +2,7 @@ package njast.templates;
 
 import java.util.List;
 
-import njast.errors.EParseException;
+import njast.parse.AstParseException;
 import njast.parse.NullChecker;
 import njast.types.Type;
 
@@ -17,7 +17,7 @@ public class Dto {
     NullChecker.check(result);
 
     if (!templateGiven.isClassTemplate()) {
-      throw new EParseException("expect class-template");
+      throw new AstParseException("expect class-template");
     }
 
     this.templateGiven = templateGiven;

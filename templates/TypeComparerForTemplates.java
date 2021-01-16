@@ -3,8 +3,8 @@ package njast.templates;
 import java.util.List;
 
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.errors.EParseException;
+import njast.ast.nodes.ClassDeclaration;
+import njast.parse.AstParseException;
 import njast.parse.NullChecker;
 import njast.types.ArrayType;
 import njast.types.Type;
@@ -119,7 +119,7 @@ public abstract class TypeComparerForTemplates {
     }
 
     else {
-      throw new EParseException("unknown base");
+      throw new AstParseException("unknown base");
     }
 
     return true;

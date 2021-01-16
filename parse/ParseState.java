@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jscan.tokenize.Token;
-import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast.nodes.ClassDeclaration;
 
 public class ParseState {
   private final int tokenlistOffset;

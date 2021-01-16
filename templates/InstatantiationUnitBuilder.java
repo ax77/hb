@@ -2,11 +2,11 @@ package njast.templates;
 
 import java.util.List;
 
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.top.InstantiationUnit;
-import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.ast_nodes.top.TopLevelTypeDeclaration;
-import njast.ast_visitors.ApplyInstantiationUnit;
+import njast.ast.mir.ApplyInstantiationUnit;
+import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.unit.CompilationUnit;
+import njast.ast.nodes.unit.InstantiationUnit;
+import njast.ast.nodes.unit.TypeDeclaration;
 
 public class InstatantiationUnitBuilder {
 
@@ -28,7 +28,7 @@ public class InstatantiationUnitBuilder {
 
   private final TemplateCodegen templateCodegen;
 
-  public InstatantiationUnitBuilder(TopLevelCompilationUnit compilationUnit) {
+  public InstatantiationUnitBuilder(CompilationUnit compilationUnit) {
     this.templateCodegen = new TemplateCodegen();
     visit(compilationUnit);
   }
@@ -42,8 +42,8 @@ public class InstatantiationUnitBuilder {
     return instantiationUnit;
   }
 
-  private void visit(TopLevelCompilationUnit compilationUnit) {
-    for (TopLevelTypeDeclaration td : compilationUnit.getTypeDeclarations()) {
+  private void visit(CompilationUnit compilationUnit) {
+    for (TypeDeclaration td : compilationUnit.getTypeDeclarations()) {
       final ClassDeclaration classDeclaration = td.getClassDeclaration();
       if (classDeclaration.isTemplate()) {
         continue;

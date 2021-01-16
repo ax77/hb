@@ -3,7 +3,7 @@ package njast.types;
 import java.io.Serializable;
 import java.util.List;
 
-import njast.ast_nodes.clazz.ClassDeclaration;
+import njast.ast.nodes.ClassDeclaration;
 import njast.parse.NullChecker;
 
 public class ClassType implements Serializable {

@@ -2,7 +2,7 @@ package njast.templates;
 
 import java.util.List;
 
-import njast.errors.EParseException;
+import njast.parse.AstParseException;
 import njast.types.ArrayType;
 import njast.types.Type;
 import njast.types.TypeBindings;
@@ -34,7 +34,7 @@ public abstract class NameBuilder {
     boolean isOk = isPrimitive || isReference || isArray;
 
     if (!isOk) {
-      throw new EParseException("expect primitive or reference type for name-generator");
+      throw new AstParseException("expect primitive or reference type for name-generator");
     }
 
     if (isPrimitive) {

@@ -2,12 +2,13 @@ package njast;
 
 import org.junit.Test;
 
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.top.InstantiationUnit;
-import njast.ast_nodes.top.TopLevelCompilationUnit;
-import njast.main.ParserMain;
+import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.unit.CompilationUnit;
+import njast.ast.nodes.unit.InstantiationUnit;
 import njast.parse.Parse;
+import njast.parse.main.ParserMain;
 import njast.templates.InstatantiationUnitBuilder;
+import njast.utils.UtilSrcToStringLevel;
 
 public class TestForInLoop {
 
@@ -99,7 +100,7 @@ public class TestForInLoop {
     //@formatter:on
 
     Parse p = new ParserMain(sb).initiateParse();
-    TopLevelCompilationUnit unit = p.parse();
+    CompilationUnit unit = p.parse();
 
     InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
     for (ClassDeclaration clazz : instantiationUnit.getClasses()) {

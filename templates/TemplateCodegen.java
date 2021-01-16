@@ -6,10 +6,10 @@ import java.util.List;
 
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
-import njast.ast_nodes.clazz.ClassDeclaration;
-import njast.ast_nodes.top.InstantiationUnit;
-import njast.ast_utils.SerializationUtils;
-import njast.errors.EParseException;
+import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.unit.InstantiationUnit;
+import njast.ast.utils.SerializationUtils;
+import njast.parse.AstParseException;
 import njast.types.ClassType;
 import njast.types.Type;
 
@@ -64,7 +64,7 @@ public class TemplateCodegen {
     expansionState.add(0, templateClass);
 
     if (typeArguments.size() != typeParameters.size()) {
-      throw new EParseException("type parameters and type arguments are different by count.");
+      throw new AstParseException("type parameters and type arguments are different by count.");
     }
 
     // I) fill all typename's with real types
@@ -106,7 +106,7 @@ public class TemplateCodegen {
   private Type presentedInGenerated2(Type result) {
 
     if (!result.isClassRef()) {
-      throw new EParseException("expect class-type");
+      throw new AstParseException("expect class-type");
     }
 
     final ClassDeclaration classWeWantToFind = result.getClassType();
@@ -133,7 +133,7 @@ public class TemplateCodegen {
     }
 
     if (!from.isClassRef()) {
-      throw new EParseException("expect class-type");
+      throw new AstParseException("expect class-type");
     }
 
     final String name = from.getClassType().getIdentifier().getName();
