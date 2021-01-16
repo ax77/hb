@@ -10,7 +10,7 @@ import jscan.tokenize.Token;
 import njast.ast_kinds.ExpressionBase;
 import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.expr.ExprExpression;
-import njast.ast_nodes.expr.ExprNumericConstant;
+import njast.ast_nodes.expr.ExprNumber;
 import njast.ast_parsers.ParseExpression;
 import njast.parse.Parse;
 import njast.types.ArrayType;
@@ -123,7 +123,7 @@ public class TypeRecognizer {
     if (count.getBase() != ExpressionBase.EPRIMARY_NUMBER) {
       parser.perror("expect array size.");
     }
-    ExprNumericConstant num = count.getLiteralNumber();
+    ExprNumber num = count.getNumber();
     if (!num.isInteger()) {
       parser.perror("expect array size integer.");
     }

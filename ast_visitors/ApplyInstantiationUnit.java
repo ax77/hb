@@ -21,7 +21,7 @@ import njast.ast_nodes.clazz.vars.VarDeclarator;
 import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
-import njast.ast_nodes.expr.ExprClassInstanceCreation;
+import njast.ast_nodes.expr.ExprClassCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
@@ -134,10 +134,10 @@ public class ApplyInstantiationUnit {
     }
 
     if (base == StatementBase.SFOR) {
-      StmtFor forloop = statement.getSfor();
+      StmtFor forloop = statement.getForStmt();
 
       // 1)
-      final ExprExpression collection = forloop.getCollection();
+      final ExprExpression collection = forloop.getAuxCollection();
       applyExpression(object, collection);
 
       // 2)
@@ -154,7 +154,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == StatementBase.SIF) {
-      Stmt_if sif = statement.getSif();
+      Stmt_if sif = statement.getIfStmt();
       applyExpression(object, sif.getCondition());
       applyStatement(object, method, sif.getTrueStatement());
       applyStatement(object, method, sif.getOptionalElseStatement());
@@ -165,15 +165,15 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == StatementBase.SEXPR) {
-      applyExpression(object, statement.getSexpression());
+      applyExpression(object, statement.getExprStmt());
     }
 
     else if (base == StatementBase.SBLOCK) {
-      visitBlock(object, method, statement.getCompound());
+      visitBlock(object, method, statement.getBlockStmt());
     }
 
     else if (base == StatementBase.SRETURN) {
-      final ExprExpression retExpression = statement.getSexpression();
+      final ExprExpression retExpression = statement.getExprStmt();
       applyExpression(object, retExpression);
     }
 
@@ -264,7 +264,7 @@ public class ApplyInstantiationUnit {
   }
 
   public void applyClassInstanceCreation(ClassDeclaration object, ExprExpression e) {
-    ExprClassInstanceCreation classInstanceCreation = e.getClassInstanceCreation();
+    ExprClassCreation classInstanceCreation = e.getClassCreation();
 
     for (FuncArg arg : classInstanceCreation.getArguments()) {
       applyExpression(object, arg.getExpression());
@@ -341,7 +341,7 @@ public class ApplyInstantiationUnit {
 
   private void applyIdentifier(ClassDeclaration object, ExprExpression e) {
 
-    final ExprIdent primaryIdent = e.getExprIdent();
+    final ExprIdent primaryIdent = e.getIdent();
 
     final Symbol sym = symtabApplier.findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
 

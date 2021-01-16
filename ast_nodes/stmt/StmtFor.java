@@ -11,9 +11,8 @@ import njast.ast_nodes.expr.ExprIdent;
 public class StmtFor implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
 
-  private final ExprExpression iter;
-  private final ExprExpression collection;
-  private final StmtStatement loop;
+  private final ExprExpression auxIter;
+  private final ExprExpression auxCollection;
 
   // we'll rewrite short form to its full form
   // for item in collection {} 
@@ -24,10 +23,11 @@ public class StmtFor implements Serializable {
   private List<VarDeclarator> decl;
   private ExprExpression test;
   private ExprExpression step;
+  private final StmtStatement loop;
 
-  public StmtFor(Ident iter, Ident collection, StmtStatement loop) {
-    this.iter = new ExprExpression(new ExprIdent(iter));
-    this.collection = new ExprExpression(new ExprIdent(collection));
+  public StmtFor(Ident auxIter, Ident auxCollection, StmtStatement loop) {
+    this.auxIter = new ExprExpression(new ExprIdent(auxIter));
+    this.auxCollection = new ExprExpression(new ExprIdent(auxCollection));
     this.loop = loop;
   }
 
@@ -35,12 +35,12 @@ public class StmtFor implements Serializable {
     return loop;
   }
 
-  public ExprExpression getIter() {
-    return iter;
+  public ExprExpression getAuxIter() {
+    return auxIter;
   }
 
-  public ExprExpression getCollection() {
-    return collection;
+  public ExprExpression getAuxCollection() {
+    return auxCollection;
   }
 
   public List<VarDeclarator> getDecl() {

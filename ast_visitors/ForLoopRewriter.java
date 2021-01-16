@@ -35,9 +35,9 @@ public class ForLoopRewriter {
     //
 
     // collection
-    final ExprExpression collection = forloop.getCollection();
+    final ExprExpression collection = forloop.getAuxCollection();
 
-    IteratorChecker checker = new IteratorChecker(collection.getExprIdent().getVariable());
+    IteratorChecker checker = new IteratorChecker(collection.getIdent().getVariable());
     if (!checker.isIterable()) {
       throw new EParseException("collection is not iterable: " + collection.toString());
     }
@@ -45,10 +45,10 @@ public class ForLoopRewriter {
     Type iteratorType = checker.getIteratorType();
 
     // iter
-    final ExprExpression iter = forloop.getIter();
+    final ExprExpression iter = forloop.getAuxIter();
     iter.setResultType(elemType);
 
-    final Ident declIdent = iter.getExprIdent().getIdentifier();
+    final Ident declIdent = iter.getIdent().getIdentifier();
 
     // 1) init iterator: 
     //    let iter: iterator<TYPE> = collection.get_iterator();
@@ -120,7 +120,7 @@ public class ForLoopRewriter {
     final SourceLocation loc = new SourceLocation("for...", -1, -1);
 
     final Ident getIteratorIdent = Hash_ident.getHashedIdent("get_iterator");
-    final Ident collectionNameIdent = collection.getExprIdent().getIdentifier();
+    final Ident collectionNameIdent = collection.getIdent().getIdentifier();
     final ExprMethodInvocation methodInvocation = new ExprMethodInvocation(getIteratorIdent,
         new ExprExpression(new ExprIdent(collectionNameIdent)), emptyArgs);
     final ExprExpression iteratorVarInitializer = new ExprExpression(methodInvocation);

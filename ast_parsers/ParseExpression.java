@@ -40,7 +40,7 @@ import njast.ast_nodes.clazz.ClassDeclaration;
 import njast.ast_nodes.expr.ExprArrayCreation;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
-import njast.ast_nodes.expr.ExprClassInstanceCreation;
+import njast.ast_nodes.expr.ExprClassCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
@@ -376,7 +376,7 @@ public class ParseExpression {
       }
 
       else if (parser.is(T_LEFT_PAREN)) {
-        Ident funcname = lhs.getExprIdent().getIdentifier();
+        Ident funcname = lhs.getIdent().getIdentifier();
         if (funcname == null) {
           parser.perror("expect function name");
         }
@@ -559,7 +559,7 @@ public class ParseExpression {
         final List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
         final ClassType ref = new ClassType(instantiatedClass, typeArguments);
         final List<FuncArg> arguments = parseArglist();
-        final ExprClassInstanceCreation classInstanceCreation = new ExprClassInstanceCreation(new Type(ref), arguments);
+        final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
 
         // it is important to register type-setter for `current` class
         // not for the class is created in `new` expression 

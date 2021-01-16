@@ -99,7 +99,7 @@ public class DumpExpression {
 
   private void genAddr(ExprExpression e) {
     if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
-      final ExprIdent literalIdentifier = e.getExprIdent();
+      final ExprIdent literalIdentifier = e.getIdent();
 
       final String identStrName = literalIdentifier.getIdentifier().getName();
 
@@ -287,7 +287,7 @@ public class DumpExpression {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      final String itoa = String.format("%d", e.getLiteralNumber().getClong());
+      final String itoa = String.format("%d", e.getNumber().getClong());
       o("push " + itoa);
 
       toops(new tac(Type.INT_TYPE, t() + "=" + itoa));

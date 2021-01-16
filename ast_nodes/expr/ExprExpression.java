@@ -17,13 +17,13 @@ public class ExprExpression implements Serializable {
   // nodes
   private ExprUnary unary;
   private ExprBinary binary;
-  private ExprNumericConstant literalNumber;
-  private ExprIdent exprIdent;
+  private ExprNumber number;
+  private ExprIdent ident;
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
-  private ExprClassInstanceCreation classInstanceCreation;
+  private ExprClassCreation classCreation;
   private ExprAssign assign;
-  private ExprArrayCreation arrayInstanceCreation;
+  private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
 
   public ExprExpression(ExprSelf selfExpression) {
@@ -31,43 +31,23 @@ public class ExprExpression implements Serializable {
     this.selfExpression = selfExpression;
   }
 
-  public ExprSelf getSelfExpression() {
-    return selfExpression;
-  }
-
   public ExprExpression(ExprAssign assign) {
     this.base = ExpressionBase.EASSIGN;
     this.assign = assign;
   }
 
-  public ExprExpression(ExprArrayCreation arrayInstanceCreation) {
+  public ExprExpression(ExprArrayCreation arrayCreation) {
     this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
-    this.arrayInstanceCreation = arrayInstanceCreation;
-  }
-
-  public ExprArrayCreation getArrayInstanceCreation() {
-    return arrayInstanceCreation;
-  }
-
-  public ExprAssign getAssign() {
-    return assign;
+    this.arrayCreation = arrayCreation;
   }
 
   public ExprExpression(ExpressionBase base) {
     this.base = base;
   }
 
-  public Type getResultType() {
-    return resultType;
-  }
-
-  public void setResultType(Type resultType) {
-    this.resultType = resultType;
-  }
-
-  public ExprExpression(ExprClassInstanceCreation classInstanceCreation) {
+  public ExprExpression(ExprClassCreation classCreation) {
     this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
-    this.classInstanceCreation = classInstanceCreation;
+    this.classCreation = classCreation;
   }
 
   public ExprExpression(ExprUnary unary) {
@@ -85,14 +65,14 @@ public class ExprExpression implements Serializable {
 
     this.base = ExpressionBase.EPRIMARY_NUMBER;
 
-    ExprNumericConstant number = null;
+    ExprNumber number = null;
     if (e.isIntegerKind()) {
-      number = new ExprNumericConstant(e.getClong(), e.getNumtype());
+      number = new ExprNumber(e.getClong(), e.getNumtype());
     } else {
-      number = new ExprNumericConstant(e.getCdouble(), e.getNumtype());
+      number = new ExprNumber(e.getCdouble(), e.getNumtype());
     }
 
-    this.literalNumber = number;
+    this.number = number;
   }
 
   public ExprExpression(ExprMethodInvocation methodInvocation) {
@@ -107,7 +87,27 @@ public class ExprExpression implements Serializable {
 
   public ExprExpression(ExprIdent symbol) {
     this.base = ExpressionBase.EPRIMARY_IDENT;
-    this.exprIdent = symbol;
+    this.ident = symbol;
+  }
+
+  public ExprArrayCreation getArrayInstanceCreation() {
+    return arrayCreation;
+  }
+
+  public ExprAssign getAssign() {
+    return assign;
+  }
+
+  public Type getResultType() {
+    return resultType;
+  }
+
+  public ExprSelf getSelfExpression() {
+    return selfExpression;
+  }
+
+  public void setResultType(Type resultType) {
+    this.resultType = resultType;
   }
 
   public ExpressionBase getBase() {
@@ -122,12 +122,12 @@ public class ExprExpression implements Serializable {
     return binary;
   }
 
-  public ExprIdent getExprIdent() {
-    return exprIdent;
+  public ExprIdent getIdent() {
+    return ident;
   }
 
-  public ExprNumericConstant getLiteralNumber() {
-    return literalNumber;
+  public ExprNumber getNumber() {
+    return number;
   }
 
   public ExprMethodInvocation getMethodInvocation() {
@@ -138,8 +138,12 @@ public class ExprExpression implements Serializable {
     return fieldAccess;
   }
 
-  public ExprClassInstanceCreation getClassInstanceCreation() {
-    return classInstanceCreation;
+  public ExprClassCreation getClassCreation() {
+    return classCreation;
+  }
+
+  public ExprArrayCreation getArrayCreation() {
+    return arrayCreation;
   }
 
   public boolean is(ExpressionBase what) {
@@ -158,7 +162,7 @@ public class ExprExpression implements Serializable {
       return fieldAccess.toString();
     }
     if (base == ExpressionBase.EPRIMARY_IDENT) {
-      return exprIdent.toString();
+      return ident.toString();
     }
     if (base == ExpressionBase.ESELF) {
       return selfExpression.toString();
@@ -167,16 +171,16 @@ public class ExprExpression implements Serializable {
       return methodInvocation.toString();
     }
     if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      return String.format("%d", literalNumber.getClong());
+      return String.format("%d", number.getClong());
     }
     if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
       return "null";
     }
     if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
-      return classInstanceCreation.toString();
+      return classCreation.toString();
     }
     if (base == ExpressionBase.EARRAY_INSTANCE_CREATION) {
-      return arrayInstanceCreation.toString();
+      return arrayCreation.toString();
     }
     return base.toString();
   }

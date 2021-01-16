@@ -4,20 +4,20 @@ import java.io.Serializable;
 
 import jscan.cstrtox.NumType;
 
-public class ExprNumericConstant implements Serializable {
+public class ExprNumber implements Serializable {
   private static final long serialVersionUID = 4121213191687917298L;
 
   private final NumType numtype;
   private final long clong;
   private final double cdouble;
 
-  public ExprNumericConstant(long clong, NumType numtype) {
+  public ExprNumber(long clong, NumType numtype) {
     this.numtype = numtype;
     this.clong = clong;
     this.cdouble = (double) clong;
   }
 
-  public ExprNumericConstant(double cdouble, NumType numtype) {
+  public ExprNumber(double cdouble, NumType numtype) {
     this.numtype = numtype;
     this.clong = (long) cdouble;
     this.cdouble = cdouble;

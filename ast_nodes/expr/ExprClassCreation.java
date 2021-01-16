@@ -9,7 +9,7 @@ import njast.parse.NullChecker;
 import njast.templates.TypeSetter;
 import njast.types.Type;
 
-public class ExprClassInstanceCreation implements Serializable, TypeSetter {
+public class ExprClassCreation implements Serializable, TypeSetter {
   private static final long serialVersionUID = -8666532744723689317L;
 
   // <class instance creation expression> ::= new <class type> < type-arguments > ( <argument list>? )
@@ -17,7 +17,7 @@ public class ExprClassInstanceCreation implements Serializable, TypeSetter {
   private Type classtype;
   private final List<FuncArg> arguments;
 
-  public ExprClassInstanceCreation(Type classtype, List<FuncArg> arguments) {
+  public ExprClassCreation(Type classtype, List<FuncArg> arguments) {
     NullChecker.check(classtype, arguments);
 
     this.classtype = classtype;

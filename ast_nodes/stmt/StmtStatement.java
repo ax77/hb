@@ -10,78 +10,74 @@ public class StmtStatement implements Serializable {
   private static final long serialVersionUID = 2946438995245230886L;
 
   private final StatementBase base;
-  private StmtBlock compound;
-  private ExprExpression expr; // return expr or expr-stmt
-  private StmtFor sfor;
-  private Stmt_if sif;
+  private StmtBlock bloskStmt;
+  private ExprExpression exprStmt; // return expr or expr-stmt
+  private StmtFor forStmt;
+  private Stmt_if ifStmt;
 
-  public StmtStatement(StmtFor sfor) {
+  public StmtStatement(StmtFor forStmt) {
     this.base = StatementBase.SFOR;
-    this.sfor = sfor;
+    this.forStmt = forStmt;
   }
 
-  public StmtStatement(Stmt_if sif) {
+  public StmtStatement(Stmt_if ifStmt) {
     this.base = StatementBase.SIF;
-    this.sif = sif;
+    this.ifStmt = ifStmt;
   }
 
   // return <expr> ;
   // <expr> 
-  public StmtStatement(StatementBase base, ExprExpression expr) {
+  public StmtStatement(StatementBase base, ExprExpression exprStmt) {
     this.base = base;
-    this.expr = expr;
+    this.exprStmt = exprStmt;
   }
 
   // {  }
-  public StmtStatement(Token from, StmtBlock compound) {
+  public StmtStatement(Token from, StmtBlock bloskStmt) {
     this.base = StatementBase.SBLOCK;
-    this.compound = compound;
+    this.bloskStmt = bloskStmt;
   }
 
-  public StmtBlock getCompound() {
-    return compound;
-  }
-
-  public void setCompound(StmtBlock compound) {
-    this.compound = compound;
+  public StmtBlock getBlockStmt() {
+    return bloskStmt;
   }
 
   public StatementBase getBase() {
     return base;
   }
 
-  public ExprExpression getSexpression() {
-    return expr;
+  public ExprExpression getExprStmt() {
+    return exprStmt;
   }
 
-  public StmtFor getSfor() {
-    return sfor;
+  public StmtFor getForStmt() {
+    return forStmt;
   }
 
-  public Stmt_if getSif() {
-    return sif;
+  public Stmt_if getIfStmt() {
+    return ifStmt;
   }
 
   @Override
   public String toString() {
     if (base == StatementBase.SIF) {
-      return sif.toString();
+      return ifStmt.toString();
     }
     if (base == StatementBase.SEXPR) {
-      return expr.toString() + ";\n";
+      return exprStmt.toString() + ";\n";
     }
     if (base == StatementBase.SBLOCK) {
-      return compound.toString();
+      return bloskStmt.toString();
     }
     if (base == StatementBase.SRETURN) {
-      if (expr != null) {
-        return "return " + expr.toString() + ";\n";
+      if (exprStmt != null) {
+        return "return " + exprStmt.toString() + ";\n";
       } else {
         return "return;\n";
       }
     }
     if (base == StatementBase.SFOR) {
-      return sfor.toString();
+      return forStmt.toString();
     }
     return base.toString();
   }
