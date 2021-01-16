@@ -5,6 +5,7 @@ import static jscan.tokenize.T.TOKEN_IDENT;
 import static jscan.tokenize.T.T_COLON;
 import static jscan.tokenize.T.T_SEMI_COLON;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -321,7 +322,7 @@ public class Parse {
     // }
   }
 
-  public CompilationUnit parse() {
+  public CompilationUnit parse() throws IOException {
     CompilationUnit tu = new CompilationUnit();
 
     // top-level
@@ -332,8 +333,8 @@ public class Parse {
       // before each function or global declaration
       errorStraySemicolon();
 
-      TypeDeclaration ed = new ParseTypeDeclarationsList(this).parse();
-      tu.put(ed);
+      new ParseTypeDeclarationsList(this).parse(tu);
+
     }
 
     return tu;

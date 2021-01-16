@@ -1,8 +1,11 @@
 package njast.ast.parsers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.fio.FileReadKind;
+import jscan.fio.FileWrapper;
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -15,10 +18,12 @@ import njast.ast.nodes.method.ClassMethodDeclaration;
 import njast.ast.nodes.method.MethodParameter;
 import njast.ast.nodes.method.MethodSignature;
 import njast.ast.nodes.stmt.StmtBlock;
+import njast.ast.nodes.unit.CompilationUnit;
 import njast.ast.nodes.unit.TypeDeclaration;
 import njast.ast.nodes.vars.VarBase;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.Parse;
+import njast.parse.main.ParserMain;
 import njast.symtab.IdentMap;
 import njast.types.ClassType;
 import njast.types.Type;
@@ -30,22 +35,77 @@ public class ParseTypeDeclarationsList {
     this.parser = parser;
   }
 
-  public TypeDeclaration parse() {
+  public void parse(CompilationUnit unit) throws IOException {
 
     Modifiers modifiers = new ParseModifiers(parser).parse();
 
-    if (parser.tok().isIdent(IdentMap.class_ident)) {
-
+    if (parser.is(IdentMap.class_ident)) {
       Token tok = parser.moveget();
+      unit.put(new TypeDeclaration(parseClassDeclaration()));
+      return;
+    }
 
-      ClassDeclaration classBody = parseClassDeclaration();
-
-      return new TypeDeclaration(classBody);
-
+    // import std.list;
+    if (parser.is(IdentMap.import_ident)) {
+      parseImport(unit);
+      return;
     }
 
     parser.perror("unimpl");
-    return null;
+  }
+
+  private void parseImport(CompilationUnit unit) throws IOException {
+
+    Token tok = parser.checkedMove(IdentMap.import_ident);
+    StringBuilder sb = new StringBuilder();
+
+    while (!parser.isEof()) {
+
+      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON);
+      if (!isOk) {
+        parser.perror("expect import path like: [import package.file;]");
+      }
+      if (parser.is(T.T_SEMI_COLON)) {
+        break;
+      }
+      if (parser.isEof()) {
+        parser.perror("unexpected EOF");
+      }
+
+      Token importname = parser.moveget();
+      if (importname.ofType(T.T_DOT)) {
+        sb.append("/");
+      } else {
+        sb.append(importname.getValue());
+      }
+
+    }
+
+    parser.semicolon();
+
+    // TODO: normal directory for imports.
+    // now: just like this, because it is easy to manage git repository
+    // with these std files, and it is easy and precise to access the files
+    // from test folder instead of the root of the app.
+    final String dir = System.getProperty("user.dir") + "/src/test/java/njast/";
+    final String path = dir + "/" + sb.toString();
+
+    FileWrapper fw = new FileWrapper(path);
+    if (!fw.isExists()) {
+      parser.perror("file does not exists: " + path);
+    }
+
+    StringBuilder source = new StringBuilder();
+    source.append(fw.readToString(FileReadKind.AS_IS));
+
+    Parse nestedParser = new ParserMain(source).initiateParse();
+    CompilationUnit unitFromImport = nestedParser.parse();
+
+    for (TypeDeclaration td : unitFromImport.getTypeDeclarations()) {
+      parser.defineClassName(td.getClassDeclaration());
+      unit.put(td);
+    }
+
   }
 
   private ClassDeclaration parseClassDeclaration() {
