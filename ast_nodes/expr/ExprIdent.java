@@ -5,14 +5,14 @@ import java.io.Serializable;
 import jscan.symtab.Ident;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
 
-public class ExprPrimaryIdent implements Serializable {
+public class ExprIdent implements Serializable {
   private static final long serialVersionUID = 7777441284065170375L;
   private final Ident identifier;
 
   //MIR:TREE
   private VarDeclarator variable;
 
-  public ExprPrimaryIdent(Ident identifier) {
+  public ExprIdent(Ident identifier) {
     this.identifier = identifier;
   }
 

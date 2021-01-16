@@ -14,7 +14,7 @@ import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
-import njast.ast_nodes.expr.ExprPrimaryIdent;
+import njast.ast_nodes.expr.ExprIdent;
 import njast.errors.EParseException;
 import njast.types.Type;
 
@@ -99,7 +99,7 @@ public class DumpExpression {
 
   private void genAddr(ExprExpression e) {
     if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
-      final ExprPrimaryIdent literalIdentifier = e.getLiteralIdentifier();
+      final ExprIdent literalIdentifier = e.getExprIdent();
 
       final String identStrName = literalIdentifier.getIdentifier().getName();
 

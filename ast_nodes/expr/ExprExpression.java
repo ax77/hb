@@ -18,7 +18,7 @@ public class ExprExpression implements Serializable {
   private ExprUnary unary;
   private ExprBinary binary;
   private ExprNumericConstant literalNumber;
-  private ExprPrimaryIdent literalIdentifier;
+  private ExprIdent exprIdent;
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
   private ExprClassInstanceCreation classInstanceCreation;
@@ -105,9 +105,9 @@ public class ExprExpression implements Serializable {
     this.fieldAccess = fieldAccess;
   }
 
-  public ExprExpression(ExprPrimaryIdent symbol) {
+  public ExprExpression(ExprIdent symbol) {
     this.base = ExpressionBase.EPRIMARY_IDENT;
-    this.literalIdentifier = symbol;
+    this.exprIdent = symbol;
   }
 
   public ExpressionBase getBase() {
@@ -122,8 +122,8 @@ public class ExprExpression implements Serializable {
     return binary;
   }
 
-  public ExprPrimaryIdent getLiteralIdentifier() {
-    return literalIdentifier;
+  public ExprIdent getExprIdent() {
+    return exprIdent;
   }
 
   public ExprNumericConstant getLiteralNumber() {
@@ -158,7 +158,7 @@ public class ExprExpression implements Serializable {
       return fieldAccess.toString();
     }
     if (base == ExpressionBase.EPRIMARY_IDENT) {
-      return literalIdentifier.toString();
+      return exprIdent.toString();
     }
     if (base == ExpressionBase.ESELF) {
       return selfExpression.toString();

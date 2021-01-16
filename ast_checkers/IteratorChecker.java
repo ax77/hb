@@ -17,6 +17,7 @@ public class IteratorChecker {
   private final VarDeclarator var;
   private final boolean isIterable;
   private Type elemType;
+  private Type iteratorType;
 
   public IteratorChecker(VarDeclarator var) {
     this.var = var;
@@ -32,6 +33,13 @@ public class IteratorChecker {
       throw new EParseException("type for iterator is not recognized: " + var.toString());
     }
     return elemType;
+  }
+
+  public Type getIteratorType() {
+    if (iteratorType == null) {
+      throw new EParseException("type for iterator is not recognized: " + var.toString());
+    }
+    return iteratorType;
   }
 
   private boolean checkIsIterable() {
@@ -100,6 +108,7 @@ public class IteratorChecker {
     }
 
     this.elemType = returnTypeGetNext;
+    this.iteratorType = returnTypeOfGetIteratorMethod;
     return true;
   }
 }

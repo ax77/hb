@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import jscan.hashed.Hash_ident;
 import jscan.sourceloc.SourceLocation;
+import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast_checkers.IteratorChecker;
@@ -16,13 +18,14 @@ import njast.ast_nodes.clazz.methods.ClassMethodDeclaration;
 import njast.ast_nodes.clazz.methods.MethodParameter;
 import njast.ast_nodes.clazz.vars.VarBase;
 import njast.ast_nodes.clazz.vars.VarDeclarator;
+import njast.ast_nodes.clazz.vars.VarInitializer;
 import njast.ast_nodes.expr.ExprAssign;
 import njast.ast_nodes.expr.ExprBinary;
 import njast.ast_nodes.expr.ExprClassInstanceCreation;
 import njast.ast_nodes.expr.ExprExpression;
 import njast.ast_nodes.expr.ExprFieldAccess;
 import njast.ast_nodes.expr.ExprMethodInvocation;
-import njast.ast_nodes.expr.ExprPrimaryIdent;
+import njast.ast_nodes.expr.ExprIdent;
 import njast.ast_nodes.stmt.StmtBlock;
 import njast.ast_nodes.stmt.StmtBlockItem;
 import njast.ast_nodes.stmt.StmtFor;
@@ -133,36 +136,20 @@ public class ApplyInstantiationUnit {
     if (base == StatementBase.SFOR) {
       StmtFor forloop = statement.getSfor();
 
-      // collection
+      // 1)
       final ExprExpression collection = forloop.getCollection();
       applyExpression(object, collection);
-      IteratorChecker checker = new IteratorChecker(collection.getLiteralIdentifier().getVariable());
-      if (!checker.isIterable()) {
-        throw new EParseException("collection is not iterable: " + collection.toString());
+
+      // 2)
+      ForLoopRewriter.rewriteForLoop(object, forloop);
+
+      // 3) normal for-loop here, in its pure-huge form
+      for (VarDeclarator var : forloop.getDecl()) {
+        visitLocalVar(object, var);
       }
-      Type elemType = checker.getElemType();
 
-      // iterator
-      final ExprExpression iter = forloop.getIter();
-      iter.setResultType(elemType);
-
-      // TODO: init iterator:
-      //
-      // for s in x {
-      //   
-      // }
-      //
-      // ...->
-      //
-      // let iter: list_iterator<int> = x.get_iterator();
-      // for(int s = iter.current(); iter.has_next(); s = iter.get_next()) {
-      //   
-      // }
-      //
-      symtabApplier.defineBlockVar(new VarDeclarator(VarBase.LOCAL_VAR, elemType,
-          iter.getLiteralIdentifier().getIdentifier(), new SourceLocation("TODO:for", -1, -1)));
-
-      // loop
+      applyExpression(object, forloop.getTest());
+      applyExpression(object, forloop.getStep());
       applyStatement(object, method, forloop.getLoop());
     }
 
@@ -354,7 +341,7 @@ public class ApplyInstantiationUnit {
 
   private void applyIdentifier(ClassDeclaration object, ExprExpression e) {
 
-    final ExprPrimaryIdent primaryIdent = e.getLiteralIdentifier();
+    final ExprIdent primaryIdent = e.getExprIdent();
 
     final Symbol sym = symtabApplier.findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
 
