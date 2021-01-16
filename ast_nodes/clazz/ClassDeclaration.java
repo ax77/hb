@@ -44,6 +44,17 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   // we'll collect all type-setters here, to fast restore
   private List<TypeSetter> typeSetters;
 
+  //anti-recursion
+  private boolean isNoexpand;
+
+  public boolean isNoexpand() {
+    return isNoexpand;
+  }
+
+  public void setNoexpand(boolean isNoexpand) {
+    this.isNoexpand = isNoexpand;
+  }
+
   public ClassDeclaration(Ident identifier) {
     this.uniqueId = UniqueCounter.getUniqueId();
     this.identifier = identifier;

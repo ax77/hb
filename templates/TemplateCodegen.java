@@ -22,6 +22,9 @@ public class TemplateCodegen {
   // output for generated
   private final InstantiationUnit instantiationUnit;
 
+  //anti-recursion
+  private List<ClassDeclaration> expansionState = new ArrayList<>();
+
   public TemplateCodegen() {
     this.generatedClasses = new ArrayList<>();
     this.generatedClassesForReuse = new HashMap<>();
@@ -34,6 +37,11 @@ public class TemplateCodegen {
 
   public Type getTypeFromTemplate(final Type from) {
     if (!from.isClassTemplate()) {
+      return from;
+    }
+
+    //anti-recursion
+    if (from.getClassType().isNoexpand()) {
       return from;
     }
 
@@ -51,6 +59,9 @@ public class TemplateCodegen {
     final ClassDeclaration templateClass = copyClazz(from.getClassType(), newName);
     final List<Type> typeArguments = from.getTypeArguments();
     final List<Type> typeParameters = templateClass.getTypeParametersT();
+
+    //anti-recursion
+    expansionState.add(0, templateClass);
 
     if (typeArguments.size() != typeParameters.size()) {
       throw new EParseException("type parameters and type arguments are different by count.");
@@ -165,6 +176,14 @@ public class TemplateCodegen {
   }
 
   private void fabric(TypeSetter typeSetter, ClassDeclaration object, Ident typenameT, Type typeToSet) {
+
+    //anti-recursion
+    for (ClassDeclaration cd : expansionState) {
+      if (cd.equals(object)) {
+        // System.out.println("mark noexpand: " + cd.getIdentifier().getName());
+        cd.setNoexpand(true);
+      }
+    }
 
     Type typeToCheck = typeSetter.getType();
 
