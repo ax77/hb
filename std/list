@@ -1,18 +1,9 @@
-class node<T>
-{
-    var prev: node<T>;
-    var item: T;
-    var next: node<T>;
-    
-    init(prev: node<T>,
-         item: T,
-         next: node<T>)
-    {
-        self.prev = prev;
-        self.next = next;
-        self.item = item;
-    }
-}
+import std.list_iterator;
+import std.list_node;
+import std.list;
+import std.io;
+import std.string;
+import std.mem.malloc;
 
 class list<T>
 {
@@ -42,40 +33,6 @@ class list<T>
         return new list_iterator<T>(
             collection: self
         );
-    }
-}
-
-class list_iterator<T> {
-
-    var collection: list<T>;
-    var last_returned: node<T>;
-    var next: node<T>;
-    var next_index: int;
-    
-    init(collection: list<T>)
-    {
-        self.collection = collection;
-        self.last_returned = collection.first;
-        self.next = collection.first;
-        self.next_index = 0;
-    }
-    
-    func get_current() -> T
-    {
-        return last_returned.item;
-    }
-    
-    func has_next() -> boolean
-    {
-        return next_index < collection.size;
-    }
-    
-    func get_next() -> T
-    {
-        self.last_returned = next;
-        self.next = next.next;
-        self.next_index += 1;
-        return last_returned.item;
     }
 }
 

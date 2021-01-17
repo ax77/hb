@@ -83,28 +83,28 @@ public class ParseTypeDeclarationsList {
 
     parser.semicolon();
 
-    // TODO: normal directory for imports.
-    // now: just like this, because it is easy to manage git repository
-    // with these std files, and it is easy and precise to access the files
-    // from test folder instead of the root of the app.
-    final String dir = System.getProperty("user.dir") + "/src/test/java/njast/";
-    final String path = dir + "/" + sb.toString();
-
-    FileWrapper fw = new FileWrapper(path);
-    if (!fw.isExists()) {
-      parser.perror("file does not exists: " + path);
-    }
-
-    StringBuilder source = new StringBuilder();
-    source.append(fw.readToString(FileReadKind.AS_IS));
-
-    Parse nestedParser = new ParserMain(source).initiateParse();
-    CompilationUnit unitFromImport = nestedParser.parse();
-
-    for (TypeDeclaration td : unitFromImport.getTypeDeclarations()) {
-      parser.defineClassName(td.getClassDeclaration());
-      unit.put(td);
-    }
+    //    // TODO: normal directory for imports.
+    //    // now: just like this, because it is easy to manage git repository
+    //    // with these std files, and it is easy and precise to access the files
+    //    // from test folder instead of the root of the app.
+    //    final String dir = System.getProperty("user.dir") + "/src/test/java/njast/";
+    //    final String path = dir + "/" + sb.toString();
+    //
+    //    FileWrapper fw = new FileWrapper(path);
+    //    if (!fw.isExists()) {
+    //      parser.perror("file does not exists: " + path);
+    //    }
+    //
+    //    StringBuilder source = new StringBuilder();
+    //    source.append(fw.readToString(FileReadKind.AS_IS));
+    //
+    //    Parse nestedParser = new ParserMain(source).initiateParse();
+    //    CompilationUnit unitFromImport = nestedParser.parse();
+    //
+    //    for (TypeDeclaration td : unitFromImport.getTypeDeclarations()) {
+    //      parser.defineClassName(td.getClassDeclaration());
+    //      unit.put(td);
+    //    }
 
   }
 
