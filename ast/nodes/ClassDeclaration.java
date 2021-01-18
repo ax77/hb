@@ -149,7 +149,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   public void setTypeParametersT(List<Type> typeParametersT) {
     for (Type tp : typeParametersT) {
-      if (!tp.isTypeVarRef()) {
+      if (!tp.is_type_var()) {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
@@ -183,7 +183,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     for (int i = 0; i < formalParameters.size(); i++) {
       Type tp1 = formalParameters.get(i).getType();
       Type tp2 = arguments.get(i).getExpression().getResultType();
-      if (!tp1.isEqualTo(tp2)) {
+      if (!tp1.is_equal_to(tp2)) {
         return false;
       }
     }

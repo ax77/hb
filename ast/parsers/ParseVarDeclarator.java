@@ -45,7 +45,7 @@ public class ParseVarDeclarator {
     if (parser.is(T.T_ASSIGN)) {
       Token assignTok = parser.moveget();
 
-      if (type.isArray()) {
+      if (type.is_array()) {
 
         if (parser.is(IdentMap.new_ident)) {
           var.setInitializer(parseInitializer());
@@ -77,7 +77,7 @@ public class ParseVarDeclarator {
     // if only array could be nested, condition would not be necessary
 
     // 1)
-    if (ty.isArray()) {
+    if (ty.is_array()) {
 
       parser.checkedMove(T.T_LEFT_BRACKET);
       long arlen = ty.getArrayType().getCount();
@@ -107,7 +107,7 @@ public class ParseVarDeclarator {
         }
 
         int offsetOf = off + elsize * count;
-        boolean nestedExpansion = sub.isArray();
+        boolean nestedExpansion = sub.is_array();
 
         if (!nestedExpansion) {
           ExprExpression expr = new ParseExpression(parser).e_assign();

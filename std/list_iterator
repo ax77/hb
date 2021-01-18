@@ -10,7 +10,7 @@ class list_iterator<T> {
     var collection: list<T>;
     var last_returned: node<T>;
     var next: node<T>;
-    var next_index: int;
+    var next_index: u64;
     
     init(collection: list<T>)
     {

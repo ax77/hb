@@ -92,7 +92,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   }
 
   public boolean isVoid() {
-    return isFunction() && getType().isVoidStub();
+    return isFunction() && getType().is_void_stub();
   }
 
   public StmtBlock getBlock() {

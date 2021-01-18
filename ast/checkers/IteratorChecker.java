@@ -1,9 +1,12 @@
 package njast.ast.checkers;
 
+import static njast.ast.mir.Renamer.GET_ITERATOR_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_GET_CURRENT_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_GET_NEXT_METHOD_NAME;
+import static njast.ast.mir.Renamer.ITERATOR_HAS_NEXT_METHOD_NAME;
+
 import java.util.ArrayList;
 
-import jscan.hashed.Hash_ident;
-import jscan.symtab.Ident;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.expr.FuncArg;
 import njast.ast.nodes.method.ClassMethodDeclaration;
@@ -11,7 +14,6 @@ import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.AstParseException;
 import njast.types.Type;
 import njast.types.TypeBase;
-import static njast.ast.mir.Renamer.*;
 
 public class IteratorChecker {
 
@@ -58,7 +60,7 @@ public class IteratorChecker {
 
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
     final Type type = var.getType();
-    if (!type.isClassRef()) {
+    if (!type.is_class()) {
       return false; // TODO: arrays
     }
 
@@ -76,7 +78,7 @@ public class IteratorChecker {
     // check the iterator class
     //
     final Type returnTypeOfGetIteratorMethod = mGetIterator.getType();
-    if (!returnTypeOfGetIteratorMethod.isClassRef()) {
+    if (!returnTypeOfGetIteratorMethod.is_class()) {
       return false;
     }
 
@@ -99,7 +101,7 @@ public class IteratorChecker {
     //
     final Type returnTypeGetCurrent = mCurrent.getType();
     final Type returnTypeGetNext = mGetNext.getType();
-    if (!returnTypeGetCurrent.isEqualTo(returnTypeGetNext)) {
+    if (!returnTypeGetCurrent.is_equal_to(returnTypeGetNext)) {
       return false;
     }
 

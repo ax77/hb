@@ -9,7 +9,7 @@ class list<T>
 {
     var first: node<T>;
     var last: node<T>;
-    var size: int;
+    var size: u64;
     
     func push_back(e: T)
     {

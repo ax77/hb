@@ -96,7 +96,7 @@ public class TypeRecognizer {
 
     // 3) class-name
     Type referenceType = getReftype();
-    if (!referenceType.isClassRef()) {
+    if (!referenceType.is_class()) {
       parser.perror("expect class-name, but was: " + referenceType.toString());
     }
 

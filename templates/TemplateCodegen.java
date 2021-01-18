@@ -36,7 +36,7 @@ public class TemplateCodegen {
   }
 
   public Type getTypeFromTemplate(final Type from) {
-    if (!from.isClassTemplate()) {
+    if (!from.is_class_template()) {
       return from;
     }
 
@@ -105,7 +105,7 @@ public class TemplateCodegen {
 
   private Type presentedInGenerated2(Type result) {
 
-    if (!result.isClassRef()) {
+    if (!result.is_class()) {
       throw new AstParseException("expect class-type");
     }
 
@@ -113,7 +113,7 @@ public class TemplateCodegen {
     final String name = classWeWantToFind.getIdentifier().getName();
 
     for (Type tp : generatedClasses) {
-      if (tp.isClassRef()) {
+      if (tp.is_class()) {
         final ClassDeclaration classAlreadyGenerated = tp.getClassType();
         final boolean first = classAlreadyGenerated.getIdentifier().getName().equals(name);
         final boolean second = classAlreadyGenerated.getUniqueId() == classWeWantToFind.getUniqueId();
@@ -132,7 +132,7 @@ public class TemplateCodegen {
       return null;
     }
 
-    if (!from.isClassRef()) {
+    if (!from.is_class()) {
       throw new AstParseException("expect class-type");
     }
 
@@ -205,7 +205,7 @@ public class TemplateCodegen {
 
   private boolean maybeReplaceTypenameWithType(Type typeToCheck, Ident typenameT) {
 
-    if (!typeToCheck.isTypeVarRef()) {
+    if (!typeToCheck.is_type_var()) {
       return false;
     }
 
@@ -219,7 +219,7 @@ public class TemplateCodegen {
 
   private void maybeClearTypeParametersIfSelfReference(Type typeToCheck, ClassDeclaration object) {
 
-    if (!typeToCheck.isClassRef()) {
+    if (!typeToCheck.is_class()) {
       return;
     }
 
@@ -234,7 +234,7 @@ public class TemplateCodegen {
 
   private Type maybeExpandTypeToNewType(Type typeToCheck) {
 
-    if (!typeToCheck.isClassRef()) {
+    if (!typeToCheck.is_class()) {
       return null;
     }
 

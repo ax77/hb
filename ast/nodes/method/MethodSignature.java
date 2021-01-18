@@ -65,7 +65,7 @@ public class MethodSignature implements Serializable {
     for (int i = 0; i < bound; i++) {
       Type tp1 = parameters.get(i).getType();
       Type tp2 = anotherParameters.get(i).getType();
-      if (!tp1.isEqualTo(tp2)) {
+      if (!tp1.is_equal_to(tp2)) {
         return false;
       }
     }

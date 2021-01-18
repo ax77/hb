@@ -16,7 +16,7 @@ public class Dto {
     NullChecker.check(typeArguments);
     NullChecker.check(result);
 
-    if (!templateGiven.isClassTemplate()) {
+    if (!templateGiven.is_class_template()) {
       throw new AstParseException("expect class-template");
     }
 

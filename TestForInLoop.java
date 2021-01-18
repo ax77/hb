@@ -35,7 +35,7 @@ public class TestForInLoop {
     sb.append(" /*016*/  {                                                \n");
     sb.append(" /*017*/      var first: node<T>;                          \n");
     sb.append(" /*018*/      var last: node<T>;                           \n");
-    sb.append(" /*019*/      var size: int;                               \n");
+    sb.append(" /*019*/      var size: u64;                               \n");
     sb.append(" /*020*/      func push_back(e: T)                         \n");
     sb.append(" /*021*/      {                                            \n");
     sb.append(" /*022*/          var l: node<T> = self.last;              \n");
@@ -63,7 +63,7 @@ public class TestForInLoop {
     sb.append(" /*044*/      var collection: list<T>;                     \n");
     sb.append(" /*045*/      var last_returned: node<T>;                  \n");
     sb.append(" /*046*/      var next: node<T>;                           \n");
-    sb.append(" /*047*/      var next_index: int;                         \n");
+    sb.append(" /*047*/      var next_index: u64;                         \n");
     sb.append(" /*048*/      init(collection: list<T>)                    \n");
     sb.append(" /*049*/      {                                            \n");
     sb.append(" /*050*/          self.collection = collection;            \n");
@@ -89,8 +89,8 @@ public class TestForInLoop {
     sb.append(" /*070*/  }                                                \n");
     sb.append(" /*071*/  class test                                       \n");
     sb.append(" /*072*/  {                                                \n");
-    sb.append(" /*073*/      var list: list<int>;                         \n");
-    sb.append(" /*074*/      var counter: int;                            \n");
+    sb.append(" /*073*/      var list: list<u64>;                         \n");
+    sb.append(" /*074*/      var counter: u64;                            \n");
     sb.append(" /*075*/      func fn() {                                  \n");
     sb.append(" /*076*/          for item in list {                       \n");
     sb.append(" /*077*/            counter += item;                       \n");

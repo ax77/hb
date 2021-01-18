@@ -40,13 +40,16 @@ public abstract class IdentRecognizer {
   }
   
   public static boolean isBasicTypeIdent(Token what) {
-    return what.isIdent(IdentMap.byte_ident)
-        || what.isIdent(IdentMap.short_ident)
-        || what.isIdent(IdentMap.char_ident)
-        || what.isIdent(IdentMap.int_ident)
-        || what.isIdent(IdentMap.long_ident)
-        || what.isIdent(IdentMap.float_ident)
-        || what.isIdent(IdentMap.double_ident)
+    return what.isIdent(IdentMap.i8_ident )
+        || what.isIdent(IdentMap.u8_ident )
+        || what.isIdent(IdentMap.i16_ident)
+        || what.isIdent(IdentMap.u16_ident)
+        || what.isIdent(IdentMap.i32_ident)
+        || what.isIdent(IdentMap.u32_ident)
+        || what.isIdent(IdentMap.i64_ident)
+        || what.isIdent(IdentMap.u64_ident)
+        || what.isIdent(IdentMap.f32_ident)
+        || what.isIdent(IdentMap.f64_ident)
         || what.isIdent(IdentMap.boolean_ident);
   }
 

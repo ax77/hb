@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.fio.FileReadKind;
-import jscan.fio.FileWrapper;
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
@@ -23,7 +21,6 @@ import njast.ast.nodes.unit.TypeDeclaration;
 import njast.ast.nodes.vars.VarBase;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.Parse;
-import njast.parse.main.ParserMain;
 import njast.symtab.IdentMap;
 import njast.types.ClassType;
 import njast.types.Type;
@@ -260,7 +257,7 @@ public class ParseTypeDeclarationsList {
     for (int i = 0; i < bound; i++) {
       Type tp1 = first.get(i).getType();
       Type tp2 = another.get(i).getType();
-      if (!tp1.isEqualTo(tp2)) {
+      if (!tp1.is_equal_to(tp2)) {
         return false;
       }
     }

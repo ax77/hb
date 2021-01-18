@@ -28,9 +28,9 @@ public abstract class NameBuilder {
   // and not depends on general toString() which we may change one day or other.
   //
   private static String typeToString(Type tp) {
-    boolean isPrimitive = tp.isPrimitive();
-    boolean isReference = tp.isClassRef();
-    boolean isArray = tp.isArray();
+    boolean isPrimitive = tp.is_primitive();
+    boolean isReference = tp.is_class();
+    boolean isArray = tp.is_array();
     boolean isOk = isPrimitive || isReference || isArray;
 
     if (!isOk) {

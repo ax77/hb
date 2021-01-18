@@ -19,7 +19,6 @@ import njast.ast.checkers.IdentRecognizer;
 import njast.ast.checkers.TypeRecognizer;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.unit.CompilationUnit;
-import njast.ast.nodes.unit.TypeDeclaration;
 import njast.ast.parsers.ParseTypeDeclarationsList;
 
 public class Parse {

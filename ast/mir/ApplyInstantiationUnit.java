@@ -252,7 +252,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      e.setResultType(Type.INT_TYPE); // TODO:
+      e.setResultType(Type.I64_TYPE); // TODO:
     }
 
     else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
@@ -332,7 +332,7 @@ public class ApplyInstantiationUnit {
     // TODO: type checker, compatible, etc...
 
     if (forLongType.contains(operator.getType())) {
-      e.setResultType(Type.LONG_TYPE);
+      e.setResultType(Type.I64_TYPE);
     }
 
     else if (forBooleanType.contains(operator.getType())) {
@@ -376,7 +376,7 @@ public class ApplyInstantiationUnit {
     // find the field, and get its type
     //
     final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
-    if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
+    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
       throw new AstParseException("expect reference for field access like [a.b] -> a must be a class.");
     }
 
@@ -408,7 +408,7 @@ public class ApplyInstantiationUnit {
       // method: a.fn(1,2,3)
 
       final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
-      if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
+      if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
         throw new AstParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
       }
 

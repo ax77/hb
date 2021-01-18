@@ -73,7 +73,7 @@ public abstract class TypeComparerForTemplates {
     // because if we'll add new base - and forget to compare it
     // it'll be better the error instead of silence.
     //
-    if (first.isPrimitive()) {
+    if (first.is_primitive()) {
       if (!base1.equals(base2)) {
         return false;
       }
@@ -101,7 +101,7 @@ public abstract class TypeComparerForTemplates {
     }
 
     else if (base1 == TypeBase.TP_ARRAY) {
-      if (!another.isArray()) {
+      if (!another.is_array()) {
         return false;
       }
 
