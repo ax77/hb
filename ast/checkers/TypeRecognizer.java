@@ -104,12 +104,16 @@ public class TypeRecognizer {
   }
 
   private Type getArray() {
-    // [2:[2:int]]
+    // 1) fixed   [2:[2:i32]], [2: u64]
+    // 2) dynamic [[i32]], [i8]
 
     parser.checkedMove(T.T_LEFT_BRACKET);
 
-    long count = getArrayCount();
-    parser.colon();
+    long count = 0;
+    if (parser.is(T.TOKEN_NUMBER)) {
+      count = getArrayCount();
+      parser.colon();
+    }
 
     Type arrayOf = new TypeRecognizer(parser).getType();
     parser.checkedMove(T.T_RIGHT_BRACKET);

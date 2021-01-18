@@ -5,6 +5,7 @@ import java.util.List;
 
 import jscan.sourceloc.SourceLocation;
 import jscan.symtab.Ident;
+import njast.ast.modifiers.Modifiers;
 import njast.ast.nodes.ClassDeclaration;
 import njast.parse.ILocation;
 import njast.templates.TypeSetter;
@@ -14,14 +15,16 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private static final long serialVersionUID = -364976996504280849L;
 
   private final VarBase base;
+  private final Modifiers modifiers;
   private /*final*/ Type type;
   private final Ident identifier;
   private List<VarInitializer> initializer;
   private final SourceLocation location;
   private ClassDeclaration clazz; // is it is a field
 
-  public VarDeclarator(VarBase base, Type type, Ident identifier, SourceLocation location) {
+  public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, SourceLocation location) {
     this.base = base;
+    this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
     this.location = location;
@@ -52,6 +55,7 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    sb.append(modifiers.toString() + " ");
     sb.append(identifier.getName());
     sb.append(": ");
     sb.append(type.toString());

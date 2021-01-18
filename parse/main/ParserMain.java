@@ -79,33 +79,25 @@ public class ParserMain implements ParserMainApi {
   // TODO: more clean, fast, precise...
   private void initIdents() {
     g("abstract");
-    //g("boolean");
     g("break");
-    g("byte");
     g("case");
     g("catch");
-    g("char");
-    //g("class");
     g("const");
     g("continue");
     g("default");
     g("do");
-    g("double");
     g("else");
     g("enum");
     g("extends");
     g("final");
     g("finally");
-    g("float");
     g("for");
     g("goto");
     g("if");
     g("implements");
     g("import");
     g("instanceof");
-    g("int");
     g("interface");
-    g("long");
     g("native");
     g("new");
     g("null");
@@ -114,23 +106,19 @@ public class ParserMain implements ParserMainApi {
     g("protected");
     g("public");
     g("return");
-    g("short");
     g("static");
     g("super");
     g("switch");
     g("synchronized");
-    g("this");
     g("throw");
     g("throws");
     g("transient");
     g("try");
-    //g("void");
     g("volatile");
     g("while");
     //
     g("var");
     g("let");
-    //g("func");
     g("weak");
     g("init");
     g("deinit");

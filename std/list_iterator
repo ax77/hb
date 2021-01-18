@@ -1,8 +1,4 @@
-import std.list_iterator;
-import std.list_node;
 import std.list;
-import std.io;
-import std.string;
 import std.mem.malloc;
 
 class list_iterator<T> {

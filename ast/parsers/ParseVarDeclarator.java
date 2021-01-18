@@ -40,7 +40,7 @@ public class ParseVarDeclarator {
 
     final Token colon = parser.colon();
     final Type type = new TypeRecognizer(parser).getType();
-    final VarDeclarator var = new VarDeclarator(base, type, id, location);
+    final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, location);
 
     if (parser.is(T.T_ASSIGN)) {
       Token assignTok = parser.moveget();

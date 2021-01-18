@@ -14,6 +14,7 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast.checkers.IteratorChecker;
+import njast.ast.modifiers.Modifiers;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.expr.ExprAssign;
 import njast.ast.nodes.expr.ExprExpression;
@@ -24,6 +25,7 @@ import njast.ast.nodes.stmt.StmtFor;
 import njast.ast.nodes.vars.VarBase;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.ast.nodes.vars.VarInitializer;
+import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ForLoopRewriter {
@@ -101,7 +103,8 @@ public class ForLoopRewriter {
   private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName) {
 
     final SourceLocation loc = new SourceLocation("for...", -1, -1);
-    final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, elemType, declIdent, loc);
+
+    final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), elemType, declIdent, loc);
 
     final List<VarInitializer> inits = new ArrayList<>();
     inits.add(new VarInitializer(call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName), 0));
@@ -116,7 +119,8 @@ public class ForLoopRewriter {
 
     final SourceLocation loc = new SourceLocation("for...", -1, -1);
 
-    final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, iteratorType, iteratorVarName, loc);
+    final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), iteratorType,
+        iteratorVarName, loc);
     final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName);
 
     final List<VarInitializer> inits = new ArrayList<>();
