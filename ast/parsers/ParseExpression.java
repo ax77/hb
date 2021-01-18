@@ -28,7 +28,6 @@ import static jscan.tokenize.T.T_XOR;
 import java.util.ArrayList;
 import java.util.List;
 
-import jscan.cconst.CStr;
 import jscan.cstrtox.C_strtox;
 import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;

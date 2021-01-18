@@ -33,6 +33,21 @@ public class ClassType implements Serializable {
     this.typeArguments.add(e);
   }
 
+  public boolean is_equal_to(ClassType another) {
+    if (this == another) {
+      return true;
+    }
+    if (!clazz.is_equal_to(another.getClazz())) {
+      return false;
+    }
+
+    if (!TypeListsComparer.typeListsAreEqual(typeArguments, another.getTypeArguments())) {
+      return false;
+    }
+
+    return true;
+  }
+
   @Override
   public String toString() {
     return clazz.getIdentifier().getName();

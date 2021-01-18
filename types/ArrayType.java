@@ -25,6 +25,22 @@ public class ArrayType implements Serializable {
     this.count = count;
   }
 
+  public boolean is_equal_to(ArrayType another) {
+    if (this == another) {
+      return true;
+    }
+
+    if (getCount() != another.getCount()) {
+      return false;
+    }
+    final Type sub1 = getArrayOf();
+    final Type sub2 = another.getArrayOf();
+    if (!sub1.is_equal_to(sub2)) {
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public String toString() {
     return "[" + String.format("%d", count) + ": " + arrayOf.toString() + "]";

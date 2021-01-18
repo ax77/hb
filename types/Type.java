@@ -102,6 +102,10 @@ public class Type implements Serializable, TypeApi {
     return classType.getClazz();
   }
 
+  public ClassType getClassTypeRef() {
+    return classType;
+  }
+
   public List<Type> getTypeArguments() {
     if (!is_class()) {
       throw new AstParseException("is not a class");
@@ -144,53 +148,98 @@ public class Type implements Serializable, TypeApi {
   public boolean is_equal_to(Type another) {
     NullChecker.check(another);
 
+    // short: two pointers are equal
     if (this == another) {
       return true;
     }
 
-    if (is_primitive()) {
-      if (!base.equals(another.getBase())) {
+    if (is(TypeBase.TP_I8)) {
+      if (!another.is(TypeBase.TP_I8)) {
         return false;
       }
-    }
-
-    else if (is_class()) {
-      if (!another.is_class()) {
+    } else if (is(TypeBase.TP_U8)) {
+      if (!another.is(TypeBase.TP_U8)) {
         return false;
       }
-      final Ident name1 = classType.getClazz().getIdentifier();
-      final Ident name2 = another.getClassType().getIdentifier();
+    } else if (is(TypeBase.TP_I16)) {
+      if (!another.is(TypeBase.TP_I16)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_U16)) {
+      if (!another.is(TypeBase.TP_U16)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_I32)) {
+      if (!another.is(TypeBase.TP_I32)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_U32)) {
+      if (!another.is(TypeBase.TP_U32)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_I64)) {
+      if (!another.is(TypeBase.TP_I64)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_U64)) {
+      if (!another.is(TypeBase.TP_U64)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_F32)) {
+      if (!another.is(TypeBase.TP_F32)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_F64)) {
+      if (!another.is(TypeBase.TP_F64)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_BOOLEAN)) {
+      if (!another.is(TypeBase.TP_BOOLEAN)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_VOID_STUB)) {
+      if (!another.is(TypeBase.TP_VOID_STUB)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T)) {
+      if (!another.is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T)) {
+        return false;
+      }
+      final Ident anotherTypeVariable = another.getTypeVariable();
+      final String name1 = typeVariable.getName();
+      final String name2 = anotherTypeVariable.getName();
       if (!name1.equals(name2)) {
         return false;
       }
-    }
-
-    else if (is_void_stub()) {
-      if (!another.is_void_stub()) {
+    } else if (is(TypeBase.TP_CLASS)) {
+      if (!another.is(TypeBase.TP_CLASS)) {
         return false;
       }
-    }
-
-    else if (is_array()) {
-      if (!another.is_array()) {
+      if (!classType.is_equal_to(another.getClassTypeRef())) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_FUNCTION)) {
+      if (!another.is(TypeBase.TP_FUNCTION)) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_ARRAY)) {
+      if (!another.is(TypeBase.TP_ARRAY)) {
         return false;
       }
       final ArrayType anotherArray = another.getArrayType();
-      if (arrayType.getCount() != anotherArray.getCount()) {
+      if (!arrayType.is_equal_to(anotherArray)) {
         return false;
       }
-      final Type sub1 = arrayType.getArrayOf();
-      final Type sub2 = anotherArray.getArrayOf();
-      if (!sub1.is_equal_to(sub2)) {
+    } else if (is(TypeBase.TP_TUPLE)) {
+      if (!another.is(TypeBase.TP_TUPLE)) {
         return false;
       }
-    }
-
-    else {
-      throw new AstParseException("unimpl...");
+    } else {
+      throw new AstParseException("unimplemented comparison for base: " + base.toString());
     }
 
     return true;
+
   }
 
   @Override
@@ -210,7 +259,10 @@ public class Type implements Serializable, TypeApi {
       }
       return arrayType.toString();
     }
-    return classType.toString();
+    if (is_class()) {
+      return classType.toString();
+    }
+    return base.toString();
   }
 
   public boolean is(TypeBase withBase) {

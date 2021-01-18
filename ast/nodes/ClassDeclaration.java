@@ -15,6 +15,7 @@ import njast.parse.AstParseException;
 import njast.parse.NullChecker;
 import njast.templates.TypeSetter;
 import njast.types.Type;
+import njast.types.TypeListsComparer;
 
 public class ClassDeclaration implements Serializable, IUniqueId {
 
@@ -76,6 +77,34 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     this.methods = new ArrayList<>();
     this.typeParametersT = new ArrayList<>();
     this.typeSetters = new ArrayList<>();
+  }
+
+  public boolean is_equal_to(ClassDeclaration another) {
+    if (this == another) {
+      return true;
+    }
+
+    final Ident anotherId = another.getIdentifier();
+    if (!identifier.equals(anotherId)) {
+      return false;
+    }
+
+    if (!TypeListsComparer.typeListsAreEqual(typeParametersT, another.getTypeParametersT())) {
+      return false;
+    }
+
+    // paranoia?
+    if (fields.size() != another.getFields().size()) {
+      return false;
+    }
+    if (constructors.size() != another.getConstructors().size()) {
+      return false;
+    }
+    if (methods.size() != another.getMethods().size()) {
+      return false;
+    }
+
+    return true;
   }
 
   public void registerTypeSetter(TypeSetter ts) {

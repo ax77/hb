@@ -43,14 +43,14 @@ public class TestTypes {
     }
 
   }
-  
+
   @Test
   public void testString() throws IOException {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append(" /*002*/ import std.string; class test {            \n");
-    sb.append(" /*003*/    var a: string = \"00000\"; func fn() { a.append(s: \"...\"); }          \n");
+    sb.append(" /*003*/    var a: string = \"00000\"; func fn() {  }          \n");
     sb.append(" /*010*/  }                       \n");
     //@formatter:on
 

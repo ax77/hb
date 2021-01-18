@@ -18,7 +18,7 @@ public class TestImportStd {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  import std.list;         \n");
+    sb.append(" /*001*/  import std.string; import std.list;         \n");
     sb.append(" /*002*/  class test {             \n");
     sb.append(" /*003*/    func main() -> i64 {   \n");
     sb.append(" /*004*/     var t:string = io.read_file();  var e: list<i64>;    \n");

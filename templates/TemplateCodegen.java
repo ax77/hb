@@ -12,6 +12,7 @@ import njast.ast.utils.SerializationUtils;
 import njast.parse.AstParseException;
 import njast.types.ClassType;
 import njast.types.Type;
+import njast.types.TypeListsComparer;
 
 public class TemplateCodegen {
 
@@ -145,7 +146,7 @@ public class TemplateCodegen {
 
     final List<Type> previouslyExpandedArgs = storedResult.getTypeArguments();
     final List<Type> currentGivenAgrs = from.getTypeArguments();
-    if (!TypeComparerForTemplates.typeArgumentListsAreEqualForTemplate(previouslyExpandedArgs, currentGivenAgrs)) {
+    if (!TypeListsComparer.typeListsAreEqual(previouslyExpandedArgs, currentGivenAgrs)) {
       return null;
     }
 

@@ -192,7 +192,7 @@ public class ExprExpression implements Serializable {
     if (base == ExpressionBase.EARRAY_INSTANCE_CREATION) {
       return arrayCreation.toString();
     }
-    if(base == ExpressionBase.ESTRING_CONST) {
+    if (base == ExpressionBase.ESTRING_CONST) {
       return stringConst;
     }
     return base.toString();
