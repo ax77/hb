@@ -28,7 +28,9 @@ import static jscan.tokenize.T.T_XOR;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.cconst.CStr;
 import jscan.cstrtox.C_strtox;
+import jscan.hashed.Hash_ident;
 import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
@@ -532,7 +534,19 @@ public class ParseExpression {
     if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
       Token saved = parser.moveget();
       if (saved.ofType(TOKEN_STRING)) {
-        parser.unimplemented("string constants");
+
+        // TODO:
+
+        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"));
+
+        final List<FuncArg> argums = new ArrayList<>();
+        argums.add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(saved.getValue())));
+
+        final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
+        final ClassType ref = new ClassType(stringClass, emptyTypeArgs);
+        final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
+
+        return new ExprExpression(classCreation);
       } else {
         return primaryNumber(saved);
       }

@@ -97,8 +97,8 @@ public class SymtabApplier {
   // SYMTAB
 
   public void defineFunctionParameter(ClassMethodDeclaration method, MethodParameter param) {
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, Mods.letModifiers(), param.getType(), param.getName(),
-        method.getLocation());
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, Mods.letModifiers(), param.getType(),
+        param.getName(), method.getLocation());
     variablesMethod.addsym(param.getName(), varsym(var));
   }
 

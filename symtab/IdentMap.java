@@ -5,39 +5,22 @@ import jscan.symtab.Ident;
 
 public final class IdentMap {
 
+  // you may put here ONLY keywords... nothings else...
+
   private static Ident g(String name) {
     return Hash_ident.getHashedIdent(name, 32);
   }
 
-  private static Ident g1(String name) {
-    return Hash_ident.getHashedIdent(name, 0);
-  }
-
-  // <class modifier>           ::= public | abstract | final
-  // <field modifier>           ::= public | protected | private | static | final | transient | volatile
-  // <method modifier>          ::= public | protected | private | static | abstract | final | synchronized | native
-  // <constructor modifier>     ::= public | protected | private
-  // <interface modifier>       ::= public | abstract
-  // <abstract method modifier> ::= public | abstract
-  //
-  // <keyword> ::= abstract | boolean | break | byte | case | catch | char | class | const | continue | default | do | double | else | extends | final | finally | float | for | goto | if | implements | import | instanceof | int | interface | long | native | new | package | private | protected | public | return | short | static | super | switch | synchronized | this | throw | throws | transient | try | void | volatile | while
-
   //@formatter:off
   public static final Ident abstract_ident       = g("abstract");
   public static final Ident break_ident          = g("break");
-  public static final Ident case_ident           = g("case");
   public static final Ident catch_ident          = g("catch");
-  public static final Ident const_ident          = g("const");
   public static final Ident continue_ident       = g("continue");
-  public static final Ident default_ident        = g("default");
   public static final Ident do_ident             = g("do");
   public static final Ident else_ident           = g("else");
   public static final Ident enum_ident           = g("enum");
-  public static final Ident extends_ident        = g("extends");
   public static final Ident final_ident          = g("final");
-  public static final Ident finally_ident        = g("finally");
   public static final Ident for_ident            = g("for");
-  public static final Ident goto_ident           = g("goto");
   public static final Ident if_ident             = g("if");
   public static final Ident implements_ident     = g("implements");
   public static final Ident import_ident         = g("import");
@@ -48,50 +31,33 @@ public final class IdentMap {
   public static final Ident null_ident           = g("null");
   public static final Ident package_ident        = g("package");
   public static final Ident private_ident        = g("private");
-  public static final Ident protected_ident      = g("protected");
   public static final Ident public_ident         = g("public");
   public static final Ident return_ident         = g("return");
   public static final Ident static_ident         = g("static");
-  public static final Ident super_ident          = g("super");
-  public static final Ident switch_ident         = g("switch");
-  public static final Ident synchronized_ident   = g("synchronized");
-  public static final Ident throw_ident          = g("throw");
-  public static final Ident throws_ident         = g("throws");
-  public static final Ident transient_ident      = g("transient");
-  public static final Ident try_ident            = g("try");
-  public static final Ident volatile_ident       = g("volatile");
   public static final Ident while_ident          = g("while");
-  
-  //
-  public static final Ident var_ident    = g("var");
-  public static final Ident let_ident    = g("let");
-  public static final Ident weak_ident   = g("weak");
-  public static final Ident init_ident   = g("init");
-  public static final Ident deinit_ident = g("deinit");
-  public static final Ident self_ident   = g("self");
-  public static final Ident in_ident     = g("in");
-  
-  //
-  public static final Ident get_iterator_ident = g1("get_iterator");
-  public static final Ident get_current_ident  = g1("get_current");
-  public static final Ident has_next_ident     = g1("has_next");
-  public static final Ident get_next_ident     = g1("get_next");
-  
+  // new syntax:
+  public static final Ident var_ident            = g("var");
+  public static final Ident let_ident            = g("let");
+  public static final Ident weak_ident           = g("weak");
+  public static final Ident init_ident           = g("init");
+  public static final Ident deinit_ident         = g("deinit");
+  public static final Ident self_ident           = g("self");
+  public static final Ident in_ident             = g("in");
   // types:
-  public static final Ident i8_ident           = g("i8");
-  public static final Ident u8_ident           = g("u8");
-  public static final Ident i16_ident          = g("i16");
-  public static final Ident u16_ident          = g("u16");
-  public static final Ident i32_ident          = g("i32");
-  public static final Ident u32_ident          = g("u32");
-  public static final Ident i64_ident          = g("i64");
-  public static final Ident u64_ident          = g("u64");
-  public static final Ident f32_ident          = g("f32");
-  public static final Ident f64_ident          = g("f64");
-  public static final Ident boolean_ident      = g("boolean");
-  public static final Ident void_ident         = g("void");
-  public static final Ident class_ident        = g("class");
-  public static final Ident func_ident         = g("func");
+  public static final Ident i8_ident             = g("i8");
+  public static final Ident u8_ident             = g("u8");
+  public static final Ident i16_ident            = g("i16");
+  public static final Ident u16_ident            = g("u16");
+  public static final Ident i32_ident            = g("i32");
+  public static final Ident u32_ident            = g("u32");
+  public static final Ident i64_ident            = g("i64");
+  public static final Ident u64_ident            = g("u64");
+  public static final Ident f32_ident            = g("f32");
+  public static final Ident f64_ident            = g("f64");
+  public static final Ident boolean_ident        = g("boolean");
+  public static final Ident void_ident           = g("void");
+  public static final Ident class_ident          = g("class");
+  public static final Ident func_ident           = g("func");
   
   //@formatter:on
 

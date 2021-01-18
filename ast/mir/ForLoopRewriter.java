@@ -14,7 +14,6 @@ import jscan.symtab.Ident;
 import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast.checkers.IteratorChecker;
-import njast.ast.modifiers.Modifiers;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.expr.ExprAssign;
 import njast.ast.nodes.expr.ExprExpression;
@@ -25,7 +24,6 @@ import njast.ast.nodes.stmt.StmtFor;
 import njast.ast.nodes.vars.VarBase;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.ast.nodes.vars.VarInitializer;
-import njast.symtab.IdentMap;
 import njast.types.Type;
 
 public class ForLoopRewriter {

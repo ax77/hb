@@ -58,7 +58,7 @@ public class Type implements Serializable, TypeApi {
 
     this.base = TypeBase.TP_ARRAY;
     this.arrayType = array;
-    
+
     //size
     this.size = arrayType.getCount() * arrayType.getArrayOf().get_size();
     this.align = arrayType.getArrayOf().get_align();
@@ -71,7 +71,7 @@ public class Type implements Serializable, TypeApi {
       throw new AstParseException("expect primitive type");
     }
     this.base = primitiveType;
-    
+
     //size
     this.size = TypeBindings.getPrimitiveTypeSize(this);
     this.align = this.size;
@@ -155,6 +155,9 @@ public class Type implements Serializable, TypeApi {
     }
 
     else if (is_class()) {
+      if (!another.is_class()) {
+        return false;
+      }
       final Ident name1 = classType.getClazz().getIdentifier();
       final Ident name2 = another.getClassType().getIdentifier();
       if (!name1.equals(name2)) {

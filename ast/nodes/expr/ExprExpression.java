@@ -25,10 +25,20 @@ public class ExprExpression implements Serializable {
   private ExprAssign assign;
   private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
+  private String stringConst;
 
   public ExprExpression(ExprSelf selfExpression) {
     this.base = ExpressionBase.ESELF;
     this.selfExpression = selfExpression;
+  }
+
+  public ExprExpression(String stringConst) {
+    this.base = ExpressionBase.ESTRING_CONST;
+    this.stringConst = stringConst;
+  }
+
+  public String getStringConst() {
+    return stringConst;
   }
 
   public ExprExpression(ExprAssign assign) {
@@ -181,6 +191,9 @@ public class ExprExpression implements Serializable {
     }
     if (base == ExpressionBase.EARRAY_INSTANCE_CREATION) {
       return arrayCreation.toString();
+    }
+    if(base == ExpressionBase.ESTRING_CONST) {
+      return stringConst;
     }
     return base.toString();
   }

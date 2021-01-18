@@ -1,12 +1,23 @@
 package njast.types;
 
+import static njast.types.TypeBase.TP_BOOLEAN;
+import static njast.types.TypeBase.TP_F32;
+import static njast.types.TypeBase.TP_F64;
+import static njast.types.TypeBase.TP_I16;
+import static njast.types.TypeBase.TP_I32;
+import static njast.types.TypeBase.TP_I64;
+import static njast.types.TypeBase.TP_I8;
+import static njast.types.TypeBase.TP_U16;
+import static njast.types.TypeBase.TP_U32;
+import static njast.types.TypeBase.TP_U64;
+import static njast.types.TypeBase.TP_U8;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import jscan.symtab.Ident;
 import njast.parse.AstParseException;
 import njast.symtab.IdentMap;
-import static njast.types.TypeBase.*;
 
 public abstract class TypeBindings {
 

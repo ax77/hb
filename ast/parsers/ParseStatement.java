@@ -4,10 +4,8 @@ import static jscan.tokenize.T.T_SEMI_COLON;
 import static njast.symtab.IdentMap.do_ident;
 import static njast.symtab.IdentMap.else_ident;
 import static njast.symtab.IdentMap.for_ident;
-import static njast.symtab.IdentMap.goto_ident;
 import static njast.symtab.IdentMap.if_ident;
 import static njast.symtab.IdentMap.return_ident;
-import static njast.symtab.IdentMap.switch_ident;
 import static njast.symtab.IdentMap.while_ident;
 
 import java.util.ArrayList;
@@ -100,22 +98,12 @@ public class ParseStatement {
     return new ParseExpression(parser).e_expression();
   }
 
-  private ExprExpression parseForLoopExpressions() {
-    return new ParseExpression(parser).e_expression();
-  }
-
   private StmtStatement parseStatement() {
 
     parser.errorStraySemicolon();
 
     if (parser.is(while_ident) || parser.is(do_ident)) {
       parser.perror("while/do loops are deprecated by design. use for-loop instead.");
-    }
-    if (parser.is(switch_ident)) {
-      parser.perror("switch-statement deprecated by design. use [if(cond) { } else { }] instead.");
-    }
-    if (parser.is(goto_ident)) {
-      parser.perror("goto-statement deprecated by design. ");
     }
 
     // return ... ;

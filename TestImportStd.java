@@ -1,23 +1,13 @@
 package njast;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 
-import jscan.fio.FileReadKind;
-import jscan.fio.FileWrapper;
-import jscan.fio.Normalizer;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.unit.CompilationUnit;
 import njast.ast.nodes.unit.InstantiationUnit;
 import njast.parse.Parse;
 import njast.parse.main.Imports;
 import njast.parse.main.ParserMain;
-import njast.symtab.IdentMap;
 import njast.templates.InstatantiationUnitBuilder;
 import njast.utils.UtilSrcToStringLevel;
 

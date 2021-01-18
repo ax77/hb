@@ -1,6 +1,7 @@
 package njast.parse.main;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import njast.ast.nodes.unit.CompilationUnit;
 import njast.parse.AstParseException;
 import njast.parse.NullChecker;
 import njast.parse.Parse;
+import njast.symtab.IdentMap;
 
 public class ParserMain implements ParserMainApi {
 
@@ -72,79 +74,21 @@ public class ParserMain implements ParserMainApi {
     return Hash_ident.getHashedIdent(name, 32);
   }
 
-  private static Ident g1(String name) {
-    return Hash_ident.getHashedIdent(name, 0);
-  }
-
   // TODO: more clean, fast, precise...
+  // we have to initialize it here because of the static-laziness
+  // we must be sure that all keywords will be created before parser will be run.
   private void initIdents() {
-    g("abstract");
-    g("break");
-    g("case");
-    g("catch");
-    g("const");
-    g("continue");
-    g("default");
-    g("do");
-    g("else");
-    g("enum");
-    g("extends");
-    g("final");
-    g("finally");
-    g("for");
-    g("goto");
-    g("if");
-    g("implements");
-    g("import");
-    g("instanceof");
-    g("interface");
-    g("native");
-    g("new");
-    g("null");
-    g("package");
-    g("private");
-    g("protected");
-    g("public");
-    g("return");
-    g("static");
-    g("super");
-    g("switch");
-    g("synchronized");
-    g("throw");
-    g("throws");
-    g("transient");
-    g("try");
-    g("volatile");
-    g("while");
-    //
-    g("var");
-    g("let");
-    g("weak");
-    g("init");
-    g("deinit");
-    g("self");
-    g("in");
-    //
-    g1("get_iterator");
-    g1("get_current");
-    g1("has_next");
-    g1("get_next");
-    //
-    g("i8");
-    g("u8");
-    g("i16");
-    g("u16");
-    g("i32");
-    g("u32");
-    g("i64");
-    g("u64");
-    g("f32");
-    g("f64");
-    g("boolean");
-    g("bool");
-    g("void");
-    g("class");
-    g("func");
+
+    for (Field field : IdentMap.class.getDeclaredFields()) {
+      final String fname = field.getName();
+      if (!fname.endsWith("_ident")) {
+        throw new AstParseException("expect ident name");
+      }
+      final int pos = fname.indexOf("_ident");
+      final String sub = fname.substring(0, pos).trim();
+      g(sub);
+    }
+
   }
 
   // details.
@@ -224,7 +168,7 @@ public class ParserMain implements ParserMainApi {
     }
 
     private Tokenlist ppString() throws IOException {
-      List<Token> input = getInput();
+      List<Token> input = preprocessNoStrConcat(getInputInternal());
       return new Tokenlist(input);
     }
 
@@ -233,13 +177,8 @@ public class ParserMain implements ParserMainApi {
       fileWrapper.assertIsExists();
       fileWrapper.assertIsFile();
 
-      List<Token> input = getInput();
+      List<Token> input = preprocessNoStrConcat(getInputInternal());
       return new Tokenlist(input);
-    }
-
-    private List<Token> getInput() throws IOException {
-
-      return preprocessNoStrConcat(getInputInternal());
     }
 
     private List<Token> preprocessNoStrConcat(List<Token> input) throws IOException {

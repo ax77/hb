@@ -28,6 +28,7 @@ import njast.ast.nodes.unit.InstantiationUnit;
 import njast.ast.nodes.vars.VarDeclarator;
 import njast.ast.nodes.vars.VarInitializer;
 import njast.parse.AstParseException;
+import njast.types.ArrayType;
 import njast.types.ClassType;
 import njast.types.Type;
 import njast.types.TypeBindings;
@@ -262,6 +263,12 @@ public class ApplyInstantiationUnit {
 
     else if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
       applyClassInstanceCreation(object, e);
+    }
+
+    else if (base == ExpressionBase.ESTRING_CONST) {
+      String strconst = e.getStringConst();
+      ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
+      e.setResultType(new Type(arrtype));
     }
 
     else {

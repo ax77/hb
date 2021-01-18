@@ -2,6 +2,7 @@ package njast;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import njast.ast.nodes.ClassDeclaration;
@@ -15,8 +16,9 @@ import njast.utils.UtilSrcToStringLevel;
 
 public class TestTypes {
 
+  @Ignore
   @Test
-  public void test() throws IOException {
+  public void test1() throws IOException {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
@@ -29,6 +31,26 @@ public class TestTypes {
     sb.append(" /*007*/    var e: f32;           \n");
     sb.append(" /*008*/    var f: i16;           \n");
     sb.append(" /*009*/    var g: list<[u32]>;   \n");
+    sb.append(" /*010*/  }                       \n");
+    //@formatter:on
+
+    Parse mainParser = new ParserMain(new Imports(sb).getSource()).initiateParse();
+
+    CompilationUnit unit = mainParser.parse();
+    InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
+    for (ClassDeclaration clazz : instantiationUnit.getClasses()) {
+      System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
+    }
+
+  }
+  
+  @Test
+  public void testString() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append(" /*002*/ import std.string; class test {            \n");
+    sb.append(" /*003*/    var a: string = \"00000\"; func fn() { a.append(s: \"...\"); }          \n");
     sb.append(" /*010*/  }                       \n");
     //@formatter:on
 

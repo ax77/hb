@@ -1,3 +1,13 @@
-import std.mem.malloc;
 
-class string {}
+class string {
+
+	var buffer: [u8];
+
+	init(buffer: [u8]) {
+		self.buffer = buffer;
+	}
+	
+	func append(c: u8) {}
+	
+	func append(s: string) {}
+}
