@@ -36,7 +36,7 @@ public class ForLoopRewriter {
     final ExprExpression collectionAux = forloop.getAuxCollection();
     final VarDeclarator collectionObjectVar = collectionAux.getIdent().getVariable();
     final Ident collectionObjectName = collectionObjectVar.getIdentifier();
-    final IteratorChecker checker = new IteratorChecker(collectionObjectVar);
+    final IteratorChecker checker = new IteratorChecker(collectionObjectVar.getType());
     final Type elemType = checker.getElemType(); // we checked that collection is 'iterable' here.
     final Type iteratorType = checker.getIteratorType();
 

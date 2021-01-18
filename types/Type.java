@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import jscan.symtab.Ident;
+import njast.ast.checkers.IteratorChecker;
 import njast.ast.nodes.ClassDeclaration;
 import njast.parse.AstParseException;
 import njast.parse.NullChecker;
@@ -29,6 +30,9 @@ import njast.parse.NullChecker;
 public class Type implements Serializable, TypeApi {
   private static final long serialVersionUID = -4630043454712001308L;
 
+  private int size;
+  private int align;
+  
   private TypeBase base;
   private ClassType classType;
   private Ident typeVariable;
@@ -212,36 +216,38 @@ public class Type implements Serializable, TypeApi {
     return this.base.equals(withBase);
   }
 
+  private boolean isOneOf(TypeBase withBase[]) {
+    for (TypeBase item : withBase) {
+      if (is(item)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   //@formatter:off
-  @Override public boolean is_i8() { return is(TP_I8); }
-  
-  @Override public boolean is_u8() { return is(TP_U8); }
-  
-  @Override public boolean is_i16() { return is(TP_I16); }
-  
-  @Override public boolean is_u16() { return is(TP_U16); }
-  
-  @Override public boolean is_i32() { return is(TP_I32); }
-  
-  @Override public boolean is_u32() { return is(TP_U32); }
-  
-  @Override public boolean is_i64() { return is(TP_I64); }
-  
-  @Override public boolean is_u64() { return is(TP_U64); }
-  
-  @Override public boolean is_f32() { return is(TP_F32); }
-  
-  @Override public boolean is_f64() { return is(TP_F64); }
-  
-  @Override public boolean is_boolean() { return is(TP_BOOLEAN); }
-  
+  @Override public boolean is_i8()        { return is(TP_I8); }
+  @Override public boolean is_u8()        { return is(TP_U8); }
+  @Override public boolean is_i16()       { return is(TP_I16); }
+  @Override public boolean is_u16()       { return is(TP_U16); }
+  @Override public boolean is_i32()       { return is(TP_I32); }
+  @Override public boolean is_u32()       { return is(TP_U32); }
+  @Override public boolean is_i64()       { return is(TP_I64); }
+  @Override public boolean is_u64()       { return is(TP_U64); }
+  @Override public boolean is_f32()       { return is(TP_F32); }
+  @Override public boolean is_f64()       { return is(TP_F64); }
+  @Override public boolean is_boolean()   { return is(TP_BOOLEAN); }
   @Override public boolean is_void_stub() { return is(TP_VOID_STUB); }
-  
+  @Override public boolean is_function()  { return is(TP_FUNCTION); }
+  @Override public boolean is_array()     { return is(TP_ARRAY); }
+  @Override public boolean is_tuple()     { return is(TP_TUPLE); }
+  //@formatter:on
+
   @Override
   public boolean is_primitive() {
     return is_primitive(base);
   }
-  
+
   @Override
   public boolean is_type_var() {
     return is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T);
@@ -251,45 +257,61 @@ public class Type implements Serializable, TypeApi {
   public boolean is_class() {
     return is(TP_CLASS);
   }
-  
+
   @Override
   public boolean is_class_template() {
     return is_class() && classType.isTemplate();
   }
-  
-  @Override public boolean is_function() { return is(TP_FUNCTION); }
-  
-  @Override public boolean is_array() { return is(TP_ARRAY); }
-  
-  @Override public boolean is_tuple() { return is(TP_TUPLE); }
-  
-  @Override public int get_size() { return -1; }
-  
-  @Override public int get_align() { return -1; }
-  
-  @Override public boolean is_iterated() { return false; }
-  
-  @Override public boolean is_reference() { return is_class() || is_array(); }
-  
-  @Override public boolean is_has_signedness() { return false; }
-  
-  @Override public boolean is_signed() { return false; }
-  
-  @Override public boolean is_unsigned() { return false; }
-  
-  @Override public boolean is_arithmetic() { return is_integer() || is_floating(); }
-  
-  @Override public boolean is_integer() { 
-    return is(TP_I8  )
-        || is(TP_U8  )
-        || is(TP_I16 )
-        || is(TP_U16 )
-        || is(TP_I32 )
-        || is(TP_U32 )
-        || is(TP_I64 )
-        || is(TP_U64 );
+
+  @Override
+  public int get_size() {
+    return size;
   }
-  
-  @Override public boolean is_floating() { return is(TP_F32) || is(TypeBase.TP_F64); }
-  //@formatter:on
+
+  @Override
+  public int get_align() {
+    return align;
+  }
+
+  @Override
+  public boolean is_iterated() {
+    final IteratorChecker checker = new IteratorChecker(this);
+    return checker.isIterable();
+  }
+
+  @Override
+  public boolean is_reference() {
+    return is_class() || is_array();
+  }
+
+  @Override
+  public boolean is_has_signedness() {
+    return false;
+  }
+
+  @Override
+  public boolean is_signed() {
+    return false;
+  }
+
+  @Override
+  public boolean is_unsigned() {
+    return false;
+  }
+
+  @Override
+  public boolean is_arithmetic() {
+    return is_integer() || is_floating();
+  }
+
+  @Override
+  public boolean is_integer() {
+    TypeBase bases[] = { TP_I8, TP_U8, TP_I16, TP_U16, TP_I32, TP_U32, TP_I64, TP_U64 };
+    return isOneOf(bases);
+  }
+
+  @Override
+  public boolean is_floating() {
+    return is(TP_F32) || is(TypeBase.TP_F64);
+  }
 }

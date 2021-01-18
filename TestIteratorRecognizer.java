@@ -109,7 +109,7 @@ public class TestIteratorRecognizer {
 
     VarDeclarator var = instantiationUnit.getClasses().get(3).getField(Hash_ident.getHashedIdent("list"));
 
-    IteratorChecker checker = new IteratorChecker(var);
+    IteratorChecker checker = new IteratorChecker(var.getType());
     assertTrue(checker.isIterable());
     assertEquals(checker.getElemType().getBase(), TypeBase.TP_I32);
 

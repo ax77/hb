@@ -10,21 +10,20 @@ import java.util.ArrayList;
 import njast.ast.nodes.ClassDeclaration;
 import njast.ast.nodes.expr.FuncArg;
 import njast.ast.nodes.method.ClassMethodDeclaration;
-import njast.ast.nodes.vars.VarDeclarator;
 import njast.parse.AstParseException;
 import njast.types.Type;
 import njast.types.TypeBase;
 
 public class IteratorChecker {
 
-  private final VarDeclarator var;
+  private final Type typeGiven;
   private final boolean isIterable;
   private Type elemType;
   private Type iteratorType;
 
-  public IteratorChecker(VarDeclarator var) {
-    this.var = var;
-    this.isIterable = checkIsIterable();
+  public IteratorChecker(final Type type) {
+    this.typeGiven = type;
+    this.isIterable = checkIsIterable(type);
   }
 
   public boolean isIterable() {
@@ -33,19 +32,19 @@ public class IteratorChecker {
 
   public Type getElemType() {
     if (elemType == null) {
-      throw new AstParseException("type for iterator is not recognized: " + var.toString());
+      throw new AstParseException("type for iterator is not recognized: " + typeGiven.toString());
     }
     return elemType;
   }
 
   public Type getIteratorType() {
     if (iteratorType == null) {
-      throw new AstParseException("type for iterator is not recognized: " + var.toString());
+      throw new AstParseException("type for iterator is not recognized: " + typeGiven.toString());
     }
     return iteratorType;
   }
 
-  private boolean checkIsIterable() {
+  private boolean checkIsIterable(final Type type) {
 
     /// we 100% sure that we can iterate over something if:
     /// 0) for item in 'collection' -> collection should be a class or an array
@@ -59,7 +58,6 @@ public class IteratorChecker {
     /// 5) these methods shouldn't have parameters
 
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-    final Type type = var.getType();
     if (!type.is_class()) {
       return false; // TODO: arrays
     }
