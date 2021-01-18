@@ -30,6 +30,7 @@ import njast.ast.nodes.vars.VarInitializer;
 import njast.parse.AstParseException;
 import njast.types.ClassType;
 import njast.types.Type;
+import njast.types.TypeBindings;
 
 public class ApplyInstantiationUnit {
 
@@ -165,7 +166,7 @@ public class ApplyInstantiationUnit {
       applyStatement(object, method, sif.getTrueStatement());
       applyStatement(object, method, sif.getOptionalElseStatement());
 
-      if (!sif.getCondition().getResultType().equals(Type.BOOLEAN_TYPE)) {
+      if (!sif.getCondition().getResultType().is_boolean()) {
         throw new AstParseException("if condition must be only a boolean type");
       }
     }
@@ -252,7 +253,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      e.setResultType(Type.I64_TYPE); // TODO:
+      e.setResultType(TypeBindings.make_i64()); // TODO:
     }
 
     else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
@@ -332,11 +333,11 @@ public class ApplyInstantiationUnit {
     // TODO: type checker, compatible, etc...
 
     if (forLongType.contains(operator.getType())) {
-      e.setResultType(Type.I64_TYPE);
+      e.setResultType(TypeBindings.make_i64());
     }
 
     else if (forBooleanType.contains(operator.getType())) {
-      e.setResultType(Type.BOOLEAN_TYPE);
+      e.setResultType(TypeBindings.make_boolean());
     }
 
     else {

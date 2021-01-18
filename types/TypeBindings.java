@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jscan.symtab.Ident;
+import njast.parse.AstParseException;
 import njast.symtab.IdentMap;
+import static njast.types.TypeBase.*;
 
 public abstract class TypeBindings {
 
@@ -23,18 +25,49 @@ public abstract class TypeBindings {
     BIND_PRIMITIVE_TO_STRING.put(TypeBase.TP_BOOLEAN, "boolean");
   }
 
-  public static final Map<Ident, Type> BIND_IDENT_TO_TYPE = new HashMap<>();
-  static {
-    BIND_IDENT_TO_TYPE.put(IdentMap.i8_ident, Type.I8_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.u8_ident, Type.U8_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.i16_ident, Type.I16_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.u16_ident, Type.U16_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.i32_ident, Type.I32_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.u32_ident, Type.U32_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.i64_ident, Type.I64_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.u64_ident, Type.U64_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.f32_ident, Type.F32_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.f64_ident, Type.F64_TYPE);
-    BIND_IDENT_TO_TYPE.put(IdentMap.boolean_ident, Type.BOOLEAN_TYPE);
+  //@formatter:off
+  
+  public static Type make_i8()      { return new Type(TP_I8); }
+  public static Type make_u8()      { return new Type(TP_U8); }
+  public static Type make_i16()     { return new Type(TP_I16); }
+  public static Type make_u16()     { return new Type(TP_U16); }
+  public static Type make_i32()     { return new Type(TP_I32); }
+  public static Type make_u32()     { return new Type(TP_U32); }
+  public static Type make_i64()     { return new Type(TP_I64); }
+  public static Type make_u64()     { return new Type(TP_U64); }
+  public static Type make_f32()     { return new Type(TP_F32); }
+  public static Type make_f64()     { return new Type(TP_F64); }
+  public static Type make_boolean() { return new Type(TP_BOOLEAN); }
+  
+  public static Type getTypeFromIdent(Ident ident) {
+         if(ident.equals(IdentMap.i8_ident))      { return make_i8(); }
+    else if(ident.equals(IdentMap.u8_ident))      { return make_u8(); }
+    else if(ident.equals(IdentMap.i16_ident))     { return make_i16(); }
+    else if(ident.equals(IdentMap.u16_ident))     { return make_u16(); }
+    else if(ident.equals(IdentMap.i32_ident))     { return make_i32(); }
+    else if(ident.equals(IdentMap.u32_ident))     { return make_u32(); }
+    else if(ident.equals(IdentMap.i64_ident))     { return make_i64(); }
+    else if(ident.equals(IdentMap.u64_ident))     { return make_u64(); }
+    else if(ident.equals(IdentMap.f32_ident))     { return make_f32(); }
+    else if(ident.equals(IdentMap.f64_ident))     { return make_f64(); }
+    else if(ident.equals(IdentMap.boolean_ident)) { return make_boolean(); }
+    throw new AstParseException("type not found for ident: " + ident.getName());
   }
+  
+  public static int getPrimitiveTypeSize(Type type) {
+         if(type.is(TP_I8))      { return 1; }
+    else if(type.is(TP_U8))      { return 1; }
+    else if(type.is(TP_I16))     { return 2; }
+    else if(type.is(TP_U16))     { return 2; }
+    else if(type.is(TP_I32))     { return 4; }
+    else if(type.is(TP_U32))     { return 4; }
+    else if(type.is(TP_I64))     { return 8; }
+    else if(type.is(TP_U64))     { return 8; }
+    else if(type.is(TP_F32))     { return 4; } 
+    else if(type.is(TP_F64))     { return 8; } // TODO: 
+    else if(type.is(TP_BOOLEAN)) { return 1; }
+    throw new AstParseException("size not found for type: " + type.toString());
+  }
+  
+  //@formatter:on
 }

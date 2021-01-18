@@ -6,9 +6,9 @@ public class ArrayType implements Serializable {
   private static final long serialVersionUID = 3421706133636460085L;
 
   private final Type arrayOf;
-  private final long count;
+  private int count;
 
-  public ArrayType(Type arrayOf, long count) {
+  public ArrayType(Type arrayOf, int count) {
     this.arrayOf = arrayOf;
     this.count = count;
   }
@@ -17,8 +17,12 @@ public class ArrayType implements Serializable {
     return arrayOf;
   }
 
-  public long getCount() {
+  public int getCount() {
     return count;
+  }
+
+  public void setCount(int count) {
+    this.count = count;
   }
 
   @Override

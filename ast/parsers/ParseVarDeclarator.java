@@ -96,7 +96,8 @@ public class ParseVarDeclarator {
       //   }
       // }
 
-      for (int count = 0; count < arlen; count++) {
+      int count = 0;
+      for (count = 0; count < arlen; count++) {
 
         Token tok = parser.tok();
         if (tok.ofType(T.T_RIGHT_BRACKET)) {
@@ -126,9 +127,10 @@ public class ParseVarDeclarator {
       warningExcessElements("array");
       parser.checkedMove(T.T_RIGHT_BRACKET);
 
+      // TODO: fixed/dynamic
       if (ty.getArrayType().getCount() <= 0) {
-        //ty.getTpArray().setArrayLen(count);
-        //ty.setSize(elsize * count);
+        ty.getArrayType().setCount(count);
+        ty.set_size(elsize * count);
       }
 
     }

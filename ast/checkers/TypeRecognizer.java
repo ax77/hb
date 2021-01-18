@@ -109,9 +109,9 @@ public class TypeRecognizer {
 
     parser.checkedMove(T.T_LEFT_BRACKET);
 
-    long count = 0;
+    int count = 0;
     if (parser.is(T.TOKEN_NUMBER)) {
-      count = getArrayCount();
+      count = (int) getArrayCount();
       parser.colon();
     }
 
@@ -191,7 +191,7 @@ public class TypeRecognizer {
 
   private Type getPrimitive() {
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    Type tp = TypeBindings.BIND_IDENT_TO_TYPE.get(tok.getIdent());
+    Type tp = TypeBindings.getTypeFromIdent(tok.getIdent());
     if (tp == null) {
       parser.perror("type is not recognized");
     }

@@ -32,23 +32,11 @@ public class Type implements Serializable, TypeApi {
 
   private int size;
   private int align;
-  
+
   private TypeBase base;
   private ClassType classType;
   private Ident typeVariable;
   private ArrayType arrayType;
-
-  public final static Type I8_TYPE = new Type(TypeBase.TP_I8);
-  public final static Type U8_TYPE = new Type(TypeBase.TP_U8);
-  public final static Type I16_TYPE = new Type(TypeBase.TP_I16);
-  public final static Type U16_TYPE = new Type(TypeBase.TP_U16);
-  public final static Type I32_TYPE = new Type(TypeBase.TP_I32);
-  public final static Type U32_TYPE = new Type(TypeBase.TP_U32);
-  public final static Type I64_TYPE = new Type(TypeBase.TP_I64);
-  public final static Type U64_TYPE = new Type(TypeBase.TP_U64);
-  public final static Type F32_TYPE = new Type(TypeBase.TP_F32);
-  public final static Type F64_TYPE = new Type(TypeBase.TP_F64);
-  public final static Type BOOLEAN_TYPE = new Type(TypeBase.TP_BOOLEAN);
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
@@ -61,6 +49,8 @@ public class Type implements Serializable, TypeApi {
 
   public Type() {
     this.base = TypeBase.TP_VOID_STUB;
+    this.size = 1;
+    this.align = 1;
   }
 
   public Type(ArrayType array) {
@@ -68,6 +58,10 @@ public class Type implements Serializable, TypeApi {
 
     this.base = TypeBase.TP_ARRAY;
     this.arrayType = array;
+    
+    //size
+    this.size = arrayType.getCount() * arrayType.getArrayOf().get_size();
+    this.align = arrayType.getArrayOf().get_align();
   }
 
   public Type(TypeBase primitiveType) {
@@ -77,6 +71,10 @@ public class Type implements Serializable, TypeApi {
       throw new AstParseException("expect primitive type");
     }
     this.base = primitiveType;
+    
+    //size
+    this.size = TypeBindings.getPrimitiveTypeSize(this);
+    this.align = this.size;
   }
 
   public Type(ClassType ref) {
@@ -313,5 +311,9 @@ public class Type implements Serializable, TypeApi {
   @Override
   public boolean is_floating() {
     return is(TP_F32) || is(TypeBase.TP_F64);
+  }
+
+  public void set_size(int i) {
+    this.size = i;
   }
 }
