@@ -26,6 +26,16 @@ public class ExprExpression implements Serializable {
   private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
   private String stringConst;
+  private ExprArrayAccess arrayAccess;
+
+  public ExprExpression(ExprArrayAccess arrayAccess) {
+    this.base = ExpressionBase.EARRAY_ACCESS;
+    this.arrayAccess = arrayAccess;
+  }
+
+  public ExprArrayAccess getArrayAccess() {
+    return arrayAccess;
+  }
 
   public ExprExpression(ExprSelf selfExpression) {
     this.base = ExpressionBase.ESELF;
@@ -194,6 +204,9 @@ public class ExprExpression implements Serializable {
     }
     if (base == ExpressionBase.ESTRING_CONST) {
       return stringConst;
+    }
+    if (base == ExpressionBase.EARRAY_ACCESS) {
+      return arrayAccess.toString();
     }
     return base.toString();
   }

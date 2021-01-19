@@ -16,4 +16,5 @@ public enum ExpressionBase {
  , ESELF
  , EARRAY_INSTANCE_CREATION
  , ESTRING_CONST
+ , EARRAY_ACCESS
 }

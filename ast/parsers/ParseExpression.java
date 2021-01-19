@@ -37,6 +37,7 @@ import njast.ast.checkers.IdentRecognizer;
 import njast.ast.checkers.TypeRecognizer;
 import njast.ast.kinds.ExpressionBase;
 import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.expr.ExprArrayAccess;
 import njast.ast.nodes.expr.ExprArrayCreation;
 import njast.ast.nodes.expr.ExprAssign;
 import njast.ast.nodes.expr.ExprBinary;
@@ -389,93 +390,24 @@ public class ParseExpression {
         parser.perror("post-increment/post-decrement are deprecated by design.");
       }
 
+      // array-subscript
+      //
+      else if (parser.is(T.T_LEFT_BRACKET)) {
+        parser.lbracket();
+        lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
+        parser.rbracket();
+
+        while (parser.is(T.T_LEFT_BRACKET)) {
+          parser.lbracket();
+          lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
+          parser.rbracket();
+        }
+      }
+
       else {
         break;
       }
     }
-
-    //    for (;;) {
-    //
-    //      // function - call
-    //      //
-    //      if (parser.tp() == T_LEFT_PAREN) {
-    //        Token lparen = parser.lparen();
-    //
-    //        List<CExpression> arglist = new ArrayList<CExpression>();
-    //
-    //        if (parser.tp() != T_RIGHT_PAREN) {
-    //          CExpression onearg = e_assign();
-    //          arglist.add(onearg);
-    //
-    //          while (parser.tp() == T.T_COMMA) {
-    //            parser.move();
-    //
-    //            CExpression oneargSeq = e_assign();
-    //            arglist.add(oneargSeq);
-    //          }
-    //        }
-    //
-    //        lhs = build_fcall(lhs, arglist, lparen);
-    //        parser.rparen();
-    //      }
-    //
-    //      // direct|indirect selection
-    //      //
-    //      else if (parser.tp() == T_DOT || parser.tp() == T_ARROW) {
-    //        Token operator = parser.tok();
-    //        parser.move(); // move . or ->
-    //
-    //        Ident fieldName = parser.getIdent();
-    //        TypeApplier.applytype(lhs, TypeApplierStage.stage_start);
-    //
-    //        // a->b :: (*a).b
-    //        if (operator.ofType(T_ARROW)) {
-    //
-    //          final Token operatorDeref = ExprUtil.derefOperator(operator);
-    //          final Token operatorDot = ExprUtil.dotOperator(operator);
-    //          final CStructField field = getFieldArrow(lhs, fieldName);
-    //
-    //          CExpression inBrace = build_unary(operatorDeref, lhs);
-    //          lhs = build_compsel(inBrace, operatorDot, field);
-    //        }
-    //
-    //        else {
-    //
-    //          final CStructField field = getFieldDot(lhs, fieldName);
-    //          lhs = build_compsel(lhs, operator, field);
-    //        }
-    //
-    //      }
-    //
-    //      // ++ --
-    //      //
-    //      else if (parser.tp() == T.T_PLUS_PLUS || parser.tp() == T_MINUS_MINUS) {
-    //        Token operator = parser.tok();
-    //        parser.move();
-    //        lhs = build_incdec(CExpressionBase.EPOSTINCDEC, operator, lhs);
-    //      }
-    //
-    //      // array-subscript
-    //      //
-    //      else if (parser.tp() == T.T_LEFT_BRACKET) {
-    //        while (parser.tp() == T_LEFT_BRACKET) {
-    //          Token lbrack = parser.lbracket();
-    //
-    //          // a[5] :: *(a+5)
-    //          Token operatorPlus = ExprUtil.plusOperator(lbrack);
-    //          Token operatorDeref = ExprUtil.derefOperator(lbrack);
-    //
-    //          CExpression inBrace = build_binary(operatorPlus, lhs, e_expression());
-    //          lhs = build_unary(operatorDeref, inBrace);
-    //
-    //          parser.rbracket();
-    //        }
-    //      }
-    //
-    //      else {
-    //        break;
-    //      }
-    //    }
 
     return lhs;
   }

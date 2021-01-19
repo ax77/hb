@@ -9,6 +9,7 @@ import jscan.tokenize.Token;
 import njast.ast.kinds.ExpressionBase;
 import njast.ast.kinds.StatementBase;
 import njast.ast.nodes.ClassDeclaration;
+import njast.ast.nodes.expr.ExprArrayAccess;
 import njast.ast.nodes.expr.ExprAssign;
 import njast.ast.nodes.expr.ExprBinary;
 import njast.ast.nodes.expr.ExprClassCreation;
@@ -269,6 +270,18 @@ public class ApplyInstantiationUnit {
       String strconst = e.getStringConst();
       ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
       e.setResultType(new Type(arrtype));
+    }
+
+    else if (base == ExpressionBase.EARRAY_ACCESS) {
+      ExprArrayAccess arrayAccess = e.getArrayAccess();
+      applyExpression(object, arrayAccess.getArray());
+      applyExpression(object, arrayAccess.getIndex());
+      Type arrtype = arrayAccess.getArray().getResultType();
+      if (!arrtype.is_array()) {
+        throw new AstParseException("expect array");
+      }
+      Type arrof = arrtype.getArrayType().getArrayOf();
+      e.setResultType(arrof);
     }
 
     else {

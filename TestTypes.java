@@ -49,9 +49,14 @@ public class TestTypes {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" /*002*/ import std.string; class test {            \n");
-    sb.append(" /*003*/    var a: string = \"00000\"; func fn() {  }          \n");
-    sb.append(" /*010*/  }                       \n");
+    sb.append(" /*001*/  class test_arrays {   \n");
+    sb.append(" /*002*/    func test() {       \n");
+    sb.append(" /*003*/      var arr: [[u8]];    \n");
+    sb.append(" /*004*/      var x: u8;        \n");
+    sb.append(" /*005*/      arr[0][0] = 1;       \n");
+    sb.append(" /*006*/      x = arr[0][1];       \n");
+    sb.append(" /*007*/    }                   \n");
+    sb.append(" /*008*/  }                     \n");
     //@formatter:on
 
     Parse mainParser = new ParserMain(new Imports(sb).getSource()).initiateParse();

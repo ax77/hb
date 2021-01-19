@@ -1,0 +1,7 @@
+
+class array {
+	var length: u64;
+	var alloc: u64;
+	var cursor: u64;
+	var table: raw_vector;
+}
