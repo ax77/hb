@@ -353,7 +353,7 @@ public class Type implements Serializable, TypeApi {
   }
 
   @Override
-  public boolean is_arithmetic() {
+  public boolean is_numeric() {
     return is_integer() || is_floating();
   }
 

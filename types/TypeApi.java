@@ -29,7 +29,7 @@ public interface TypeApi {
   public boolean is_has_signedness();
   public boolean is_signed();
   public boolean is_unsigned();
-  public boolean is_arithmetic();
+  public boolean is_numeric();
   public boolean is_integer();
   public boolean is_floating();
 }

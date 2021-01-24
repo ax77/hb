@@ -3,6 +3,7 @@ package njast;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jscan.hashed.Hash_ident;
@@ -18,6 +19,7 @@ import njast.types.TypeBase;
 
 public class TestIteratorRecognizer {
 
+  @Ignore
   @Test
   public void testIteratorRecognizer() throws Exception {
 

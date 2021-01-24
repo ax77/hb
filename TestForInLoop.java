@@ -1,5 +1,6 @@
 package njast;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import njast.ast.nodes.ClassDeclaration;
@@ -12,6 +13,7 @@ import njast.utils.UtilSrcToStringLevel;
 
 public class TestForInLoop {
 
+  @Ignore
   @Test
   public void testForInLoop() throws Exception {
 

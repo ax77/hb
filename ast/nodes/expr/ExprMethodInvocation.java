@@ -7,7 +7,7 @@ import njast.ast.nodes.method.ClassMethodDeclaration;
 import njast.ast.utils.ExprUtil;
 
 public class ExprMethodInvocation {
-  private final ExprExpression object;
+  private /*final*/ ExprExpression object;
   private final List<FuncArg> arguments;
   private final Ident funcname;
   private final boolean isMethodInvocation;
@@ -70,6 +70,10 @@ public class ExprMethodInvocation {
     sb.append(")");
 
     return sb.toString();
+  }
+
+  public void setObject(ExprExpression exprExpression) {
+    this.object = exprExpression;
   }
 
 }

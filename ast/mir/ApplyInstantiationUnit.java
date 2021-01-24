@@ -1,10 +1,8 @@
 package njast.ast.mir;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import jscan.tokenize.T;
 import jscan.tokenize.Token;
 import njast.ast.kinds.ExpressionBase;
 import njast.ast.kinds.StatementBase;
@@ -313,33 +311,6 @@ public class ApplyInstantiationUnit {
     e.setResultType(node.getLvalue().getResultType());
   }
 
-  private static HashSet<T> forLongType = new HashSet<>();
-  static {
-
-    // by now only:
-    // add, mul, sub, div
-
-    forLongType.add(T.T_PLUS);
-    forLongType.add(T.T_MINUS);
-    forLongType.add(T.T_TIMES);
-    forLongType.add(T.T_DIVIDE);
-  }
-
-  private static HashSet<T> forBooleanType = new HashSet<>();
-  static {
-
-    // == ` != ` > ` >= ` < ` <=
-
-    forBooleanType.add(T.T_EQ);
-    forBooleanType.add(T.T_NE);
-
-    forBooleanType.add(T.T_GT);
-    forBooleanType.add(T.T_GE);
-
-    forBooleanType.add(T.T_LT);
-    forBooleanType.add(T.T_LE);
-  }
-
   private void applyBinary(ClassDeclaration object, ExprExpression e) {
     ExprBinary node = e.getBinary();
     Token operator = node.getOperator();
@@ -350,19 +321,7 @@ public class ApplyInstantiationUnit {
     applyExpression(object, LHS);
     applyExpression(object, RHS);
 
-    // TODO: type checker, compatible, etc...
-
-    if (forLongType.contains(operator.getType())) {
-      e.setResultType(TypeBindings.make_i64());
-    }
-
-    else if (forBooleanType.contains(operator.getType())) {
-      e.setResultType(TypeBindings.make_boolean());
-    }
-
-    else {
-      throw new AstParseException("unimpl:[" + operator.getValue() + "]");
-    }
+    ExprTypeSetters.setBinaryType(e, operator);
 
   }
 
