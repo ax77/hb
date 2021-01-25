@@ -12,6 +12,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
@@ -19,8 +20,8 @@ import ast_method.MethodParameter;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.Stmt_for;
 import ast_stmt.StmtStatement;
+import ast_stmt.Stmt_for;
 import ast_stmt.Stmt_if;
 import ast_types.ArrayType;
 import ast_types.ClassType;
@@ -30,7 +31,6 @@ import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 import ast_vars.VarInitializer;
 import errors.AstParseException;
-import tokenize.Token;
 
 public class TreeAnnotator {
 
@@ -223,69 +223,63 @@ public class TreeAnnotator {
       return;
     }
 
-    ExpressionBase base = e.getBase();
-
-    if (base == ExpressionBase.EBINARY) {
+    if (e.is(ExpressionBase.EUNARY)) {
+      applyUnary(object, e);
+    } else if (e.is(ExpressionBase.EBINARY)) {
       applyBinary(object, e);
-    }
-
-    else if (base == ExpressionBase.EASSIGN) {
+    } else if (e.is(ExpressionBase.EASSIGN)) {
       applyAssign(object, e);
-    }
-
-    else if (base == ExpressionBase.EPRIMARY_IDENT) {
+    } else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
       applyIdentifier(object, e);
-    }
-
-    else if (base == ExpressionBase.EMETHOD_INVOCATION) {
+    } else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
       applyMethodInvocation(object, e);
-    }
-
-    else if (base == ExpressionBase.EFIELD_ACCESS) {
+    } else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
       applyFieldAccess(object, e);
-    }
-
-    else if (base == ExpressionBase.ESELF) {
-      final ClassDeclaration clazz = e.getSelfExpression().getClazz();
-      final ArrayList<Type> typeArguments = new ArrayList<>();
-      final ClassType ref = new ClassType(clazz, typeArguments);
-      e.setResultType(new Type(ref));
-    }
-
-    else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      e.setResultType(e.getNumber().getType()); // TODO:
-    }
-
-    else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
+    } else if (e.is(ExpressionBase.ESELF)) {
+      applySelfLiteral(e);
+    } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
+      applyNumericLiteral(e);
+    } else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
       // TODO:
-    }
-
-    else if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
+    } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
       applyClassInstanceCreation(object, e);
+    } else if (e.is(ExpressionBase.ESTRING_CONST)) {
+      applyStringLiteral(e);
+    } else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
+      applyArrayAccess(object, e);
+    } else {
+      throw new AstParseException("unimpl. expression-type-applier for:" + e.toString());
     }
 
-    else if (base == ExpressionBase.ESTRING_CONST) {
-      String strconst = e.getStringConst();
-      ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
-      e.setResultType(new Type(arrtype));
-    }
+  }
 
-    else if (base == ExpressionBase.EARRAY_ACCESS) {
-      ExprArrayAccess arrayAccess = e.getArrayAccess();
-      applyExpression(object, arrayAccess.getArray());
-      applyExpression(object, arrayAccess.getIndex());
-      Type arrtype = arrayAccess.getArray().getResultType();
-      if (!arrtype.is_array()) {
-        throw new AstParseException("expect array");
-      }
-      Type arrof = arrtype.getArrayType().getArrayOf();
-      e.setResultType(arrof);
-    }
+  public void applyNumericLiteral(ExprExpression e) {
+    e.setResultType(e.getNumber().getType());
+  }
 
-    else {
-      throw new AstParseException("unimpl. expr.:" + base.toString());
-    }
+  public void applySelfLiteral(ExprExpression e) {
+    final ClassDeclaration clazz = e.getSelfExpression().getClazz();
+    final ArrayList<Type> typeArguments = new ArrayList<>();
+    final ClassType ref = new ClassType(clazz, typeArguments);
+    e.setResultType(new Type(ref));
+  }
 
+  public void applyStringLiteral(ExprExpression e) {
+    String strconst = e.getStringConst();
+    ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
+    e.setResultType(new Type(arrtype));
+  }
+
+  public void applyArrayAccess(ClassDeclaration object, ExprExpression e) {
+    ExprArrayAccess arrayAccess = e.getArrayAccess();
+    applyExpression(object, arrayAccess.getArray());
+    applyExpression(object, arrayAccess.getIndex());
+    Type arrtype = arrayAccess.getArray().getResultType();
+    if (!arrtype.is_array()) {
+      throw new AstParseException("expect array");
+    }
+    Type arrof = arrtype.getArrayType().getArrayOf();
+    e.setResultType(arrof);
   }
 
   public void applyClassInstanceCreation(ClassDeclaration object, ExprExpression e) {
@@ -312,7 +306,9 @@ public class TreeAnnotator {
     final Type lhsType = node.getLvalue().getResultType();
     if (rvalue.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
       // TODO:
-    } else {
+    }
+
+    else {
       final Type rhsType = node.getRvalue().getResultType();
       if (!lhsType.is_equal_to(rhsType)) {
         throw new AstParseException("types are different for assign: " + e.toString());
@@ -322,18 +318,17 @@ public class TreeAnnotator {
     e.setResultType(lhsType);
   }
 
+  public void applyUnary(ClassDeclaration object, ExprExpression e) {
+    final ExprUnary node = e.getUnary();
+    applyExpression(object, node.getOperand());
+    ExprTypeSetters.setUnaryType(e);
+  }
+
   private void applyBinary(ClassDeclaration object, ExprExpression e) {
-    ExprBinary node = e.getBinary();
-    Token operator = node.getOperator();
-
-    final ExprExpression LHS = node.getLhs();
-    final ExprExpression RHS = node.getRhs();
-
-    applyExpression(object, LHS);
-    applyExpression(object, RHS);
-
-    ExprTypeSetters.setBinaryType(e, operator);
-
+    final ExprBinary node = e.getBinary();
+    applyExpression(object, node.getLhs());
+    applyExpression(object, node.getRhs());
+    ExprTypeSetters.setBinaryType(e);
   }
 
   private void applyIdentifier(ClassDeclaration object, ExprExpression e) {

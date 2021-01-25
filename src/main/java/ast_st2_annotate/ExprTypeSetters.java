@@ -23,6 +23,7 @@ import static tokenize.T.T_XOR;
 
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
+import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -42,12 +43,51 @@ public class ExprTypeSetters {
     return false;
   }
 
-  public static void setBinaryType(final ExprExpression e, Token operator) {
+  public static void setUnaryType(final ExprExpression e) {
 
+    final ExprUnary unary = e.getUnary();
+    final ExprExpression operand = unary.getOperand();
+
+    final Token operator = unary.getOperator();
+    final T op = operator.getType();
+    checkOpIsUnary(op);
+
+    final Type lhsType = operand.getResultType();
+
+    if (in(op, new T[] { T_PLUS, T_MINUS })) {
+      if (lhsType.is_numeric()) {
+        e.setResultType(lhsType);
+      }
+    }
+
+    else if (op == T_TILDE) {
+      if (lhsType.is_integer()) {
+        e.setResultType(lhsType);
+      }
+    }
+
+    else if (op == T_EXCLAMATION) {
+      if (lhsType.is_boolean()) {
+        e.setResultType(lhsType);
+      }
+    }
+
+    else {
+      throw new AstParseException("unimpl. op: " + operator.getValue());
+    }
+
+    if (e.getResultType() == null) {
+      throw new AstParseException("unary expression error: " + e.toString());
+    }
+  }
+
+  public static void setBinaryType(final ExprExpression e) {
+
+    final ExprBinary binary = e.getBinary();
+    final Token operator = binary.getOperator();
     final T op = operator.getType();
     checkOpIsBinary(op);
 
-    final ExprBinary binary = e.getBinary();
     final ExprExpression lhs = binary.getLhs();
     final ExprExpression rhs = binary.getRhs();
     final Type lhsType = lhs.getResultType();
@@ -168,6 +208,13 @@ public class ExprTypeSetters {
     NullChecker.check(tp);
   }
 
+  private static void checkOpIsUnary(T op) {
+    boolean isOk = op == T_PLUS || op == T_MINUS || op == T_EXCLAMATION || op == T_TILDE;
+    if (!isOk) {
+      throw new AstParseException("not an unary operator: " + op.toString());
+    }
+  }
+
   private static void checkOpIsBinary(T op) {
     //@formatter:off
     boolean isOk = 
@@ -179,7 +226,7 @@ public class ExprTypeSetters {
         || op == T_GE          
         || op == T_LSHIFT      
         || op == T_RSHIFT      
-        || op == T_EXCLAMATION 
+        //|| op == T_EXCLAMATION 
         || op == T_AND_AND     
         || op == T_OR_OR       
         || op == T_PLUS        
@@ -189,7 +236,7 @@ public class ExprTypeSetters {
         || op == T_PERCENT     
         || op == T_AND         
         || op == T_OR          
-        || op == T_TILDE       
+        //|| op == T_TILDE       
         || op == T_XOR;  
     //@formatter:on
     if (!isOk) {

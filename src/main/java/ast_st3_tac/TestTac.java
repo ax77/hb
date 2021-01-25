@@ -32,6 +32,7 @@ import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSelf;
+import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_st1_templates.InstatantiationUnitBuilder;
@@ -188,8 +189,12 @@ public class TestTac {
     }
 
     else if (base == EUNARY) {
-      throw new RuntimeException(base.toString() + " ???");
+      final ExprUnary unary = e.getUnary();
+      final Token op = unary.getOperator();
+      gen(unary.getOperand());
 
+      final Quad svL = pop();
+      quads(new Quad(QuadOpc.UNOP, ht(), e.getResultType(), op.getValue(), svL.getResult()));
     }
 
     else if (base == EPRIMARY_IDENT) {
@@ -332,7 +337,7 @@ public class TestTac {
     sb.append(" /*029*/          var tok: token = new token(type: tp);           \n");
     sb.append(" /*030*/          tok.type.tp = 12;                               \n");
     sb.append(" /*031*/          var xxx: i32;                                   \n");
-    sb.append(" /*031*/          arr[1][2] = 1024;                         \n");
+    sb.append(" /*031*/          arr[1][2] = -1+ 1024;                         \n");
     sb.append(" /*032*/          return xxx;                                     \n");
     sb.append(" /*033*/      }                                                   \n");
     sb.append(" /*034*/  }                                                       \n");

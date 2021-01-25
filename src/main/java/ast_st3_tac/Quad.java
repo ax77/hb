@@ -60,6 +60,17 @@ public class Quad {
     this.lhs = lhs;
   }
 
+  // unary
+  public Quad(QuadOpc base, ResultName result, Type type, String op, ResultName lhs) {
+    NullChecker.check(base, result, type, lhs);
+
+    this.base = base;
+    this.result = result;
+    this.type = type;
+    this.op = op;
+    this.lhs = lhs;
+  }
+
   // binary
   public Quad(QuadOpc base, ResultName result, Type type, String op, ResultName lhs, ResultName rhs) {
     NullChecker.check(base, result, type, op, lhs, rhs);
@@ -197,8 +208,12 @@ public class Quad {
       return typeToStr + resultToStr + " = " + lhs + "[" + rhs + "]";
     }
 
-    // bin
+    // bin|un
     NullChecker.check(op);
+    if (base == QuadOpc.UNOP) {
+      return typeToStr + resultToStr + " = " + op + lhs;
+    }
+
     return typeToStr + resultToStr + " = " + lhs + op + rhs;
   }
 
