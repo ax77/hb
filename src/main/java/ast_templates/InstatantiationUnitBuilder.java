@@ -1,9 +1,11 @@
 package ast_templates;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_mir.ApplyInstantiationUnit;
+import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import ast_unit.TypeDeclaration;
@@ -30,19 +32,35 @@ public class InstatantiationUnitBuilder {
 
   public InstatantiationUnitBuilder(CompilationUnit compilationUnit) {
     this.templateCodegen = new TemplateCodegen();
-    visit(compilationUnit);
+    expandTemplates(compilationUnit);
   }
 
   public InstantiationUnit getInstantiationUnit() {
     final InstantiationUnit instantiationUnit = templateCodegen.getInstantiationUnit();
 
+    // we should clear type-arguments, because we'll compare these
+    // classes between each other later, and actually those classes
+    // are fully expanded from template, and their type-arguments are
+    // not necessary
+    for (ClassDeclaration cd : instantiationUnit.getClasses()) {
+      List<TypeSetter> typeSetters = cd.getTypeSetters();
+      for (TypeSetter ts : typeSetters) {
+        Type tp = ts.getType();
+        if (tp.is_class()) {
+          tp.getClassTypeRef().setTypeArguments(new ArrayList<>());
+        }
+      }
+    }
+
+    // resolve all symbols, identifiers, with scope rules,
+    // and add result-type to each expression.
     final ApplyInstantiationUnit applier = new ApplyInstantiationUnit();
     applier.visit(instantiationUnit);
 
     return instantiationUnit;
   }
 
-  private void visit(CompilationUnit compilationUnit) {
+  private void expandTemplates(CompilationUnit compilationUnit) {
     for (TypeDeclaration td : compilationUnit.getTypeDeclarations()) {
       final ClassDeclaration classDeclaration = td.getClassDeclaration();
       if (classDeclaration.isTemplate()) {

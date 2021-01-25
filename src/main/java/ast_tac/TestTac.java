@@ -34,6 +34,7 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSelf;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
+import ast_mir.Lvalue;
 import ast_templates.InstatantiationUnitBuilder;
 import ast_types.ClassType;
 import ast_types.Type;
@@ -155,14 +156,6 @@ public class TestTac {
     // quads(new Quad(ht(), resultType, "LD", popResultName()));
   }
 
-  private void checkLvalue(ExprExpression e) {
-    final boolean isLvalue = e.is(ExpressionBase.EARRAY_ACCESS) || e.is(EPRIMARY_IDENT)
-        || e.is(ExpressionBase.EFIELD_ACCESS);
-    if (!isLvalue) {
-      throw new AstParseException("not an lvalue: " + e.toString());
-    }
-  }
-
   private void gen(ExprExpression e) {
     NullChecker.check(e);
     ExpressionBase base = e.getBase();
@@ -173,7 +166,7 @@ public class TestTac {
 
       final ExprExpression lvalue = assing.getLvalue();
       gen(lvalue);
-      checkLvalue(lvalue);
+      Lvalue.checkHard(lvalue);
 
       gen(assing.getRvalue());
       store(e.getResultType());

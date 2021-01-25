@@ -50,7 +50,7 @@ public class TestTypes {
     sb.append(" /*002*/    func test() {       \n");
     sb.append(" /*003*/      var arr: [[u8]];    \n");
     sb.append(" /*004*/      var x: u8;        \n");
-    sb.append(" /*005*/      arr[0][0] = 1;       \n");
+    sb.append(" /*005*/      arr[0][0] = 1_u8;       \n");
     sb.append(" /*006*/      x = arr[0][1];       \n");
     sb.append(" /*007*/    }                   \n");
     sb.append(" /*008*/  }                     \n");

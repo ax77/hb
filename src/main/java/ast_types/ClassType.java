@@ -10,7 +10,7 @@ public class ClassType implements Serializable {
   private static final long serialVersionUID = 7267823355463707870L;
 
   private final ClassDeclaration clazz;
-  private final List<Type> typeArguments;
+  private /*final*/ List<Type> typeArguments;
 
   public ClassType(ClassDeclaration clazz, List<Type> typeArguments) {
     NullChecker.check(clazz, typeArguments);
@@ -31,6 +31,10 @@ public class ClassType implements Serializable {
     NullChecker.check(e);
 
     this.typeArguments.add(e);
+  }
+
+  public void setTypeArguments(List<Type> typeArguments) {
+    this.typeArguments = typeArguments;
   }
 
   public boolean is_equal_to(ClassType another) {

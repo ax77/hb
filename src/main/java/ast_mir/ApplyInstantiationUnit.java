@@ -253,7 +253,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      e.setResultType(TypeBindings.make_i32()); // TODO:
+      e.setResultType(e.getNumber().getType()); // TODO:
     }
 
     else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
@@ -302,13 +302,24 @@ public class ApplyInstantiationUnit {
     ExprAssign node = e.getAssign();
 
     final ExprExpression lvalue = node.getLvalue();
+    Lvalue.checkHard(lvalue);
+
     final ExprExpression rvalue = node.getRvalue();
 
     applyExpression(object, lvalue);
     applyExpression(object, rvalue);
 
-    // TODO: type-checking, is assignable, etc...
-    e.setResultType(node.getLvalue().getResultType());
+    final Type lhsType = node.getLvalue().getResultType();
+    if (rvalue.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
+      // TODO:
+    } else {
+      final Type rhsType = node.getRvalue().getResultType();
+      if (!lhsType.is_equal_to(rhsType)) {
+        throw new AstParseException("types are different for assign: " + e.toString());
+      }
+    }
+
+    e.setResultType(lhsType);
   }
 
   private void applyBinary(ClassDeclaration object, ExprExpression e) {
