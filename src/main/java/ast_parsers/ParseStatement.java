@@ -174,7 +174,7 @@ public class ParseStatement {
     Ident collection = parser.getIdent();
 
     StmtBlock loop = parseBlock();
-    return new StmtStatement(new Stmt_for(iter, collection, loop));
+    return new StmtStatement(new Stmt_for(iter, collection, loop, from));
   }
 
 }

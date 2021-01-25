@@ -63,15 +63,15 @@ public class ParseExpression {
   }
 
   private ExprExpression build_unary(Token op, ExprExpression operand) {
-    return new ExprExpression(new ExprUnary(op, operand));
+    return new ExprExpression(new ExprUnary(op, operand), op);
   }
 
   private ExprExpression build_binary(Token operator, ExprExpression lhs, ExprExpression rhs) {
-    return new ExprExpression(new ExprBinary(operator, lhs, rhs));
+    return new ExprExpression(new ExprBinary(operator, lhs, rhs), operator);
   }
 
   private ExprExpression build_assign(Token tok, ExprExpression lvalue, ExprExpression rvalue) {
-    return new ExprExpression(new ExprAssign(tok, lvalue, rvalue));
+    return new ExprExpression(new ExprAssign(tok, lvalue, rvalue), tok);
   }
 
   public ExprExpression e_expression() {
@@ -392,8 +392,8 @@ public class ParseExpression {
         // parser.rbracket();
 
         while (parser.is(T.T_LEFT_BRACKET)) {
-          parser.lbracket();
-          lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
+          Token saved = parser.lbracket();
+          lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()), saved);
           parser.rbracket();
         }
       }
@@ -411,20 +411,25 @@ public class ParseExpression {
     Token operator = parser.moveget();
     Token identifier = parser.checkedMove(T.TOKEN_IDENT);
 
-    lhs = new ExprExpression(new ExprFieldAccess(identifier.getIdent(), lhs));
+    lhs = new ExprExpression(new ExprFieldAccess(identifier.getIdent(), lhs), operator);
     return lhs;
   }
 
   private ExprExpression methodInvocation(Ident funcname) {
     // apply <this.> before function name, more convenient
-    ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
+    Token tok = parser.tok();
+
+    ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), tok);
     List<FuncArg> arglist = parseArglist();
-    return new ExprExpression(new ExprMethodInvocation(funcname, selfExpression, arglist));
+
+    tok = parser.tok();
+    return new ExprExpression(new ExprMethodInvocation(funcname, selfExpression, arglist), tok);
   }
 
   private ExprExpression methodInvocation(Ident funcname, ExprExpression lhs) {
     List<FuncArg> arglist = parseArglist();
-    lhs = new ExprExpression(new ExprMethodInvocation(funcname, lhs, arglist));
+    Token tok = parser.tok();
+    lhs = new ExprExpression(new ExprMethodInvocation(funcname, lhs, arglist), tok);
     return lhs;
   }
 
@@ -465,13 +470,13 @@ public class ParseExpression {
         final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"));
 
         final List<FuncArg> argums = new ArrayList<>();
-        argums.add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(saved.getValue())));
+        argums.add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(saved.getValue(), saved)));
 
         final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
         final ClassType ref = new ClassType(stringClass, emptyTypeArgs);
         final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
 
-        return new ExprExpression(classCreation);
+        return new ExprExpression(classCreation, saved);
       }
 
       else {
@@ -492,7 +497,7 @@ public class ParseExpression {
         // it is important to register type-setter for `current` class
         // not for the class is created in `new` expression 
         parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
-        return new ExprExpression(arrayCreation);
+        return new ExprExpression(arrayCreation, saved);
       }
 
       else {
@@ -506,27 +511,27 @@ public class ParseExpression {
         // it is important to register type-setter for `current` class
         // not for the class is created in `new` expression 
         parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
-        return new ExprExpression(classInstanceCreation);
+        return new ExprExpression(classInstanceCreation, saved);
       }
 
     }
 
     if (parser.is(IdentMap.self_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
+      ExprExpression thisexpr = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), saved);
       return thisexpr;
     }
 
     if (parser.is(IdentMap.null_ident)) {
       Token saved = parser.moveget();
-      ExprExpression nullexpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL);
+      ExprExpression nullexpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, saved);
       return nullexpr;
     }
 
     // simple name
     if (IdentRecognizer.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
-      return new ExprExpression(new ExprIdent(saved.getIdent()));
+      return new ExprExpression(new ExprIdent(saved.getIdent()), saved);
     }
 
     // ( expression )

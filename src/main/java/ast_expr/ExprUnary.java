@@ -20,4 +20,9 @@ public class ExprUnary {
     return operand;
   }
 
+  @Override
+  public String toString() {
+    return operator.getValue() + operand.toString();
+  }
+
 }

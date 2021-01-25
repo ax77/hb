@@ -34,6 +34,8 @@ import utils_oth.NullChecker;
 
 public class ExprTypeSetters {
 
+  private static final String RESULT_TYPE_NOT_RESOLVED = "result type not resolved";
+
   private static boolean in(T op, T[] where) {
     for (T t : where) {
       if (op.equals(t)) {
@@ -43,6 +45,10 @@ public class ExprTypeSetters {
     return false;
   }
 
+  private static void error(final ExprExpression e, String msg) {
+    throw new AstParseException(e.getLocationToString() + ":error[" + msg + "] " + e.toString());
+  }
+
   public static void setUnaryType(final ExprExpression e) {
 
     final ExprUnary unary = e.getUnary();
@@ -50,7 +56,11 @@ public class ExprTypeSetters {
 
     final Token operator = unary.getOperator();
     final T op = operator.getType();
-    checkOpIsUnary(op);
+
+    boolean isOk = op == T_PLUS || op == T_MINUS || op == T_EXCLAMATION || op == T_TILDE;
+    if (!isOk) {
+      error(e, "not an unary operator " + operator.getValue());
+    }
 
     final Type lhsType = operand.getResultType();
 
@@ -73,11 +83,11 @@ public class ExprTypeSetters {
     }
 
     else {
-      throw new AstParseException("unimpl. op: " + operator.getValue());
+      error(e, "unimpl. unary");
     }
 
     if (e.getResultType() == null) {
-      throw new AstParseException("unary expression error: " + e.toString());
+      error(e, RESULT_TYPE_NOT_RESOLVED);
     }
   }
 
@@ -86,7 +96,10 @@ public class ExprTypeSetters {
     final ExprBinary binary = e.getBinary();
     final Token operator = binary.getOperator();
     final T op = operator.getType();
-    checkOpIsBinary(op);
+
+    if (!isBinaryOperator(op)) {
+      error(e, "not a binary operator " + operator.getValue());
+    }
 
     final ExprExpression lhs = binary.getLhs();
     final ExprExpression rhs = binary.getRhs();
@@ -94,8 +107,8 @@ public class ExprTypeSetters {
     final Type rhsType = rhs.getResultType();
 
     if (!in(op, new T[] { T_EQ, T_NE })) {
-      checkTypeNotNull(lhsType);
-      checkTypeNotNull(rhsType);
+      checkTypeNotNull(e, lhsType);
+      checkTypeNotNull(e, rhsType);
       if (!lhsType.is_equal_to(rhsType)) {
         errorNoComatible(e, lhs, op, rhs);
       }
@@ -190,57 +203,49 @@ public class ExprTypeSetters {
     }
 
     else {
-      throw new AstParseException("unimpl. op: " + operator.getValue());
+      error(e, "unimpl. binary");
     }
 
     if (e.getResultType() == null) {
-      errorNoComatible(e, lhs, op, rhs);
+      error(e, RESULT_TYPE_NOT_RESOLVED);
     }
 
+  }
+
+  public static boolean isBinaryOperator(final T op) {
+    //@formatter:off
+    boolean isOk = 
+         op == T_EQ          
+      || op == T_NE          
+      || op == T_LT          
+      || op == T_LE          
+      || op == T_GT          
+      || op == T_GE          
+      || op == T_LSHIFT      
+      || op == T_RSHIFT      
+      || op == T_AND_AND     
+      || op == T_OR_OR       
+      || op == T_PLUS        
+      || op == T_MINUS       
+      || op == T_TIMES       
+      || op == T_DIVIDE      
+      || op == T_PERCENT     
+      || op == T_AND         
+      || op == T_OR          
+      || op == T_XOR;
+    return isOk;
+    //@formatter:on
   }
 
   private static void errorNoComatible(ExprExpression e, ExprExpression lhs, T op, ExprExpression rhs) {
-    throw new AstParseException("TODO: no-compat: " + e.toString());
+    throw new AstParseException(e.getLocationToString() + ", no-compatible: " + e.toString());
 
   }
 
-  private static void checkTypeNotNull(Type tp) {
-    NullChecker.check(tp);
-  }
-
-  private static void checkOpIsUnary(T op) {
-    boolean isOk = op == T_PLUS || op == T_MINUS || op == T_EXCLAMATION || op == T_TILDE;
-    if (!isOk) {
-      throw new AstParseException("not an unary operator: " + op.toString());
+  private static void checkTypeNotNull(ExprExpression e, Type tp) {
+    if (tp == null) {
+      throw new AstParseException(e.getLocationToString() + ", unexpected null result type: " + e.toString());
     }
   }
 
-  private static void checkOpIsBinary(T op) {
-    //@formatter:off
-    boolean isOk = 
-           op == T_EQ          
-        || op == T_NE          
-        || op == T_LT          
-        || op == T_LE          
-        || op == T_GT          
-        || op == T_GE          
-        || op == T_LSHIFT      
-        || op == T_RSHIFT      
-        //|| op == T_EXCLAMATION 
-        || op == T_AND_AND     
-        || op == T_OR_OR       
-        || op == T_PLUS        
-        || op == T_MINUS       
-        || op == T_TIMES       
-        || op == T_DIVIDE      
-        || op == T_PERCENT     
-        || op == T_AND         
-        || op == T_OR          
-        //|| op == T_TILDE       
-        || op == T_XOR;  
-    //@formatter:on
-    if (!isOk) {
-      throw new AstParseException("not an binary operator: " + op.toString());
-    }
-  }
 }

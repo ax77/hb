@@ -337,7 +337,7 @@ public class TestTac {
     sb.append(" /*029*/          var tok: token = new token(type: tp);           \n");
     sb.append(" /*030*/          tok.type.tp = 12;                               \n");
     sb.append(" /*031*/          var xxx: i32;                                   \n");
-    sb.append(" /*031*/          arr[1][2] = -1+ 1024;                         \n");
+    sb.append(" /*031*/          arr[1][2] = -1 + 1024;                         \n");
     sb.append(" /*032*/          return xxx;                                     \n");
     sb.append(" /*033*/      }                                                   \n");
     sb.append(" /*034*/  }                                                       \n");

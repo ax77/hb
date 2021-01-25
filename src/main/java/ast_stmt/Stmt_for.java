@@ -7,6 +7,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
+import tokenize.Token;
 
 public class Stmt_for implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
@@ -25,9 +26,9 @@ public class Stmt_for implements Serializable {
   private ExprExpression step;
   private final StmtBlock loop;
 
-  public Stmt_for(Ident auxIter, Ident auxCollection, StmtBlock loop) {
-    this.auxIter = new ExprExpression(new ExprIdent(auxIter));
-    this.auxCollection = new ExprExpression(new ExprIdent(auxCollection));
+  public Stmt_for(Ident auxIter, Ident auxCollection, StmtBlock loop, Token from) {
+    this.auxIter = new ExprExpression(new ExprIdent(auxIter), from);
+    this.auxCollection = new ExprExpression(new ExprIdent(auxCollection), from);
     this.loop = loop;
   }
 

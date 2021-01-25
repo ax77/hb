@@ -2,15 +2,18 @@ package ast_expr;
 
 import java.io.Serializable;
 
+import ast_sourceloc.ILocation;
+import ast_sourceloc.SourceLocation;
 import ast_types.Type;
 import literals.IntLiteral;
 import tokenize.Token;
 
-public class ExprExpression implements Serializable {
+public class ExprExpression implements Serializable, ILocation {
   private static final long serialVersionUID = -2905880039842730533L;
 
   // main
   private final ExpressionBase base; // what union contains
+  private final SourceLocation location;
   private Type resultType;
 
   // nodes
@@ -27,76 +30,89 @@ public class ExprExpression implements Serializable {
   private String stringConst;
   private ExprArrayAccess arrayAccess;
 
-  public ExprExpression(ExprArrayAccess arrayAccess) {
+  public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
     this.base = ExpressionBase.EARRAY_ACCESS;
+    this.location = new SourceLocation(beginPos);
     this.arrayAccess = arrayAccess;
+  }
+
+  public ExprExpression(ExprSelf selfExpression, Token beginPos) {
+    this.base = ExpressionBase.ESELF;
+    this.location = new SourceLocation(beginPos);
+    this.selfExpression = selfExpression;
+  }
+
+  public ExprExpression(String stringConst, Token beginPos) {
+    this.base = ExpressionBase.ESTRING_CONST;
+    this.location = new SourceLocation(beginPos);
+    this.stringConst = stringConst;
+  }
+
+  public ExprExpression(ExprAssign assign, Token beginPos) {
+    this.base = ExpressionBase.EASSIGN;
+    this.location = new SourceLocation(beginPos);
+    this.assign = assign;
+  }
+
+  public ExprExpression(ExprArrayCreation arrayCreation, Token beginPos) {
+    this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
+    this.location = new SourceLocation(beginPos);
+    this.arrayCreation = arrayCreation;
+  }
+
+  public ExprExpression(ExpressionBase base, Token beginPos) {
+    this.base = base;
+    this.location = new SourceLocation(beginPos);
+  }
+
+  public ExprExpression(ExprClassCreation classCreation, Token beginPos) {
+    this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
+    this.location = new SourceLocation(beginPos);
+    this.classCreation = classCreation;
+  }
+
+  public ExprExpression(ExprUnary unary, Token beginPos) {
+    this.base = ExpressionBase.EUNARY;
+    this.location = new SourceLocation(beginPos);
+    this.unary = unary;
+  }
+
+  public ExprExpression(ExprBinary binary, Token beginPos) {
+    this.base = ExpressionBase.EBINARY;
+    this.location = new SourceLocation(beginPos);
+    this.binary = binary;
+  }
+
+  public ExprExpression(IntLiteral e, Token token) {
+    this.base = ExpressionBase.EPRIMARY_NUMBER;
+    this.location = new SourceLocation(token);
+    this.number = e;
+  }
+
+  public ExprExpression(ExprMethodInvocation methodInvocation, Token beginPos) {
+    this.base = ExpressionBase.EMETHOD_INVOCATION;
+    this.location = new SourceLocation(beginPos);
+    this.methodInvocation = methodInvocation;
+  }
+
+  public ExprExpression(ExprFieldAccess fieldAccess, Token beginPos) {
+    this.base = ExpressionBase.EFIELD_ACCESS;
+    this.location = new SourceLocation(beginPos);
+    this.fieldAccess = fieldAccess;
+  }
+
+  public ExprExpression(ExprIdent symbol, Token beginPos) {
+    this.base = ExpressionBase.EPRIMARY_IDENT;
+    this.location = new SourceLocation(beginPos);
+    this.ident = symbol;
   }
 
   public ExprArrayAccess getArrayAccess() {
     return arrayAccess;
   }
 
-  public ExprExpression(ExprSelf selfExpression) {
-    this.base = ExpressionBase.ESELF;
-    this.selfExpression = selfExpression;
-  }
-
-  public ExprExpression(String stringConst) {
-    this.base = ExpressionBase.ESTRING_CONST;
-    this.stringConst = stringConst;
-  }
-
   public String getStringConst() {
     return stringConst;
-  }
-
-  public ExprExpression(ExprAssign assign) {
-    this.base = ExpressionBase.EASSIGN;
-    this.assign = assign;
-  }
-
-  public ExprExpression(ExprArrayCreation arrayCreation) {
-    this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
-    this.arrayCreation = arrayCreation;
-  }
-
-  public ExprExpression(ExpressionBase base) {
-    this.base = base;
-  }
-
-  public ExprExpression(ExprClassCreation classCreation) {
-    this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
-    this.classCreation = classCreation;
-  }
-
-  public ExprExpression(ExprUnary unary) {
-    this.base = ExpressionBase.EUNARY;
-    this.unary = unary;
-  }
-
-  public ExprExpression(ExprBinary binary) {
-    this.base = ExpressionBase.EBINARY;
-    this.binary = binary;
-  }
-
-  public ExprExpression(IntLiteral e, Token token) {
-    this.base = ExpressionBase.EPRIMARY_NUMBER;
-    this.number = e;
-  }
-
-  public ExprExpression(ExprMethodInvocation methodInvocation) {
-    this.base = ExpressionBase.EMETHOD_INVOCATION;
-    this.methodInvocation = methodInvocation;
-  }
-
-  public ExprExpression(ExprFieldAccess fieldAccess) {
-    this.base = ExpressionBase.EFIELD_ACCESS;
-    this.fieldAccess = fieldAccess;
-  }
-
-  public ExprExpression(ExprIdent symbol) {
-    this.base = ExpressionBase.EPRIMARY_IDENT;
-    this.ident = symbol;
   }
 
   public ExprArrayCreation getArrayInstanceCreation() {
@@ -197,7 +213,20 @@ public class ExprExpression implements Serializable {
     if (base == ExpressionBase.EARRAY_ACCESS) {
       return arrayAccess.toString();
     }
+    if (base == ExpressionBase.EUNARY) {
+      return unary.toString();
+    }
     return base.toString();
+  }
+
+  @Override
+  public SourceLocation getLocation() {
+    return location;
+  }
+
+  @Override
+  public String getLocationToString() {
+    return location.toString();
   }
 
 }

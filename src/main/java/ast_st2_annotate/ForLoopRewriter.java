@@ -14,6 +14,7 @@ import ast_expr.ExprAssign;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprUtil;
 import ast_expr.FuncArg;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.Stmt_for;
@@ -68,22 +69,29 @@ public class ForLoopRewriter {
     forloop.setTest(testExpression);
   }
 
+  private static Token todoLoc() {
+    Token tok = new Token();
+    tok.setValue("???");
+    tok.setType(T.TOKEN_ERROR);
+    return tok;
+  }
+
   private static void setStep(Stmt_for forloop, final Ident item, final Ident iteratorVarName) {
     // 4) item = iter.get_net()
     final ExprExpression lhs = id(item);
     final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName);
 
-    final ExprExpression stepExpression = new ExprExpression(new ExprAssign(getAssignTok(), lhs, rhs));
+    final ExprExpression stepExpression = new ExprExpression(new ExprAssign(getAssignTok(), lhs, rhs), todoLoc());
     forloop.setStep(stepExpression);
   }
 
   private static ExprExpression id(Ident iteratorVarName) {
-    return new ExprExpression(new ExprIdent(iteratorVarName));
+    return new ExprExpression(new ExprIdent(iteratorVarName), todoLoc());
   }
 
   private static ExprExpression call(final Ident funcname, final Ident objectName) {
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName), emptyArgs));
+    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName), emptyArgs), todoLoc());
   }
 
   private static Ident createNameForIteratorItself() {
