@@ -5,16 +5,16 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import ast.ast.checkers.IteratorChecker;
-import ast.ast.nodes.ClassDeclaration;
-import ast.ast.nodes.unit.CompilationUnit;
-import ast.ast.nodes.unit.InstantiationUnit;
-import ast.ast.nodes.vars.VarDeclarator;
-import ast.parse.Parse;
-import ast.parse.main.ParserMain;
-import ast.templates.InstatantiationUnitBuilder;
-import ast.types.TypeBase;
-import jscan.hashed.Hash_ident;
+import ast_checkers.IteratorChecker;
+import ast_class.ClassDeclaration;
+import ast_templates.InstatantiationUnitBuilder;
+import ast_types.TypeBase;
+import ast_unit.CompilationUnit;
+import ast_unit.InstantiationUnit;
+import ast_vars.VarDeclarator;
+import hashed.Hash_ident;
+import parse.Parse;
+import parse.ParserMain;
 
 public class TestIteratorRecognizer {
 

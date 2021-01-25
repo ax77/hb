@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import ast.ast.nodes.ClassDeclaration;
-import ast.ast.nodes.unit.CompilationUnit;
-import ast.ast.nodes.unit.InstantiationUnit;
-import ast.parse.Parse;
-import ast.parse.main.Imports;
-import ast.parse.main.ParserMain;
-import ast.templates.InstatantiationUnitBuilder;
+import ast_class.ClassDeclaration;
+import ast_templates.InstatantiationUnitBuilder;
+import ast_unit.CompilationUnit;
+import ast_unit.InstantiationUnit;
+import parse.ImportsResolver;
+import parse.Parse;
+import parse.ParserMain;
 
 public class TestTypes {
 
@@ -31,7 +31,7 @@ public class TestTypes {
     sb.append(" /*010*/  }                       \n");
     //@formatter:on
 
-    Parse mainParser = new ParserMain(new Imports(sb).getSource()).initiateParse();
+    Parse mainParser = new ParserMain(new ImportsResolver(sb).getSource()).initiateParse();
 
     CompilationUnit unit = mainParser.parse();
     InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
@@ -56,7 +56,7 @@ public class TestTypes {
     sb.append(" /*008*/  }                     \n");
     //@formatter:on
 
-    Parse mainParser = new ParserMain(new Imports(sb).getSource()).initiateParse();
+    Parse mainParser = new ParserMain(new ImportsResolver(sb).getSource()).initiateParse();
 
     CompilationUnit unit = mainParser.parse();
     InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();

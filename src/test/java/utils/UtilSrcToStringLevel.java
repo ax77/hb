@@ -2,9 +2,9 @@ package utils;
 
 import java.util.List;
 
-import jscan.tokenize.Stream;
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
+import tokenize.Stream;
+import tokenize.T;
+import tokenize.Token;
 
 public class UtilSrcToStringLevel {
 

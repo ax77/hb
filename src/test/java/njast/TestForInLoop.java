@@ -2,12 +2,12 @@ package njast;
 
 import org.junit.Test;
 
-import ast.ast.nodes.ClassDeclaration;
-import ast.ast.nodes.unit.CompilationUnit;
-import ast.ast.nodes.unit.InstantiationUnit;
-import ast.parse.Parse;
-import ast.parse.main.ParserMain;
-import ast.templates.InstatantiationUnitBuilder;
+import ast_class.ClassDeclaration;
+import ast_templates.InstatantiationUnitBuilder;
+import ast_unit.CompilationUnit;
+import ast_unit.InstantiationUnit;
+import parse.Parse;
+import parse.ParserMain;
 
 public class TestForInLoop {
 
