@@ -417,9 +417,9 @@ public class ParseExpression {
 
   private ExprExpression methodInvocation(Ident funcname) {
     // apply <this.> before function name, more convenient
-    //ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
+    ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)));
     List<FuncArg> arglist = parseArglist();
-    return new ExprExpression(new ExprMethodInvocation(funcname, arglist));
+    return new ExprExpression(new ExprMethodInvocation(funcname, selfExpression, arglist));
   }
 
   private ExprExpression methodInvocation(Ident funcname, ExprExpression lhs) {

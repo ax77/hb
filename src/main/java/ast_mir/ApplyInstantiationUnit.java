@@ -384,41 +384,26 @@ public class ApplyInstantiationUnit {
       applyExpression(object, arg.getExpression());
     }
 
-    if (methodInvocation.isMethodInvocation()) {
-      // method: a.fn(1,2,3)
+    // a.fn(1,2,3)
+    // self.fn(1,2,3)
 
-      final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
-      if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
-        throw new AstParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
-      }
-
-      final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassType();
-      final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
-          arguments);
-
-      if (method == null) {
-        throw new AstParseException("class has no method: " + methodInvocation.getFuncname().getName());
-      }
-
-      e.setResultType(method.getType());
-
-      // remember method
-      methodInvocation.setMethod(method);
-
+    final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
+    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
+      throw new AstParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
     }
 
-    else {
+    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassType();
+    final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
+        arguments);
 
-      // function: fn(1,2,3)
-      ClassMethodDeclaration func = object.getMethod(methodInvocation.getFuncname(), arguments);
-      if (func == null) {
-        throw new AstParseException("class has no method: " + methodInvocation.getFuncname().getName());
-      }
-      e.setResultType(func.getType());
-
-      // remember method
-      methodInvocation.setMethod(func);
+    if (method == null) {
+      throw new AstParseException("class has no method: " + methodInvocation.getFuncname().getName());
     }
+
+    e.setResultType(method.getType());
+
+    // remember method
+    methodInvocation.setMethod(method);
 
   }
 

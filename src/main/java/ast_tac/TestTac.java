@@ -235,13 +235,6 @@ public class TestTac {
 
     else if (base == EMETHOD_INVOCATION) {
       final ExprMethodInvocation fcall = e.getMethodInvocation();
-
-      if (!fcall.isMethodInvocation()) {
-        // add 'self.' - and remove the 'wildness' from the function :)
-        final ClassDeclaration clazz = fcall.getMethod().getClazz();
-        fcall.setObject(new ExprExpression(new ExprSelf(clazz)));
-      }
-
       gen(fcall.getObject());
 
       final List<ResultName> args = genArgs(fcall);

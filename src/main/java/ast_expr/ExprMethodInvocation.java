@@ -4,30 +4,24 @@ import java.util.List;
 
 import ast_method.ClassMethodDeclaration;
 import tokenize.Ident;
+import utils_oth.NullChecker;
 
 public class ExprMethodInvocation {
   private /*final*/ ExprExpression object;
   private final List<FuncArg> arguments;
   private final Ident funcname;
-  private final boolean isMethodInvocation;
 
   //MIR:TREE
   private ClassMethodDeclaration method;
 
   // a.b()
+  // self.b()
   public ExprMethodInvocation(Ident funcname, ExprExpression object, List<FuncArg> arguments) {
+    NullChecker.check(funcname, object, arguments);
+
     this.funcname = funcname;
     this.object = object;
     this.arguments = arguments;
-    this.isMethodInvocation = true;
-  }
-
-  // b()
-  public ExprMethodInvocation(Ident funcname, List<FuncArg> arguments) {
-    this.funcname = funcname;
-    this.object = null;
-    this.arguments = arguments;
-    this.isMethodInvocation = false;
   }
 
   public ExprExpression getObject() {
@@ -42,10 +36,6 @@ public class ExprMethodInvocation {
     return funcname;
   }
 
-  public boolean isMethodInvocation() {
-    return isMethodInvocation;
-  }
-
   public ClassMethodDeclaration getMethod() {
     return method;
   }
@@ -58,10 +48,8 @@ public class ExprMethodInvocation {
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    if (isMethodInvocation) {
-      sb.append(object.toString());
-      sb.append(".");
-    }
+    sb.append(object.toString());
+    sb.append(".");
 
     sb.append(funcname.getName());
     sb.append("(");
