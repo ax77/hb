@@ -74,7 +74,7 @@ public class Imports {
     // now: just like this, because it is easy to manage git repository
     // with these std files, and it is easy and precise to access the files
     // from test folder instead of the root of the app.
-    final String dir = System.getProperty("user.dir") + "/src/test/java/njast/";
+    final String dir = System.getProperty("user.dir");
     final String path = dir + "/" + sb.toString();
 
     return Normalizer.normalize(path);
