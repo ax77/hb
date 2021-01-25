@@ -2,9 +2,9 @@ package ast.ast.nodes.expr;
 
 import java.io.Serializable;
 
+import ast.IntLiteral;
 import ast.ast.kinds.ExpressionBase;
 import ast.types.Type;
-import jscan.cstrtox.C_strtox;
 import jscan.tokenize.Token;
 
 public class ExprExpression implements Serializable {
@@ -17,7 +17,7 @@ public class ExprExpression implements Serializable {
   // nodes
   private ExprUnary unary;
   private ExprBinary binary;
-  private ExprNumber number;
+  private IntLiteral number;
   private ExprIdent ident;
   private ExprMethodInvocation methodInvocation;
   private ExprFieldAccess fieldAccess;
@@ -80,19 +80,9 @@ public class ExprExpression implements Serializable {
     this.binary = binary;
   }
 
-  public ExprExpression(C_strtox e, Token token) {
-    e.ev(); // XXX:
-
+  public ExprExpression(IntLiteral e, Token token) {
     this.base = ExpressionBase.EPRIMARY_NUMBER;
-
-    ExprNumber number = null;
-    if (e.isIntegerKind()) {
-      number = new ExprNumber(e.getClong(), e.getNumtype());
-    } else {
-      number = new ExprNumber(e.getCdouble(), e.getNumtype());
-    }
-
-    this.number = number;
+    this.number = e;
   }
 
   public ExprExpression(ExprMethodInvocation methodInvocation) {
@@ -146,7 +136,7 @@ public class ExprExpression implements Serializable {
     return ident;
   }
 
-  public ExprNumber getNumber() {
+  public IntLiteral getNumber() {
     return number;
   }
 
@@ -191,7 +181,7 @@ public class ExprExpression implements Serializable {
       return methodInvocation.toString();
     }
     if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      return String.format("%d", number.getClong());
+      return number.toString();
     }
     if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {
       return "null";

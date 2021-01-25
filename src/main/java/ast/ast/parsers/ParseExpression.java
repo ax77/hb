@@ -50,7 +50,6 @@ import ast.parse.ParseState;
 import ast.symtab.IdentMap;
 import ast.types.ClassType;
 import ast.types.Type;
-import jscan.cstrtox.C_strtox;
 import jscan.hashed.Hash_ident;
 import jscan.tokenize.Ident;
 import jscan.tokenize.T;
@@ -73,11 +72,6 @@ public class ParseExpression {
 
   private ExprExpression build_assign(Token tok, ExprExpression lvalue, ExprExpression rvalue) {
     return new ExprExpression(new ExprAssign(tok, lvalue, rvalue));
-  }
-
-  // numeric-char-constants
-  private ExprExpression build_number(C_strtox e, Token token) {
-    return new ExprExpression(e, token);
   }
 
   public ExprExpression e_expression() {
@@ -478,8 +472,11 @@ public class ParseExpression {
         final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
 
         return new ExprExpression(classCreation);
-      } else {
-        return primaryNumber(saved);
+      }
+
+      else {
+        // TODO: chars.
+        return new ExprExpression(saved.getNumconst(), saved);
       }
     }
 
@@ -543,20 +540,6 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
-  }
-
-  private ExprExpression primaryNumber(Token saved) {
-    //TODO:NUMBERS
-    String toeval = "";
-    if (saved.ofType(TOKEN_CHAR)) {
-      toeval = String.format("%d", saved.getCharconstant().getV());
-    } else {
-      toeval = saved.getValue();
-    }
-
-    // TODO:NUMBERS
-    C_strtox strtox = new C_strtox(toeval);
-    return build_number(strtox, saved);
   }
 
 }

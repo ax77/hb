@@ -217,7 +217,7 @@ public class TestTac {
     }
 
     else if (base == EPRIMARY_NUMBER) {
-      final int iconst = (int) e.getNumber().getClong();
+      final int iconst = (int) e.getNumber().getInteger();
       final String itoa = String.format("%d", iconst);
       final Quad quad = new Quad(QuadOpc.NUM_DECL, ht(), new Type(TypeBase.TP_I32), h(itoa));
 

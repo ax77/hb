@@ -1,9 +1,13 @@
-package ast.tac;
+package ast;
+
+import java.io.Serializable;
 
 import ast.parse.NullChecker;
 import ast.types.TypeBase;
 
-public class IntLiteral {
+public class IntLiteral implements Serializable {
+  private static final long serialVersionUID = -5869192653078818614L;
+
   private final String input; // what was given, for debug printing
   private final TypeBase type;
   private final long integer;

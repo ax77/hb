@@ -1,6 +1,6 @@
-package jscan.cspec;
+package jscan.tokenize;
 
-import static jscan.main.Env.HC_FEOF;
+import static jscan.tokenize.Env.HC_FEOF;
 
 import java.util.Formatter;
 

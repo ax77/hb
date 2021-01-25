@@ -2,7 +2,7 @@ package ast.tac;
 
 import java.util.List;
 
-import ast.ast.nodes.expr.ExprNumber;
+import ast.IntLiteral;
 import ast.ast.nodes.method.ClassMethodDeclaration;
 import ast.ast.nodes.vars.VarDeclarator;
 import ast.parse.NullChecker;
@@ -38,7 +38,7 @@ public class Quad {
   // note: 'self' has no varSym
   private VarDeclarator varSym; // var|field
   private ClassMethodDeclaration methodSym;
-  private ExprNumber numberSym;
+  private IntLiteral numberSym;
 
   public Quad(ResultName result, Type type, StoreDst storeDst, ResultName storeSrc) {
     NullChecker.check(result, type, storeDst, storeSrc);
@@ -111,11 +111,11 @@ public class Quad {
     this.methodSym = methodSym;
   }
 
-  public ExprNumber getNumberSym() {
+  public IntLiteral getNumberSym() {
     return numberSym;
   }
 
-  public void setNumberSym(ExprNumber numberSym) {
+  public void setNumberSym(IntLiteral numberSym) {
     this.numberSym = numberSym;
   }
 

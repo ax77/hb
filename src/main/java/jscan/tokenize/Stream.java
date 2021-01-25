@@ -1,10 +1,10 @@
 package jscan.tokenize;
 
-import static jscan.main.Env.EOF_TOKEN_ENTRY;
-import static jscan.main.Env.HC_FEOF;
-import static jscan.main.Env.isDec;
-import static jscan.main.Env.isLetter;
-import static jscan.main.Env.isOpStart;
+import static jscan.tokenize.Env.EOF_TOKEN_ENTRY;
+import static jscan.tokenize.Env.HC_FEOF;
+import static jscan.tokenize.Env.isDec;
+import static jscan.tokenize.Env.isLetter;
+import static jscan.tokenize.Env.isOpStart;
 import static jscan.tokenize.T.TOKEN_EOF;
 import static jscan.tokenize.T.TOKEN_ERROR;
 import static jscan.tokenize.T.T_DIVIDE;
@@ -16,13 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import jscan.cconst.CChar;
-import jscan.cconst.CStr;
-import jscan.cconst.CStrEnc;
-import jscan.cspec.CBuf;
-import jscan.cspec.CEscaper;
+import ast.IntLiteral;
+import ast.ParseIntLiteral;
 import jscan.hashed.Hash_ident;
-import jscan.main.Env;
 import jscan.main.ScanExc;
 import jscan.sourceloc.SourceLocation;
 
@@ -215,7 +211,7 @@ public class Stream {
     // string|char
     final boolean isStringStart = (c == '\'' || c == '\"');
     if (isStringStart) {
-      return getString(c, CStrEnc.STR_ENC_NONE);
+      return getString(c);
     }
 
     // identifier 
@@ -308,7 +304,7 @@ public class Stream {
 
   }
 
-  private Token getString(int c, CStrEnc enc) {
+  private Token getString(int c) {
     int endof = (c == '\"' ? '\"' : '\'');
     T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
     StringBuilder strbuf = new StringBuilder();
@@ -333,24 +329,7 @@ public class Stream {
       strbuf.append((char) next2);
     }
 
-    // TODO:
-    int escaped[] = new CEscaper(new CBuf(strbuf.toString()), "TODO").escape();
     Token token = new Token();
-
-    if (endof == '\"') {
-      CStr strconstant = new CStr(escaped, enc);
-      token.setStrconstant(strconstant);
-    } else {
-      if (escaped.length == 0) {
-        throw new ScanExc("" + " error : empty char constant");
-      }
-      if (escaped.length > 2) {
-        //throw new ScanExc(startLocation + " error : too long char constant"); // TODO: WC
-      }
-      CChar charconstant = new CChar(escaped[0], enc);
-      token.setCharconstant(charconstant);
-    }
-
     setPos(token);
     token.setType(typeoftok);
     token.setValue((char) endof + strbuf.toString() + (char) endof);
@@ -359,6 +338,7 @@ public class Stream {
   }
 
   public Token getPpNum(int c) {
+
     /*
      * pp-number:
      *   digit
@@ -393,7 +373,14 @@ public class Stream {
 
       break;
     }
-    return specialToken(T.TOKEN_NUMBER, strbuf.toString());
+
+    final String numstr = strbuf.toString();
+    IntLiteral intLiteral = new ParseIntLiteral(numstr).parse();
+
+    final Token specialToken = specialToken(T.TOKEN_NUMBER, numstr);
+    specialToken.setNumconst(intLiteral);
+
+    return specialToken;
   }
 
   public List<Token> getTokenlist() {

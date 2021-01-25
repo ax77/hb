@@ -6,8 +6,7 @@ import static jscan.tokenize.Fposition.fnewline;
 
 import java.io.Serializable;
 
-import jscan.cconst.CChar;
-import jscan.cconst.CStr;
+import ast.IntLiteral;
 import jscan.sourceloc.SourceLocation;
 
 public class Token implements Serializable {
@@ -18,9 +17,7 @@ public class Token implements Serializable {
   private Ident ident;
   private String value;
   private SourceLocation location;
-
-  private CStr strconstant;
-  private CChar charconstant;
+  private IntLiteral numconst;
 
   public Token() {
     setDefaults();
@@ -42,6 +39,14 @@ public class Token implements Serializable {
 
   // source - location routine
   //
+
+  public IntLiteral getNumconst() {
+    return numconst;
+  }
+
+  public void setNumconst(IntLiteral numconst) {
+    this.numconst = numconst;
+  }
 
   public String loc() {
     if (location == null) {
@@ -87,8 +92,6 @@ public class Token implements Serializable {
     type = other.type;
     ident = other.ident;
     value = other.value;
-    strconstant = other.strconstant;
-    charconstant = other.charconstant;
     fposition = other.fposition;
     location = new SourceLocation(other.location);
   }
@@ -181,22 +184,6 @@ public class Token implements Serializable {
     }
 
     return "\nToken [v=" + value + "; tp=" + type + ppf + "]";
-  }
-
-  public CStr getStrconstant() {
-    return strconstant;
-  }
-
-  public void setStrconstant(CStr strconstant) {
-    this.strconstant = strconstant;
-  }
-
-  public CChar getCharconstant() {
-    return charconstant;
-  }
-
-  public void setCharconstant(CChar charconstant) {
-    this.charconstant = charconstant;
   }
 
   public boolean isIdent(Ident what) {

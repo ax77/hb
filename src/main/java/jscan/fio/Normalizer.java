@@ -3,6 +3,8 @@ package jscan.fio;
 import java.util.ArrayList;
 import java.util.List;
 
+import jscan.tokenize.Env;
+
 public abstract class Normalizer {
 
   public static String normalize(final String given) {
@@ -48,24 +50,13 @@ public abstract class Normalizer {
     return sb.toString();
   }
 
-  //@formatter:off
-  private static boolean isLetter(int c) {
-    return c == 'a' || c == 'b' || c == 'c' || c == 'd' || c == 'e' || c == 'f' || c == 'g' || c == 'h' || c == 'i'
-        || c == 'j' || c == 'k' || c == 'l' || c == 'm' || c == 'n' || c == 'o' || c == 'p' || c == 'q' || c == 'r'
-        || c == 's' || c == 't' || c == 'u' || c == 'v' || c == 'w' || c == 'x' || c == 'y' || c == 'z' || c == 'A'
-        || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F' || c == 'G' || c == 'H' || c == 'I' || c == 'J'
-        || c == 'K' || c == 'L' || c == 'M' || c == 'N' || c == 'O' || c == 'P' || c == 'Q' || c == 'R' || c == 'S'
-        || c == 'T' || c == 'U' || c == 'V' || c == 'W' || c == 'X' || c == 'Y' || c == 'Z' || c == '_';
-  }
-  //@formatter:on
-
   public static boolean isAbsolutePath(String s) {
     return isAbsolutePathWin(s) || isAbsoluteUnix(s);
   }
 
   public static boolean isAbsolutePathWin(String s) {
     if (s.length() >= 3) { // C:\, C:\\, C:/, C://
-      if (isLetter(s.charAt(0)) && s.charAt(1) == ':' && (s.charAt(2) == '\\' || s.charAt(2) == '/')) {
+      if (Env.isLetter(s.charAt(0)) && s.charAt(1) == ':' && (s.charAt(2) == '\\' || s.charAt(2) == '/')) {
         return true;
       }
     }

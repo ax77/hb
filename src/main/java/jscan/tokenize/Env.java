@@ -1,6 +1,4 @@
-package jscan.main;
-
-import jscan.tokenize.Token;
+package jscan.tokenize;
 
 public class Env {
 

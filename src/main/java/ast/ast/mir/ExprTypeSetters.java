@@ -1,9 +1,25 @@
 package ast.ast.mir;
 
-import jscan.tokenize.T;
-import jscan.tokenize.Token;
-
-import static jscan.tokenize.T.*;
+import static jscan.tokenize.T.T_AND;
+import static jscan.tokenize.T.T_AND_AND;
+import static jscan.tokenize.T.T_DIVIDE;
+import static jscan.tokenize.T.T_EQ;
+import static jscan.tokenize.T.T_EXCLAMATION;
+import static jscan.tokenize.T.T_GE;
+import static jscan.tokenize.T.T_GT;
+import static jscan.tokenize.T.T_LE;
+import static jscan.tokenize.T.T_LSHIFT;
+import static jscan.tokenize.T.T_LT;
+import static jscan.tokenize.T.T_MINUS;
+import static jscan.tokenize.T.T_NE;
+import static jscan.tokenize.T.T_OR;
+import static jscan.tokenize.T.T_OR_OR;
+import static jscan.tokenize.T.T_PERCENT;
+import static jscan.tokenize.T.T_PLUS;
+import static jscan.tokenize.T.T_RSHIFT;
+import static jscan.tokenize.T.T_TILDE;
+import static jscan.tokenize.T.T_TIMES;
+import static jscan.tokenize.T.T_XOR;
 
 import ast.ast.kinds.ExpressionBase;
 import ast.ast.nodes.expr.ExprBinary;
@@ -12,6 +28,8 @@ import ast.parse.AstParseException;
 import ast.parse.NullChecker;
 import ast.types.Type;
 import ast.types.TypeBindings;
+import jscan.tokenize.T;
+import jscan.tokenize.Token;
 
 public class ExprTypeSetters {
 

@@ -3,10 +3,10 @@ package ast.ast.checkers;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast.IntLiteral;
 import ast.ast.kinds.ExpressionBase;
 import ast.ast.nodes.ClassDeclaration;
 import ast.ast.nodes.expr.ExprExpression;
-import ast.ast.nodes.expr.ExprNumber;
 import ast.ast.parsers.ParseExpression;
 import ast.parse.Parse;
 import ast.types.ArrayType;
@@ -126,14 +126,15 @@ public class TypeRecognizer {
     if (count.getBase() != ExpressionBase.EPRIMARY_NUMBER) {
       parser.perror("expect array size.");
     }
-    ExprNumber num = count.getNumber();
-    if (!num.isInteger()) {
-      parser.perror("expect array size integer.");
-    }
-    if (num.getClong() <= 0) {
-      parser.perror("zero or negative array size are not supported");
-    }
-    return num.getClong();
+    //TODO:
+    IntLiteral num = count.getNumber();
+    // if (!num.isInteger()) {
+    //   parser.perror("expect array size integer.");
+    // }
+    // if (num.getClong() <= 0) {
+    //   parser.perror("zero or negative array size are not supported");
+    // }
+    return num.getInteger();
   }
 
   private boolean isRefTypenameT(Ident typeName) {
