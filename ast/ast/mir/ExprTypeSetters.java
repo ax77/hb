@@ -5,6 +5,7 @@ import jscan.tokenize.Token;
 
 import static jscan.tokenize.T.*;
 
+import ast.ast.kinds.ExpressionBase;
 import ast.ast.nodes.expr.ExprBinary;
 import ast.ast.nodes.expr.ExprExpression;
 import ast.parse.AstParseException;
@@ -34,8 +35,9 @@ public class ExprTypeSetters {
     final Type lhsType = lhs.getResultType();
     final Type rhsType = rhs.getResultType();
 
-    checkTypeNotNull(lhsType);
-    checkTypeNotNull(rhsType);
+    //TODO:null-literal
+    //checkTypeNotNull(lhsType);
+    //checkTypeNotNull(rhsType);
 
     // T_PLUS,T_MINUS->numeric
     // is_numeric|is_numeric
@@ -60,8 +62,47 @@ public class ExprTypeSetters {
       }
     }
 
+    // == !=
+    if (in(op, new T[] { T_EQ, T_NE })) {
+      // T_EQ,T_NE->boolean
+      // is_numeric|is_numeric
+      // is_boolean|is_boolean
+      // is_reference|is_reference
+      // is_reference|is_null_literal
+      // is_null_literal|is_reference
+      final Type resultType = TypeBindings.make_boolean();
+
+      if (lhsType != null && rhsType != null) {
+        if (lhsType.is_numeric() && rhsType.is_numeric()) {
+          e.setResultType(resultType);
+        }
+        if (lhsType.is_boolean() && rhsType.is_boolean()) {
+          e.setResultType(resultType);
+        }
+        if (lhsType.is_reference() && rhsType.is_reference()) {
+          e.setResultType(resultType);
+        }
+      }
+
+      else {
+        if (lhsType == null) {
+          NullChecker.check(rhsType);
+          if (lhs.is(ExpressionBase.EPRIMARY_NULL_LITERAL) && rhsType.is_reference()) {
+            e.setResultType(resultType);
+          }
+        }
+        if (rhsType == null) {
+          NullChecker.check(lhsType);
+          if (lhsType.is_reference() && rhs.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
+            e.setResultType(resultType);
+          }
+        }
+      }
+
+    }
+
     // + -
-    if (in(op, new T[] { T_PLUS, T_MINUS })) {
+    else if (in(op, new T[] { T_PLUS, T_MINUS })) {
       if (lhsType.is_numeric() && rhsType.is_numeric()) {
         e.setResultType(lhsType);
       }

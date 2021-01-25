@@ -4,11 +4,14 @@ import static jscan.tokenize.Fposition.fatbol;
 import static jscan.tokenize.Fposition.fleadws;
 import static jscan.tokenize.Fposition.fnewline;
 
+import java.io.Serializable;
+
 import jscan.cconst.CChar;
 import jscan.cconst.CStr;
 import jscan.sourceloc.SourceLocation;
 
-public class Token {
+public class Token implements Serializable {
+  private static final long serialVersionUID = -6400923302892741933L;
 
   private int fposition;
   private T type;

@@ -253,7 +253,7 @@ public class ApplyInstantiationUnit {
     }
 
     else if (base == ExpressionBase.EPRIMARY_NUMBER) {
-      e.setResultType(TypeBindings.make_i64()); // TODO:
+      e.setResultType(TypeBindings.make_i32()); // TODO:
     }
 
     else if (base == ExpressionBase.EPRIMARY_NULL_LITERAL) {

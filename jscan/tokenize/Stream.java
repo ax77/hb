@@ -28,9 +28,6 @@ import jscan.sourceloc.SourceLocation;
 
 public class Stream {
 
-  private final char Q1 = '\'';
-  private final char Q2 = '\"';
-
   private final Token EOL_TOKEN;
   private final Token WSP_TOKEN;
 
@@ -76,13 +73,6 @@ public class Stream {
     VALID_COMBINATIONS.put(">>", T.T_RSHIFT);
     VALID_COMBINATIONS.put("||", T.T_OR_OR);
     VALID_COMBINATIONS.put("|=", T.T_OR_EQUAL);
-
-    //
-    VALID_COMBINATIONS.put("<:", T.T_LEFT_BRACKET);
-    VALID_COMBINATIONS.put(":>", T.T_RIGHT_BRACKET);
-    VALID_COMBINATIONS.put("<%", T.T_LEFT_BRACE);
-    VALID_COMBINATIONS.put("%>", T.T_RIGHT_BRACE);
-    VALID_COMBINATIONS.put("%:", T.T_SHARP);
 
     // special handling for this large...
     // %:%:
@@ -283,20 +273,6 @@ public class Stream {
       return specialToken(combType, combOp);
     }
 
-    // digraph
-    if (combOp.equals("%:")) {
-      int p = buffer.peekc();
-      if (p == '%') {
-        p = buffer.nextc(); // %
-        p = buffer.nextc(); // :
-        if (p != ':') {
-          throw new ScanExc("Incomplete digrahp");
-        }
-        return specialToken(T.T_SHARP_SHARP, "%:%:");
-      }
-      return specialToken(T.T_SHARP, "%:");
-    }
-
     // ...
     if (combOp.equals("..")) {
       int p = buffer.nextc();
@@ -304,7 +280,6 @@ public class Stream {
         combOp += (char) p;
         return specialToken(T.T_DOT_DOT_DOT, combOp);
       } else {
-        //System.out.println(filename + ":" + buffer.getLine() + " T_DOT_DOT [..] handle");
         return specialToken(T.T_DOT_DOT, combOp);
       }
     }

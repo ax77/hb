@@ -1,6 +1,9 @@
 package jscan.tokenize;
 
-public final class Ident {
+import java.io.Serializable;
+
+public final class Ident implements Serializable {
+  private static final long serialVersionUID = 7844228085581642714L;
 
   private final String name;
   private int ns;

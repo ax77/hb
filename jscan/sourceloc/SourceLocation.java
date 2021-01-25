@@ -1,9 +1,13 @@
 package jscan.sourceloc;
 
+import java.io.Serializable;
+
 import jscan.hashed.Hash_strings;
 import jscan.tokenize.Token;
 
-public class SourceLocation {
+public class SourceLocation implements Serializable {
+  private static final long serialVersionUID = -635987520233195844L;
+
   protected final String filename;
   protected final int line;
   protected final int column;
