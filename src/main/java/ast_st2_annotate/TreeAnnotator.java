@@ -31,6 +31,7 @@ import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 import ast_vars.VarInitializer;
 import errors.AstParseException;
+import errors.ErrorLocation;
 
 public class TreeAnnotator {
 
@@ -248,7 +249,7 @@ public class TreeAnnotator {
     } else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
       applyArrayAccess(object, e);
     } else {
-      throw new AstParseException("unimpl. expression-type-applier for:" + e.toString());
+      ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
   }
@@ -276,7 +277,7 @@ public class TreeAnnotator {
     applyExpression(object, arrayAccess.getIndex());
     Type arrtype = arrayAccess.getArray().getResultType();
     if (!arrtype.is_array()) {
-      throw new AstParseException("expect array");
+      ErrorLocation.errorExpression("expect array", e);
     }
     Type arrof = arrtype.getArrayType().getArrayOf();
     e.setResultType(arrof);
@@ -311,7 +312,7 @@ public class TreeAnnotator {
     else {
       final Type rhsType = node.getRvalue().getResultType();
       if (!lhsType.is_equal_to(rhsType)) {
-        throw new AstParseException("types are different for assign: " + e.toString());
+        ErrorLocation.errorExpression("types are different for assign", e);
       }
     }
 
@@ -363,14 +364,14 @@ public class TreeAnnotator {
     //
     final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
     if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
-      throw new AstParseException("expect reference for field access like [a.b] -> a must be a class.");
+      ErrorLocation.errorExpression("expect reference for field access like [a.b] -> a must be a class.", e);
     }
 
     final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassType();
     final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
 
     if (field == null) {
-      throw new AstParseException("class has no field: " + fieldAccess.getFieldName().getName());
+      ErrorLocation.errorExpression("class has no field: " + fieldAccess.getFieldName().getName(), e);
     }
 
     e.setResultType(field.getType());
@@ -395,7 +396,7 @@ public class TreeAnnotator {
 
     final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
     if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
-      throw new AstParseException("expect reference for method invocation like [a.b()] -> a must be a class.");
+      ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
     }
 
     final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassType();
@@ -403,7 +404,7 @@ public class TreeAnnotator {
         arguments);
 
     if (method == null) {
-      throw new AstParseException("class has no method: " + methodInvocation.getFuncname().getName());
+      ErrorLocation.errorExpression("class has no method: " + methodInvocation.getFuncname().getName(), e);
     }
 
     e.setResultType(method.getType());

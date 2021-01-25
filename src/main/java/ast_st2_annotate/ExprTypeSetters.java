@@ -28,6 +28,7 @@ import ast_expr.ExpressionBase;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
+import errors.ErrorLocation;
 import tokenize.T;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -46,7 +47,7 @@ public class ExprTypeSetters {
   }
 
   private static void error(final ExprExpression e, String msg) {
-    throw new AstParseException(e.getLocationToString() + ":error[" + msg + "] " + e.toString());
+    ErrorLocation.errorExpression(msg, e);
   }
 
   public static void setUnaryType(final ExprExpression e) {

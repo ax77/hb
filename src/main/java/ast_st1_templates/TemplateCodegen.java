@@ -227,7 +227,6 @@ public class TemplateCodegen {
     final ClassDeclaration nested = typeToCheck.getClassType();
 
     if (nested.equals(object)) {
-      // nested.getTypeParametersT().clear();
       nested.setTypeParametersT(new ArrayList<>());
     }
 
