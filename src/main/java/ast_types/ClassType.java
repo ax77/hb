@@ -1,6 +1,7 @@
 package ast_types;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -33,8 +34,9 @@ public class ClassType implements Serializable {
     this.typeArguments.add(e);
   }
 
-  public void setTypeArguments(List<Type> typeArguments) {
-    this.typeArguments = typeArguments;
+  public void forgetTemplateHistory() {
+    this.typeArguments = new ArrayList<>();
+    clazz.setTypeParametersT(new ArrayList<>());
   }
 
   public boolean is_equal_to(ClassType another) {

@@ -10,7 +10,7 @@ import ast.UniqueCounter;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
 import ast_method.MethodParameter;
-import ast_templates.TypeSetter;
+import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_vars.VarDeclarator;

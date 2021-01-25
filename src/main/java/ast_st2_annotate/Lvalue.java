@@ -1,4 +1,4 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
 

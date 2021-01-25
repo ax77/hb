@@ -1,4 +1,4 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import static tokenize.T.T_AND;
 import static tokenize.T.T_AND_AND;

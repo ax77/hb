@@ -1,9 +1,9 @@
-package ast_mir;
+package ast_st2_annotate;
 
-import static ast_mir.Renamer.GET_ITERATOR_METHOD_NAME;
-import static ast_mir.Renamer.ITERATOR_GET_CURRENT_METHOD_NAME;
-import static ast_mir.Renamer.ITERATOR_GET_NEXT_METHOD_NAME;
-import static ast_mir.Renamer.ITERATOR_HAS_NEXT_METHOD_NAME;
+import static ast_st2_annotate.PredefinedNamesForRewriters.GET_ITERATOR_METHOD_NAME;
+import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_GET_CURRENT_METHOD_NAME;
+import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_GET_NEXT_METHOD_NAME;
+import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_HAS_NEXT_METHOD_NAME;
 
 import java.util.ArrayList;
 import java.util.List;

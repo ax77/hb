@@ -1,4 +1,4 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,12 @@ import ast_vars.VarInitializer;
 import errors.AstParseException;
 import tokenize.Token;
 
-public class ApplyInstantiationUnit {
+public class TreeAnnotator {
 
-  private final SymtabApplier symtabApplier;
+  private final TreeScopes symtabApplier;
 
-  public ApplyInstantiationUnit() {
-    this.symtabApplier = new SymtabApplier();
+  public TreeAnnotator() {
+    this.symtabApplier = new TreeScopes();
   }
 
   //////////////////////////////////////////////////////////////////////

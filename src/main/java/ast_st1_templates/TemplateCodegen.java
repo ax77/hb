@@ -1,4 +1,4 @@
-package ast_templates;
+package ast_st1_templates;
 
 import java.util.ArrayList;
 import java.util.HashMap;

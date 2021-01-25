@@ -1,4 +1,4 @@
-package ast_tac;
+package ast_st3_tac;
 
 public class StoreDst {
 

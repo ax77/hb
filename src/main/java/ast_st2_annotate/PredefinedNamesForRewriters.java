@@ -1,9 +1,9 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import hashed.Hash_ident;
 import tokenize.Ident;
 
-public abstract class Renamer {
+public abstract class PredefinedNamesForRewriters {
 
   //for( type item = iter.current(); iter.has_next(); item = iter.get_next() ) {}
   //

@@ -1,4 +1,4 @@
-package ast_tac;
+package ast_st3_tac;
 
 import static ast_expr.ExpressionBase.EARRAY_INSTANCE_CREATION;
 import static ast_expr.ExpressionBase.EASSIGN;
@@ -34,8 +34,8 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSelf;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
-import ast_mir.Lvalue;
-import ast_templates.InstatantiationUnitBuilder;
+import ast_st1_templates.InstatantiationUnitBuilder;
+import ast_st2_annotate.Lvalue;
 import ast_types.ClassType;
 import ast_types.Type;
 import ast_types.TypeBase;

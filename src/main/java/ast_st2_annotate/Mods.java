@@ -1,4 +1,4 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import ast_modifiers.Modifiers;
 import ast_symtab.IdentMap;

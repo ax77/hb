@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import ast_class.ClassDeclaration;
-import ast_templates.InstatantiationUnitBuilder;
+import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import parse.ImportsResolver;

@@ -1,4 +1,4 @@
-package ast_mir;
+package ast_st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
@@ -10,7 +10,7 @@ import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
 
-public class SymtabApplier {
+public class TreeScopes {
 
   //to define a symbol in a function or nested block and check redefinition
   //1) check the current block 
@@ -44,7 +44,7 @@ public class SymtabApplier {
   private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
   private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
-  public SymtabApplier() {
+  public TreeScopes() {
     this.typeNames = new Symtab<>();
     this.variablesClass = new Symtab<>();
     this.variablesMethod = new Symtab<>();

@@ -2,7 +2,7 @@ package ast_method;
 
 import java.io.Serializable;
 
-import ast_templates.TypeSetter;
+import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import tokenize.Ident;
 

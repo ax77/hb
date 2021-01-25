@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ast_checkers.IteratorChecker;
 import ast_class.ClassDeclaration;
-import ast_templates.InstatantiationUnitBuilder;
+import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_types.TypeBase;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
@@ -15,6 +15,7 @@ import ast_vars.VarDeclarator;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.ParserMain;
+import utils.UtilSrcToStringLevel;
 
 public class TestIteratorRecognizer {
 

@@ -1,14 +1,15 @@
-package ast_templates;
+package ast_st1_templates;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_mir.ApplyInstantiationUnit;
+import ast_st2_annotate.TreeAnnotator;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import ast_unit.TypeDeclaration;
+import errors.AstParseException;
 
 public class InstatantiationUnitBuilder {
 
@@ -43,18 +44,18 @@ public class InstatantiationUnitBuilder {
     // are fully expanded from template, and their type-arguments are
     // not necessary
     for (ClassDeclaration cd : instantiationUnit.getClasses()) {
-      List<TypeSetter> typeSetters = cd.getTypeSetters();
+      final List<TypeSetter> typeSetters = cd.getTypeSetters();
       for (TypeSetter ts : typeSetters) {
-        Type tp = ts.getType();
+        final Type tp = ts.getType();
         if (tp.is_class()) {
-          tp.getClassTypeRef().setTypeArguments(new ArrayList<>());
+          tp.getClassTypeRef().forgetTemplateHistory();
         }
       }
     }
 
     // resolve all symbols, identifiers, with scope rules,
     // and add result-type to each expression.
-    final ApplyInstantiationUnit applier = new ApplyInstantiationUnit();
+    final TreeAnnotator applier = new TreeAnnotator();
     applier.visit(instantiationUnit);
 
     return instantiationUnit;
