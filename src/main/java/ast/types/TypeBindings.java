@@ -65,6 +65,20 @@ public abstract class TypeBindings {
     throw new AstParseException("type not found for ident: " + ident.getName());
   }
   
+  public static Type getTypeBySuffix(String suff) {
+         if(suff.equals("i8"))  { return make_i8(); }
+    else if(suff.equals("u8"))  { return make_u8(); }
+    else if(suff.equals("i16")) { return make_i16(); }
+    else if(suff.equals("u16")) { return make_u16(); }
+    else if(suff.equals("i32")) { return make_i32(); }
+    else if(suff.equals("u32")) { return make_u32(); }
+    else if(suff.equals("i64")) { return make_i64(); }
+    else if(suff.equals("u64")) { return make_u64(); }
+    else if(suff.equals("f32")) { return make_f32(); }
+    else if(suff.equals("f64")) { return make_f64(); }
+    throw new AstParseException("unknown suffix: " + suff.toString());
+  }
+  
   public static int getPrimitiveTypeSize(Type type) {
          if(type.is(TP_I8))      { return 1; }
     else if(type.is(TP_U8))      { return 1; }
