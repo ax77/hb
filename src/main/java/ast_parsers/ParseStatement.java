@@ -16,7 +16,7 @@ import ast_expr.ExprExpression;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.StmtFor;
+import ast_stmt.Stmt_for;
 import ast_stmt.StmtStatement;
 import ast_stmt.Stmt_if;
 import ast_symtab.IdentMap;
@@ -47,7 +47,6 @@ public class ParseStatement {
     StmtBlock block = new StmtBlock(blockStatements);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-
     return block;
   }
 
@@ -152,16 +151,12 @@ public class ParseStatement {
     Token from = parser.checkedMove(if_ident);
 
     ExprExpression ifexpr = new ParseExpression(parser).e_expression();
-    checkSemicolonAndLbrace();
-
-    StmtStatement ifstmt = parseStatement();
-    StmtStatement ifelse = null;
+    StmtBlock ifstmt = parseBlock();
+    StmtBlock ifelse = null;
 
     if (parser.is(else_ident)) {
       Token elsekw = parser.checkedMove(else_ident);
-      checkSemicolonAndLbrace();
-
-      ifelse = parseStatement();
+      ifelse = parseBlock();
       return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
     }
 
@@ -178,17 +173,8 @@ public class ParseStatement {
     parser.checkedMove(IdentMap.in_ident);
     Ident collection = parser.getIdent();
 
-    checkSemicolonAndLbrace();
-    StmtStatement loop = parseStatement();
-
-    return new StmtStatement(new StmtFor(iter, collection, loop));
-  }
-
-  private void checkSemicolonAndLbrace() {
-    parser.errorStraySemicolon();
-    if (!parser.is(T.T_LEFT_BRACE)) {
-      parser.perror("unbraced statements are deprecated by design.");
-    }
+    StmtBlock loop = parseBlock();
+    return new StmtStatement(new Stmt_for(iter, collection, loop));
   }
 
 }

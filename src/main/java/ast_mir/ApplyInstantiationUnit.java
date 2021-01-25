@@ -19,7 +19,7 @@ import ast_method.MethodParameter;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.StmtFor;
+import ast_stmt.Stmt_for;
 import ast_stmt.StmtStatement;
 import ast_stmt.Stmt_if;
 import ast_types.ArrayType;
@@ -141,7 +141,7 @@ public class ApplyInstantiationUnit {
     }
 
     if (base == StatementBase.SFOR) {
-      StmtFor forloop = statement.getForStmt();
+      Stmt_for forloop = statement.getForStmt();
 
       // 1)
       final ExprExpression collection = forloop.getAuxCollection();
@@ -157,14 +157,14 @@ public class ApplyInstantiationUnit {
 
       applyExpression(object, forloop.getTest());
       applyExpression(object, forloop.getStep());
-      applyStatement(object, method, forloop.getLoop());
+      visitBlock(object, method, forloop.getLoop());
     }
 
     else if (base == StatementBase.SIF) {
       Stmt_if sif = statement.getIfStmt();
       applyExpression(object, sif.getCondition());
-      applyStatement(object, method, sif.getTrueStatement());
-      applyStatement(object, method, sif.getOptionalElseStatement());
+      visitBlock(object, method, sif.getTrueStatement());
+      visitBlock(object, method, sif.getOptionalElseStatement());
 
       if (!sif.getCondition().getResultType().is_boolean()) {
         throw new AstParseException("if condition must be only a boolean type");

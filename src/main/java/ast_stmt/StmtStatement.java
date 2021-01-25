@@ -11,10 +11,10 @@ public class StmtStatement implements Serializable {
   private final StatementBase base;
   private StmtBlock bloskStmt;
   private ExprExpression exprStmt; // return expr or expr-stmt
-  private StmtFor forStmt;
+  private Stmt_for forStmt;
   private Stmt_if ifStmt;
 
-  public StmtStatement(StmtFor forStmt) {
+  public StmtStatement(Stmt_for forStmt) {
     this.base = StatementBase.SFOR;
     this.forStmt = forStmt;
   }
@@ -49,7 +49,7 @@ public class StmtStatement implements Serializable {
     return exprStmt;
   }
 
-  public StmtFor getForStmt() {
+  public Stmt_for getForStmt() {
     return forStmt;
   }
 

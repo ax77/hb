@@ -387,9 +387,9 @@ public class ParseExpression {
       // array-subscript
       //
       else if (parser.is(T.T_LEFT_BRACKET)) {
-        parser.lbracket();
-        lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
-        parser.rbracket();
+        // parser.lbracket();
+        // lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
+        // parser.rbracket();
 
         while (parser.is(T.T_LEFT_BRACKET)) {
           parser.lbracket();

@@ -16,7 +16,7 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.FuncArg;
 import ast_sourceloc.SourceLocation;
-import ast_stmt.StmtFor;
+import ast_stmt.Stmt_for;
 import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -30,7 +30,7 @@ public class ForLoopRewriter {
 
   private static int var_counter = 0;
 
-  public static void rewriteForLoop(ClassDeclaration object, StmtFor forloop) {
+  public static void rewriteForLoop(ClassDeclaration object, Stmt_for forloop) {
 
     // collection
     final ExprExpression collectionAux = forloop.getAuxCollection();
@@ -62,13 +62,13 @@ public class ForLoopRewriter {
     setStep(forloop, item, iteratorVarName);
   }
 
-  private static void setTest(StmtFor forloop, final Ident iteratorVarName) {
+  private static void setTest(Stmt_for forloop, final Ident iteratorVarName) {
     // 3) iter.has_next();
     final ExprExpression testExpression = call(ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName);
     forloop.setTest(testExpression);
   }
 
-  private static void setStep(StmtFor forloop, final Ident item, final Ident iteratorVarName) {
+  private static void setStep(Stmt_for forloop, final Ident item, final Ident iteratorVarName) {
     // 4) item = iter.get_net()
     final ExprExpression lhs = id(item);
     final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName);
