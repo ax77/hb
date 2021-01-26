@@ -36,17 +36,13 @@ public class Stmt_if implements Serializable {
     sb.append(condition.toString());
     sb.append(")");
 
-    sb.append("\n{\n");
     if (trueStatement != null) {
       sb.append(trueStatement.toString());
     }
-    sb.append("\n}\n");
 
     if (optionalElseStatement != null) {
       sb.append("else");
-      sb.append("\n{\n");
       sb.append(optionalElseStatement.toString());
-      sb.append("\n}\n");
     }
 
     return sb.toString();

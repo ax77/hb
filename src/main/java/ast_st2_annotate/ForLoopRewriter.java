@@ -14,7 +14,6 @@ import ast_expr.ExprAssign;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprUtil;
 import ast_expr.FuncArg;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.Stmt_for;
@@ -32,6 +31,17 @@ public class ForLoopRewriter {
   private static int var_counter = 0;
 
   public static void rewriteForLoop(ClassDeclaration object, Stmt_for forloop) {
+
+    // for item in args { ... }
+    // =>
+    // {
+    //   var __it0__: list_iterator_2_string = args.get_iterator();
+    //   var item: string = __it0__.get_current();
+    //   
+    //   for( ; __it0__.has_next(); item = __it0__.get_next() )
+    //   {
+    //   }
+    // }
 
     // collection
     final ExprExpression collectionAux = forloop.getAuxCollection();

@@ -144,21 +144,42 @@ public class TreeAnnotator {
     if (base == StatementBase.SFOR) {
       Stmt_for forloop = statement.getForStmt();
 
-      // 1)
-      final ExprExpression collection = forloop.getAuxCollection();
-      applyExpression(object, collection);
+      if (forloop.isShortForm()) {
 
-      // 2)
-      ForLoopRewriter.rewriteForLoop(object, forloop);
+        // 1)
+        final ExprExpression collection = forloop.getAuxCollection();
+        applyExpression(object, collection);
 
-      // 3) normal for-loop here, in its pure-huge form
-      for (VarDeclarator var : forloop.getDecl()) {
-        visitLocalVar(object, var);
+        // 2)
+        ForLoopRewriter.rewriteForLoop(object, forloop);
+
+        // 3) normal for-loop here, in its pure-huge form
+
+        List<StmtBlockItem> items = new ArrayList<>();
+        for (VarDeclarator var : forloop.getDecl()) {
+          items.add(new StmtBlockItem(var));
+        }
+        forloop.setDecl(null);
+        forloop.setShortForm(false);
+
+        items.add(new StmtBlockItem(new StmtStatement(forloop)));
+        StmtBlock block = new StmtBlock(items);
+
+        statement.replaceForLoopWithBlock(block);
+        applyStatement(object, method, statement);
+
+      }
+
+      if (forloop.getDecl() != null) {
+        for (VarDeclarator var : forloop.getDecl()) {
+          visitLocalVar(object, var);
+        }
       }
 
       applyExpression(object, forloop.getTest());
       applyExpression(object, forloop.getStep());
       visitBlock(object, method, forloop.getLoop());
+
     }
 
     else if (base == StatementBase.SIF) {

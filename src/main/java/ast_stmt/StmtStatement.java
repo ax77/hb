@@ -8,7 +8,7 @@ import tokenize.Token;
 public class StmtStatement implements Serializable {
   private static final long serialVersionUID = 2946438995245230886L;
 
-  private final StatementBase base;
+  private /*final*/ StatementBase base;
   private StmtBlock bloskStmt;
   private ExprExpression exprStmt; // return expr or expr-stmt
   private Stmt_for forStmt;
@@ -79,6 +79,13 @@ public class StmtStatement implements Serializable {
       return forStmt.toString();
     }
     return base.toString();
+  }
+
+  // for-loop-rewriters
+  public void replaceForLoopWithBlock(StmtBlock block) {
+    this.base = StatementBase.SBLOCK;
+    this.bloskStmt = block;
+    this.forStmt = null;
   }
 
 }

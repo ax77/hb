@@ -121,10 +121,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
       sb.append(getType().toString());
     }
 
-    sb.append("\n{\n");
     sb.append(block.toString());
-    sb.append("\n}\n");
-
     return sb.toString();
   }
 

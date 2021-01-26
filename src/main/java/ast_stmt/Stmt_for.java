@@ -12,6 +12,7 @@ import tokenize.Token;
 public class Stmt_for implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
 
+  private boolean isShortForm;
   private final ExprExpression auxIter;
   private final ExprExpression auxCollection;
 
@@ -30,6 +31,7 @@ public class Stmt_for implements Serializable {
     this.auxIter = new ExprExpression(new ExprIdent(auxIter), from);
     this.auxCollection = new ExprExpression(new ExprIdent(auxCollection), from);
     this.loop = loop;
+    this.isShortForm = true;
   }
 
   public StmtBlock getLoop() {
@@ -68,6 +70,14 @@ public class Stmt_for implements Serializable {
     this.step = step;
   }
 
+  public boolean isShortForm() {
+    return isShortForm;
+  }
+
+  public void setShortForm(boolean isShortForm) {
+    this.isShortForm = isShortForm;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -91,28 +101,11 @@ public class Stmt_for implements Serializable {
     }
     sb.append(")");
 
-    sb.append("\n{\n");
     if (loop != null) {
       sb.append(loop.toString());
     }
-    sb.append("\n}\n");
 
     return sb.toString();
-
-    //    StringBuilder sb = new StringBuilder();
-    //    sb.append("for ");
-    //
-    //    sb.append(iter.toString());
-    //    sb.append(" in ");
-    //    sb.append(collection.toString());
-    //
-    //    sb.append("\n{\n");
-    //    if (loop != null) {
-    //      sb.append(loop.toString());
-    //    }
-    //    sb.append("\n}\n");
-    //
-    //    return sb.toString();
   }
 
 }

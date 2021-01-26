@@ -18,6 +18,7 @@ public class TestImports {
     for (ClassDeclaration clazz : result.getClasses()) {
       System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
     }
+
   }
 
 }

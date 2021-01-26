@@ -29,9 +29,11 @@ public class StmtBlock implements Serializable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    sb.append("\n{\n");
     for (StmtBlockItem blockItem : blockStatements) {
       sb.append(blockItem.toString());
     }
+    sb.append("\n}\n");
     return sb.toString();
   }
 
