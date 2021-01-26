@@ -2,7 +2,7 @@ class test_scope {
 
 	var e: boolean;
 	
-	func fn(a: i32, b: i32)
+	func fn(a: i32, b: i32) -> void
 	{
 		// var a: i32;
 		// var zzz: i32 = 0;

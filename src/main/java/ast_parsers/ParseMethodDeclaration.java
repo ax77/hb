@@ -43,7 +43,11 @@ public class ParseMethodDeclaration {
     Type returnType = new Type(); // void stub
     if (parser.is(T.T_ARROW)) {
       parser.checkedMove(T.T_ARROW);
-      returnType = new TypeRecognizer(parser).getType();
+      if (parser.is(IdentMap.void_ident)) {
+        parser.move(); // void stub
+      } else {
+        returnType = new TypeRecognizer(parser).getType();
+      }
     }
 
     //5)
