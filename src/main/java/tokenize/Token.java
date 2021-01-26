@@ -19,8 +19,23 @@ public class Token implements Serializable {
   private SourceLocation location;
 
   private int charconst;
-  private CStr strconst;
+  private int[] strconst;
   private IntLiteral numconst;
+
+  private void fillProperyValues(Token other) {
+
+    // XXX: very important fill __ALL__ properties...
+    // don't be so smart here...
+
+    this.fposition = other.fposition;
+    this.type = other.type;
+    this.ident = other.ident;
+    this.value = other.value;
+    this.location = other.location;
+    this.charconst = other.charconst;
+    this.strconst = other.strconst;
+    this.numconst = other.numconst;
+  }
 
   public Token() {
     setDefaults();
@@ -59,11 +74,11 @@ public class Token implements Serializable {
     this.charconst = charconst;
   }
 
-  public CStr getStrconst() {
+  public int[] getStrconst() {
     return strconst;
   }
 
-  public void setStrconst(CStr strconst) {
+  public void setStrconst(int[] strconst) {
     this.strconst = strconst;
   }
 
@@ -101,18 +116,6 @@ public class Token implements Serializable {
 
   public void setLocation(SourceLocation location) {
     this.location = location;
-  }
-
-  private void fillProperyValues(Token other) {
-
-    // XXX: very important fill __ALL__ properties...
-    // don't be clever here...
-
-    type = other.type;
-    ident = other.ident;
-    value = other.value;
-    fposition = other.fposition;
-    location = new SourceLocation(other.location);
   }
 
   public boolean ofType(T _type) {
@@ -195,14 +198,7 @@ public class Token implements Serializable {
 
   @Override
   public String toString() {
-
-    String ppf = "";
-    String pflags = Fposition.print(fposition);
-    if (!pflags.isEmpty()) {
-      ppf = "; fpos=" + pflags;
-    }
-
-    return "\nToken [v=" + value + "; tp=" + type + ppf + "]";
+    return value;
   }
 
   public boolean isIdent(Ident what) {

@@ -335,9 +335,10 @@ public class Stream {
     Token token = new Token();
 
     if (endof == '\"') {
-      CStr strconstant = new CStr(escaped);
-      token.setStrconst(strconstant);
-    } else {
+      token.setStrconst(escaped);
+    }
+
+    else {
       if (escaped.length == 0) {
         throw new ScanExc("" + " error : empty char constant");
       }
