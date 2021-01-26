@@ -17,6 +17,9 @@ public class Token implements Serializable {
   private Ident ident;
   private String value;
   private SourceLocation location;
+
+  private int charconst;
+  private CStr strconst;
   private IntLiteral numconst;
 
   public Token() {
@@ -46,6 +49,22 @@ public class Token implements Serializable {
 
   public void setNumconst(IntLiteral numconst) {
     this.numconst = numconst;
+  }
+
+  public int getCharconst() {
+    return charconst;
+  }
+
+  public void setCharconst(int charconst) {
+    this.charconst = charconst;
+  }
+
+  public CStr getStrconst() {
+    return strconst;
+  }
+
+  public void setStrconst(CStr strconst) {
+    this.strconst = strconst;
   }
 
   public String loc() {

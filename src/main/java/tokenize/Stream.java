@@ -304,49 +304,52 @@ public class Stream {
 
   }
 
-  private char esc(char c) {
-    if (c == 't') {
-      return '\t';
-    }
-    if (c == 'n') {
-      return '\n';
-    }
-    if (c == 'r') {
-      return '\r';
-    }
-    if (c == '0') {
-      return '\0';
-    }
-    return c;
-  }
-
   private Token getString(int c) {
+
     int endof = (c == '\"' ? '\"' : '\'');
     T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
     StringBuilder strbuf = new StringBuilder();
 
     for (;;) {
-      int nextc = buffer.nextc();
-      if (nextc == Env.HC_FEOF) {
+      int next1 = buffer.nextc();
+      if (next1 == Env.HC_FEOF) {
         throw new ScanExc(Integer.toString(buffer.getLine()));
       }
-      if (nextc == endof) {
+      if (next1 == '\n') {
+        throw new ScanExc(Integer.toString(buffer.getLine()));
+      }
+      if (next1 == endof) {
         break;
       }
-
-      if (nextc == '\\') {
-        final char esc = esc((char) buffer.nextc());
-        strbuf.append(esc);
-      } else {
-        strbuf.append((char) nextc);
+      if (next1 != '\\') {
+        strbuf.append((char) next1);
+        continue;
       }
-
+      int next2 = buffer.nextc();
+      strbuf.append("\\");
+      strbuf.append((char) next2);
     }
 
+    // TODO:
+    int escaped[] = new CEscaper(new CBuf(strbuf.toString())).escape();
     Token token = new Token();
+
+    if (endof == '\"') {
+      CStr strconstant = new CStr(escaped);
+      token.setStrconst(strconstant);
+    } else {
+      if (escaped.length == 0) {
+        throw new ScanExc("" + " error : empty char constant");
+      }
+      if (escaped.length > 2) {
+        //throw new ScanExc(startLocation + " error : too long char constant"); // TODO: WC
+      }
+      token.setCharconst(escaped[0]);
+    }
+
     setPos(token);
     token.setType(typeoftok);
-    token.setValue(strbuf.toString()); //  + (char) endof
+    token.setValue((char) endof + strbuf.toString() + (char) endof);
     return token;
 
   }

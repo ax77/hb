@@ -465,12 +465,13 @@ public class ParseExpression {
       Token saved = parser.moveget();
       if (saved.ofType(TOKEN_STRING)) {
 
-        // TODO:
+        // TODO:__string__
 
         final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"));
 
         final List<FuncArg> argums = new ArrayList<>();
-        argums.add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(saved.getValue(), saved)));
+        argums.add(
+            new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(ExpressionBase.ESTRING_CONST, saved)));
 
         final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
         final ClassType ref = new ClassType(stringClass, emptyTypeArgs);
@@ -481,9 +482,9 @@ public class ParseExpression {
 
       else if (saved.ofType(TOKEN_CHAR)) {
 
-        // TODO:
+        // TODO:__string__
 
-        return new ExprExpression(saved.getValue().charAt(0), saved);
+        return new ExprExpression(ExpressionBase.ECHAR_CONST, saved);
       }
 
       else {

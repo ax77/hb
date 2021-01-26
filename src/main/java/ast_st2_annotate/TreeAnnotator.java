@@ -289,7 +289,7 @@ public class TreeAnnotator {
   }
 
   public void applyStringLiteral(ExprExpression e) {
-    String strconst = e.getStringConst();
+    String strconst = e.getBeginPos().getValue(); // TODO:__string__
     ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
     e.setResultType(new Type(arrtype));
   }

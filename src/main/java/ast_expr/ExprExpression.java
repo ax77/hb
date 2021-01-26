@@ -7,6 +7,7 @@ import ast_sourceloc.SourceLocation;
 import ast_types.Type;
 import literals.IntLiteral;
 import tokenize.Token;
+import utils_oth.NullChecker;
 
 public class ExprExpression implements Serializable, ILocation {
   private static final long serialVersionUID = -2905880039842730533L;
@@ -28,16 +29,7 @@ public class ExprExpression implements Serializable, ILocation {
   private ExprAssign assign;
   private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
-  private String stringConst;
   private ExprArrayAccess arrayAccess;
-  private char charConst;
-
-  public ExprExpression(char charConst, Token beginPos) {
-    this.base = ExpressionBase.ECHAR_CONST;
-    this.location = new SourceLocation(beginPos);
-    this.beginPos = beginPos;
-    this.charConst = charConst;
-  }
 
   public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
     this.base = ExpressionBase.EARRAY_ACCESS;
@@ -51,13 +43,6 @@ public class ExprExpression implements Serializable, ILocation {
     this.location = new SourceLocation(beginPos);
     this.beginPos = beginPos;
     this.selfExpression = selfExpression;
-  }
-
-  public ExprExpression(String stringConst, Token beginPos) {
-    this.base = ExpressionBase.ESTRING_CONST;
-    this.location = new SourceLocation(beginPos);
-    this.beginPos = beginPos;
-    this.stringConst = stringConst;
   }
 
   public ExprExpression(ExprAssign assign, Token beginPos) {
@@ -74,7 +59,10 @@ public class ExprExpression implements Serializable, ILocation {
     this.arrayCreation = arrayCreation;
   }
 
+  // string-literal, char-literal, null-literal
+  //
   public ExprExpression(ExpressionBase base, Token beginPos) {
+    NullChecker.check(beginPos);
     this.base = base;
     this.location = new SourceLocation(beginPos);
     this.beginPos = beginPos;
@@ -131,10 +119,6 @@ public class ExprExpression implements Serializable, ILocation {
 
   public ExprArrayAccess getArrayAccess() {
     return arrayAccess;
-  }
-
-  public String getStringConst() {
-    return stringConst;
   }
 
   public ExprArrayCreation getArrayInstanceCreation() {
@@ -197,10 +181,6 @@ public class ExprExpression implements Serializable, ILocation {
     return base.equals(what);
   }
 
-  public char getCharConst() {
-    return charConst;
-  }
-
   @Override
   public String toString() {
     if (base == ExpressionBase.EBINARY) {
@@ -234,11 +214,7 @@ public class ExprExpression implements Serializable, ILocation {
       return arrayCreation.toString();
     }
     if (base == ExpressionBase.ESTRING_CONST) {
-      String s = "";
-      s += "\"";
-      s += stringConst;
-      s += "\"";
-      return s;
+      return beginPos.getValue(); // because of the bootstrap: '\0' etc...
     }
     if (base == ExpressionBase.EARRAY_ACCESS) {
       return arrayAccess.toString();
@@ -247,11 +223,7 @@ public class ExprExpression implements Serializable, ILocation {
       return unary.toString();
     }
     if (base == ExpressionBase.ECHAR_CONST) {
-      String s = "";
-      s += "\'";
-      s += charConst;
-      s += "\'";
-      return s;
+      return beginPos.getValue(); // because of the bootstrap: '\0' etc...
     }
     return base.toString();
   }

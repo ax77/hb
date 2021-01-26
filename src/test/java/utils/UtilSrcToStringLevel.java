@@ -29,7 +29,7 @@ public class UtilSrcToStringLevel {
       if (tok.isAtBol()) {
         sb.append(pad());
       }
-      sb.append(esc(tok));
+      sb.append(tok.getValue());
       if (tok.isNewLine()) {
         sb.append("\n");
       }
@@ -40,33 +40,6 @@ public class UtilSrcToStringLevel {
     }
 
     return sb.toString();
-  }
-
-  private static String esc(Token tok) {
-    if (tok.ofType(T.TOKEN_STRING)) {
-      return "\"" + unesc(tok) + "\"";
-    }
-    if (tok.ofType(T.TOKEN_CHAR)) {
-      return "\'" + unesc(tok) + "\'";
-    }
-    return unesc(tok);
-  }
-
-  private static String unesc(Token tok) {
-    final String value = tok.getValue();
-    if (value.equals("\n")) {
-      return "\\n";
-    }
-    if (value.equals("\r")) {
-      return "\\r";
-    }
-    if (value.equals("\t")) {
-      return "\\t";
-    }
-    if (value.equals("\0")) {
-      return "\\0";
-    }
-    return value;
   }
 
   private static String pad() {
