@@ -1,0 +1,9 @@
+import std.list;
+import std.string;
+
+class test_import_list { 
+	func main() -> i32 {
+		var args: list<string> = new list<string>();
+		return 0;
+	}
+} 

@@ -1,0 +1,36 @@
+import std.list;
+
+class list_iterator<T> {
+
+    var collection: list<T>;
+    var last_returned: node<T>;
+    var next: node<T>;
+    var next_index: i32;
+    
+    init(collection: list<T>)
+    {
+        self.collection = collection;
+        self.last_returned = collection.first;
+        self.next = collection.first;
+        self.next_index = 0;
+    }
+    
+    func get_current() -> T
+    {
+        return last_returned.item;
+    }
+    
+    func has_next() -> boolean
+    {
+        return next_index < collection.size;
+    }
+    
+    func get_next() -> T
+    {
+        self.last_returned = next;
+        self.next = next.next;
+        self.next_index += 1;
+        return last_returned.item;
+    }
+}
+

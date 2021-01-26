@@ -1,6 +1,5 @@
 import std.list;
 import std.string;
-import std.mem.malloc;
 
 class io {
 	func read_file(path: string) -> string {}
