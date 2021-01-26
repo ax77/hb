@@ -32,6 +32,7 @@ import ast_vars.VarDeclarator;
 import ast_vars.VarInitializer;
 import errors.AstParseException;
 import errors.ErrorLocation;
+import static ast_st2_annotate.TreeScopes.*;
 
 public class TreeAnnotator {
 
@@ -350,7 +351,7 @@ public class TreeAnnotator {
 
     final ExprIdent primaryIdent = e.getIdent();
 
-    final Symbol sym = symtabApplier.findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
+    final Symbol sym = symtabApplier.findVar(primaryIdent.getIdentifier(), F_ALL);
     if (sym == null) {
       ErrorLocation.errorExpression("symbol was not declared in this scope", e);
     }

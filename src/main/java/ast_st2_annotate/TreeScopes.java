@@ -3,6 +3,8 @@ package ast_st2_annotate;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_method.MethodParameter;
+import ast_modifiers.Modifiers;
+import ast_sourceloc.SourceLocation;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarBase;
@@ -38,6 +40,15 @@ public class TreeScopes {
   // also we annotate each expression with its type too
   // deep semantic check will be later.
   // we need to build middle-level AST here...
+
+  // search masks
+  //@formatter:off
+  public static final int F_FILE    = 0x0001;
+  public static final int F_CLASS   = 0x0002;
+  public static final int F_METHOD  = 0x0004; // include parameters
+  public static final int F_BLOCK   = 0x0008;
+  public static final int F_ALL     = F_FILE|F_CLASS|F_METHOD|F_BLOCK;
+  //@formatter:on
 
   private Symtab<Ident, Symbol> typeNames;
   private Symtab<Ident, Symbol> variablesClass; // fields
@@ -97,70 +108,52 @@ public class TreeScopes {
   // SYMTAB
 
   public void defineFunctionParameter(ClassMethodDeclaration method, MethodParameter param) {
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, Mods.letModifiers(), param.getType(),
-        param.getName(), method.getLocation());
+    final SourceLocation loc = method.getLocation();
+    final Modifiers mod = Mods.letModifiers();
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(), loc);
+
+    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
+    checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(param.getName(), varsym(var));
   }
 
-  public Symbol findVarMethodClass(Ident name) {
-    Symbol var = variablesMethod.getsym(name);
-    if (var == null) {
-      var = variablesClass.getsym(name);
-    }
-    return var;
-  }
-
   public void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
-
-    Symbol maybeAlreadyDefined = findVarMethodClass(var.getIdentifier());
-    if (maybeAlreadyDefined != null) {
-      throw new AstParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
-    }
-
+    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD | F_CLASS);
+    checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
   }
 
-  public Symbol findVarBlockMethod(Ident name) {
-    Symbol var = variablesBlock.getsym(name);
-    if (var == null) {
-      var = variablesMethod.getsym(name);
-    }
-    return var;
-  }
-
   public void defineBlockVar(VarDeclarator var) {
-
-    Symbol maybeAlreadyDefined = findVarBlockMethod(var.getIdentifier());
-    if (maybeAlreadyDefined != null) {
-      throw new AstParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
-    }
-
+    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_BLOCK | F_METHOD);
+    checkRedefinition(var, maybeAlreadyDefined);
     variablesBlock.addsym(var.getIdentifier(), varsym(var));
   }
 
-  public Symbol findBindingFromIdentifierToTypename(Ident name) {
+  private boolean hasBit(int option, int mask) {
+    return (option & mask) != 0;
+  }
 
-    Symbol var = variablesBlock.getsym(name);
-    if (var != null) {
-      return var;
+  public Symbol findVar(Ident name, int option) {
+
+    Symbol var = null;
+
+    if (hasBit(option, F_BLOCK)) {
+      var = variablesBlock.getsym(name);
     }
 
-    var = variablesMethod.getsym(name);
-    if (var != null) {
-      return var;
+    if (var == null && hasBit(option, F_METHOD)) {
+      var = variablesMethod.getsym(name);
     }
 
-    var = variablesClass.getsym(name);
-    if (var != null) {
-      return var;
+    if (var == null && hasBit(option, F_CLASS)) {
+      var = variablesClass.getsym(name);
     }
 
-    var = typeNames.getsym(name);
-    if (var != null) {
-      return var;
+    if (var == null && hasBit(option, F_FILE)) {
+      var = typeNames.getsym(name);
     }
 
-    return null;
+    return var;
   }
 
   public void initVarZero(VarDeclarator var) {
@@ -168,6 +161,12 @@ public class TreeScopes {
 
   public void defineClassField(ClassDeclaration object, VarDeclarator field) {
     variablesClass.addsym(field.getIdentifier(), varsym(field));
+  }
+
+  private void checkRedefinition(VarDeclarator var, Symbol maybeAlreadyDefined) {
+    if (maybeAlreadyDefined != null) {
+      throw new AstParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
+    }
   }
 
   public String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {

@@ -20,7 +20,7 @@ public class TestImports {
     }
 
   }
-  
+
   @Test
   public void testScope() throws Exception {
 
