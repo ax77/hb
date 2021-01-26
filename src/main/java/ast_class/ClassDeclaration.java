@@ -22,31 +22,62 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
-  //  NormalClassDeclaration:
-  //    class Identifier [TypeParameters]
-  //    [extends Type] [implements TypeList] ClassBody
-
   private Ident identifier;
   private List<ClassMethodDeclaration> constructors;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
+
+  /// we'll use unique-id when we'll generate the code
+  ///
   private final int uniqueId;
 
-  // we store type-variables as original references to Type
-  //
-  // each type-variable is an identifier like: class Pair<K, V> { K key; V value; Pair<K, V> hash; }
-  // where type-variables are: K and V in this example
-  //
-  // when we'll expand template, we'll replace each at once in every places it used by its pointer
-  // it is important to not screw this reference up before
-  //
+  /// we store type-variables as original references to Type
+  ///
+  /// each type-variable is an identifier like: class Pair<K, V> { K key; V value; Pair<K, V> hash; }
+  /// where type-variables are: K and V in this example
+  ///
+  /// when we'll expand template, we'll replace each at once in every places it used by its pointer
+  /// it is important to not screw this reference up before
+  ///
   private List<Type> typeParametersT;
 
-  // we'll collect all type-setters here, to fast restore
+  /// we'll collect all type-setters here
+  /// type-setter is an variable, new-expression, method-parameter, etc...
+  /// each type-setter in a class is an unique pointer.
+  /// when we'll expand templates - we can iterate over this list,
+  /// instead of the iteration over the whole AST, 
+  /// and paste instead of each type-parameter the real type which was given
+  /// var flags: list<i32>;
+  /// we'll set 'i32' for each type parameter
+  /// we expand each type-parameter step by step, and compare the 
+  /// names, if it is a simple type-parameter like 'T' -> class pair<K, V> { K key; V value; }
+  /// there: K and V are 'plain' type-parameters, and for declaration like [var p: pair<i32, u64>;] 
+  /// we'll compare that type-parameters.size() == type-arguments.size() and
+  /// we'll iterate over each type-parameter, and set the real type (i32, u64) instead of
+  /// its name ('T')
+  ///
   private List<TypeSetter> typeSetters;
 
-  //anti-recursion
+  /// anti-recursion handling in template-expansion
+  /// we may have a different cases where templated classes are 
+  /// recursively depends on each other.
+  /// for example:
+  ///
+  /// class list<T> { var iterator: list_iterator<T>; }
+  /// class list_iterator<T> { var collection: list<T>; }
+  ///
+  /// for human it is easy to recognize that we should promote the given type
+  /// within each class, and it will be the result:
+  /// var flags: list<i32>;
+  /// it seems that we should easily paste 'i32' instead of each type-parameter
+  /// and it seems easy, but it's not.
+  /// it will cause recursion -> we should expand the 'list', and
+  /// in an expansion state we'll find that we should expand 'list_iterator' and
+  /// in an expansion state we'll find that we should expand 'list', and so on.
+  /// so: once expanded class won't never expand again, because we'll mark it 
+  /// as NOEXPAND.
+  //
   private boolean isNoexpand;
 
   public boolean isNoexpand() {
