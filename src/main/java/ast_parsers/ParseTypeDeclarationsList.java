@@ -157,7 +157,7 @@ public class ParseTypeDeclarationsList {
     if (isConstructorDeclaration) {
       final Token tok = parser.checkedMove(IdentMap.init_ident);
       final List<MethodParameter> parameters = new ParseFormalParameterList(parser).parse();
-      final StmtBlock block = new ParseStatement(parser).parseBlock();
+      final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
       final MethodSignature signature = new MethodSignature(IdentMap.init_ident, parameters);
       final Type returnType = new Type(new ClassType(clazz, new ArrayList<>()));
       final SourceLocation location = new SourceLocation(tok);
@@ -174,7 +174,7 @@ public class ParseTypeDeclarationsList {
     boolean isDestructor = parser.is(IdentMap.deinit_ident);
     if (isDestructor) {
       final Token tok = parser.checkedMove(IdentMap.deinit_ident);
-      final StmtBlock block = new ParseStatement(parser).parseBlock();
+      final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
       final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, new SourceLocation(tok));
 
       checkDestructorRedefinition(clazz);

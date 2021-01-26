@@ -10,6 +10,7 @@ import ast_symtab.Symtab;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import errors.ErrorLocation;
 import tokenize.Ident;
 
 public class TreeScopes {
@@ -165,26 +166,8 @@ public class TreeScopes {
 
   private void checkRedefinition(VarDeclarator var, Symbol maybeAlreadyDefined) {
     if (maybeAlreadyDefined != null) {
-      throw new AstParseException(errorVarRedefinition(var, maybeAlreadyDefined.getVariable()));
+      ErrorLocation.errorVarRedefinition(var, maybeAlreadyDefined.getVariable());
     }
   }
 
-  public String errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
-
-    final String name = varYouWantToDefine.getIdentifier().getName();
-    final String location = varYouWantToDefine.getLocationToString();
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("\nError: ");
-    sb.append(location);
-    sb.append("\n");
-    sb.append("duplicate variable: ");
-    sb.append(name);
-    sb.append("\n");
-    sb.append("previously defined here: ");
-    sb.append(varDefinedPreviously.getLocationToString());
-    sb.append("\n");
-
-    return sb.toString();
-  }
 }

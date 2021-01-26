@@ -34,7 +34,7 @@ public class ParseStatement {
     this.parser = parser;
   }
 
-  public StmtBlock parseBlock() {
+  public StmtBlock parseBlock(VarBase varBase) {
 
     Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
 
@@ -43,31 +43,18 @@ public class ParseStatement {
       return new StmtBlock();
     }
 
-    List<StmtBlockItem> blockStatements = parseBlockStamentList();
-    StmtBlock block = new StmtBlock(blockStatements);
+    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
+    while (parser.tp() != T.T_RIGHT_BRACE) {
+      StmtBlockItem oneBlock = parseOneBlock(varBase);
+      bs.add(oneBlock);
+    }
+    StmtBlock block = new StmtBlock(bs);
 
     Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
     return block;
   }
 
-  public StmtStatement parseCompoundStatement() {
-    Token lbrace = parser.tok();
-    StmtBlock block = parseBlock();
-    return new StmtStatement(lbrace, block);
-  }
-
-  private List<StmtBlockItem> parseBlockStamentList() {
-    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
-
-    while (parser.tp() != T.T_RIGHT_BRACE) {
-      StmtBlockItem oneBlock = parseOneBlock();
-      bs.add(oneBlock);
-    }
-
-    return bs;
-  }
-
-  private StmtBlockItem parseOneBlock() {
+  private StmtBlockItem parseOneBlock(VarBase varBase) {
 
     //  BlockStatement:
     //    LocalVariableDeclarationStatement
@@ -78,7 +65,7 @@ public class ParseStatement {
     //    { VariableModifier } Type VariableDeclarators ;
 
     if (parser.isTypeWithOptModifiersBegin()) {
-      VarDeclarator localVar = new ParseVarDeclarator(parser).parse(VarBase.METHOD_VAR);
+      VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase);
 
       ClassDeclaration currentClass = parser.getCurrentClass(true);
       currentClass.registerTypeSetter(localVar);
@@ -137,7 +124,8 @@ public class ParseStatement {
     // {  }
 
     if (parser.is(T.T_LEFT_BRACE)) {
-      return parseCompoundStatement();
+      Token from = parser.tok();
+      return new StmtStatement(from, parseBlock(VarBase.LOCAL_VAR));
     }
 
     // expression-statement by default
@@ -151,12 +139,12 @@ public class ParseStatement {
     Token from = parser.checkedMove(if_ident);
 
     ExprExpression ifexpr = new ParseExpression(parser).e_expression();
-    StmtBlock ifstmt = parseBlock();
+    StmtBlock ifstmt = parseBlock(VarBase.LOCAL_VAR);
     StmtBlock ifelse = null;
 
     if (parser.is(else_ident)) {
       Token elsekw = parser.checkedMove(else_ident);
-      ifelse = parseBlock();
+      ifelse = parseBlock(VarBase.LOCAL_VAR);
       return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
     }
 
@@ -173,7 +161,7 @@ public class ParseStatement {
     parser.checkedMove(IdentMap.in_ident);
     Ident collection = parser.getIdent();
 
-    StmtBlock loop = parseBlock();
+    StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
     return new StmtStatement(new Stmt_for(iter, collection, loop, from));
   }
 

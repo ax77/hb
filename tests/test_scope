@@ -1,6 +1,12 @@
 class test_scope {
 
-	func fn(a: i32, b: i32) {
+	var e: boolean;
+	
+	func fn(a: i32, b: i32)
+	{
+		// var a: i32;
+		// var zzz: i32 = 0;
+		
         {
           //error var i: i32 = 0;
           var e: boolean;
@@ -14,6 +20,7 @@ class test_scope {
             }
           } else {
             var i: i32 = 0;
+            // var b: i32 = 0;
           }
         }
 	}

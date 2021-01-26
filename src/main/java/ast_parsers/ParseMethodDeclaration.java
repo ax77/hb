@@ -12,6 +12,7 @@ import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
 import ast_symtab.IdentMap;
 import ast_types.Type;
+import ast_vars.VarBase;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -46,7 +47,7 @@ public class ParseMethodDeclaration {
     }
 
     //5)
-    final StmtBlock block = new ParseStatement(parser).parseBlock();
+    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
 
     final MethodSignature signature = new MethodSignature(ident, parameters);
 
