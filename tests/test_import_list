@@ -7,12 +7,14 @@ class test_import_list {
 		var x: i32 = 0;
 		var y: i32 = 0;
 		var z: i32 = 0;
+		var s: string = "_";
 		for item in args {
 			x += 1;
 			for nested in args {
 				y += 1;
 				for width in args {
 					z += 1;
+					s.append(c: '0');
 				}
 			}
 		}

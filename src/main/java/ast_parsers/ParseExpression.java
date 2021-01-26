@@ -48,7 +48,9 @@ import ast_expr.FuncArg;
 import ast_symtab.IdentMap;
 import ast_types.ClassType;
 import ast_types.Type;
+import ast_types.TypeBindings;
 import hashed.Hash_ident;
+import literals.IntLiteral;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -479,8 +481,15 @@ public class ParseExpression {
         return new ExprExpression(classCreation, saved);
       }
 
+      else if (saved.ofType(TOKEN_CHAR)) {
+        // TODO:
+        String sval = saved.getValue().substring(1, saved.getValue().length() - 1);
+        char cval = sval.charAt(0);
+        IntLiteral lit = new IntLiteral(String.format("%d", (int) cval), TypeBindings.make_u8(), (long) cval);
+        return new ExprExpression(lit, saved);
+      }
+
       else {
-        // TODO: chars.
         return new ExprExpression(saved.getNumconst(), saved);
       }
     }

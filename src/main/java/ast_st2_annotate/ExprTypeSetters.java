@@ -111,7 +111,7 @@ public class ExprTypeSetters {
       checkTypeNotNull(e, lhsType);
       checkTypeNotNull(e, rhsType);
       if (!lhsType.is_equal_to(rhsType)) {
-        errorNoComatible(e, lhs, op, rhs);
+        errorNoComatible(e, lhs, operator, rhs);
       }
     }
 
@@ -126,7 +126,7 @@ public class ExprTypeSetters {
 
       if (lhsType != null && rhsType != null) {
         if (!lhsType.is_equal_to(rhsType)) {
-          errorNoComatible(e, lhs, op, rhs);
+          errorNoComatible(e, lhs, operator, rhs);
         }
         if (lhsType.is_numeric() && rhsType.is_numeric()) {
           e.setResultType(resultType);
@@ -238,9 +238,9 @@ public class ExprTypeSetters {
     //@formatter:on
   }
 
-  private static void errorNoComatible(ExprExpression e, ExprExpression lhs, T op, ExprExpression rhs) {
-    throw new AstParseException(e.getLocationToString() + ", no-compatible: " + e.toString());
-
+  private static void errorNoComatible(ExprExpression e, ExprExpression lhs, Token op, ExprExpression rhs) {
+    ErrorLocation.errorExpression("for operator: " + op.getValue() + " types are not not compatible: LHS="
+        + lhs.getResultType().toString() + ", RHS=" + rhs.getResultType().toString(), e);
   }
 
   private static void checkTypeNotNull(ExprExpression e, Type tp) {
