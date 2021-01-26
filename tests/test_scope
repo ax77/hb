@@ -1,0 +1,20 @@
+class test_scope {
+
+	func fn() {
+        {
+          //error var i: i32 = 0;
+          var e: boolean;
+          if e {
+            {
+              var i: i32 = 0;
+            }
+            var i: i32 = 0;
+            {
+              //error var i: i32 = 0;
+            }
+          } else {
+            var i: i32 = 0;
+          }
+        }
+	}
+}

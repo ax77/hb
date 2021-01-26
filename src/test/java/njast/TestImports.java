@@ -16,7 +16,19 @@ public class TestImports {
 
     InstantiationUnit result = new ParserMain(thisFname).parseInstantiationUnit();
     for (ClassDeclaration clazz : result.getClasses()) {
-      System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
+      // System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
+    }
+
+  }
+  
+  @Test
+  public void testScope() throws Exception {
+
+    String thisFname = "/tests/test_scope";
+
+    InstantiationUnit result = new ParserMain(thisFname).parseInstantiationUnit();
+    for (ClassDeclaration clazz : result.getClasses()) {
+      // System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
     }
 
   }

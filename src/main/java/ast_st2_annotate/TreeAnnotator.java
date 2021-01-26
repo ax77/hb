@@ -135,92 +135,83 @@ public class TreeAnnotator {
     }
 
     StatementBase base = statement.getBase();
-    boolean hasItsOwnScope = (base == StatementBase.SBLOCK) || (base == StatementBase.SFOR);
-
-    if (hasItsOwnScope) {
-      symtabApplier.openBlockScope(base.toString());
-    }
-
     if (base == StatementBase.SFOR) {
-      Stmt_for forloop = statement.getForStmt();
-
-      if (forloop.isShortForm()) {
-
-        // 1)
-        final ExprExpression collection = forloop.getAuxCollection();
-        applyExpression(object, collection);
-
-        // 2)
-        ForLoopRewriter.rewriteForLoop(object, forloop);
-
-        // 3) normal for-loop here, in its pure-huge form
-
-        List<StmtBlockItem> items = new ArrayList<>();
-        for (VarDeclarator var : forloop.getDecl()) {
-          items.add(new StmtBlockItem(var));
-        }
-        forloop.setDecl(null);
-        forloop.setShortForm(false);
-
-        items.add(new StmtBlockItem(new StmtStatement(forloop)));
-        StmtBlock block = new StmtBlock(items);
-
-        statement.replaceForLoopWithBlock(block);
-        applyStatement(object, method, statement);
-
-      }
-
-      if (forloop.getDecl() != null) {
-        for (VarDeclarator var : forloop.getDecl()) {
-          visitLocalVar(object, var);
-        }
-      }
-
-      applyExpression(object, forloop.getTest());
-      applyExpression(object, forloop.getStep());
-      visitBlock(object, method, forloop.getLoop());
-
-    }
-
-    else if (base == StatementBase.SIF) {
-      Stmt_if sif = statement.getIfStmt();
-      applyExpression(object, sif.getCondition());
-      visitBlock(object, method, sif.getTrueStatement());
-      visitBlock(object, method, sif.getOptionalElseStatement());
-
-      if (!sif.getCondition().getResultType().is_boolean()) {
-        throw new AstParseException("if condition must be only a boolean type");
-      }
-    }
-
-    else if (base == StatementBase.SEXPR) {
+      visitForLoop(object, method, statement);
+    } else if (base == StatementBase.SIF) {
+      visit_if(object, method, statement);
+    } else if (base == StatementBase.SEXPR) {
       applyExpression(object, statement.getExprStmt());
-    }
-
-    else if (base == StatementBase.SBLOCK) {
+    } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, statement.getBlockStmt());
-    }
-
-    else if (base == StatementBase.SRETURN) {
-      final ExprExpression retExpression = statement.getExprStmt();
-      applyExpression(object, retExpression);
-    }
-
-    else {
+    } else if (base == StatementBase.SRETURN) {
+      applyExpression(object, statement.getExprStmt());
+    } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
-    }
-
-    if (hasItsOwnScope) {
-      symtabApplier.closeBlockScope();
     }
 
   }
 
+  private void visit_if(final ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement statement) {
+    Stmt_if sif = statement.getIfStmt();
+    applyExpression(object, sif.getCondition());
+    visitBlock(object, method, sif.getTrueStatement());
+    visitBlock(object, method, sif.getOptionalElseStatement());
+
+    if (!sif.getCondition().getResultType().is_boolean()) {
+      throw new AstParseException("if condition must be only a boolean type");
+    }
+  }
+
+  private void visitForLoop(final ClassDeclaration object, ClassMethodDeclaration method,
+      final StmtStatement statement) {
+    Stmt_for forloop = statement.getForStmt();
+
+    if (forloop.isShortForm()) {
+
+      // 1)
+      final ExprExpression collection = forloop.getAuxCollection();
+      applyExpression(object, collection);
+
+      // 2)
+      ForLoopRewriter.rewriteForLoop(object, forloop);
+
+      // 3) normal for-loop here, in its pure-huge form
+
+      List<StmtBlockItem> items = new ArrayList<>();
+      for (VarDeclarator var : forloop.getDecl()) {
+        items.add(new StmtBlockItem(var));
+      }
+      forloop.setDecl(null);
+      forloop.setShortForm(false);
+
+      items.add(new StmtBlockItem(new StmtStatement(forloop)));
+      StmtBlock block = new StmtBlock(items);
+
+      statement.replaceForLoopWithBlock(block);
+      applyStatement(object, method, statement);
+
+    }
+
+    if (forloop.getDecl() != null) {
+      for (VarDeclarator var : forloop.getDecl()) {
+        visitLocalVar(object, var);
+      }
+    }
+
+    applyExpression(object, forloop.getTest());
+    applyExpression(object, forloop.getStep());
+    visitBlock(object, method, forloop.getLoop());
+  }
+
   private void visitBlock(final ClassDeclaration object, ClassMethodDeclaration method, final StmtBlock body) {
+    symtabApplier.openBlockScope("block");
+
     for (StmtBlockItem block : body.getBlockStatements()) {
       visitLocalVar(object, block.getLocalVariable());
       applyStatement(object, method, block.getStatement());
     }
+
+    symtabApplier.closeBlockScope();
   }
 
   private void visitLocalVar(final ClassDeclaration object, VarDeclarator var) {
