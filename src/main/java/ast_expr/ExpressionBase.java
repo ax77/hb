@@ -17,4 +17,5 @@ public enum ExpressionBase {
  , EARRAY_INSTANCE_CREATION
  , ESTRING_CONST
  , EARRAY_ACCESS
+ , ECHAR_CONST
 }

@@ -14,7 +14,7 @@ class test_import_list {
 				y += 1;
 				for width in args {
 					z += 1;
-					s.append(c: '0');
+					s.append(c: '\n');
 				}
 			}
 		}

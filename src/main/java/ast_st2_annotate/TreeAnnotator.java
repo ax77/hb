@@ -269,6 +269,8 @@ public class TreeAnnotator {
       applyStringLiteral(e);
     } else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
       applyArrayAccess(object, e);
+    } else if (e.is(ExpressionBase.ECHAR_CONST)) {
+      e.setResultType(TypeBindings.make_u8());
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
@@ -358,7 +360,7 @@ public class TreeAnnotator {
     final ExprIdent primaryIdent = e.getIdent();
 
     final Symbol sym = symtabApplier.findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
-    if(sym == null) {
+    if (sym == null) {
       ErrorLocation.errorExpression("symbol was not declared in this scope", e);
     }
 

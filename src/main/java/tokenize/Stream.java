@@ -304,35 +304,49 @@ public class Stream {
 
   }
 
+  private char esc(char c) {
+    if (c == 't') {
+      return '\t';
+    }
+    if (c == 'n') {
+      return '\n';
+    }
+    if (c == 'r') {
+      return '\r';
+    }
+    if (c == '0') {
+      return '\0';
+    }
+    return c;
+  }
+
   private Token getString(int c) {
     int endof = (c == '\"' ? '\"' : '\'');
     T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
     StringBuilder strbuf = new StringBuilder();
 
     for (;;) {
-      int next1 = buffer.nextc();
-      if (next1 == Env.HC_FEOF) {
+      int nextc = buffer.nextc();
+      if (nextc == Env.HC_FEOF) {
         throw new ScanExc(Integer.toString(buffer.getLine()));
       }
-      if (next1 == '\n') {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
-      }
-      if (next1 == endof) {
+      if (nextc == endof) {
         break;
       }
-      if (next1 != '\\') {
-        strbuf.append((char) next1);
-        continue;
+
+      if (nextc == '\\') {
+        final char esc = esc((char) buffer.nextc());
+        strbuf.append(esc);
+      } else {
+        strbuf.append((char) nextc);
       }
-      int next2 = buffer.nextc();
-      strbuf.append("\\");
-      strbuf.append((char) next2);
+
     }
 
     Token token = new Token();
     setPos(token);
     token.setType(typeoftok);
-    token.setValue((char) endof + strbuf.toString() + (char) endof);
+    token.setValue(strbuf.toString()); //  + (char) endof
     return token;
 
   }

@@ -30,6 +30,14 @@ public class ExprExpression implements Serializable, ILocation {
   private ExprSelf selfExpression;
   private String stringConst;
   private ExprArrayAccess arrayAccess;
+  private char charConst;
+
+  public ExprExpression(char charConst, Token beginPos) {
+    this.base = ExpressionBase.ECHAR_CONST;
+    this.location = new SourceLocation(beginPos);
+    this.beginPos = beginPos;
+    this.charConst = charConst;
+  }
 
   public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
     this.base = ExpressionBase.EARRAY_ACCESS;
@@ -189,6 +197,10 @@ public class ExprExpression implements Serializable, ILocation {
     return base.equals(what);
   }
 
+  public char getCharConst() {
+    return charConst;
+  }
+
   @Override
   public String toString() {
     if (base == ExpressionBase.EBINARY) {
@@ -222,13 +234,24 @@ public class ExprExpression implements Serializable, ILocation {
       return arrayCreation.toString();
     }
     if (base == ExpressionBase.ESTRING_CONST) {
-      return stringConst;
+      String s = "";
+      s += "\"";
+      s += stringConst;
+      s += "\"";
+      return s;
     }
     if (base == ExpressionBase.EARRAY_ACCESS) {
       return arrayAccess.toString();
     }
     if (base == ExpressionBase.EUNARY) {
       return unary.toString();
+    }
+    if (base == ExpressionBase.ECHAR_CONST) {
+      String s = "";
+      s += "\'";
+      s += charConst;
+      s += "\'";
+      return s;
     }
     return base.toString();
   }
