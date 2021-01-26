@@ -14,6 +14,7 @@ import ast_expr.ExprAssign;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprUtil;
 import ast_expr.FuncArg;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.Stmt_for;
@@ -53,55 +54,53 @@ public class ForLoopRewriter {
 
     // iter
     final ExprExpression iterAux = forloop.getAuxIter();
+    final Token beginPos = iterAux.getBeginPos();
     iterAux.setResultType(elemType);
 
     final Ident item = iterAux.getIdent().getIdentifier();
 
     // 1) let iter: iterator<TYPE> = collection.get_iterator();
     final Ident iteratorVarName = createNameForIteratorItself();
-    final VarDeclarator iteratorVar = genMethodGetIterator(collectionObjectName, iteratorType, iteratorVarName);
+
+    final VarDeclarator iteratorVar = genMethodGetIterator(collectionObjectName, iteratorType, iteratorVarName,
+        beginPos);
 
     final List<VarDeclarator> decl = new ArrayList<>();
     decl.add(iteratorVar);
 
     //2 ) TYPE item = iter.current()
-    final VarDeclarator itemVar = genMethodInitItemVar(elemType, item, iteratorVarName);
+    final VarDeclarator itemVar = genMethodInitItemVar(elemType, item, iteratorVarName, beginPos);
     decl.add(itemVar);
     forloop.setDecl(decl);
 
-    setTest(forloop, iteratorVarName);
-    setStep(forloop, item, iteratorVarName);
+    setTest(forloop, iteratorVarName, beginPos);
+    setStep(forloop, item, iteratorVarName, beginPos);
   }
 
-  private static void setTest(Stmt_for forloop, final Ident iteratorVarName) {
+  private static void setTest(Stmt_for forloop, final Ident iteratorVarName, Token beginPos) {
     // 3) iter.has_next();
-    final ExprExpression testExpression = call(ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName);
+    final ExprExpression testExpression = call(ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName, beginPos);
     forloop.setTest(testExpression);
   }
 
-  private static Token todoLoc() {
-    Token tok = new Token();
-    tok.setValue("???");
-    tok.setType(T.TOKEN_ERROR);
-    return tok;
-  }
-
-  private static void setStep(Stmt_for forloop, final Ident item, final Ident iteratorVarName) {
+  private static void setStep(Stmt_for forloop, final Ident item, final Ident iteratorVarName, Token beginPos) {
     // 4) item = iter.get_net()
-    final ExprExpression lhs = id(item);
-    final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName);
+    final ExprExpression lhs = id(item, beginPos);
+    final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName, beginPos);
 
-    final ExprExpression stepExpression = new ExprExpression(new ExprAssign(getAssignTok(), lhs, rhs), todoLoc());
+    final ExprAssign assign = new ExprAssign(getAssignTok(beginPos), lhs, rhs);
+    final ExprExpression stepExpression = new ExprExpression(assign, beginPos);
+
     forloop.setStep(stepExpression);
   }
 
-  private static ExprExpression id(Ident iteratorVarName) {
-    return new ExprExpression(new ExprIdent(iteratorVarName), todoLoc());
+  private static ExprExpression id(Ident iteratorVarName, Token beginPos) {
+    return new ExprExpression(new ExprIdent(iteratorVarName), beginPos);
   }
 
-  private static ExprExpression call(final Ident funcname, final Ident objectName) {
+  private static ExprExpression call(final Ident funcname, final Ident objectName, Token beginPos) {
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName), emptyArgs), todoLoc());
+    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName, beginPos), emptyArgs), beginPos);
   }
 
   private static Ident createNameForIteratorItself() {
@@ -109,21 +108,19 @@ public class ForLoopRewriter {
     return Hash_ident.getHashedIdent("__it" + nextCount + "__");
   }
 
-  private static Token getAssignTok() {
-    Token tok = new Token();
-    tok.setType(T.T_ASSIGN);
-    tok.setValue("=");
+  private static Token getAssignTok(Token beginPos) {
+    Token tok = ExprUtil.copyTokenAddNewType(beginPos, T.T_ASSIGN, "=");
     return tok;
   }
 
-  private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName) {
+  private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName,
+      Token beginPos) {
 
-    final SourceLocation loc = new SourceLocation("for...", -1, -1);
-
+    final SourceLocation loc = new SourceLocation(beginPos);
     final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), elemType, declIdent, loc);
 
     final List<VarInitializer> inits = new ArrayList<>();
-    inits.add(new VarInitializer(call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName), 0));
+    inits.add(new VarInitializer(call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName, beginPos), 0));
 
     itemVar.setInitializer(inits);
     return itemVar;
@@ -131,13 +128,11 @@ public class ForLoopRewriter {
   }
 
   private static VarDeclarator genMethodGetIterator(final Ident collectionObjectName, final Type iteratorType,
-      final Ident iteratorVarName) {
+      final Ident iteratorVarName, Token beginPos) {
 
-    final SourceLocation loc = new SourceLocation("for...", -1, -1);
-
-    final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), iteratorType,
-        iteratorVarName, loc);
-    final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName);
+    final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.letModifiers(), iteratorType,
+        iteratorVarName, new SourceLocation(beginPos));
+    final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName, beginPos);
 
     final List<VarInitializer> inits = new ArrayList<>();
     inits.add(new VarInitializer(iteratorVarInitializer, 0));

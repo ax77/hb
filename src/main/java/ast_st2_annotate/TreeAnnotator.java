@@ -358,6 +358,9 @@ public class TreeAnnotator {
     final ExprIdent primaryIdent = e.getIdent();
 
     final Symbol sym = symtabApplier.findBindingFromIdentifierToTypename(primaryIdent.getIdentifier());
+    if(sym == null) {
+      ErrorLocation.errorExpression("symbol was not declared in this scope", e);
+    }
 
     if (sym.isClassType()) {
       throw new AstParseException("unimpl.");

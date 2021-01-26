@@ -4,8 +4,17 @@ import std.string;
 class test_import_list { 
 	func main() -> i32 {
 		var args: list<string> = new list<string>();
+		var x: i32 = 0;
+		var y: i32 = 0;
+		var z: i32 = 0;
 		for item in args {
-		
+			x += 1;
+			for nested in args {
+				y += 1;
+				for width in args {
+					z += 1;
+				}
+			}
 		}
 		return 0;
 	}

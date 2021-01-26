@@ -160,10 +160,7 @@ public class TreeScopes {
       return var;
     }
 
-    else {
-      throw new AstParseException("type not found for id: " + name.getName());
-    }
-
+    return null;
   }
 
   public void initVarZero(VarDeclarator var) {
