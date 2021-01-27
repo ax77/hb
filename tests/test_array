@@ -7,5 +7,9 @@ class test_array {
 		var xxx: i32;
 		var yyy: u8;
 		var zzz: f32;
+		var arr: [i64];
+		var booooo: boolean;
+		var chch: u8;
+		var eself: test_array;
 	}
 }

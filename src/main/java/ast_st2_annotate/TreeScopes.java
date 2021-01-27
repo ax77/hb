@@ -110,7 +110,8 @@ public class TreeScopes {
 
   public void defineFunctionParameter(ClassMethodDeclaration method, MethodParameter param) {
     final Modifiers mod = Mods.letModifiers();
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(), method.getBeginPos());
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(),
+        method.getBeginPos());
 
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
@@ -154,9 +155,6 @@ public class TreeScopes {
     }
 
     return var;
-  }
-
-  public void initVarZero(VarDeclarator var) {
   }
 
   public void defineClassField(ClassDeclaration object, VarDeclarator field) {

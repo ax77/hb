@@ -8,18 +8,18 @@ class test_scope {
 		// var zzz: i32 = 0;
 		
         {
-          //error var i: i32 = 0;
+          //error var i: i32 ;
           var e: boolean;
           if e {
             {
-              var i: i32 = 0;
+              var i: i32 ;
             }
-            var i: i32 = 0;
+            var i: i32 ;
             {
               //error var i: i32 = 0;
             }
           } else {
-            var i: i32 = 0;
+            var i: i32 ;
             // var b: i32 = 0;
           }
         }

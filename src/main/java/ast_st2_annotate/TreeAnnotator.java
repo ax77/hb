@@ -1,5 +1,7 @@
 package ast_st2_annotate;
 
+import static ast_st2_annotate.TreeScopes.F_ALL;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +33,11 @@ import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
-import ast_vars.VarInitializer;
 import errors.AstParseException;
 import errors.ErrorLocation;
 import hashed.Hash_ident;
 import tokenize.Ident;
-
-import static ast_st2_annotate.TreeScopes.*;
+import tokenize.Token;
 
 public class TreeAnnotator {
 
@@ -109,9 +109,7 @@ public class TreeAnnotator {
       // method variables
       final VarDeclarator var = block.getLocalVariable();
       if (var != null) {
-        symtabApplier.initVarZero(var);
         symtabApplier.defineMethodVariable(method, var);
-
         applyInitializer(object, var);
       }
 
@@ -125,12 +123,19 @@ public class TreeAnnotator {
     if (var.isArrayInitializer()) {
       throw new AstParseException("unimpl. array-inits.");
     }
-    ExprExpression init = var.getSimpleInitializer();
+    final ExprExpression init = var.getSimpleInitializer();
     if (init == null) {
-      Type tp = var.getType();
+      final Type tp = var.getType();
+      final Token beginPos = var.getBeginPos();
       if (tp.is_numeric()) {
-        ExprExpression defaultInit = ExprUtil.getEmptyPrimitive(tp, var.getBeginPos());
-        var.setSimpleInitializer(defaultInit);
+        ExprExpression zeroExpr = ExprUtil.getEmptyPrimitive(tp, beginPos);
+        var.setSimpleInitializer(zeroExpr);
+      } else if (tp.is_class() || tp.is_array()) {
+        ExprExpression nullExpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, beginPos);
+        var.setSimpleInitializer(nullExpr);
+      } else if (tp.is_boolean()) {
+        ExprExpression falseExpr = new ExprExpression(false, beginPos);
+        var.setSimpleInitializer(falseExpr);
       }
     }
     applyExpression(object, init);
@@ -227,13 +232,12 @@ public class TreeAnnotator {
   }
 
   private void visitLocalVar(final ClassDeclaration object, VarDeclarator var) {
-
     if (var == null) {
       return;
     }
 
-    symtabApplier.initVarZero(var);
     symtabApplier.defineBlockVar(var);
+    applyInitializer(object, var);
   }
 
   //////////////////////////////////////////////////////////////////////
