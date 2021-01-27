@@ -124,30 +124,12 @@ public class TreeAnnotator {
       throw new AstParseException("unimpl. array-inits.");
     }
 
-    ExprExpression init = var.getSimpleInitializer();
+    maybeInitVariableByDefault(var);
 
-    // initialize variable with its default value:
-    // null for arrays and classes
-    // zero for primitives
-    // false for boolean
-    if (init == null) {
-      final Type tp = var.getType();
-      final Token beginPos = var.getBeginPos();
-      if (tp.is_numeric()) {
-        ExprExpression zeroExpr = ExprUtil.getEmptyPrimitive(tp, beginPos);
-        var.setSimpleInitializer(zeroExpr);
-      } else if (tp.is_class() || tp.is_array()) {
-        ExprExpression nullExpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, beginPos);
-        var.setSimpleInitializer(nullExpr);
-      } else if (tp.is_boolean()) {
-        ExprExpression falseExpr = new ExprExpression(false, beginPos);
-        var.setSimpleInitializer(falseExpr);
-      }
-    }
+    final ExprExpression init = var.getSimpleInitializer();
 
-    init = var.getSimpleInitializer();
     if (init == null) {
-      throw new AstParseException("unexpected, init must be present");
+      throw new AstParseException("unexpected, initializer should be there: " + var.getLocationToString());
     }
 
     //MIR:TREE
@@ -158,6 +140,33 @@ public class TreeAnnotator {
     }
 
     applyExpression(object, init);
+  }
+
+  private void maybeInitVariableByDefault(final VarDeclarator var) {
+
+    final ExprExpression init = var.getSimpleInitializer();
+    if (init != null) {
+      return;
+    }
+
+    // initialize variable with its default value:
+    // null for arrays and classes
+    // zero for primitives
+    // false for boolean
+    final Type tp = var.getType();
+    final Token beginPos = var.getBeginPos();
+
+    if (tp.is_numeric()) {
+      ExprExpression zeroExpr = ExprUtil.getEmptyPrimitive(tp, beginPos);
+      var.setSimpleInitializer(zeroExpr);
+    } else if (tp.is_class() || tp.is_array()) {
+      ExprExpression nullExpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, beginPos);
+      var.setSimpleInitializer(nullExpr);
+    } else if (tp.is_boolean()) {
+      ExprExpression falseExpr = new ExprExpression(false, beginPos);
+      var.setSimpleInitializer(falseExpr);
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////////
