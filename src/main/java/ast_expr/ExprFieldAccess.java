@@ -2,6 +2,7 @@ package ast_expr;
 
 import java.io.Serializable;
 
+import ast_types.ArrayType;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
 
@@ -13,6 +14,7 @@ public class ExprFieldAccess implements Serializable {
 
   //MIR:TREE
   private VarDeclarator field;
+  private ArrayType array;
 
   public ExprFieldAccess(Ident fieldName, ExprExpression object) {
     this.fieldName = fieldName;
@@ -33,6 +35,14 @@ public class ExprFieldAccess implements Serializable {
 
   public void setField(VarDeclarator field) {
     this.field = field;
+  }
+
+  public ArrayType getArray() {
+    return array;
+  }
+
+  public void setArray(ArrayType array) {
+    this.array = array;
   }
 
   @Override

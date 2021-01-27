@@ -32,6 +32,9 @@ import ast_vars.VarDeclarator;
 import ast_vars.VarInitializer;
 import errors.AstParseException;
 import errors.ErrorLocation;
+import hashed.Hash_ident;
+import tokenize.Ident;
+
 import static ast_st2_annotate.TreeScopes.*;
 
 public class TreeAnnotator {
@@ -378,24 +381,48 @@ public class TreeAnnotator {
     final ExprFieldAccess fieldAccess = e.getFieldAccess();
     applyExpression(object, fieldAccess.getObject());
 
+    final String fieldNameToString = fieldAccess.getFieldName().getName();
+
     // find the field, and get its type
-    //
+
     final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
-    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
-      ErrorLocation.errorExpression("expect reference for field access like [a.b] -> a must be a class.", e);
+    if (resultTypeOfObject == null) {
+      ErrorLocation.errorExpression("type unspecified for field-access expression:", e);
+    }
+    boolean isOkAccess = resultTypeOfObject.is_class() || resultTypeOfObject.is_array();
+    if (!isOkAccess) {
+      ErrorLocation
+          .errorExpression("expect reference for field access like [a.b] -> a must be a class, or array.length", e);
     }
 
-    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassType();
-    final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
+    // array-property access
 
-    if (field == null) {
-      ErrorLocation.errorExpression("class has no field: " + fieldAccess.getFieldName().getName(), e);
+    if (resultTypeOfObject.is_array()) {
+      final Ident expectedProperty = Hash_ident.getHashedIdent("length");
+      if (!fieldAccess.getFieldName().equals(expectedProperty)) {
+        ErrorLocation.errorExpression("array has no property: " + fieldNameToString, e);
+      }
+      e.setResultType(TypeBindings.make_u64());
+
+      // remember array
+      fieldAccess.setArray(resultTypeOfObject.getArrayType());
     }
 
-    e.setResultType(field.getType());
+    // class-field access
 
-    // remember field
-    fieldAccess.setField(field);
+    else {
+      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassType();
+      final VarDeclarator field = whereWeWantToFindTheField.getField(fieldAccess.getFieldName());
+
+      if (field == null) {
+        ErrorLocation.errorExpression("class has no field: " + fieldNameToString, e);
+      }
+
+      e.setResultType(field.getType());
+
+      // remember field
+      fieldAccess.setField(field);
+    }
 
   }
 
