@@ -1,27 +1,29 @@
 package njast;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import tokenize.Stream;
-import tokenize.Token;
-import utils_fio.FileReadKind;
-import utils_fio.FileWrapper;
 
 public class TestTokenizer {
+
   @Test
-  public void testCharZero() throws Exception {
-    final String dir = System.getProperty("user.dir");
-    FileWrapper fw = new FileWrapper(dir + "/tests/test_string_tokenizer.txt");
+  public void testTokenizerSimple() throws Exception {
+    // 3:beg+end+eof
 
-    Stream stream = new Stream("...test...", fw.readToString(FileReadKind.AS_IS));
-    List<Token> tokens = stream.getTokenlist();
+    assertEquals(4 + 3, new Stream(".", "+-*/").getTokenlist().size());
+    assertEquals(2 + 3, new Stream(".", ">>>>=").getTokenlist().size());
+    assertEquals(8 + 3, new Stream(".", "+=-=*=/=>>=<<===!=").getTokenlist().size());
+    assertEquals(8 + 3, new Stream(".", "abc a b c 123 1 2 3").getTokenlist().size());
+    assertEquals(2 + 3, new Stream(".", "'1' \"0\"").getTokenlist().size());
+    assertEquals(1 + 3, new Stream(".", "/*comment*/\n\n//comment\n\n 0").getTokenlist().size());
+    assertEquals(0 + 3, new Stream(".", "/*comment*/\n\n//comment\n\n").getTokenlist().size());
+    assertEquals(6 + 3, new Stream(".", "()[]{}").getTokenlist().size());
+    assertEquals(2 + 3, new Stream(".", ".....").getTokenlist().size());
+    assertEquals(2 + 3, new Stream(".", "......").getTokenlist().size());
+    assertEquals(3 + 3, new Stream(".", ". . .").getTokenlist().size());
+    assertEquals(8 + 3, new Stream(".", ":;!#%^&*").getTokenlist().size());
 
-    for (Token tok : tokens) {
-      if (tok.typeIsSpecialStreamMarks()) {
-        continue;
-      }
-    }
   }
 }

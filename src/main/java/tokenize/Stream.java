@@ -4,11 +4,7 @@ import static tokenize.Env.EOF_TOKEN_ENTRY;
 import static tokenize.Env.HC_FEOF;
 import static tokenize.Env.isDec;
 import static tokenize.Env.isLetter;
-import static tokenize.Env.isOpStart;
 import static tokenize.T.TOKEN_EOF;
-import static tokenize.T.TOKEN_ERROR;
-import static tokenize.T.T_DIVIDE;
-import static tokenize.T.T_DIVIDE_EQUAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +27,10 @@ public class Stream {
   private final List<Token> tokenlist;
   private CBuf buffer;
 
-  private static final Map<String, T> VALID_COMBINATIONS = new HashMap<String, T>();
-  private static final Map<String, T> SINGLE_OPERATORS = new HashMap<String, T>();
-  private static final Map<String, T> OTHER_ASCII_CHARACTERS = new HashMap<String, T>();
+  private static final Map<String, T> VALID_COMBINATIONS_2 = new HashMap<>();
+  private static final Map<String, T> VALID_COMBINATIONS_3 = new HashMap<>();
+  private static final Map<String, T> SINGLE_OPERATORS = new HashMap<>();
+  private static final Map<String, T> OTHER_ASCII_CHARACTERS = new HashMap<>();
 
   static {
 
@@ -44,39 +41,35 @@ public class Stream {
     // " %= += <= || ) / ? } %: "
     // " ## -- == ! * : [ # %:%: "
 
-    //
-    VALID_COMBINATIONS.put("->", T.T_ARROW);
-    VALID_COMBINATIONS.put("--", T.T_MINUS_MINUS);
-    VALID_COMBINATIONS.put("-=", T.T_MINUS_EQUAL);
-    VALID_COMBINATIONS.put("!=", T.T_NE);
+    // 3
+    VALID_COMBINATIONS_3.put(">>=", T.T_RSHIFT_EQUAL);
+    VALID_COMBINATIONS_3.put("<<=", T.T_LSHIFT_EQUAL);
+    VALID_COMBINATIONS_3.put("...", T.T_DOT_DOT_DOT);
 
-    // this is not ANSI, but for easy recognize ellipsis ...
-    VALID_COMBINATIONS.put("..", T.T_DOT_DOT);
+    // 2
+    VALID_COMBINATIONS_2.put("->", T.T_ARROW);
+    VALID_COMBINATIONS_2.put("--", T.T_MINUS_MINUS);
+    VALID_COMBINATIONS_2.put("-=", T.T_MINUS_EQUAL);
+    VALID_COMBINATIONS_2.put("!=", T.T_NE);
+    VALID_COMBINATIONS_2.put("..", T.T_DOT_DOT);
+    VALID_COMBINATIONS_2.put("*=", T.T_TIMES_EQUAL);
+    VALID_COMBINATIONS_2.put("/=", T.T_DIVIDE_EQUAL);
+    VALID_COMBINATIONS_2.put("&=", T.T_AND_EQUAL);
+    VALID_COMBINATIONS_2.put("&&", T.T_AND_AND);
+    VALID_COMBINATIONS_2.put("##", T.T_SHARP_SHARP);
+    VALID_COMBINATIONS_2.put("%=", T.T_PERCENT_EQUAL);
+    VALID_COMBINATIONS_2.put("^=", T.T_XOR_EQUAL);
+    VALID_COMBINATIONS_2.put("++", T.T_PLUS_PLUS);
+    VALID_COMBINATIONS_2.put("+=", T.T_PLUS_EQUAL);
+    VALID_COMBINATIONS_2.put("<=", T.T_LE);
+    VALID_COMBINATIONS_2.put("<<", T.T_LSHIFT);
+    VALID_COMBINATIONS_2.put("==", T.T_EQ);
+    VALID_COMBINATIONS_2.put(">=", T.T_GE);
+    VALID_COMBINATIONS_2.put(">>", T.T_RSHIFT);
+    VALID_COMBINATIONS_2.put("||", T.T_OR_OR);
+    VALID_COMBINATIONS_2.put("|=", T.T_OR_EQUAL);
 
-    VALID_COMBINATIONS.put("*=", T.T_TIMES_EQUAL);
-    VALID_COMBINATIONS.put("/=", T.T_DIVIDE_EQUAL);
-    VALID_COMBINATIONS.put("&=", T.T_AND_EQUAL);
-    VALID_COMBINATIONS.put("&&", T.T_AND_AND);
-    VALID_COMBINATIONS.put("##", T.T_SHARP_SHARP);
-    VALID_COMBINATIONS.put("%=", T.T_PERCENT_EQUAL);
-    VALID_COMBINATIONS.put("^=", T.T_XOR_EQUAL);
-    VALID_COMBINATIONS.put("++", T.T_PLUS_PLUS);
-    VALID_COMBINATIONS.put("+=", T.T_PLUS_EQUAL);
-    VALID_COMBINATIONS.put("<=", T.T_LE);
-    VALID_COMBINATIONS.put("<<", T.T_LSHIFT);
-    VALID_COMBINATIONS.put("==", T.T_EQ);
-    VALID_COMBINATIONS.put(">=", T.T_GE);
-    VALID_COMBINATIONS.put(">>", T.T_RSHIFT);
-    VALID_COMBINATIONS.put("||", T.T_OR_OR);
-    VALID_COMBINATIONS.put("|=", T.T_OR_EQUAL);
-
-    // special handling for this large...
-    // %:%:
-    // >>=
-    // <<=
-    // ...
-
-    //
+    // 1
     SINGLE_OPERATORS.put(",", T.T_COMMA);
     SINGLE_OPERATORS.put("-", T.T_MINUS);
     SINGLE_OPERATORS.put(";", T.T_SEMI_COLON);
@@ -148,28 +141,37 @@ public class Stream {
     token.setLocation(new SourceLocation(filename, buffer.getLine(), column));
   }
 
+  private void move() {
+    buffer.nextc();
+  }
+
   private Token nex2() {
 
-    int c = buffer.nextc();
-    int nextchar = buffer.peekc();
+    final char[] threechars = buffer.peekc3();
+    final char c1 = threechars[0];
+    final char c2 = threechars[1];
+    final char c3 = threechars[2];
 
-    if (c == HC_FEOF) {
+    if (c1 == HC_FEOF) {
       return EOF_TOKEN_ENTRY;
     }
 
-    final boolean isWhiteSpace = c == ' ' || c == '\t' || c == '\f';
+    final boolean isWhiteSpace = c1 == ' ' || c1 == '\t' || c1 == '\f';
     if (isWhiteSpace) {
+      move();
       return WSP_TOKEN;
     }
 
-    if (c == '\n') {
+    if (c1 == '\n') {
+      move();
       return EOL_TOKEN;
     }
 
-    if (c == '/') { /* [//], [/*], [/=], [/] */
+    if (c1 == '/') { /* [//], [/*], [/=], [/] */
 
-      if (nextchar == '/') {
-        buffer.nextc(); /* XXX: SHIFT */
+      if (c2 == '/') {
+        move();
+        move();
         for (;;) {
           int tmpch = buffer.nextc();
           if (tmpch == '\n') {
@@ -181,9 +183,9 @@ public class Stream {
         }
       }
 
-      else if (nextchar == '*') {
-        // throw new ScanExc("c-style comments /**/ are deprecated.");
-        buffer.nextc(); /* XXX: SHIFT */
+      else if (c2 == '*') {
+        move();
+        move();
         int prevc = '\0';
         for (;;) {
           int tmpch = buffer.nextc();
@@ -197,102 +199,77 @@ public class Stream {
         }
       }
 
-      else if (nextchar == '=') {
-        buffer.nextc(); /* XXX: SHIFT */
-        return specialToken(T_DIVIDE_EQUAL, "/=");
-      }
-
-      else {
-        return specialToken(T_DIVIDE, "/");
-      }
-
     }
 
     // string|char
-    final boolean isStringStart = (c == '\'' || c == '\"');
+    final boolean isStringStart = (c1 == '\'' || c1 == '\"');
     if (isStringStart) {
-      return getString(c);
+      return getString();
     }
 
     // identifier 
-    if (isLetter(c)) {
-      return getOneIdent(c, nextchar);
+    if (isLetter(c1)) {
+      return getOneIdent();
     }
 
     // numeric
-    if (isDec(c)) {
-      return getPpNum(c);
+    if (isDec(c1)) {
+      return getPpNum();
     }
 
-    if (isOpStart(c)) {
-      return getOnePunct(c, nextchar);
+    // operators
+    if (Env.isOpStart(c1)) {
+      return getOperator(c1, c2, c3);
     }
 
-    String sval = Character.toString((char) c);
-    if (c == '$' || c == '@' || c == '`' || c == '\\') {
-      T typeoftok = OTHER_ASCII_CHARACTERS.get(sval);
-      return specialToken(typeoftok, sval);
-    }
-
-    // default unknown
-    //
-    System.out.println(filename + ":" + buffer.getLine() + " TOKEN_ERROR handle " + sval);
-    return specialToken(TOKEN_ERROR, sval);
+    throw new ScanExc("unknown source: " + combineOp(c1, c2, c3));
   }
 
-  public Token getOnePunct(int c, int nextchar) {
-    String combOp = Character.toString((char) c) + Character.toString((char) nextchar);
+  /// this function is not-optimized, of course
+  /// but it works as primitive and simple as possible
+  /// 
+  private Token getOperator(char c1, char c2, char c3) {
 
-    // I) single
-    if (!VALID_COMBINATIONS.containsKey(combOp)) {
-      String defaultRet = "";
-      defaultRet += (char) c;
-      T singleOpType = SINGLE_OPERATORS.get(defaultRet);
-      return specialToken(singleOpType, defaultRet);
+    // from top to bottom
+
+    final String three = combineOp(c1, c2, c3);
+    if (VALID_COMBINATIONS_3.containsKey(three)) {
+      move();
+      move();
+      move();
+      return specialToken(VALID_COMBINATIONS_3.get(three), three);
     }
 
-    // II) combine
-    T combType = VALID_COMBINATIONS.get(combOp);
-    buffer.nextc(); /* XXX: SHIFT */
-
-    // >>=
-    // <<=
-    if (combOp.equals(">>") || combOp.equals("<<")) {
-      int p = buffer.peekc();
-      if (p == '=') {
-        buffer.nextc(); /* XXX: SHIFT */
-        T shiftAssignType = combOp.equals(">>") ? T.T_RSHIFT_EQUAL : T.T_LSHIFT_EQUAL;
-        combOp += (char) p;
-        return specialToken(shiftAssignType, combOp);
-      }
-
-      return specialToken(combType, combOp);
+    final String two = combineOp(c1, c2);
+    if (VALID_COMBINATIONS_2.containsKey(two)) {
+      move();
+      move();
+      return specialToken(VALID_COMBINATIONS_2.get(two), two);
     }
 
-    // ...
-    if (combOp.equals("..")) {
-      int p = buffer.nextc();
-      if (p == '.') {
-        combOp += (char) p;
-        return specialToken(T.T_DOT_DOT_DOT, combOp);
-      } else {
-        return specialToken(T.T_DOT_DOT, combOp);
-      }
+    final String one = combineOp(c1);
+    if (SINGLE_OPERATORS.containsKey(one)) {
+      move();
+      return specialToken(SINGLE_OPERATORS.get(one), one);
     }
 
-    // otherwise return two-chars token... ++, --, ->, etc.
-    return specialToken(combType, combOp);
+    throw new ScanExc("unknown operator: " + three);
   }
 
-  private Token getOneIdent(int c, int nextchar) {
-
+  private String combineOp(char... ops) {
     StringBuilder sb = new StringBuilder();
-    sb.append((char) c);
+    for (char op : ops) {
+      sb.append(op);
+    }
+    return sb.toString();
+  }
 
-    // tail
+  private Token getOneIdent() {
+
+    final StringBuilder sb = new StringBuilder();
 
     for (;;) {
-      int peek1 = buffer.peekc();
+      char peek1 = buffer.peekc();
       boolean isIdentifierTail = isLetter(peek1) || isDec(peek1);
       if (!isIdentifierTail) {
         break;
@@ -304,11 +281,13 @@ public class Stream {
 
   }
 
-  private Token getString(int c) {
+  private Token getString() {
 
-    int endof = (c == '\"' ? '\"' : '\'');
-    T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
-    StringBuilder strbuf = new StringBuilder();
+    char c = buffer.nextc();
+
+    final char endof = (c == '\"' ? '\"' : '\'');
+    final T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
+    final StringBuilder strbuf = new StringBuilder();
 
     for (;;) {
       int next1 = buffer.nextc();
@@ -350,12 +329,12 @@ public class Stream {
 
     setPos(token);
     token.setType(typeoftok);
-    token.setValue((char) endof + strbuf.toString() + (char) endof);
+    token.setValue(endof + strbuf.toString() + endof);
     return token;
 
   }
 
-  public Token getPpNum(int c) {
+  public Token getPpNum() {
 
     /*
      * pp-number:
@@ -369,7 +348,6 @@ public class Stream {
      */
 
     StringBuilder strbuf = new StringBuilder();
-    strbuf.append((char) c);
 
     for (;;) {
       int peekc = buffer.peekc();

@@ -2,17 +2,13 @@ package tokenize;
 
 import static tokenize.Env.HC_FEOF;
 
-import java.util.Formatter;
-
-import errors.ScanExc;
-
 public class CBuf {
   private final char buffer[];
   private final int size;
   private int offset;
   private int line;
   private int column;
-  private int prevc;
+  private char prevc;
   private int eofs;
 
   public CBuf(String b) {
@@ -29,16 +25,16 @@ public class CBuf {
     eofs = -1;
   }
 
-  public int peekc() {
+  public char peekc() {
 
     // don't be too smart ;)
     int save_offset = offset;
     int save_line = line;
     int save_column = column;
-    int save_prevc = prevc;
+    char save_prevc = prevc;
     int save_eofs = eofs;
 
-    int c = nextc();
+    char c = nextc();
 
     offset = save_offset;
     line = save_line;
@@ -49,17 +45,20 @@ public class CBuf {
     return c;
   }
 
-  public int peekc2() {
+  public char[] peekc3() {
+
+    char[] res = new char[3];
 
     // don't be too smart ;)
     int save_offset = offset;
     int save_line = line;
     int save_column = column;
-    int save_prevc = prevc;
+    char save_prevc = prevc;
     int save_eofs = eofs;
 
-    int c = nextc();
-    c = nextc();
+    res[0] = nextc();
+    res[1] = nextc();
+    res[2] = nextc();
 
     offset = save_offset;
     line = save_line;
@@ -67,17 +66,17 @@ public class CBuf {
     prevc = save_prevc;
     eofs = save_eofs;
 
-    return c;
+    return res;
   }
 
-  public int nextc() {
+  public char nextc() {
 
     // when you build buffer, allocate more space to avoid IOOB check
     // for example: source = { '1', '2', '3', '\0' }, buffer = { '1', '2', '3', '\0', '\0', '\0', '\0', '\0' }
 
     for (;;) {
 
-      if (eofs > 0) {
+      if (eofs > 8) {
         throw new RuntimeException("Infinite loop handling...");
       }
 
@@ -125,7 +124,7 @@ public class CBuf {
         return HC_FEOF; // '\0';
       }
 
-      int next = buffer[offset++];
+      char next = buffer[offset++];
       column++;
       prevc = next;
 
@@ -140,89 +139,19 @@ public class CBuf {
 
   @Override
   public String toString() {
-
-    StringBuilder sb = new StringBuilder();
-    Formatter fm = new Formatter(sb);
-    fm.format("[offset=%5d, line=%5d, column=%2d]", offset, line, column);
-
-    return sb.toString();
+    return String.format("[offset=%d, line=%d, column=%d]", offset, line, column);
   }
 
   public int getLine() {
     return line;
   }
 
-  public void setLine(int line) {
-    this.line = line;
-  }
-
   public int getColumn() {
     return column;
   }
 
-  public void setColumn(int column) {
-    this.column = column;
-  }
-
   public int getPrevc() {
     return prevc;
-  }
-
-  public void shiftOffset(int npos) {
-    if (npos < 0 || npos >= size) {
-      throw new ScanExc("Incorrect offset...");
-    }
-    offset = npos;
-  }
-
-  // new test research
-  // see TestBuf.java
-
-  private boolean nextis_internal(String what) {
-
-    final int srclen = what.length();
-    final int bound = Integer.min(srclen, size);
-
-    for (int i = 0; i < bound; i++) {
-      char expect = what.charAt(i);
-      char actual = (char) nextc();
-      if (expect != actual) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  public boolean nextis(String what) {
-    // don't be too smart ;)
-    int save_offset = offset;
-    int save_line = line;
-    int save_column = column;
-    int save_prevc = prevc;
-    int save_eofs = eofs;
-
-    boolean result = nextis_internal(what);
-
-    offset = save_offset;
-    line = save_line;
-    column = save_column;
-    prevc = save_prevc;
-    eofs = save_eofs;
-
-    return result;
-  }
-
-  public String nexts(int howMuch) {
-    if (howMuch < 0 || howMuch >= size) {
-      throw new ScanExc("overflow nexts: you want " + howMuch + " but buffer.size=" + size);
-    }
-
-    StringBuilder sb = new StringBuilder();
-    while (--howMuch >= 0) {
-      sb.append((char) nextc());
-    }
-    return sb.toString();
   }
 
 }

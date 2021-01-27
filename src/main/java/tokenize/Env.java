@@ -2,7 +2,7 @@ package tokenize;
 
 public class Env {
 
-  public static final int HC_FEOF = -1;
+  public static final char HC_FEOF = '\0';
   public static final Token EOF_TOKEN_ENTRY = new Token(true);
 
   public static boolean isLetter(int c) {
