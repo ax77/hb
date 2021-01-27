@@ -9,6 +9,7 @@ import ast_modifiers.Modifiers;
 import ast_sourceloc.SourceLocation;
 import ast_symtab.IdentMap;
 import ast_types.Type;
+import ast_vars.VarArrayInitializer;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import ast_vars.VarInitializer;
@@ -48,19 +49,19 @@ public class ParseVarDeclarator {
       if (type.is_array()) {
 
         if (parser.is(IdentMap.new_ident)) {
-          var.setInitializer(parseInitializer());
+          var.setSimpleInitializer(parseInitializer());
         }
 
         else {
           List<VarInitializer> inits = new ArrayList<>();
           readInitializerListInternal(inits, type, 0);
-          var.setInitializer(inits);
+          var.setArrayInitializer(new VarArrayInitializer(inits));
         }
 
       }
 
       else {
-        var.setInitializer(parseInitializer());
+        var.setSimpleInitializer(parseInitializer());
       }
 
     }
@@ -158,11 +159,8 @@ public class ParseVarDeclarator {
     }
   }
 
-  private List<VarInitializer> parseInitializer() {
-    ExprExpression init = new ParseExpression(parser).e_assign();
-    List<VarInitializer> inits = new ArrayList<>();
-    inits.add(new VarInitializer(init, 0));
-    return inits;
+  private ExprExpression parseInitializer() {
+    return new ParseExpression(parser).e_assign();
   }
 
 }

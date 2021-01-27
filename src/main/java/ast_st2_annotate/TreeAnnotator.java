@@ -5,6 +5,7 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprArrayAccess;
+import ast_expr.ExprArrayCreation;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprClassCreation;
@@ -110,7 +111,7 @@ public class TreeAnnotator {
         symtabApplier.initVarZero(var);
         symtabApplier.defineMethodVariable(method, var);
 
-        initVarInitializer(var, var.getInitializer());
+        applyInitializer(object, var);
       }
 
       applyStatement(object, method, block.getStatement());
@@ -119,13 +120,16 @@ public class TreeAnnotator {
     symtabApplier.closeMethodScope();
   }
 
-  private void initVarInitializer(VarDeclarator var, List<VarInitializer> initializer) {
-
-    if (initializer == null) {
+  private void applyInitializer(final ClassDeclaration object, VarDeclarator var) {
+    if (var.isArrayInitializer()) {
+      throw new AstParseException("unimpl. array-inits.");
+    }
+    ExprExpression init = var.getSimpleInitializer();
+    if (init == null) {
+      // TODO: set default init for the type of the value of var
       return;
     }
-
-    // TODO Auto-generated method stub
+    applyExpression(object, init);
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -268,6 +272,9 @@ public class TreeAnnotator {
       e.setResultType(TypeBindings.make_u8());
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean()); // TODO: ?
+    } else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
+      ExprArrayCreation arrayCreation = e.getArrayCreation();
+      e.setResultType(arrayCreation.getType()); // TODO
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
@@ -369,9 +376,7 @@ public class TreeAnnotator {
     final VarDeclarator variable = sym.getVariable();
     e.setResultType(variable.getType());
 
-    if (variable.getInitializer() != null) {
-      //applyExpression(object, variable.getInitializer().getInitializer());
-    }
+    applyInitializer(object, variable);
 
     // remember var
     primaryIdent.setVariable(variable);

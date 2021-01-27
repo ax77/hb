@@ -21,7 +21,6 @@ import ast_stmt.Stmt_for;
 import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
-import ast_vars.VarInitializer;
 import hashed.Hash_ident;
 import tokenize.Ident;
 import tokenize.T;
@@ -119,10 +118,8 @@ public class ForLoopRewriter {
     final SourceLocation loc = new SourceLocation(beginPos);
     final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), elemType, declIdent, loc);
 
-    final List<VarInitializer> inits = new ArrayList<>();
-    inits.add(new VarInitializer(call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName, beginPos), 0));
-
-    itemVar.setInitializer(inits);
+    final ExprExpression efcall = call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName, beginPos);
+    itemVar.setSimpleInitializer(efcall);
     return itemVar;
 
   }
@@ -134,10 +131,7 @@ public class ForLoopRewriter {
         iteratorVarName, new SourceLocation(beginPos));
     final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName, beginPos);
 
-    final List<VarInitializer> inits = new ArrayList<>();
-    inits.add(new VarInitializer(iteratorVarInitializer, 0));
-
-    iteratorVar.setInitializer(inits);
+    iteratorVar.setSimpleInitializer(iteratorVarInitializer);
     return iteratorVar;
 
   }
