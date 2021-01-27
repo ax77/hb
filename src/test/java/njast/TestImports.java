@@ -4,7 +4,9 @@ import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
+import ast_types.TypeBindings;
 import ast_unit.InstantiationUnit;
+import literals.IntLiteral;
 import utils.UtilSrcToStringLevel;
 
 public class TestImports {
@@ -32,7 +34,7 @@ public class TestImports {
     }
 
   }
-  
+
   @Test
   public void testArray() throws Exception {
 
@@ -40,7 +42,7 @@ public class TestImports {
 
     InstantiationUnit result = new ParserMain(thisFname).parseInstantiationUnit();
     for (ClassDeclaration clazz : result.getClasses()) {
-       System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
+      System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
     }
 
   }

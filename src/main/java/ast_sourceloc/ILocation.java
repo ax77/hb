@@ -1,7 +1,11 @@
 package ast_sourceloc;
 
-public interface ILocation {
-  public SourceLocation getLocation();
+import tokenize.Token;
 
-  public String getLocationToString();
+public interface ILocation {
+  SourceLocation getLocation();
+
+  String getLocationToString();
+
+  Token getBeginPos();
 }

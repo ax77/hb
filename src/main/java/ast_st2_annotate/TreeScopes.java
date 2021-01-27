@@ -109,9 +109,8 @@ public class TreeScopes {
   // SYMTAB
 
   public void defineFunctionParameter(ClassMethodDeclaration method, MethodParameter param) {
-    final SourceLocation loc = method.getLocation();
     final Modifiers mod = Mods.letModifiers();
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(), loc);
+    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(), method.getBeginPos());
 
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);

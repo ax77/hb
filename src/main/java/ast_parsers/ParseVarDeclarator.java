@@ -6,7 +6,6 @@ import java.util.List;
 import ast_checkers.TypeRecognizer;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_sourceloc.SourceLocation;
 import ast_symtab.IdentMap;
 import ast_types.Type;
 import ast_vars.VarArrayInitializer;
@@ -37,11 +36,10 @@ public class ParseVarDeclarator {
 
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = tok.getIdent();
-    final SourceLocation location = new SourceLocation(tok);
 
     final Token colon = parser.colon();
     final Type type = new TypeRecognizer(parser).getType();
-    final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, location);
+    final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, tok);
 
     if (parser.is(T.T_ASSIGN)) {
       Token assignTok = parser.moveget();

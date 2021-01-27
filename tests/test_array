@@ -4,5 +4,8 @@ class test_array {
 		var x: u64 = array.length;
 		var z: boolean = true;
 		var y: boolean = false;
+		var xxx: i32;
+		var yyy: u8;
+		var zzz: f32;
 	}
 }

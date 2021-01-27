@@ -14,6 +14,7 @@ import ast_stmt.StmtBlock;
 import ast_symtab.IdentMap;
 import ast_types.Type;
 import tokenize.Ident;
+import tokenize.Token;
 import utils_oth.NullChecker;
 
 public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocation, IUniqueId {
@@ -28,6 +29,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   // func: clazz, header, parameters, body
 
   private final ClassMethodBase base;
+  private final Token beginPos;
   private final ClassDeclaration clazz;
   private final MethodSignature signature;
   private /*final*/ Type returnType;
@@ -37,31 +39,33 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
   // function/init
   public ClassMethodDeclaration(ClassMethodBase base, ClassDeclaration clazz, MethodSignature signature,
-      Type returnType, StmtBlock block, SourceLocation location) {
+      Type returnType, StmtBlock block, Token beginPos) {
 
-    NullChecker.check(clazz, signature, block, location);
+    NullChecker.check(clazz, signature, block, beginPos);
 
     this.base = base;
     this.clazz = clazz;
     this.signature = signature;
     this.returnType = returnType;
     this.block = block;
-    this.location = location;
+    this.beginPos = beginPos;
+    this.location = new SourceLocation(beginPos);
     this.uniqueId = UniqueCounter.getUniqueId();
 
   }
 
   // deinit
-  public ClassMethodDeclaration(ClassDeclaration clazz, StmtBlock block, SourceLocation location) {
+  public ClassMethodDeclaration(ClassDeclaration clazz, StmtBlock block, Token beginPos) {
 
-    NullChecker.check(clazz, block, location);
+    NullChecker.check(clazz, block, beginPos);
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
     this.clazz = clazz;
     this.signature = new MethodSignature(IdentMap.deinit_ident, new ArrayList<>());
     this.returnType = new Type();
     this.block = block;
-    this.location = location;
+    this.beginPos = beginPos;
+    this.location = new SourceLocation(beginPos);
     this.uniqueId = UniqueCounter.getUniqueId();
   }
 
@@ -159,6 +163,10 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   @Override
   public int getUniqueId() {
     return uniqueId;
+  }
+
+  public Token getBeginPos() {
+    return beginPos;
   }
 
 }

@@ -115,8 +115,8 @@ public class ForLoopRewriter {
   private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName,
       Token beginPos) {
 
-    final SourceLocation loc = new SourceLocation(beginPos);
-    final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), elemType, declIdent, loc);
+    final VarDeclarator itemVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.varModifiers(), elemType, declIdent,
+        beginPos);
 
     final ExprExpression efcall = call(ITERATOR_GET_CURRENT_METHOD_NAME, iteratorVarName, beginPos);
     itemVar.setSimpleInitializer(efcall);
@@ -128,7 +128,7 @@ public class ForLoopRewriter {
       final Ident iteratorVarName, Token beginPos) {
 
     final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.letModifiers(), iteratorType,
-        iteratorVarName, new SourceLocation(beginPos));
+        iteratorVarName, beginPos);
     final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName, beginPos);
 
     iteratorVar.setSimpleInitializer(iteratorVarInitializer);

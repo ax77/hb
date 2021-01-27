@@ -14,6 +14,7 @@ import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprUnary;
+import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
@@ -126,8 +127,11 @@ public class TreeAnnotator {
     }
     ExprExpression init = var.getSimpleInitializer();
     if (init == null) {
-      // TODO: set default init for the type of the value of var
-      return;
+      Type tp = var.getType();
+      if (tp.is_numeric()) {
+        ExprExpression defaultInit = ExprUtil.getEmptyPrimitive(tp, var.getBeginPos());
+        var.setSimpleInitializer(defaultInit);
+      }
     }
     applyExpression(object, init);
   }

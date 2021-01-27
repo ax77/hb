@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ast_types.Type;
+import ast_types.TypeBindings;
+import literals.IntLiteral;
 import tokenize.T;
 import tokenize.Token;
 
@@ -108,6 +111,63 @@ public abstract class ExprUtil {
       break;
     }
     return ntoken;
+  }
+
+  public static ExprExpression getEmptyPrimitive(Type tp, Token beginPos) {
+    //@formatter:off
+    if(tp.is_i8())  { return new ExprExpression(make_iconst_i8() , beginPos); }
+    if(tp.is_u8())  { return new ExprExpression(make_iconst_u8() , beginPos); }
+    if(tp.is_i16()) { return new ExprExpression(make_iconst_i16(), beginPos); }
+    if(tp.is_u16()) { return new ExprExpression(make_iconst_u16(), beginPos); }
+    if(tp.is_i32()) { return new ExprExpression(make_iconst_i32(), beginPos); }
+    if(tp.is_u32()) { return new ExprExpression(make_iconst_u32(), beginPos); }
+    if(tp.is_i64()) { return new ExprExpression(make_iconst_i64(), beginPos); }
+    if(tp.is_u64()) { return new ExprExpression(make_iconst_u64(), beginPos); }
+    if(tp.is_f32()) { return new ExprExpression(make_iconst_f32(), beginPos); }
+    if(tp.is_f64()) { return new ExprExpression(make_iconst_f64(), beginPos); }
+    return null;
+    //@formatter:on
+  }
+
+  // empty constants for each primitive type
+  public static IntLiteral make_iconst_i8() {
+    return new IntLiteral("0_i8", TypeBindings.make_i8(), 0);
+  }
+
+  public static IntLiteral make_iconst_u8() {
+    return new IntLiteral("0_u8", TypeBindings.make_u8(), 0);
+  }
+
+  public static IntLiteral make_iconst_i16() {
+    return new IntLiteral("0_i16", TypeBindings.make_i16(), 0);
+  }
+
+  public static IntLiteral make_iconst_u16() {
+    return new IntLiteral("0_u16", TypeBindings.make_u16(), 0);
+  }
+
+  public static IntLiteral make_iconst_i32() {
+    return new IntLiteral("0_i32", TypeBindings.make_i32(), 0);
+  }
+
+  public static IntLiteral make_iconst_u32() {
+    return new IntLiteral("0_u32", TypeBindings.make_u32(), 0);
+  }
+
+  public static IntLiteral make_iconst_i64() {
+    return new IntLiteral("0_i64", TypeBindings.make_i64(), 0);
+  }
+
+  public static IntLiteral make_iconst_u64() {
+    return new IntLiteral("0_u64", TypeBindings.make_u64(), 0);
+  }
+
+  public static IntLiteral make_iconst_f32() {
+    return new IntLiteral("0_f32", TypeBindings.make_f32(), 0);
+  }
+
+  public static IntLiteral make_iconst_f64() {
+    return new IntLiteral("0_f64", TypeBindings.make_f64(), 0);
   }
 
 }

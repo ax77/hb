@@ -17,6 +17,7 @@ import java.util.Map;
 
 import ast_symtab.IdentMap;
 import errors.AstParseException;
+import literals.IntLiteral;
 import tokenize.Ident;
 
 public abstract class TypeBindings {

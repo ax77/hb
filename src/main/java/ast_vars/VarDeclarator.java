@@ -10,11 +10,13 @@ import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import tokenize.Ident;
+import tokenize.Token;
 
 public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private static final long serialVersionUID = -364976996504280849L;
 
   private final VarBase base;
+  private final Token beginPos;
   private final Modifiers modifiers;
   private /*final*/ Type type;
   private final Ident identifier;
@@ -23,12 +25,14 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private final SourceLocation location;
   private ClassDeclaration clazz; // is it is a field
 
-  public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, SourceLocation location) {
+  public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, Token beginPos) {
     this.base = base;
     this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
-    this.location = location;
+
+    this.beginPos = beginPos;
+    this.location = new SourceLocation(beginPos);
   }
 
   @Override
@@ -90,6 +94,10 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
 
   public VarBase getBase() {
     return base;
+  }
+
+  public Token getBeginPos() {
+    return beginPos;
   }
 
   @Override
