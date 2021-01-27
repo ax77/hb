@@ -2,5 +2,7 @@ class test_array {
 	func fn() {
 		var array: [i32] = new [2: i32];
 		array.length;
+		true;
+		false;
 	}
 }

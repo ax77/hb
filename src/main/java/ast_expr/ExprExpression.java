@@ -30,6 +30,14 @@ public class ExprExpression implements Serializable, ILocation {
   private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
   private ExprArrayAccess arrayAccess;
+  private boolean booleanLiteral;
+
+  public ExprExpression(boolean value, Token beginPos) {
+    this.base = ExpressionBase.EBOOLEAN_LITERAL;
+    this.location = new SourceLocation(beginPos);
+    this.beginPos = beginPos;
+    this.booleanLiteral = value;
+  }
 
   public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
     this.base = ExpressionBase.EARRAY_ACCESS;
@@ -181,6 +189,10 @@ public class ExprExpression implements Serializable, ILocation {
     return base.equals(what);
   }
 
+  public boolean getBooleanLiteral() {
+    return booleanLiteral;
+  }
+
   @Override
   public String toString() {
     if (base == ExpressionBase.EBINARY) {
@@ -224,6 +236,12 @@ public class ExprExpression implements Serializable, ILocation {
     }
     if (base == ExpressionBase.ECHAR_CONST) {
       return beginPos.getValue(); // because of the bootstrap: '\0' etc...
+    }
+    if (base == ExpressionBase.EBOOLEAN_LITERAL) {
+      if (booleanLiteral) {
+        return "true";
+      }
+      return "false";
     }
     return base.toString();
   }

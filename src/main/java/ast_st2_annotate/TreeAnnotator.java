@@ -266,6 +266,8 @@ public class TreeAnnotator {
       applyArrayAccess(object, e);
     } else if (e.is(ExpressionBase.ECHAR_CONST)) {
       e.setResultType(TypeBindings.make_u8());
+    } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
+      e.setResultType(TypeBindings.make_boolean()); // TODO: ?
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }

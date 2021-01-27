@@ -529,6 +529,16 @@ public class ParseExpression {
       return thisexpr;
     }
 
+    if (parser.is(IdentMap.true_ident)) {
+      Token saved = parser.moveget();
+      return new ExprExpression(true, saved);
+    }
+
+    if (parser.is(IdentMap.false_ident)) {
+      Token saved = parser.moveget();
+      return new ExprExpression(false, saved);
+    }
+
     if (parser.is(IdentMap.null_ident)) {
       Token saved = parser.moveget();
       ExprExpression nullexpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, saved);

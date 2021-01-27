@@ -28,13 +28,16 @@ public final class IdentMap {
   public static final Ident interface_ident      = g("interface");
   public static final Ident native_ident         = g("native");
   public static final Ident new_ident            = g("new");
-  public static final Ident null_ident           = g("null");
   public static final Ident package_ident        = g("package");
   public static final Ident private_ident        = g("private");
   public static final Ident public_ident         = g("public");
   public static final Ident return_ident         = g("return");
   public static final Ident static_ident         = g("static");
   public static final Ident while_ident          = g("while");
+  // literals
+  public static final Ident null_ident           = g("null");
+  public static final Ident true_ident           = g("true");
+  public static final Ident false_ident          = g("false");
   // new syntax:
   public static final Ident var_ident            = g("var");
   public static final Ident let_ident            = g("let");

@@ -18,4 +18,5 @@ public enum ExpressionBase {
  , ESTRING_CONST
  , EARRAY_ACCESS
  , ECHAR_CONST
+ , EBOOLEAN_LITERAL
 }
