@@ -123,7 +123,13 @@ public class TreeAnnotator {
     if (var.isArrayInitializer()) {
       throw new AstParseException("unimpl. array-inits.");
     }
-    final ExprExpression init = var.getSimpleInitializer();
+
+    ExprExpression init = var.getSimpleInitializer();
+
+    // initialize variable with its default value:
+    // null for arrays and classes
+    // zero for primitives
+    // false for boolean
     if (init == null) {
       final Type tp = var.getType();
       final Token beginPos = var.getBeginPos();
@@ -138,6 +144,19 @@ public class TreeAnnotator {
         var.setSimpleInitializer(falseExpr);
       }
     }
+
+    init = var.getSimpleInitializer();
+    if (init == null) {
+      throw new AstParseException("unexpected, init must be present");
+    }
+
+    //MIR:TREE
+    if (init.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
+      init.getArrayCreation().setVar(var);
+    } else if (init.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+      init.getClassCreation().setVar(var);
+    }
+
     applyExpression(object, init);
   }
 
@@ -281,12 +300,28 @@ public class TreeAnnotator {
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean()); // TODO: ?
     } else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
-      ExprArrayCreation arrayCreation = e.getArrayCreation();
-      e.setResultType(arrayCreation.getType()); // TODO
+      applyArrayCreation(e);
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void checkArraySize(ArrayType array, ExprExpression e) {
+    if (array.getCount() == 0) {
+      ErrorLocation.errorExpression("array-creation with zero-size", e);
+    }
+    if (array.getArrayOf().is_array()) {
+      checkArraySize(array.getArrayOf().getArrayType(), e);
+    }
+  }
+
+  private void applyArrayCreation(ExprExpression e) {
+    final ExprArrayCreation arrayCreation = e.getArrayCreation();
+    final Type type = arrayCreation.getType();
+    final ArrayType array = type.getArrayType();
+    checkArraySize(array, e);
+    e.setResultType(type);
   }
 
   public void applyNumericLiteral(ExprExpression e) {
@@ -386,7 +421,7 @@ public class TreeAnnotator {
 
     applyInitializer(object, variable);
 
-    // remember var
+    //MIR:TREE
     primaryIdent.setVariable(variable);
 
   }
@@ -435,7 +470,7 @@ public class TreeAnnotator {
 
       e.setResultType(field.getType());
 
-      // remember field
+      //MIR:TREE
       fieldAccess.setField(field);
     }
 
@@ -469,7 +504,7 @@ public class TreeAnnotator {
 
     e.setResultType(method.getType());
 
-    // remember method
+    //MIR:TREE
     methodInvocation.setMethod(method);
 
   }

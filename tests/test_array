@@ -1,6 +1,6 @@
 class test_array {
 	func fn() {
-		var array: [i32] = new [2: i32];
+		var array: [[i32]] = new [2: [2: i32]];
 		var x: u64 = array.length;
 		var z: boolean = true;
 		var y: boolean = false;

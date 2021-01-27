@@ -492,11 +492,11 @@ public class ParseExpression {
       }
     }
 
-    // new ClassName(x, y, z)
+    // new ClassName<i32>(x, y, z) 
     if (parser.is(IdentMap.new_ident)) {
       Token saved = parser.moveget();
 
-      // new [2:int] ;
+      // new [2:int] 
       if (parser.is(T.T_LEFT_BRACKET)) {
         final Type arrayCreator = new TypeRecognizer(parser).getType();
         final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
