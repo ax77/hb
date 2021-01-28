@@ -108,37 +108,30 @@ public class Stream {
     tokenlist = new ArrayList<Token>();
     buffer = new CBuf(_txt);
 
-    EOL_TOKEN = new Token();
+    EOL_TOKEN = new Token("\\n", T.TOKEN_ERROR, builtinZeroLocation());
     EOL_TOKEN.setNewLine(true);
-    EOL_TOKEN.setValue("\\n");
 
-    WSP_TOKEN = new Token();
+    WSP_TOKEN = new Token(" ", T.TOKEN_ERROR, builtinZeroLocation());
     WSP_TOKEN.setLeadingWhitespace(true);
-    WSP_TOKEN.setValue(" ");
 
     tokenize();
     buffer = null; // forget
   }
 
-  private Token specialToken(T _type, String _value) {
-    Token token = new Token();
-    token.set(_type, _value);
-
-    setPos(token);
-    return token;
+  private SourceLocation builtinZeroLocation() {
+    return new SourceLocation(filename, 0, 0);
   }
 
-  private Token identToken(Ident _ident) {
-    Token token = new Token();
-    token.setIdent(_ident);
-
-    setPos(token);
-    return token;
+  private Token specialToken(T type, String value) {
+    return new Token(value, type, curLoc());
   }
 
-  private void setPos(Token token) {
-    final int column = buffer.getColumn() - token.getValue().length();
-    token.setLocation(new SourceLocation(filename, buffer.getLine(), column));
+  private Token identToken(Ident ident) {
+    return new Token(ident, curLoc());
+  }
+
+  private SourceLocation curLoc() {
+    return new SourceLocation(filename, buffer.getLine(), -1);
   }
 
   private void move() {
@@ -296,7 +289,6 @@ public class Stream {
     char c = buffer.nextc();
 
     final char endof = (c == '\"' ? '\"' : '\'');
-    final T typeoftok = (c == '\'') ? T.TOKEN_CHAR : T.TOKEN_STRING;
     final StringBuilder strbuf = new StringBuilder();
 
     for (;;) {
@@ -320,27 +312,22 @@ public class Stream {
     }
 
     // TODO:
-    int escaped[] = new CEscaper(new CBuf(strbuf.toString())).escape();
-    Token token = new Token();
+    final String repr = endof + strbuf.toString() + endof;
+    final int escaped[] = new CEscaper(new CBuf(strbuf.toString())).escape();
 
     if (endof == '\"') {
-      token.setStrconst(escaped);
+      return new Token(escaped, repr, curLoc());
     }
 
-    else {
-      if (escaped.length == 0) {
-        throw new ScanExc("" + " error : empty char constant");
-      }
-      if (escaped.length > 2) {
-        //throw new ScanExc(startLocation + " error : too long char constant"); // TODO: WC
-      }
-      token.setCharconst(escaped[0]);
+    // chars
+
+    if (escaped.length == 0) {
+      throw new ScanExc("" + " error : empty char constant");
+    }
+    if (escaped.length > 2) {
     }
 
-    setPos(token);
-    token.setType(typeoftok);
-    token.setValue(endof + strbuf.toString() + endof);
-    return token;
+    return new Token((char) escaped[0], curLoc());
 
   }
 
@@ -381,12 +368,9 @@ public class Stream {
     }
 
     final String numstr = strbuf.toString();
-    IntLiteral intLiteral = new ParseIntLiteral(numstr).parse();
+    final IntLiteral intLiteral = new ParseIntLiteral(numstr).parse();
 
-    final Token specialToken = specialToken(T.TOKEN_NUMBER, numstr);
-    specialToken.setNumconst(intLiteral);
-
-    return specialToken;
+    return new Token(intLiteral, curLoc());
   }
 
   public List<Token> getTokenlist() {
@@ -394,18 +378,12 @@ public class Stream {
   }
 
   private void markbegin() {
-    Token t = new Token();
-    t.setType(T.TOKEN_STREAMBEGIN);
-    t.setLocation(new SourceLocation(filename, 0, 0)); // TODO:real pos
-    t.setValue("");
+    Token t = new Token("", T.TOKEN_STREAMBEGIN, builtinZeroLocation());
     tokenlist.add(t);
   }
 
   private void markend() {
-    Token t = new Token();
-    t.setType(T.TOKEN_STREAMEND);
-    t.setLocation(new SourceLocation(filename, 0, 0)); // TODO:real pos
-    t.setValue("");
+    Token t = new Token("", T.TOKEN_STREAMEND, builtinZeroLocation());
     tokenlist.add(t);
   }
 

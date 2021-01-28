@@ -8,114 +8,146 @@ import java.io.Serializable;
 
 import ast_sourceloc.SourceLocation;
 import literals.IntLiteral;
+import utils_oth.NullChecker;
 
 public class Token implements Serializable {
   private static final long serialVersionUID = -6400923302892741933L;
 
+  // base
   private int fposition;
-  private T type;
+  private final String value;
+  private final T type;
+  private final SourceLocation location;
+  // literals
   private Ident ident;
-  private String value;
-  private SourceLocation location;
-
-  private int charconst;
+  private char charconst;
   private int[] strconst;
   private IntLiteral numconst;
 
-  private void fillProperyValues(Token other) {
-
-    // XXX: very important fill __ALL__ properties...
-    // don't be so smart here...
+  // simple copy constructor
+  public Token(Token other) {
+    NullChecker.check(other.location);
 
     this.fposition = other.fposition;
-    this.type = other.type;
-    this.ident = other.ident;
     this.value = other.value;
+    this.type = other.type;
     this.location = other.location;
+    this.ident = other.ident;
     this.charconst = other.charconst;
     this.strconst = other.strconst;
     this.numconst = other.numconst;
   }
 
+  // copy constructor with specified value/type
+  public Token(Token other, String value, T type) {
+    NullChecker.check(other.location);
+
+    this.fposition = other.fposition;
+    this.value = value;
+    this.type = type;
+    this.location = other.location;
+    this.ident = other.ident;
+    this.charconst = other.charconst;
+    this.strconst = other.strconst;
+    this.numconst = other.numconst;
+  }
+
+  // whitespace, newline stubs
+  public Token(String value, T type, SourceLocation location) {
+    NullChecker.check(location);
+
+    this.value = value;
+    this.type = type;
+    this.location = location;
+  }
+
+  // eof
   public Token() {
-    setDefaults();
+    this.value = "";
+    this.type = T.TOKEN_EOF;
+    this.location = unspecifiedLocation();
   }
 
-  public Token(Token src) {
-    fillProperyValues(src);
+  // ident
+  public Token(Ident ident, SourceLocation location) {
+    NullChecker.check(location);
+
+    this.type = T.TOKEN_IDENT;
+    this.value = ident.getName();
+    this.location = location;
+    this.ident = ident;
   }
 
-  public Token(boolean eof) {
-    setDefaults();
-    type = T.TOKEN_EOF;
+  // char
+  public Token(char charconst, SourceLocation location) {
+    NullChecker.check(location);
+
+    this.type = T.TOKEN_CHAR;
+    this.value = String.format("%c", charconst);
+    this.charconst = charconst;
+    this.location = location;
   }
 
-  private void setDefaults() {
-    value = "";
-    type = T.TOKEN_ERROR;
+  // string
+  public Token(int[] strconst, String repr, SourceLocation location) {
+    NullChecker.check(location);
+
+    this.type = T.TOKEN_STRING;
+    this.value = repr;
+    this.strconst = strconst;
+    this.location = location;
   }
 
-  // source - location routine
+  // numerics
+  public Token(IntLiteral numconst, SourceLocation location) {
+    NullChecker.check(location);
+
+    this.type = T.TOKEN_NUMBER;
+    this.value = numconst.getInput();
+    this.numconst = numconst;
+    this.location = location;
+  }
+
+  // literals
   //
 
   public IntLiteral getNumconst() {
     return numconst;
   }
 
-  public void setNumconst(IntLiteral numconst) {
-    this.numconst = numconst;
-  }
-
   public int getCharconst() {
     return charconst;
-  }
-
-  public void setCharconst(int charconst) {
-    this.charconst = charconst;
   }
 
   public int[] getStrconst() {
     return strconst;
   }
 
-  public void setStrconst(int[] strconst) {
-    this.strconst = strconst;
+  // source - location routine
+  //
+
+  private SourceLocation unspecifiedLocation() {
+    return new SourceLocation("unspecified", -1, -1);
   }
 
   public String loc() {
-    if (location == null) {
-      return "<unspec. source-location>"; // TODO:why, and when???
-    }
-    return location.getFilename() + ":" + location.getLine() + ":" + location.getColumn() + ": ";
+    return location.toString();
   }
 
   public String getFilename() {
-    if (location == null) {
-      return "<unspec. source-location>"; // TODO:why, and when???
-    }
     return location.getFilename();
   }
 
-  public int getRow() {
-    if (location == null) {
-      return -1; // TODO:why, and when???
-    }
+  public int getLine() {
     return location.getLine();
   }
 
   public int getColumn() {
-    if (location == null) {
-      return -1; // TODO:why, and when???
-    }
     return location.getColumn();
   }
 
   public SourceLocation getLocation() {
     return location;
-  }
-
-  public void setLocation(SourceLocation location) {
-    this.location = location;
   }
 
   public boolean ofType(T _type) {
@@ -169,31 +201,12 @@ public class Token implements Serializable {
     return type;
   }
 
-  public void setType(T type) {
-    this.type = type;
-  }
-
   public Ident getIdent() {
     return ident;
   }
 
-  public void setIdent(Ident ident) {
-    type = T.TOKEN_IDENT;
-    value = ident.getName();
-    this.ident = ident;
-  }
-
   public String getValue() {
     return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-  public void set(T _type, String _value) {
-    type = _type;
-    value = _value;
   }
 
   @Override

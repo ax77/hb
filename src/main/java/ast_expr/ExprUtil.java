@@ -27,6 +27,7 @@ import java.util.Map;
 
 import ast_types.Type;
 import ast_types.TypeBindings;
+import errors.AstParseException;
 import literals.IntLiteral;
 import tokenize.T;
 import tokenize.Token;
@@ -34,11 +35,7 @@ import tokenize.Token;
 public abstract class ExprUtil {
 
   public static Token copyTokenAddNewType(Token from, T newtype, String newvalue) {
-
-    Token ntoken = new Token(from);
-    ntoken.setType(newtype);
-    ntoken.setValue(newvalue);
-    return ntoken;
+    return new Token(from, newvalue, newtype);
   }
 
   public static Token assignOperator(Token from) {
@@ -59,58 +56,44 @@ public abstract class ExprUtil {
     return sb.toString();
   }
 
-  private static Map<T, T> asopmap = new HashMap<T, T>();
+  //@formatter:off
+  private static Map<T, T> asopmap = new HashMap<>();
   static {
-    asopmap.put(T_TIMES_EQUAL, T_TIMES);
-    asopmap.put(T_PERCENT_EQUAL, T_PERCENT);
-    asopmap.put(T_DIVIDE_EQUAL, T_DIVIDE);
-    asopmap.put(T_PLUS_EQUAL, T_PLUS);
-    asopmap.put(T_MINUS_EQUAL, T_MINUS);
-    asopmap.put(T_LSHIFT_EQUAL, T_LSHIFT);
-    asopmap.put(T_RSHIFT_EQUAL, T_RSHIFT);
-    asopmap.put(T_AND_EQUAL, T_AND);
-    asopmap.put(T_XOR_EQUAL, T_XOR);
-    asopmap.put(T_OR_EQUAL, T_OR);
+    asopmap.put(T_TIMES_EQUAL    , T_TIMES);
+    asopmap.put(T_PERCENT_EQUAL  , T_PERCENT);
+    asopmap.put(T_DIVIDE_EQUAL   , T_DIVIDE);
+    asopmap.put(T_PLUS_EQUAL     , T_PLUS);
+    asopmap.put(T_MINUS_EQUAL    , T_MINUS);
+    asopmap.put(T_LSHIFT_EQUAL   , T_LSHIFT);
+    asopmap.put(T_RSHIFT_EQUAL   , T_RSHIFT);
+    asopmap.put(T_AND_EQUAL      , T_AND);
+    asopmap.put(T_XOR_EQUAL      , T_XOR);
+    asopmap.put(T_OR_EQUAL       , T_OR);
   }
+  private static Map<T, String> ops = new HashMap<>();
+  static {
+    ops.put(T_TIMES_EQUAL   , "*");
+    ops.put(T_PERCENT_EQUAL , "%");
+    ops.put(T_DIVIDE_EQUAL  , "/");
+    ops.put(T_PLUS_EQUAL    , "+");
+    ops.put(T_MINUS_EQUAL   , "-");
+    ops.put(T_LSHIFT_EQUAL  , "<<");
+    ops.put(T_RSHIFT_EQUAL  , ">>");
+    ops.put(T_AND_EQUAL     , "&");
+    ops.put(T_XOR_EQUAL     , "^");
+    ops.put(T_OR_EQUAL      , "|");
+  }
+  //@formatter:on
 
+  // from '+=' we should build a '+' operator
+  //
   public static Token getOperatorFromCompAssign(Token from) {
-    Token ntoken = new Token(from);
-    ntoken.setType(asopmap.get(from.getType()));
-    switch (ntoken.getType()) {
-    case T_TIMES:
-      ntoken.setValue("*");
-      break;
-    case T_PERCENT:
-      ntoken.setValue("%");
-      break;
-    case T_DIVIDE:
-      ntoken.setValue("/");
-      break;
-    case T_PLUS:
-      ntoken.setValue("+");
-      break;
-    case T_MINUS:
-      ntoken.setValue("-");
-      break;
-    case T_LSHIFT:
-      ntoken.setValue("<<");
-      break;
-    case T_RSHIFT:
-      ntoken.setValue(">>");
-      break;
-    case T_AND:
-      ntoken.setValue("&");
-      break;
-    case T_XOR:
-      ntoken.setValue("^");
-      break;
-    case T_OR:
-      ntoken.setValue("|");
-      break;
-    default:
-      break;
+    final String value = ops.get(from.getType());
+    final T type = asopmap.get(from.getType());
+    if (value == null || type == null) {
+      throw new AstParseException("error assign operator: " + from.loc());
     }
-    return ntoken;
+    return new Token(from, value, type);
   }
 
   public static ExprExpression getEmptyPrimitive(Type tp, Token beginPos) {

@@ -14,7 +14,7 @@ public class SourceLocation implements Serializable {
 
   public SourceLocation(Token tok) {
     this.filename = Hash_strings.getHashedString(tok.getFilename());
-    this.line = tok.getRow();
+    this.line = tok.getLine();
     this.column = tok.getColumn();
   }
 

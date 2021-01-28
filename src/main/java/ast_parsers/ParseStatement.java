@@ -16,8 +16,8 @@ import ast_expr.ExprExpression;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.Stmt_for;
 import ast_stmt.StmtStatement;
+import ast_stmt.Stmt_for;
 import ast_stmt.Stmt_if;
 import ast_symtab.IdentMap;
 import ast_vars.VarBase;
@@ -100,13 +100,13 @@ public class ParseStatement {
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new StmtStatement(StatementBase.SRETURN, null);
+        return new StmtStatement(StatementBase.SRETURN, null, from);
       }
 
       ExprExpression expr = e_expression();
 
       parser.checkedMove(T_SEMI_COLON);
-      return new StmtStatement(StatementBase.SRETURN, expr);
+      return new StmtStatement(StatementBase.SRETURN, expr, from);
     }
 
     // for( ;; )
@@ -125,12 +125,12 @@ public class ParseStatement {
 
     if (parser.is(T.T_LEFT_BRACE)) {
       Token from = parser.tok();
-      return new StmtStatement(from, parseBlock(VarBase.LOCAL_VAR));
+      return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), from);
     }
 
     // expression-statement by default
     //
-    StmtStatement ret = new StmtStatement(StatementBase.SEXPR, e_expression());
+    StmtStatement ret = new StmtStatement(StatementBase.SEXPR, e_expression(), parser.tok());
     parser.semicolon();
     return ret;
   }
@@ -145,10 +145,10 @@ public class ParseStatement {
     if (parser.is(else_ident)) {
       Token elsekw = parser.checkedMove(else_ident);
       ifelse = parseBlock(VarBase.LOCAL_VAR);
-      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse), from);
     }
 
-    return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse));
+    return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse), from);
   }
 
   private StmtStatement parseForLoop() {
@@ -162,7 +162,7 @@ public class ParseStatement {
     Ident collection = parser.getIdent();
 
     StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
-    return new StmtStatement(new Stmt_for(iter, collection, loop, from));
+    return new StmtStatement(new Stmt_for(iter, collection, loop, from), from);
   }
 
 }

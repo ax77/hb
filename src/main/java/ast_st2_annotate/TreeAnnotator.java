@@ -229,7 +229,7 @@ public class TreeAnnotator {
       forloop.setDecl(null);
       forloop.setShortForm(false);
 
-      items.add(new StmtBlockItem(new StmtStatement(forloop)));
+      items.add(new StmtBlockItem(new StmtStatement(forloop, collection.getBeginPos())));
       StmtBlock block = new StmtBlock(items);
 
       statement.replaceForLoopWithBlock(block);

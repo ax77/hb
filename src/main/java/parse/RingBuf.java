@@ -44,7 +44,7 @@ public class RingBuf {
         }
 
         if (first) {
-          tmp.append(String.format("%-7d|", t.getRow()));
+          tmp.append(String.format("%-7d|", t.getLine()));
           tmp.append(pad());
           first = false;
         }

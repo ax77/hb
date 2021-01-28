@@ -16,14 +16,12 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprUtil;
 import ast_expr.FuncArg;
-import ast_sourceloc.SourceLocation;
 import ast_stmt.Stmt_for;
 import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import hashed.Hash_ident;
 import tokenize.Ident;
-import tokenize.T;
 import tokenize.Token;
 
 public class ForLoopRewriter {
@@ -87,7 +85,7 @@ public class ForLoopRewriter {
     final ExprExpression lhs = id(item, beginPos);
     final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName, beginPos);
 
-    final ExprAssign assign = new ExprAssign(getAssignTok(beginPos), lhs, rhs);
+    final ExprAssign assign = new ExprAssign(ExprUtil.assignOperator(beginPos), lhs, rhs);
     final ExprExpression stepExpression = new ExprExpression(assign, beginPos);
 
     forloop.setStep(stepExpression);
@@ -105,11 +103,6 @@ public class ForLoopRewriter {
   private static Ident createNameForIteratorItself() {
     final String nextCount = String.format("%d", var_counter++);
     return Hash_ident.getHashedIdent("__it" + nextCount + "__");
-  }
-
-  private static Token getAssignTok(Token beginPos) {
-    Token tok = ExprUtil.copyTokenAddNewType(beginPos, T.T_ASSIGN, "=");
-    return tok;
   }
 
   private static VarDeclarator genMethodInitItemVar(Type elemType, Ident declIdent, final Ident iteratorVarName,
