@@ -252,11 +252,6 @@ public class TreeAnnotator {
 
   private void visitBlock(final ClassDeclaration object, ClassMethodDeclaration method, final StmtBlock body) {
 
-    // empty 'if' for example
-    if (body == null) {
-      return;
-    }
-
     symtabApplier.openBlockScope("block");
 
     for (StmtBlockItem block : body.getBlockStatements()) {
@@ -313,6 +308,7 @@ public class TreeAnnotator {
       if (maybeReplaceIdentWithFieldAccess(variable, object, e)) {
         applyExpression(object, e);
       }
+
     }
 
     else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
@@ -461,6 +457,14 @@ public class TreeAnnotator {
   }
 
   private void applyIdentifier(ClassDeclaration object, ExprExpression e) {
+
+    // the only one thing that we should to do here:
+    // to find what the 'id' is, and bind the
+    // found symbol to the ExprIdent, and set the result
+    // for this expression as a type of this symbol
+    // we had found.
+    // do not apply any initializers, etc, with this variable here,
+    // because it is not a goal...
 
     final ExprIdent primaryIdent = e.getIdent();
 

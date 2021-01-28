@@ -14,7 +14,7 @@ public class ExprFieldAccess implements Serializable {
 
   //MIR:TREE
   private VarDeclarator field;
-  private ArrayType array;
+  private ArrayType array; // array.length
 
   public ExprFieldAccess(Ident fieldName, ExprExpression object) {
     this.fieldName = fieldName;

@@ -23,5 +23,9 @@ class test_scope {
             // var b: i32 = 0;
           }
         }
+        
+        if e {}
+        var e: boolean;
+        if e {}
 	}
 }

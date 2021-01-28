@@ -11,13 +11,9 @@ import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
 
 public class TestImports {
-  
-  int x = 0;
 
   @Test
   public void testImports() throws Exception {
-    
-    int x = 0;
 
     List<String> files = new ArrayList<>();
     files.add("/tests/test_array");
