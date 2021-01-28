@@ -361,7 +361,7 @@ public class ParseExpression {
           if (lhs.getBase() == ExpressionBase.EFIELD_ACCESS) {
           }
 
-          lhs = methodInvocation(ident, lhs);
+          lhs = methodInvocation(lhs, ident);
         }
 
         else {
@@ -406,31 +406,35 @@ public class ParseExpression {
     return lhs;
   }
 
-  private ExprExpression fieldAccess(ExprExpression lhs) {
-
-    Token operator = parser.moveget();
-    Token identifier = parser.checkedMove(T.TOKEN_IDENT);
-
-    lhs = new ExprExpression(new ExprFieldAccess(identifier.getIdent(), lhs), operator);
-    return lhs;
+  private ExprExpression fieldAccess(final ExprExpression obj) {
+    final Token dot = parser.checkedMove(T.T_DOT);
+    final Token fieldName = parser.checkedMove(T.TOKEN_IDENT);
+    return new ExprExpression(new ExprFieldAccess(obj, fieldName.getIdent()), dot);
   }
 
-  private ExprExpression methodInvocation(Ident funcname) {
+  private ExprExpression methodInvocation(final Ident funcname) {
     // apply <this.> before function name, more convenient
+    // the method call has the form: a.b()
+    // if 'a' is not specified - it means that we want
+    // to call the method from current class,
+    // and we can apply the 'self' before method-name easily here
+    // we'll check that class in a 'self' expression has that method
+    // in a stage-2
+    // the form of the method call expression will be: 'self.method_name()' 
+    // instead of just 'method_name()'
     Token tok = parser.tok();
 
     ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), tok);
     List<FuncArg> arglist = parseArglist();
 
     tok = parser.tok();
-    return new ExprExpression(new ExprMethodInvocation(funcname, selfExpression, arglist), tok);
+    return new ExprExpression(new ExprMethodInvocation(selfExpression, funcname, arglist), tok);
   }
 
-  private ExprExpression methodInvocation(Ident funcname, ExprExpression lhs) {
+  private ExprExpression methodInvocation(final ExprExpression obj, final Ident funcname) {
     List<FuncArg> arglist = parseArglist();
     Token tok = parser.tok();
-    lhs = new ExprExpression(new ExprMethodInvocation(funcname, lhs, arglist), tok);
-    return lhs;
+    return new ExprExpression(new ExprMethodInvocation(obj, funcname, arglist), tok);
   }
 
   private List<FuncArg> parseArglist() {

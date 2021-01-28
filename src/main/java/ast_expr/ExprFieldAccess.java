@@ -9,16 +9,19 @@ import tokenize.Ident;
 public class ExprFieldAccess implements Serializable {
 
   private static final long serialVersionUID = -6528124385251141959L;
-  private final Ident fieldName;
+
+  // object.fieldName
+  // where object will be evaluated as expression at stage-2
   private final ExprExpression object;
+  private final Ident fieldName;
 
   //MIR:TREE
   private VarDeclarator field;
   private ArrayType array; // array.length
 
-  public ExprFieldAccess(Ident fieldName, ExprExpression object) {
-    this.fieldName = fieldName;
+  public ExprFieldAccess(ExprExpression object, Ident fieldName) {
     this.object = object;
+    this.fieldName = fieldName;
   }
 
   public Ident getFieldName() {
@@ -43,6 +46,10 @@ public class ExprFieldAccess implements Serializable {
 
   public void setArray(ArrayType array) {
     this.array = array;
+  }
+
+  public boolean isArrayLengthExpression() {
+    return array != null;
   }
 
   @Override

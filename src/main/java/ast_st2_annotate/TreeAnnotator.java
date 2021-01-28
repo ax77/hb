@@ -489,7 +489,7 @@ public class TreeAnnotator {
     if (variable.getBase() == VarBase.CLASS_FIELD) {
       final Ident fieldName = variable.getIdentifier();
       final ExprExpression selfExpression = new ExprExpression(new ExprSelf(object), variable.getBeginPos());
-      final ExprFieldAccess fieldAccess = new ExprFieldAccess(fieldName, selfExpression);
+      final ExprFieldAccess fieldAccess = new ExprFieldAccess(selfExpression, fieldName);
       e.replaceIdentWithFieldAccess(fieldAccess);
       return true;
     }

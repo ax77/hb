@@ -97,7 +97,7 @@ public class ForLoopRewriter {
 
   private static ExprExpression call(final Ident funcname, final Ident objectName, Token beginPos) {
     final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
-    return new ExprExpression(new ExprMethodInvocation(funcname, id(objectName, beginPos), emptyArgs), beginPos);
+    return new ExprExpression(new ExprMethodInvocation(id(objectName, beginPos), funcname, emptyArgs), beginPos);
   }
 
   private static Ident createNameForIteratorItself() {

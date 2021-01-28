@@ -7,16 +7,18 @@ import tokenize.Ident;
 import utils_oth.NullChecker;
 
 public class ExprMethodInvocation {
+
+  // object.funcname(arguments)
   private /*final*/ ExprExpression object;
-  private final List<FuncArg> arguments;
   private final Ident funcname;
+  private final List<FuncArg> arguments;
 
   //MIR:TREE
   private ClassMethodDeclaration method;
 
   // a.b()
   // self.b()
-  public ExprMethodInvocation(Ident funcname, ExprExpression object, List<FuncArg> arguments) {
+  public ExprMethodInvocation(ExprExpression object, Ident funcname, List<FuncArg> arguments) {
     NullChecker.check(funcname, object, arguments);
 
     this.funcname = funcname;
