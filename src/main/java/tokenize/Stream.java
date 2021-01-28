@@ -222,6 +222,13 @@ public class Stream {
       return getOperator(c1, c2, c3);
     }
 
+    // specials, reserved
+    final String others = combineOp(c1);
+    if (OTHER_ASCII_CHARACTERS.containsKey(others)) {
+      move();
+      return specialToken(OTHER_ASCII_CHARACTERS.get(others), others);
+    }
+
     throw new ScanExc("unknown source: " + combineOp(c1, c2, c3));
   }
 
@@ -259,6 +266,9 @@ public class Stream {
   private String combineOp(char... ops) {
     StringBuilder sb = new StringBuilder();
     for (char op : ops) {
+      if (op == '\0') {
+        continue;
+      }
       sb.append(op);
     }
     return sb.toString();

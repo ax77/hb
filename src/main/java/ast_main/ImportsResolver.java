@@ -63,38 +63,7 @@ public class ImportsResolver {
   }
 
   private String parseImport(Parse parser) throws IOException {
-    parser.checkedMove(IdentMap.import_ident);
-    return dir + "/" + getImportName(parser);
-  }
-
-  private String getImportName(Parse parser) {
-
-    StringBuilder sb = new StringBuilder();
-
-    while (!parser.isEof()) {
-
-      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON);
-      if (!isOk) {
-        parser.perror("expect import path like: [import package.file;]");
-      }
-      if (parser.is(T.T_SEMI_COLON)) {
-        break;
-      }
-      if (parser.isEof()) {
-        parser.perror("unexpected EOF");
-      }
-
-      Token importname = parser.moveget();
-      if (importname.ofType(T.T_DOT)) {
-        sb.append("/");
-      } else {
-        sb.append(importname.getValue());
-      }
-
-    }
-
-    parser.semicolon();
-    return sb.toString();
+    return dir + "/" + PackageNameCutter.cutPackageName(parser, IdentMap.import_ident);
   }
 
 }
