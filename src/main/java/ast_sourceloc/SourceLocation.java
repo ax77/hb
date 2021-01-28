@@ -3,20 +3,13 @@ package ast_sourceloc;
 import java.io.Serializable;
 
 import hashed.Hash_strings;
-import tokenize.Token;
 
 public class SourceLocation implements Serializable {
   private static final long serialVersionUID = -635987520233195844L;
 
-  protected final String filename;
-  protected final int line;
-  protected final int column;
-
-  public SourceLocation(Token tok) {
-    this.filename = Hash_strings.getHashedString(tok.getFilename());
-    this.line = tok.getLine();
-    this.column = tok.getColumn();
-  }
+  private final String filename;
+  private final int line;
+  private final int column;
 
   public SourceLocation(String filename, int line, int column) {
     this.filename = Hash_strings.getHashedString(filename);

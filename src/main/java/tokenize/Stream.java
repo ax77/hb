@@ -108,18 +108,18 @@ public class Stream {
     tokenlist = new ArrayList<Token>();
     buffer = new CBuf(_txt);
 
-    EOL_TOKEN = new Token("\\n", T.TOKEN_ERROR, builtinZeroLocation());
+    EOL_TOKEN = new Token("\\n", T.TOKEN_ERROR, builtinZeroLocation(T.TOKEN_ERROR));
     EOL_TOKEN.setNewLine(true);
 
-    WSP_TOKEN = new Token(" ", T.TOKEN_ERROR, builtinZeroLocation());
+    WSP_TOKEN = new Token(" ", T.TOKEN_ERROR, builtinZeroLocation(T.TOKEN_ERROR));
     WSP_TOKEN.setLeadingWhitespace(true);
 
     tokenize();
     buffer = null; // forget
   }
 
-  private SourceLocation builtinZeroLocation() {
-    return new SourceLocation(filename, 0, 0);
+  private SourceLocation builtinZeroLocation(T type) {
+    return new SourceLocation(type.toString(), -1, -1);
   }
 
   private Token specialToken(T type, String value) {
@@ -378,12 +378,12 @@ public class Stream {
   }
 
   private void markbegin() {
-    Token t = new Token("", T.TOKEN_STREAMBEGIN, builtinZeroLocation());
+    Token t = new Token("", T.TOKEN_STREAMBEGIN, builtinZeroLocation(T.TOKEN_STREAMBEGIN));
     tokenlist.add(t);
   }
 
   private void markend() {
-    Token t = new Token("", T.TOKEN_STREAMEND, builtinZeroLocation());
+    Token t = new Token("", T.TOKEN_STREAMEND, builtinZeroLocation(T.TOKEN_STREAMEND));
     tokenlist.add(t);
   }
 

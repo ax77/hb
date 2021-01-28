@@ -22,7 +22,6 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private final Ident identifier;
   private ExprExpression simpleInitializer;
   private VarArrayInitializer arrayInitializer;
-  private final SourceLocation location;
   private ClassDeclaration clazz; // is it is a field
 
   public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, Token beginPos) {
@@ -30,9 +29,7 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     this.modifiers = modifiers;
     this.type = type;
     this.identifier = identifier;
-
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
   }
 
   @Override
@@ -96,18 +93,18 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     return base;
   }
 
-  public Token getBeginPos() {
-    return beginPos;
-  }
-
   @Override
   public SourceLocation getLocation() {
-    return location;
+    return beginPos.getLocation();
   }
 
   @Override
   public String getLocationToString() {
-    return location.toString();
+    return beginPos.getLocationToString();
+  }
+
+  public Token getBeginPos() {
+    return beginPos;
   }
 
 }

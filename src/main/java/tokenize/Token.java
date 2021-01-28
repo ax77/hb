@@ -65,7 +65,7 @@ public class Token implements Serializable {
   public Token() {
     this.value = "";
     this.type = T.TOKEN_EOF;
-    this.location = unspecifiedLocation();
+    this.location = new SourceLocation(this.type.toString(), -1, -1);
   }
 
   // ident
@@ -126,11 +126,7 @@ public class Token implements Serializable {
   // source - location routine
   //
 
-  private SourceLocation unspecifiedLocation() {
-    return new SourceLocation("unspecified", -1, -1);
-  }
-
-  public String loc() {
+  public String getLocationToString() {
     return location.toString();
   }
 
@@ -140,10 +136,6 @@ public class Token implements Serializable {
 
   public int getLine() {
     return location.getLine();
-  }
-
-  public int getColumn() {
-    return location.getColumn();
   }
 
   public SourceLocation getLocation() {

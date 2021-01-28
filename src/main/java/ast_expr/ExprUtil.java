@@ -91,7 +91,7 @@ public abstract class ExprUtil {
     final String value = ops.get(from.getType());
     final T type = asopmap.get(from.getType());
     if (value == null || type == null) {
-      throw new AstParseException("error assign operator: " + from.loc());
+      throw new AstParseException("error assign operator: " + from.getLocationToString());
     }
     return new Token(from, value, type);
   }

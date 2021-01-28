@@ -34,7 +34,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private final MethodSignature signature;
   private /*final*/ Type returnType;
   private final StmtBlock block;
-  private final SourceLocation location;
   private final int uniqueId;
 
   // function/init
@@ -49,7 +48,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.returnType = returnType;
     this.block = block;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
     this.uniqueId = UniqueCounter.getUniqueId();
 
   }
@@ -65,7 +63,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.returnType = new Type();
     this.block = block;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
     this.uniqueId = UniqueCounter.getUniqueId();
   }
 
@@ -147,12 +144,16 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
   @Override
   public SourceLocation getLocation() {
-    return location;
+    return beginPos.getLocation();
   }
 
   @Override
   public String getLocationToString() {
-    return location.toString();
+    return beginPos.getLocationToString();
+  }
+
+  public Token getBeginPos() {
+    return beginPos;
   }
 
   @Override
@@ -163,10 +164,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   @Override
   public int getUniqueId() {
     return uniqueId;
-  }
-
-  public Token getBeginPos() {
-    return beginPos;
   }
 
 }

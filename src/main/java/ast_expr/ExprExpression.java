@@ -14,7 +14,6 @@ public class ExprExpression implements Serializable, ILocation {
 
   // main
   private final ExpressionBase base; // what union contains
-  private final SourceLocation location;
   private final Token beginPos;
   private Type resultType;
 
@@ -34,35 +33,33 @@ public class ExprExpression implements Serializable, ILocation {
 
   public ExprExpression(boolean value, Token beginPos) {
     this.base = ExpressionBase.EBOOLEAN_LITERAL;
-    this.location = new SourceLocation(beginPos);
     this.beginPos = beginPos;
     this.booleanLiteral = value;
   }
 
   public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
     this.base = ExpressionBase.EARRAY_ACCESS;
-    this.location = new SourceLocation(beginPos);
     this.beginPos = beginPos;
     this.arrayAccess = arrayAccess;
   }
 
   public ExprExpression(ExprSelf selfExpression, Token beginPos) {
     this.base = ExpressionBase.ESELF;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.selfExpression = selfExpression;
   }
 
   public ExprExpression(ExprAssign assign, Token beginPos) {
     this.base = ExpressionBase.EASSIGN;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.assign = assign;
   }
 
   public ExprExpression(ExprArrayCreation arrayCreation, Token beginPos) {
     this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.arrayCreation = arrayCreation;
   }
@@ -72,55 +69,54 @@ public class ExprExpression implements Serializable, ILocation {
   public ExprExpression(ExpressionBase base, Token beginPos) {
     NullChecker.check(beginPos);
     this.base = base;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
   }
 
   public ExprExpression(ExprClassCreation classCreation, Token beginPos) {
     this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.classCreation = classCreation;
   }
 
   public ExprExpression(ExprUnary unary, Token beginPos) {
     this.base = ExpressionBase.EUNARY;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.unary = unary;
   }
 
   public ExprExpression(ExprBinary binary, Token beginPos) {
     this.base = ExpressionBase.EBINARY;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.binary = binary;
   }
 
   public ExprExpression(IntLiteral e, Token token) {
     this.base = ExpressionBase.EPRIMARY_NUMBER;
-    this.location = new SourceLocation(token);
     this.beginPos = token;
     this.number = e;
   }
 
   public ExprExpression(ExprMethodInvocation methodInvocation, Token beginPos) {
     this.base = ExpressionBase.EMETHOD_INVOCATION;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.methodInvocation = methodInvocation;
   }
 
   public ExprExpression(ExprFieldAccess fieldAccess, Token beginPos) {
     this.base = ExpressionBase.EFIELD_ACCESS;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.fieldAccess = fieldAccess;
   }
 
   public ExprExpression(ExprIdent symbol, Token beginPos) {
     this.base = ExpressionBase.EPRIMARY_IDENT;
-    this.location = new SourceLocation(beginPos);
+
     this.beginPos = beginPos;
     this.ident = symbol;
   }
@@ -248,12 +244,12 @@ public class ExprExpression implements Serializable, ILocation {
 
   @Override
   public SourceLocation getLocation() {
-    return location;
+    return beginPos.getLocation();
   }
 
   @Override
   public String getLocationToString() {
-    return location.toString();
+    return beginPos.getLocationToString();
   }
 
   public Token getBeginPos() {

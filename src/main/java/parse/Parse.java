@@ -151,7 +151,7 @@ public class Parse {
     }
     ringBuffer.add(tok);
 
-    lastloc = (prevtok == null ? tok.loc() : prevtok.loc());
+    lastloc = (prevtok == null ? tok.getLocationToString() : prevtok.getLocationToString());
     prevtok = tok;
   }
 

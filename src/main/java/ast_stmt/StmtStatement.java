@@ -12,7 +12,6 @@ public class StmtStatement implements Serializable, ILocation {
 
   private /*final*/ StatementBase base;
   private final Token beginPos;
-  private final SourceLocation location;
   private StmtBlock bloskStmt;
   private ExprExpression exprStmt; // return expr or expr-stmt
   private Stmt_for forStmt;
@@ -21,14 +20,14 @@ public class StmtStatement implements Serializable, ILocation {
   public StmtStatement(Stmt_for forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
+
     this.forStmt = forStmt;
   }
 
   public StmtStatement(Stmt_if ifStmt, Token beginPos) {
     this.base = StatementBase.SIF;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
+
     this.ifStmt = ifStmt;
   }
 
@@ -37,7 +36,7 @@ public class StmtStatement implements Serializable, ILocation {
   public StmtStatement(StatementBase base, ExprExpression exprStmt, Token beginPos) {
     this.base = base;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
+
     this.exprStmt = exprStmt;
   }
 
@@ -45,7 +44,7 @@ public class StmtStatement implements Serializable, ILocation {
   public StmtStatement(StmtBlock bloskStmt, Token beginPos) {
     this.base = StatementBase.SBLOCK;
     this.beginPos = beginPos;
-    this.location = new SourceLocation(beginPos);
+
     this.bloskStmt = bloskStmt;
   }
 
@@ -102,15 +101,14 @@ public class StmtStatement implements Serializable, ILocation {
 
   @Override
   public SourceLocation getLocation() {
-    return location;
+    return beginPos.getLocation();
   }
 
   @Override
   public String getLocationToString() {
-    return location.toString();
+    return beginPos.getLocationToString();
   }
 
-  @Override
   public Token getBeginPos() {
     return beginPos;
   }
