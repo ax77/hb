@@ -8,11 +8,16 @@ import org.junit.Test;
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
 import ast_unit.InstantiationUnit;
+import utils.UtilSrcToStringLevel;
 
 public class TestImports {
+  
+  int x = 0;
 
   @Test
   public void testImports() throws Exception {
+    
+    int x = 0;
 
     List<String> files = new ArrayList<>();
     files.add("/tests/test_array");
@@ -22,7 +27,7 @@ public class TestImports {
     for (String f : files) {
       InstantiationUnit result = new ParserMain(f).parseInstantiationUnit();
       for (ClassDeclaration clazz : result.getClasses()) {
-        // System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
+        System.out.println(UtilSrcToStringLevel.tos(clazz.toString()));
       }
     }
 

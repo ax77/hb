@@ -2,26 +2,27 @@ import std.list;
 import std.string;
 
 class test_import_list { 
+
+    var x: i32 = 0;
+    var y: i32 = 0;
+    var z: i32 = 0;
+		
 	func main() -> i32 {
-		var args: list<string> = new list<string>();
-		var x: i32 = 0;
-		var y: i32 = 0;
-		var z: i32 = 0;
-		var s: string = "_";
-		for item in args {
-			x += 1;
-			for nested in args {
-				y += 1;
-				for width in args {
-					z += 1;
-					s.append(c: '\r'); //have to rewrite, it doesn't work
-					s.append(c: '\n');
-					s.append(c: '\t');
-					s.append(c: '\0');
-					s.append(c: '\\');
-				}
-			}
+	   {
+    	    var x: i32 = 1024;
+    		var args: list<i32> = new list<i32>();
+    
+    		for item in args {
+    			x += 1;
+    			for nested in args {
+    				y += 1;
+    				for width in args {
+    					z += 1;
+    				}
+    			}
+    		}
+    		if x == 0 { x += 1; } else { x -= 1; }
 		}
-		return 0;
+		return x;
 	}
 } 

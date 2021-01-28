@@ -8,10 +8,10 @@ public class Stmt_if implements Serializable {
   private static final long serialVersionUID = 8138015838549729527L;
 
   private final ExprExpression condition;
-  private final StmtBlock trueStatement;
-  private final StmtBlock optionalElseStatement;
+  private final StmtStatement trueStatement;
+  private final StmtStatement optionalElseStatement;
 
-  public Stmt_if(ExprExpression condition, StmtBlock trueStatement, StmtBlock optionalElseStatement) {
+  public Stmt_if(ExprExpression condition, StmtStatement trueStatement, StmtStatement optionalElseStatement) {
     this.condition = condition;
     this.trueStatement = trueStatement;
     this.optionalElseStatement = optionalElseStatement;
@@ -21,11 +21,11 @@ public class Stmt_if implements Serializable {
     return condition;
   }
 
-  public StmtBlock getTrueStatement() {
+  public StmtStatement getTrueStatement() {
     return trueStatement;
   }
 
-  public StmtBlock getOptionalElseStatement() {
+  public StmtStatement getOptionalElseStatement() {
     return optionalElseStatement;
   }
 
@@ -40,9 +40,11 @@ public class Stmt_if implements Serializable {
       sb.append(trueStatement.toString());
     }
 
+    // TODO:
     if (optionalElseStatement != null) {
-      sb.append("else");
+      sb.append("\nelse {\n");
       sb.append(optionalElseStatement.toString());
+      sb.append("\n}\n");
     }
 
     return sb.toString();

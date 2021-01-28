@@ -119,7 +119,7 @@ public class TreeScopes {
   }
 
   public void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
-    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD | F_CLASS);
+    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD); // | F_CLASS ???
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
   }

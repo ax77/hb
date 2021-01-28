@@ -139,12 +139,12 @@ public class ParseStatement {
     Token from = parser.checkedMove(if_ident);
 
     ExprExpression ifexpr = new ParseExpression(parser).e_expression();
-    StmtBlock ifstmt = parseBlock(VarBase.LOCAL_VAR);
-    StmtBlock ifelse = null;
+    StmtStatement ifstmt = parseStatement();
+    StmtStatement ifelse = null;
 
     if (parser.is(else_ident)) {
       Token elsekw = parser.checkedMove(else_ident);
-      ifelse = parseBlock(VarBase.LOCAL_VAR);
+      ifelse = parseStatement();
       return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse), from);
     }
 

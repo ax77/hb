@@ -17,6 +17,13 @@ public class StmtStatement implements Serializable, ILocation {
   private Stmt_for forStmt;
   private Stmt_if ifStmt;
 
+  //MIR:TREE:rewriter
+  public void replaceForLoopWithBlock(StmtBlock block) {
+    this.base = StatementBase.SBLOCK;
+    this.bloskStmt = block;
+    this.forStmt = null;
+  }
+
   public StmtStatement(Stmt_for forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
     this.beginPos = beginPos;
@@ -90,13 +97,6 @@ public class StmtStatement implements Serializable, ILocation {
       return forStmt.toString();
     }
     return base.toString();
-  }
-
-  // for-loop-rewriters
-  public void replaceForLoopWithBlock(StmtBlock block) {
-    this.base = StatementBase.SBLOCK;
-    this.bloskStmt = block;
-    this.forStmt = null;
   }
 
   @Override

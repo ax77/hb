@@ -15,6 +15,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprSelf;
 import ast_expr.ExprUnary;
 import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
@@ -32,6 +33,7 @@ import ast_types.ClassType;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
@@ -199,8 +201,8 @@ public class TreeAnnotator {
   private void visit_if(final ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement statement) {
     Stmt_if sif = statement.getIfStmt();
     applyExpression(object, sif.getCondition());
-    visitBlock(object, method, sif.getTrueStatement());
-    visitBlock(object, method, sif.getOptionalElseStatement());
+    applyStatement(object, method, sif.getTrueStatement());
+    applyStatement(object, method, sif.getOptionalElseStatement());
 
     if (!sif.getCondition().getResultType().is_boolean()) {
       throw new AstParseException("if condition must be only a boolean type");
@@ -249,6 +251,12 @@ public class TreeAnnotator {
   }
 
   private void visitBlock(final ClassDeclaration object, ClassMethodDeclaration method, final StmtBlock body) {
+
+    // empty 'if' for example
+    if (body == null) {
+      return;
+    }
+
     symtabApplier.openBlockScope("block");
 
     for (StmtBlockItem block : body.getBlockStatements()) {
@@ -282,35 +290,76 @@ public class TreeAnnotator {
 
     if (e.is(ExpressionBase.EUNARY)) {
       applyUnary(object, e);
-    } else if (e.is(ExpressionBase.EBINARY)) {
+    }
+
+    else if (e.is(ExpressionBase.EBINARY)) {
       applyBinary(object, e);
-    } else if (e.is(ExpressionBase.EASSIGN)) {
+    }
+
+    else if (e.is(ExpressionBase.EASSIGN)) {
       applyAssign(object, e);
-    } else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
+    }
+
+    else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
       applyIdentifier(object, e);
-    } else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
+
+      // if it is possible to replace each 'id' with 'self.id'
+      // if 'id' is a class-field
+      // if 'id' a local variable - we'll just find the symbol, and bind it
+      final VarDeclarator variable = e.getIdent().getVariable();
+      if (variable == null) {
+        ErrorLocation.errorExpression("symbol not found", e);
+      }
+      if (maybeReplaceIdentWithFieldAccess(variable, object, e)) {
+        applyExpression(object, e);
+      }
+    }
+
+    else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
       applyMethodInvocation(object, e);
-    } else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
+    }
+
+    else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
       applyFieldAccess(object, e);
-    } else if (e.is(ExpressionBase.ESELF)) {
+    }
+
+    else if (e.is(ExpressionBase.ESELF)) {
       applySelfLiteral(e);
-    } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
+    }
+
+    else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
       applyNumericLiteral(e);
-    } else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
+    }
+
+    else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
       // TODO:
-    } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+    }
+
+    else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
       applyClassInstanceCreation(object, e);
-    } else if (e.is(ExpressionBase.ESTRING_CONST)) {
+    }
+
+    else if (e.is(ExpressionBase.ESTRING_CONST)) {
       applyStringLiteral(e);
-    } else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
+    }
+
+    else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
       applyArrayAccess(object, e);
-    } else if (e.is(ExpressionBase.ECHAR_CONST)) {
+    }
+
+    else if (e.is(ExpressionBase.ECHAR_CONST)) {
       e.setResultType(TypeBindings.make_u8());
-    } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
+    }
+
+    else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean()); // TODO: ?
-    } else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
+    }
+
+    else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
       applyArrayCreation(e);
-    } else {
+    }
+
+    else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
@@ -428,11 +477,19 @@ public class TreeAnnotator {
     final VarDeclarator variable = sym.getVariable();
     e.setResultType(variable.getType());
 
-    applyInitializer(object, variable);
-
     //MIR:TREE
     primaryIdent.setVariable(variable);
+  }
 
+  private boolean maybeReplaceIdentWithFieldAccess(VarDeclarator variable, ClassDeclaration object, ExprExpression e) {
+    if (variable.getBase() == VarBase.CLASS_FIELD) {
+      final Ident fieldName = variable.getIdentifier();
+      final ExprExpression selfExpression = new ExprExpression(new ExprSelf(object), variable.getBeginPos());
+      final ExprFieldAccess fieldAccess = new ExprFieldAccess(fieldName, selfExpression);
+      e.replaceIdentWithFieldAccess(fieldAccess);
+      return true;
+    }
+    return false;
   }
 
   private void applyFieldAccess(ClassDeclaration object, ExprExpression e) {

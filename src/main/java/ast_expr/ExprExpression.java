@@ -13,7 +13,7 @@ public class ExprExpression implements Serializable, ILocation {
   private static final long serialVersionUID = -2905880039842730533L;
 
   // main
-  private final ExpressionBase base; // what union contains
+  private /*final*/ ExpressionBase base; // what union contains
   private final Token beginPos;
   private Type resultType;
 
@@ -30,6 +30,13 @@ public class ExprExpression implements Serializable, ILocation {
   private ExprSelf selfExpression;
   private ExprArrayAccess arrayAccess;
   private boolean booleanLiteral;
+
+  //MIR:TREE:rewriter
+  public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
+    this.base = ExpressionBase.EFIELD_ACCESS;
+    this.fieldAccess = fieldAccess;
+    this.ident = null;
+  }
 
   public ExprExpression(boolean value, Token beginPos) {
     this.base = ExpressionBase.EBOOLEAN_LITERAL;
