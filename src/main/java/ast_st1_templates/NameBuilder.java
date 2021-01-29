@@ -18,9 +18,9 @@ public abstract class NameBuilder {
     StringBuilder sb = new StringBuilder();
     sb.append(origNameOfTemplateClass);
     sb.append("_");
-    sb.append(classUniqueId);
-    sb.append("_");
     sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
+    sb.append("_");
+    sb.append(classUniqueId);
     return sb.toString();
   }
 
@@ -46,7 +46,8 @@ public abstract class NameBuilder {
       return String.format("%d", array.getCount()) + "_arr"; // TODO:
     }
 
-    return tp.getClassType().getIdentifier().getName();
+    return tp.getClassType().getIdentifier().getName() + "_"
+        + typeArgumentsToStringForGeneratedName(tp.getTypeArguments());
   }
 
   private static String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
