@@ -65,7 +65,13 @@ public class Stream {
     VALID_COMBINATIONS_2.put("<<", T.T_LSHIFT);
     VALID_COMBINATIONS_2.put("==", T.T_EQ);
     VALID_COMBINATIONS_2.put(">=", T.T_GE);
-    VALID_COMBINATIONS_2.put(">>", T.T_RSHIFT);
+
+    /// we'll handle this as a special case in 
+    /// expression parsing stage,
+    /// because it's much easier to handle this situation: list<list<i32>>
+    /// in expression, instead of to rewrite the whole parser logic...
+    /// VALID_COMBINATIONS_2.put(">>", T.T_RSHIFT);
+
     VALID_COMBINATIONS_2.put("||", T.T_OR_OR);
     VALID_COMBINATIONS_2.put("|=", T.T_OR_EQUAL);
 

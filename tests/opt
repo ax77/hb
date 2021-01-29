@@ -1,0 +1,10 @@
+class opt<T>
+{
+    let elem: T;
+    func push(elem: T) {
+    }
+    func get() -> T {
+        return elem;
+    }
+}
+

@@ -272,12 +272,31 @@ public class ParseExpression {
     return e;
   }
 
+  private boolean isRshift() {
+    if (parser.is(T.T_GT) && parser.peek().ofType(T.T_GT)) {
+      return true;
+    }
+    return false;
+  }
+
+  private Token buildRshiftToken() {
+    Token tok = parser.tok();
+    parser.move(); // >
+    parser.move(); // >
+    return ExprUtil.copyTokenAddNewType(tok, T.T_RSHIFT, ">>");
+  }
+
   private ExprExpression e_shift() {
     ExprExpression e = e_add();
-    while (parser.tp() == T_LSHIFT || parser.tp() == T_RSHIFT) {
-      Token saved = parser.tok();
-      parser.move();
-      e = build_binary(saved, e, e_add());
+    while (parser.is(T_LSHIFT) || isRshift()) {
+      if (parser.is(T_LSHIFT)) {
+        Token saved = parser.tok();
+        parser.move();
+        e = build_binary(saved, e, e_add());
+      } else {
+        Token saved = buildRshiftToken();
+        e = build_binary(saved, e, e_add());
+      }
     }
     return e;
   }

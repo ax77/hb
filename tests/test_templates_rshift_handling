@@ -1,0 +1,11 @@
+import tests.opt;
+import std.node;
+
+class test_templates_rshift_handling
+{
+    var t1: opt<opt<i32>>;
+    var t2: node<node<node<i32>>>;
+    var a: i32;
+    var b: i32;
+    var c: i32 = a >> b >> 1;
+}
