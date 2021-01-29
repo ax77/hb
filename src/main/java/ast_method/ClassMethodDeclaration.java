@@ -11,7 +11,7 @@ import ast_sourceloc.ILocation;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_types.Type;
 import tokenize.Ident;
 import tokenize.Token;
@@ -59,7 +59,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
     this.clazz = clazz;
-    this.signature = new MethodSignature(IdentMap.deinit_ident, new ArrayList<>());
+    this.signature = new MethodSignature(Keywords.deinit_ident, new ArrayList<>());
     this.returnType = new Type();
     this.block = block;
     this.beginPos = beginPos;

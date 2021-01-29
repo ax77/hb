@@ -3,10 +3,9 @@ package ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_checkers.TypeRecognizer;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarArrayInitializer;
 import ast_vars.VarBase;
@@ -38,7 +37,7 @@ public class ParseVarDeclarator {
     final Ident id = tok.getIdent();
 
     final Token colon = parser.colon();
-    final Type type = new TypeRecognizer(parser).getType();
+    final Type type = new ParseType(parser).getType();
     final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, tok);
 
     if (parser.is(T.T_ASSIGN)) {
@@ -46,7 +45,7 @@ public class ParseVarDeclarator {
 
       if (type.is_array()) {
 
-        if (parser.is(IdentMap.new_ident)) {
+        if (parser.is(Keywords.new_ident)) {
           var.setSimpleInitializer(parseInitializer());
         }
 

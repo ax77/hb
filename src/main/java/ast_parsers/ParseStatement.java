@@ -1,11 +1,11 @@
 package ast_parsers;
 
-import static ast_symtab.IdentMap.do_ident;
-import static ast_symtab.IdentMap.else_ident;
-import static ast_symtab.IdentMap.for_ident;
-import static ast_symtab.IdentMap.if_ident;
-import static ast_symtab.IdentMap.return_ident;
-import static ast_symtab.IdentMap.while_ident;
+import static ast_symtab.Keywords.do_ident;
+import static ast_symtab.Keywords.else_ident;
+import static ast_symtab.Keywords.for_ident;
+import static ast_symtab.Keywords.if_ident;
+import static ast_symtab.Keywords.return_ident;
+import static ast_symtab.Keywords.while_ident;
 import static tokenize.T.T_SEMI_COLON;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
 import ast_stmt.Stmt_for;
 import ast_stmt.Stmt_if;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import parse.Parse;
@@ -158,7 +158,7 @@ public class ParseStatement {
     Token from = parser.checkedMove(for_ident);
     Ident iter = parser.getIdent();
 
-    parser.checkedMove(IdentMap.in_ident);
+    parser.checkedMove(Keywords.in_ident);
     Ident collection = parser.getIdent();
 
     StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);

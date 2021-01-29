@@ -107,4 +107,8 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     return beginPos;
   }
 
+  public boolean is(VarBase want) {
+    return base.equals(want);
+  }
+
 }

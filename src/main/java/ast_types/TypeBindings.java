@@ -15,9 +15,8 @@ import static ast_types.TypeBase.TP_U8;
 import java.util.HashMap;
 import java.util.Map;
 
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import errors.AstParseException;
-import literals.IntLiteral;
 import tokenize.Ident;
 
 public abstract class TypeBindings {
@@ -52,17 +51,17 @@ public abstract class TypeBindings {
   public static Type make_boolean() { return new Type(TP_BOOLEAN); }
   
   public static Type getTypeFromIdent(Ident ident) {
-         if(ident.equals(IdentMap.i8_ident))      { return make_i8(); }
-    else if(ident.equals(IdentMap.u8_ident))      { return make_u8(); }
-    else if(ident.equals(IdentMap.i16_ident))     { return make_i16(); }
-    else if(ident.equals(IdentMap.u16_ident))     { return make_u16(); }
-    else if(ident.equals(IdentMap.i32_ident))     { return make_i32(); }
-    else if(ident.equals(IdentMap.u32_ident))     { return make_u32(); }
-    else if(ident.equals(IdentMap.i64_ident))     { return make_i64(); }
-    else if(ident.equals(IdentMap.u64_ident))     { return make_u64(); }
-    else if(ident.equals(IdentMap.f32_ident))     { return make_f32(); }
-    else if(ident.equals(IdentMap.f64_ident))     { return make_f64(); }
-    else if(ident.equals(IdentMap.boolean_ident)) { return make_boolean(); }
+         if(ident.equals(Keywords.i8_ident))      { return make_i8(); }
+    else if(ident.equals(Keywords.u8_ident))      { return make_u8(); }
+    else if(ident.equals(Keywords.i16_ident))     { return make_i16(); }
+    else if(ident.equals(Keywords.u16_ident))     { return make_u16(); }
+    else if(ident.equals(Keywords.i32_ident))     { return make_i32(); }
+    else if(ident.equals(Keywords.u32_ident))     { return make_u32(); }
+    else if(ident.equals(Keywords.i64_ident))     { return make_i64(); }
+    else if(ident.equals(Keywords.u64_ident))     { return make_u64(); }
+    else if(ident.equals(Keywords.f32_ident))     { return make_f32(); }
+    else if(ident.equals(Keywords.f64_ident))     { return make_f64(); }
+    else if(ident.equals(Keywords.boolean_ident)) { return make_boolean(); }
     throw new AstParseException("type not found for ident: " + ident.getName());
   }
   

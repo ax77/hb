@@ -1,7 +1,6 @@
 package ast_checkers;
 
 import static ast_st2_annotate.PredefinedNamesForRewriters.GET_ITERATOR_METHOD_NAME;
-import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_GET_CURRENT_METHOD_NAME;
 import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_GET_NEXT_METHOD_NAME;
 import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_HAS_NEXT_METHOD_NAME;
 
@@ -81,13 +80,12 @@ public class IteratorChecker {
     }
 
     final ClassDeclaration iteratorClazz = returnTypeOfGetIteratorMethod.getClassType();
-    final ClassMethodDeclaration mCurrent = iteratorClazz.getMethod(ITERATOR_GET_CURRENT_METHOD_NAME, emptyArgs);
     final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(ITERATOR_HAS_NEXT_METHOD_NAME, emptyArgs);
     final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(ITERATOR_GET_NEXT_METHOD_NAME, emptyArgs);
-    if (mCurrent == null || mHasNext == null || mGetNext == null) {
+    if (mHasNext == null || mGetNext == null) {
       return false;
     }
-    if (mCurrent.isVoid() || mHasNext.isVoid() || mGetNext.isVoid()) {
+    if (mHasNext.isVoid() || mGetNext.isVoid()) {
       return false;
     }
 
@@ -95,15 +93,7 @@ public class IteratorChecker {
       return false;
     }
 
-    // check what the type will return our iterator we found
-    //
-    final Type returnTypeGetCurrent = mCurrent.getType();
-    final Type returnTypeGetNext = mGetNext.getType();
-    if (!returnTypeGetCurrent.is_equal_to(returnTypeGetNext)) {
-      return false;
-    }
-
-    this.elemType = returnTypeGetNext;
+    this.elemType = mGetNext.getType();
     this.iteratorType = returnTypeOfGetIteratorMethod;
     return true;
   }

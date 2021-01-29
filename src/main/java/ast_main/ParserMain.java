@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_st1_templates.InstatantiationUnitBuilder;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
@@ -75,7 +75,7 @@ public class ParserMain implements ParserMainApi {
   // we must be sure that all keywords will be created before parser will be run.
   //
   private void initIdents() {
-    for (Field field : IdentMap.class.getDeclaredFields()) {
+    for (Field field : Keywords.class.getDeclaredFields()) {
       final String fname = field.getName();
       if (!fname.endsWith("_ident")) {
         throw new AstParseException("expect ident name");

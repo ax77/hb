@@ -1,4 +1,4 @@
-package ast_checkers;
+package ast_parsers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
-import ast_parsers.ParseExpression;
+import ast_symtab.Keywords;
 import ast_types.ArrayType;
 import ast_types.ClassType;
 import ast_types.Type;
@@ -17,7 +17,7 @@ import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 
-public class TypeRecognizer {
+public class ParseType {
 
   private final Parse parser;
 
@@ -26,7 +26,7 @@ public class TypeRecognizer {
   private boolean isTypeParameter;
   private boolean isArray;
 
-  public TypeRecognizer(Parse parser) {
+  public ParseType(Parse parser) {
 
     this.parser = parser;
 
@@ -34,7 +34,7 @@ public class TypeRecognizer {
     // 2) reference: class-name, interface-name, etc
     // 3) type-variable, i.e. typename T: class Node<T> { T next; }
 
-    boolean typeWasFound = IdentRecognizer.isBasicTypeIdent(parser.tok());
+    boolean typeWasFound = isBasicTypeIdent(parser.tok());
 
     // I
     if (typeWasFound) {
@@ -115,7 +115,7 @@ public class TypeRecognizer {
       parser.colon();
     }
 
-    Type arrayOf = new TypeRecognizer(parser).getType();
+    Type arrayOf = new ParseType(parser).getType();
     parser.checkedMove(T.T_RIGHT_BRACKET);
 
     return new Type(new ArrayType(arrayOf, count));
@@ -180,7 +180,7 @@ public class TypeRecognizer {
   }
 
   private Type getTypeArgument() {
-    TypeRecognizer nested = new TypeRecognizer(parser);
+    ParseType nested = new ParseType(parser);
     return nested.getType();
   }
 
@@ -218,5 +218,21 @@ public class TypeRecognizer {
   public boolean isArray() {
     return isArray;
   }
+
+  //@formatter:off
+  private boolean isBasicTypeIdent(Token what) {
+    return what.isIdent(Keywords.i8_ident )
+        || what.isIdent(Keywords.u8_ident )
+        || what.isIdent(Keywords.i16_ident)
+        || what.isIdent(Keywords.u16_ident)
+        || what.isIdent(Keywords.i32_ident)
+        || what.isIdent(Keywords.u32_ident)
+        || what.isIdent(Keywords.i64_ident)
+        || what.isIdent(Keywords.u64_ident)
+        || what.isIdent(Keywords.f32_ident)
+        || what.isIdent(Keywords.f64_ident)
+        || what.isIdent(Keywords.boolean_ident);
+  }
+  //@formatter:on
 
 }

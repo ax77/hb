@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import ast_checkers.IdentRecognizer;
-import ast_checkers.TypeRecognizer;
 import ast_class.ClassDeclaration;
+import ast_parsers.ParseType;
 import ast_parsers.ParseTypeDeclarationsList;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
@@ -105,15 +105,19 @@ public class Parse {
     return referenceTypes.get(ident);
   }
 
+  public boolean isUserDefinedIdentNoKeyword(Token what) {
+    return what.ofType(T.TOKEN_IDENT) && !what.isBuiltinIdent();
+  }
+
   public boolean isClassName() {
-    if (IdentRecognizer.isUserDefinedIdentNoKeyword(tok)) {
+    if (isUserDefinedIdentNoKeyword(tok)) {
       return isClassName(tok.getIdent());
     }
     return false;
   }
 
   private boolean isPrimitiveOrReferenceTypeBegin() {
-    TypeRecognizer typeRecognizer = new TypeRecognizer(this);
+    ParseType typeRecognizer = new ParseType(this);
     return typeRecognizer.isType();
   }
 

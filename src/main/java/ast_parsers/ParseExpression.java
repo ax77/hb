@@ -7,6 +7,7 @@ import static tokenize.T.T_AND;
 import static tokenize.T.T_AND_AND;
 import static tokenize.T.T_DIVIDE;
 import static tokenize.T.T_EQ;
+import static tokenize.T.T_EXCLAMATION;
 import static tokenize.T.T_GE;
 import static tokenize.T.T_GT;
 import static tokenize.T.T_LE;
@@ -22,6 +23,7 @@ import static tokenize.T.T_PLUS;
 import static tokenize.T.T_QUESTION;
 import static tokenize.T.T_RIGHT_PAREN;
 import static tokenize.T.T_RSHIFT;
+import static tokenize.T.T_TILDE;
 import static tokenize.T.T_TIMES;
 import static tokenize.T.T_XOR;
 
@@ -29,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_checkers.IdentRecognizer;
-import ast_checkers.TypeRecognizer;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprArrayAccess;
 import ast_expr.ExprArrayCreation;
@@ -45,7 +46,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_types.ClassType;
 import ast_types.Type;
 import hashed.Hash_ident;
@@ -74,6 +75,32 @@ public class ParseExpression {
     return new ExprExpression(new ExprAssign(tok, lvalue, rvalue), tok);
   }
 
+  //@formatter:off
+  private boolean isAssignOperator(Token what) {
+    return what.ofType(T.T_ASSIGN)
+        || what.ofType(T.T_TIMES_EQUAL)
+        || what.ofType(T.T_PERCENT_EQUAL)
+        || what.ofType(T.T_DIVIDE_EQUAL)
+        || what.ofType(T.T_PLUS_EQUAL)
+        || what.ofType(T.T_MINUS_EQUAL)
+        || what.ofType(T.T_LSHIFT_EQUAL)
+        || what.ofType(T.T_RSHIFT_EQUAL)
+        || what.ofType(T.T_AND_EQUAL)
+        || what.ofType(T.T_XOR_EQUAL)
+        || what.ofType(T.T_OR_EQUAL);
+  }
+
+  // & * + - ~ !
+  private boolean isUnaryOperator(Token what) {
+    return what.ofType(T_AND)
+        || what.ofType(T_TIMES)
+        || what.ofType(T_PLUS)
+        || what.ofType(T_MINUS)
+        || what.ofType(T_TILDE)
+        || what.ofType(T_EXCLAMATION);
+  }
+  //@formatter:on
+
   public ExprExpression e_expression() {
     ExprExpression e = e_assign();
 
@@ -96,7 +123,7 @@ public class ParseExpression {
   }
 
   private boolean isCompoundAssign(Token what) {
-    return IdentRecognizer.isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
+    return isAssignOperator(what) && !what.ofType(T.T_ASSIGN);
   }
 
   public ExprExpression e_assign() {
@@ -111,7 +138,7 @@ public class ParseExpression {
     //      lhs = build_assign(saved, lhs, rhs);
     //    }
 
-    if (IdentRecognizer.isAssignOperator(parser.tok())) {
+    if (isAssignOperator(parser.tok())) {
 
       Token saved = parser.tok();
 
@@ -167,21 +194,6 @@ public class ParseExpression {
   }
 
   private ExprExpression e_cnd() {
-
-    // WAS:
-    // ExprExpression res = e_lor();
-    //
-    // if (parser.tp() != T_QUESTION) {
-    //   return res;
-    // }
-    //
-    // Token saved = parser.tok();
-    // parser.move();
-    //
-    // ExprExpression btrue = e_expression();
-    // parser.checkedMove(T_COLON);
-    //
-    // return build_ternary(res, btrue, e_cnd(), saved);
 
     ExprExpression res = e_lor();
     if (parser.is(T_QUESTION)) {
@@ -323,7 +335,7 @@ public class ParseExpression {
   private ExprExpression e_unary() {
 
     // [& * + - ~ !]
-    if (IdentRecognizer.isUnaryOperator(parser.tok())) {
+    if (isUnaryOperator(parser.tok())) {
       Token operator = parser.tok();
       parser.move();
       return build_unary(operator, e_cast());
@@ -348,7 +360,7 @@ public class ParseExpression {
         final Token dot = parser.moveget();
         final Token peek = parser.peek();
 
-        final boolean dot_ident_lparen = IdentRecognizer.isUserDefinedIdentNoKeyword(parser.tok())
+        final boolean dot_ident_lparen = parser.isUserDefinedIdentNoKeyword(parser.tok())
             && peek.ofType(T.T_LEFT_PAREN);
 
         if (dot_ident_lparen) {
@@ -497,12 +509,12 @@ public class ParseExpression {
     }
 
     // new ClassName<i32>(x, y, z) 
-    if (parser.is(IdentMap.new_ident)) {
+    if (parser.is(Keywords.new_ident)) {
       Token saved = parser.moveget();
 
       // new [2:int] 
       if (parser.is(T.T_LEFT_BRACKET)) {
-        final Type arrayCreator = new TypeRecognizer(parser).getType();
+        final Type arrayCreator = new ParseType(parser).getType();
         final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
 
         // it is important to register type-setter for `current` class
@@ -514,7 +526,7 @@ public class ParseExpression {
       else {
 
         final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
-        final List<Type> typeArguments = new TypeRecognizer(parser).getTypeArguments();
+        final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
         final ClassType ref = new ClassType(instantiatedClass, typeArguments);
         final List<FuncArg> arguments = parseArglist();
         final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
@@ -527,30 +539,30 @@ public class ParseExpression {
 
     }
 
-    if (parser.is(IdentMap.self_ident)) {
+    if (parser.is(Keywords.self_ident)) {
       Token saved = parser.moveget();
       ExprExpression thisexpr = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), saved);
       return thisexpr;
     }
 
-    if (parser.is(IdentMap.true_ident)) {
+    if (parser.is(Keywords.true_ident)) {
       Token saved = parser.moveget();
       return new ExprExpression(true, saved);
     }
 
-    if (parser.is(IdentMap.false_ident)) {
+    if (parser.is(Keywords.false_ident)) {
       Token saved = parser.moveget();
       return new ExprExpression(false, saved);
     }
 
-    if (parser.is(IdentMap.null_ident)) {
+    if (parser.is(Keywords.null_ident)) {
       Token saved = parser.moveget();
       ExprExpression nullexpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, saved);
       return nullexpr;
     }
 
     // simple name
-    if (IdentRecognizer.isUserDefinedIdentNoKeyword(parser.tok())) {
+    if (parser.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
       return new ExprExpression(new ExprIdent(saved.getIdent()), saved);
     }

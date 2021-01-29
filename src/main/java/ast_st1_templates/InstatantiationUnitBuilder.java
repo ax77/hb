@@ -1,15 +1,13 @@
 package ast_st1_templates;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_st2_annotate.TreeAnnotator;
+import ast_st2_annotate.SymInstantiationUnitApplier;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import ast_unit.TypeDeclaration;
-import errors.AstParseException;
 
 public class InstatantiationUnitBuilder {
 
@@ -55,7 +53,7 @@ public class InstatantiationUnitBuilder {
 
     // resolve all symbols, identifiers, with scope rules,
     // and add result-type to each expression.
-    final TreeAnnotator applier = new TreeAnnotator();
+    final SymInstantiationUnitApplier applier = new SymInstantiationUnitApplier();
     applier.visit(instantiationUnit);
 
     return instantiationUnit;

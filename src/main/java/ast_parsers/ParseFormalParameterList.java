@@ -3,7 +3,6 @@ package ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_checkers.TypeRecognizer;
 import ast_method.MethodParameter;
 import ast_types.Type;
 import parse.Parse;
@@ -43,7 +42,7 @@ public class ParseFormalParameterList {
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = tok.getIdent();
     final Token colon = parser.colon();
-    final Type type = new TypeRecognizer(parser).getType();
+    final Type type = new ParseType(parser).getType();
     return new MethodParameter(id, type);
   }
 

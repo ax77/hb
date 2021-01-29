@@ -4,16 +4,14 @@ import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_method.MethodParameter;
 import ast_modifiers.Modifiers;
-import ast_sourceloc.SourceLocation;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
-import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
-public class TreeScopes {
+public class SymbolTable {
 
   //to define a symbol in a function or nested block and check redefinition
   //1) check the current block 
@@ -56,7 +54,7 @@ public class TreeScopes {
   private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
   private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
-  public TreeScopes() {
+  public SymbolTable() {
     this.typeNames = new Symtab<>();
     this.variablesClass = new Symtab<>();
     this.variablesMethod = new Symtab<>();

@@ -13,7 +13,7 @@ import ast_method.MethodParameter;
 import ast_method.MethodSignature;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import ast_types.ClassType;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
@@ -37,10 +37,10 @@ public class ParseTypeDeclarationsList {
     // opt
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
-    if (parser.is(IdentMap.class_ident)) {
+    if (parser.is(Keywords.class_ident)) {
       unit.put(new TypeDeclaration(parseClassDeclaration()));
-    } else if (parser.is(IdentMap.import_ident)) {
-      PackageNameCutter.cutPackageName(parser, IdentMap.import_ident);
+    } else if (parser.is(Keywords.import_ident)) {
+      PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
     } else {
       parser.perror("unimpl");
     }
@@ -48,7 +48,7 @@ public class ParseTypeDeclarationsList {
 
   private ClassDeclaration parseClassDeclaration() {
 
-    Token classKw = parser.checkedMove(IdentMap.class_ident);
+    Token classKw = parser.checkedMove(Keywords.class_ident);
     Ident ident = parser.getIdent();
 
     // class Thing<T> {
@@ -95,12 +95,12 @@ public class ParseTypeDeclarationsList {
 
     // init
     // 
-    boolean isConstructorDeclaration = parser.is(IdentMap.init_ident);
+    boolean isConstructorDeclaration = parser.is(Keywords.init_ident);
     if (isConstructorDeclaration) {
-      final Token tok = parser.checkedMove(IdentMap.init_ident);
+      final Token tok = parser.checkedMove(Keywords.init_ident);
       final List<MethodParameter> parameters = new ParseFormalParameterList(parser).parse();
       final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
-      final MethodSignature signature = new MethodSignature(IdentMap.init_ident, parameters);
+      final MethodSignature signature = new MethodSignature(Keywords.init_ident, parameters);
       final Type returnType = new Type(new ClassType(clazz, new ArrayList<>()));
       final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
           signature, returnType, block, tok);
@@ -112,9 +112,9 @@ public class ParseTypeDeclarationsList {
 
     // deinit
     //
-    boolean isDestructor = parser.is(IdentMap.deinit_ident);
+    boolean isDestructor = parser.is(Keywords.deinit_ident);
     if (isDestructor) {
-      final Token tok = parser.checkedMove(IdentMap.deinit_ident);
+      final Token tok = parser.checkedMove(Keywords.deinit_ident);
       final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
       final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, tok);
 
@@ -125,7 +125,7 @@ public class ParseTypeDeclarationsList {
 
     // function
     //
-    boolean isFunction = parser.is(IdentMap.func_ident);
+    boolean isFunction = parser.is(Keywords.func_ident);
     if (isFunction) {
       ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse(clazz);
       checkMethodRedefinition(clazz, methodDeclaration);
@@ -139,8 +139,8 @@ public class ParseTypeDeclarationsList {
     // private var
     // ...
 
-    boolean isCorrectVarBegin = IdentRecognizer.is_any_modifier(parser.tok()) || parser.is(IdentMap.var_ident)
-        || parser.is(IdentMap.let_ident);
+    boolean isCorrectVarBegin = IdentRecognizer.is_any_modifier(parser.tok()) || parser.is(Keywords.var_ident)
+        || parser.is(Keywords.let_ident);
     if (!isCorrectVarBegin) {
       parser.perror("expect variable - declaration");
     }

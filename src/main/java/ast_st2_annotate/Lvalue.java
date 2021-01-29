@@ -4,7 +4,6 @@ import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
 
 import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
-import errors.AstParseException;
 import errors.ErrorLocation;
 
 public abstract class Lvalue {

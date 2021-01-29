@@ -3,7 +3,7 @@ package ast_symtab;
 import hashed.Hash_ident;
 import tokenize.Ident;
 
-public final class IdentMap {
+public final class Keywords {
 
   // you may put here ONLY keywords... nothings else...
 

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,18 +34,12 @@ import ast_expr.ExprSelf;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
-import ast_main.ImportsResolver;
-import ast_main.ParserMain;
-import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_st2_annotate.Lvalue;
 import ast_types.ClassType;
 import ast_types.Type;
 import ast_types.TypeBase;
-import ast_unit.CompilationUnit;
-import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
-import parse.Parse;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -343,32 +336,32 @@ public class TestTac {
     sb.append(" /*034*/  }                                                       \n");
     //@formatter:on
 
-//    Parse mainParser = new ParserMain(new ImportsResolver(sb).getSource()).initiateParse();
-//
-//    CompilationUnit unit = mainParser.parse();
-//    InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
-//    ExprExpression expression2 = instantiationUnit.getClasses().get(2).getMethods().get(1).getBlock()
-//        .getBlockStatements().get(4).getStatement().getExprStmt();
-//
-//    gen(expression2);
-//
-//    for (Entry<ResultName, Quad> e : allops.entrySet()) {
-//      // System.out.println(e.getKey().toString() + "::" +e.getValue().getType().toString());
-//    }
-//
-//    // // const folding: that is :)
-//    // List<Quad> toRemove = new ArrayList<>();
-//    // for (Quad q : quads) {
-//    //   if (q.getBase() == QuadOpc.NUM_DECL) {
-//    //     toRemove.add(q);
-//    //     hashResultName.get(q.getResult().getResult()).setResult(q.getLhs().toString());
-//    //   }
-//    // }
-//    // for (Quad q : toRemove) {
-//    //   quads.remove(q);
-//    // }
-//
-//    System.out.println(txt1(";\n"));
+    //    Parse mainParser = new ParserMain(new ImportsResolver(sb).getSource()).initiateParse();
+    //
+    //    CompilationUnit unit = mainParser.parse();
+    //    InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
+    //    ExprExpression expression2 = instantiationUnit.getClasses().get(2).getMethods().get(1).getBlock()
+    //        .getBlockStatements().get(4).getStatement().getExprStmt();
+    //
+    //    gen(expression2);
+    //
+    //    for (Entry<ResultName, Quad> e : allops.entrySet()) {
+    //      // System.out.println(e.getKey().toString() + "::" +e.getValue().getType().toString());
+    //    }
+    //
+    //    // // const folding: that is :)
+    //    // List<Quad> toRemove = new ArrayList<>();
+    //    // for (Quad q : quads) {
+    //    //   if (q.getBase() == QuadOpc.NUM_DECL) {
+    //    //     toRemove.add(q);
+    //    //     hashResultName.get(q.getResult().getResult()).setResult(q.getLhs().toString());
+    //    //   }
+    //    // }
+    //    // for (Quad q : toRemove) {
+    //    //   quads.remove(q);
+    //    // }
+    //
+    //    System.out.println(txt1(";\n"));
 
   }
 

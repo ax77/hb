@@ -5,11 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ast_symtab.IdentMap;
+import ast_symtab.Keywords;
 import parse.Parse;
 import parse.Tokenlist;
 import tokenize.Stream;
-import tokenize.T;
 import tokenize.Token;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
@@ -45,7 +44,7 @@ public class ImportsResolver {
 
     Set<String> imports = new HashSet<>();
     while (!parser.isEof()) {
-      if (parser.is(IdentMap.import_ident)) {
+      if (parser.is(Keywords.import_ident)) {
         imports.add(parseImport(parser));
       } else {
         parser.move();
@@ -63,7 +62,7 @@ public class ImportsResolver {
   }
 
   private String parseImport(Parse parser) throws IOException {
-    return dir + "/" + PackageNameCutter.cutPackageName(parser, IdentMap.import_ident);
+    return dir + "/" + PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
   }
 
 }
