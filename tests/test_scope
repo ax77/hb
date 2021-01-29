@@ -26,6 +26,13 @@ class test_scope {
         
         if e {}
         var e: boolean;
-        if e {}
+        var cnt: i32 = 0;
+        if cnt==1 {
+            cnt+=1;
+        } else if cnt==0 {
+            cnt-=1;
+        } else {
+            cnt -= 2; 
+        }
 	}
 }

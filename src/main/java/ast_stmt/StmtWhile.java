@@ -21,7 +21,11 @@ public class StmtWhile {
 
   @Override
   public String toString() {
-    return "while " + condition.toString() + block.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append("while ");
+    sb.append(condition.toString());
+    sb.append(block.toString());
+    return sb.toString();
   }
 
 }

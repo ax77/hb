@@ -3,6 +3,7 @@ package ast_stmt;
 import java.io.Serializable;
 
 import ast_vars.VarDeclarator;
+import utils_oth.NullChecker;
 
 public class StmtBlockItem implements Serializable {
   private static final long serialVersionUID = -5769795901942280395L;
@@ -11,10 +12,12 @@ public class StmtBlockItem implements Serializable {
   private StmtStatement statement;
 
   public StmtBlockItem(VarDeclarator localVariable) {
+    NullChecker.check(localVariable);
     this.localVariable = localVariable;
   }
 
   public StmtBlockItem(StmtStatement statement) {
+    NullChecker.check(statement);
     this.statement = statement;
   }
 
@@ -40,7 +43,7 @@ public class StmtBlockItem implements Serializable {
     if (statement != null) {
       return statement.toString() + "\n";
     }
-    return "STMT";
+    return "??? StmtBlockItem-is empty";
   }
 
 }

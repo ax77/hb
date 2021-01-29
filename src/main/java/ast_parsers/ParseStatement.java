@@ -16,10 +16,10 @@ import ast_expr.ExprExpression;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.StmtStatement;
-import ast_stmt.StmtWhile;
 import ast_stmt.StmtForeach;
 import ast_stmt.StmtSelect;
+import ast_stmt.StmtStatement;
+import ast_stmt.StmtWhile;
 import ast_symtab.Keywords;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -37,33 +37,24 @@ public class ParseStatement {
 
   public StmtBlock parseBlock(VarBase varBase) {
 
-    Token lbrace = parser.checkedMove(T.T_LEFT_BRACE);
+    parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
-      Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
+      parser.rbrace();
       return new StmtBlock();
     }
 
-    List<StmtBlockItem> bs = new ArrayList<StmtBlockItem>();
-    while (parser.tp() != T.T_RIGHT_BRACE) {
-      StmtBlockItem oneBlock = parseOneBlock(varBase);
-      bs.add(oneBlock);
+    final List<StmtBlockItem> items = new ArrayList<StmtBlockItem>();
+    while (!parser.is(T.T_RIGHT_BRACE)) {
+      final StmtBlockItem oneBlock = parseOneBlock(varBase);
+      items.add(oneBlock);
     }
-    StmtBlock block = new StmtBlock(bs);
+    parser.rbrace();
 
-    Token rbrace = parser.checkedMove(T.T_RIGHT_BRACE);
-    return block;
+    return new StmtBlock(items);
   }
 
   private StmtBlockItem parseOneBlock(VarBase varBase) {
-
-    //  BlockStatement:
-    //    LocalVariableDeclarationStatement
-    //    ClassOrInterfaceDeclaration
-    //    [Identifier :] Statement
-    //
-    //  LocalVariableDeclarationStatement:
-    //    { VariableModifier } Type VariableDeclarators ;
 
     if (parser.isTypeWithOptModifiersBegin()) {
       VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase);
@@ -79,10 +70,6 @@ public class ParseStatement {
       parser.perror("something wrong in a statement");
     }
     return new StmtBlockItem(stmt);
-  }
-
-  private ExprExpression e_expression() {
-    return new ParseExpression(parser).e_expression();
   }
 
   private StmtStatement parseStatement() {
@@ -104,7 +91,7 @@ public class ParseStatement {
         return new StmtStatement(StatementBase.SRETURN, null, beginPos);
       }
 
-      final ExprExpression expr = e_expression();
+      final ExprExpression expr = new ParseExpression(parser).e_expression();
       parser.semicolon();
       return new StmtStatement(StatementBase.SRETURN, expr, beginPos);
     }
@@ -113,7 +100,7 @@ public class ParseStatement {
 
     if (parser.is(while_ident)) {
       final Token beginPos = parser.checkedMove(while_ident);
-      final ExprExpression condition = e_expression();
+      final ExprExpression condition = new ParseExpression(parser).e_expression();
       final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
       return new StmtStatement(new StmtWhile(condition, block), beginPos);
     }
@@ -121,61 +108,60 @@ public class ParseStatement {
     // for item in collection {  }
 
     if (parser.is(for_ident)) {
-      return parseForLoop();
+      return parseForeach();
     }
 
-    // if ( expr ) stmt else stmt
+    // if 
 
     if (parser.is(if_ident)) {
-      return parse_if();
+      return parseSelection();
     }
 
     // {  }
 
     if (parser.is(T.T_LEFT_BRACE)) {
-      Token from = parser.tok();
-      return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), from);
+      final Token beginPos = parser.tok();
+      return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), beginPos);
     }
 
     // expression-statement by default
     //
-    StmtStatement ret = new StmtStatement(StatementBase.SEXPR, e_expression(), parser.tok());
+    final Token beginPos = parser.tok();
+    final ExprExpression expression = new ParseExpression(parser).e_expression();
     parser.semicolon();
-    return ret;
+    return new StmtStatement(StatementBase.SEXPR, expression, beginPos);
   }
 
-  private StmtStatement parse_if() {
-    Token from = parser.checkedMove(if_ident);
+  private StmtStatement parseSelection() {
+    Token ifKeyword = parser.checkedMove(if_ident);
 
-    final ExprExpression ifexpr = new ParseExpression(parser).e_expression();
+    final ExprExpression condition = new ParseExpression(parser).e_expression();
     shouldBeLeftBrace();
+    final StmtStatement trueStatement = parseStatement();
 
-    final StmtStatement ifstmt = parseStatement();
-    StmtStatement ifelse = null;
-
+    StmtStatement optionalElseStatement = null;
     if (parser.is(else_ident)) {
-      Token elsekw = parser.checkedMove(else_ident);
+      final Token elseKeyword = parser.checkedMove(else_ident);
       shouldBeIfOrLeftBrace();
-
-      ifelse = parseStatement();
-      return new StmtStatement(new StmtSelect(ifexpr, ifstmt, ifelse), elsekw);
+      optionalElseStatement = parseStatement();
+      return new StmtStatement(new StmtSelect(condition, trueStatement, optionalElseStatement), elseKeyword);
     }
 
-    return new StmtStatement(new StmtSelect(ifexpr, ifstmt, ifelse), from);
+    return new StmtStatement(new StmtSelect(condition, trueStatement, optionalElseStatement), ifKeyword);
   }
 
-  private StmtStatement parseForLoop() {
+  private StmtStatement parseForeach() {
 
     // for item in list {}
 
-    Token from = parser.checkedMove(for_ident);
-    Ident iter = parser.getIdent();
+    final Token beginPos = parser.checkedMove(for_ident);
+    final Ident iter = parser.getIdent();
 
     parser.checkedMove(Keywords.in_ident);
-    Ident collection = parser.getIdent();
+    final Ident collection = parser.getIdent();
 
-    StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
-    return new StmtStatement(new StmtForeach(iter, collection, loop, from), from);
+    final StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
+    return new StmtStatement(new StmtForeach(iter, collection, loop, beginPos), beginPos);
   }
 
   private void shouldBeIfOrLeftBrace() {

@@ -41,10 +41,7 @@ public class StmtForeach implements Serializable {
     sb.append(" in ");
     sb.append(auxCollection.toString());
 
-    if (loop != null) {
-      sb.append(loop.toString());
-    }
-
+    sb.append(loop.toString());
     return sb.toString();
   }
 

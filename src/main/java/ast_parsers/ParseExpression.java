@@ -30,7 +30,6 @@ import static tokenize.T.T_XOR;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_checkers.IdentRecognizer;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprArrayAccess;
 import ast_expr.ExprArrayCreation;
