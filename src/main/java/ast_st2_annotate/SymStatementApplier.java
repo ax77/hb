@@ -1,20 +1,17 @@
 package ast_st2_annotate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtForeach;
+import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
-import ast_stmt.Stmt_for;
-import ast_stmt.Stmt_if;
+import ast_stmt.StmtWhile;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
-import errors.ErrorLocation;
 
 public class SymStatementApplier {
 
@@ -32,78 +29,52 @@ public class SymStatementApplier {
     }
 
     StatementBase base = statement.getBase();
-    if (base == StatementBase.SFOR) {
+    if (base == StatementBase.SFOREACH_TMP) {
       visitForLoop(object, method, statement);
     } else if (base == StatementBase.SIF) {
-      visit_if(object, method, statement);
+      visitSelectionStmt(object, method, statement);
     } else if (base == StatementBase.SEXPR) {
       applyExpression(object, statement.getExprStmt());
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, statement.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
       applyExpression(object, statement.getExprStmt());
+    } else if (base == StatementBase.SWHILE) {
+      visitWhile(object, method, statement);
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
   }
 
-  private void visit_if(final ClassDeclaration object, final ClassMethodDeclaration method,
+  private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtStatement statement) {
-    Stmt_if sif = statement.getIfStmt();
-    applyExpression(object, sif.getCondition());
-    applyStatement(object, method, sif.getTrueStatement());
-    applyStatement(object, method, sif.getOptionalElseStatement());
+    final StmtWhile whileStmt = statement.getWhileStmt();
+    applyExpression(object, whileStmt.getCondition());
+    visitBlock(object, method, whileStmt.getBlock());
+  }
 
-    if (!sif.getCondition().getResultType().is_boolean()) {
+  private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
+      final StmtStatement statement) {
+    final StmtSelect ifStmt = statement.getIfStmt();
+    applyExpression(object, ifStmt.getCondition());
+    applyStatement(object, method, ifStmt.getTrueStatement());
+    applyStatement(object, method, ifStmt.getOptionalElseStatement());
+
+    if (!ifStmt.getCondition().getResultType().is_boolean()) {
       throw new AstParseException("if condition must be only a boolean type");
     }
   }
 
   private void visitForLoop(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtStatement statement) {
-    final Stmt_for forloop = statement.getForStmt();
+    final StmtForeach forloop = statement.getForStmt();
 
-    if (forloop.isShortForm()) {
+    final ForeachToWhileRewriter rewriter = new ForeachToWhileRewriter(symtabApplier, object, forloop);
+    final StmtBlock resultBlock = rewriter.genBlock();
 
-      // 1)
-      final ExprExpression collection = forloop.getAuxCollection();
-      applyExpression(object, collection);
-
-      // 2)
-      ForLoopRewriter.rewriteForLoop(object, forloop);
-
-      // 3) normal for-loop here, in its pure-huge form
-
-      final List<StmtBlockItem> items = new ArrayList<>();
-      final List<VarDeclarator> decl = forloop.getDecl();
-      if (decl.size() != 2) {
-        ErrorLocation.errorExpression("for-loop rewriter aux error", collection);
-      }
-
-      items.add(new StmtBlockItem(decl.remove(0)));
-      forloop.getLoop().getBlockStatements().add(0, new StmtBlockItem(decl.remove(0))); // TODO:
-
-      forloop.setDecl(null);
-      forloop.setShortForm(false);
-
-      items.add(new StmtBlockItem(new StmtStatement(forloop, collection.getBeginPos())));
-      final StmtBlock block = new StmtBlock(items);
-
-      statement.replaceForLoopWithBlock(block);
-      applyStatement(object, method, statement);
-
-    }
-
-    if (forloop.getDecl() != null) {
-      for (VarDeclarator var : forloop.getDecl()) {
-        visitLocalVar(object, var);
-      }
-    }
-
-    applyExpression(object, forloop.getTest());
-    applyExpression(object, forloop.getStep());
-    visitBlock(object, method, forloop.getLoop());
+    statement.replaceForLoopWithBlock(resultBlock);
+    applyStatement(object, method, statement);
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock body) {

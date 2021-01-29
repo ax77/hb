@@ -12,6 +12,8 @@ class test_import_list {
         for item in args {
             printf(s: item);
         }
+        
+        while true {}
 		
 	}
 } 

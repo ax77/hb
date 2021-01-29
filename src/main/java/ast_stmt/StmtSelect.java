@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 import ast_expr.ExprExpression;
 
-public class Stmt_if implements Serializable {
+public class StmtSelect implements Serializable {
   private static final long serialVersionUID = 8138015838549729527L;
 
   private final ExprExpression condition;
   private final StmtStatement trueStatement;
   private final StmtStatement optionalElseStatement;
 
-  public Stmt_if(ExprExpression condition, StmtStatement trueStatement, StmtStatement optionalElseStatement) {
+  public StmtSelect(ExprExpression condition, StmtStatement trueStatement, StmtStatement optionalElseStatement) {
     this.condition = condition;
     this.trueStatement = trueStatement;
     this.optionalElseStatement = optionalElseStatement;

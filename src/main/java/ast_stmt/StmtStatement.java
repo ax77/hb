@@ -14,27 +14,33 @@ public class StmtStatement implements Serializable, ILocation {
   private final Token beginPos;
   private StmtBlock bloskStmt;
   private ExprExpression exprStmt; // return expr or expr-stmt
-  private Stmt_for forStmt;
-  private Stmt_if ifStmt;
+  private StmtForeach forEachStmt;
+  private StmtSelect ifStmt;
+  private StmtWhile whileStmt;
 
   //MIR:TREE:rewriter
   public void replaceForLoopWithBlock(StmtBlock block) {
     this.base = StatementBase.SBLOCK;
     this.bloskStmt = block;
-    this.forStmt = null;
+    this.forEachStmt = null;
   }
 
-  public StmtStatement(Stmt_for forStmt, Token beginPos) {
-    this.base = StatementBase.SFOR;
+  public StmtStatement(StmtWhile whileStmt, Token beginPos) {
+    this.base = StatementBase.SWHILE;
     this.beginPos = beginPos;
-
-    this.forStmt = forStmt;
+    this.whileStmt = whileStmt;
   }
 
-  public StmtStatement(Stmt_if ifStmt, Token beginPos) {
+  // it will be rewritten to while() at the stage-2
+  public StmtStatement(StmtForeach forEachStmt, Token beginPos) {
+    this.base = StatementBase.SFOREACH_TMP;
+    this.beginPos = beginPos;
+    this.forEachStmt = forEachStmt;
+  }
+
+  public StmtStatement(StmtSelect ifStmt, Token beginPos) {
     this.base = StatementBase.SIF;
     this.beginPos = beginPos;
-
     this.ifStmt = ifStmt;
   }
 
@@ -43,7 +49,6 @@ public class StmtStatement implements Serializable, ILocation {
   public StmtStatement(StatementBase base, ExprExpression exprStmt, Token beginPos) {
     this.base = base;
     this.beginPos = beginPos;
-
     this.exprStmt = exprStmt;
   }
 
@@ -51,7 +56,6 @@ public class StmtStatement implements Serializable, ILocation {
   public StmtStatement(StmtBlock bloskStmt, Token beginPos) {
     this.base = StatementBase.SBLOCK;
     this.beginPos = beginPos;
-
     this.bloskStmt = bloskStmt;
   }
 
@@ -67,12 +71,16 @@ public class StmtStatement implements Serializable, ILocation {
     return exprStmt;
   }
 
-  public Stmt_for getForStmt() {
-    return forStmt;
+  public StmtForeach getForStmt() {
+    return forEachStmt;
   }
 
-  public Stmt_if getIfStmt() {
+  public StmtSelect getIfStmt() {
     return ifStmt;
+  }
+
+  public StmtWhile getWhileStmt() {
+    return whileStmt;
   }
 
   @Override
@@ -93,8 +101,11 @@ public class StmtStatement implements Serializable, ILocation {
         return "return;\n";
       }
     }
-    if (base == StatementBase.SFOR) {
-      return forStmt.toString();
+    if (base == StatementBase.SFOREACH_TMP) {
+      return forEachStmt.toString();
+    }
+    if (base == StatementBase.SWHILE) {
+      return whileStmt.toString();
     }
     return base.toString();
   }

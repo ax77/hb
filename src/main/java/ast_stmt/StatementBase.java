@@ -4,12 +4,12 @@ public enum StatementBase {
   //@formatter:off
     SBLOCK
   , SIF
-//  , SWHILE
+  , SWHILE
 //  , SDOWHILE
   , SEXPR
   , SBREAK
   , SCONTINUE
-  , SFOR
+  , SFOREACH_TMP
   , SRETURN
 //  , SGOTO
 //  , SLABEL

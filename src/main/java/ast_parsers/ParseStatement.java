@@ -17,8 +17,9 @@ import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
-import ast_stmt.Stmt_for;
-import ast_stmt.Stmt_if;
+import ast_stmt.StmtWhile;
+import ast_stmt.StmtForeach;
+import ast_stmt.StmtSelect;
 import ast_symtab.Keywords;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -88,28 +89,36 @@ public class ParseStatement {
 
     parser.errorStraySemicolon();
 
-    if (parser.is(while_ident) || parser.is(do_ident)) {
-      parser.perror("while/do loops are deprecated by design. use for-loop instead.");
+    if (parser.is(do_ident)) {
+      parser.perror("do loops unimpl.");
     }
 
     // return ... ;
     // return ;
 
     if (parser.is(return_ident)) {
-      Token from = parser.checkedMove(return_ident);
+      Token beginPos = parser.checkedMove(return_ident);
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new StmtStatement(StatementBase.SRETURN, null, from);
+        return new StmtStatement(StatementBase.SRETURN, null, beginPos);
       }
 
-      ExprExpression expr = e_expression();
-
-      parser.checkedMove(T_SEMI_COLON);
-      return new StmtStatement(StatementBase.SRETURN, expr, from);
+      final ExprExpression expr = e_expression();
+      parser.semicolon();
+      return new StmtStatement(StatementBase.SRETURN, expr, beginPos);
     }
 
-    // for( ;; )
+    // while condition {  }
+
+    if (parser.is(while_ident)) {
+      final Token beginPos = parser.checkedMove(while_ident);
+      final ExprExpression condition = e_expression();
+      final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
+      return new StmtStatement(new StmtWhile(condition, block), beginPos);
+    }
+
+    // for item in collection {  }
 
     if (parser.is(for_ident)) {
       return parseForLoop();
@@ -138,17 +147,21 @@ public class ParseStatement {
   private StmtStatement parse_if() {
     Token from = parser.checkedMove(if_ident);
 
-    ExprExpression ifexpr = new ParseExpression(parser).e_expression();
-    StmtStatement ifstmt = parseStatement();
+    final ExprExpression ifexpr = new ParseExpression(parser).e_expression();
+    shouldBeLeftBrace();
+
+    final StmtStatement ifstmt = parseStatement();
     StmtStatement ifelse = null;
 
     if (parser.is(else_ident)) {
       Token elsekw = parser.checkedMove(else_ident);
+      shouldBeIfOrLeftBrace();
+
       ifelse = parseStatement();
-      return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse), from);
+      return new StmtStatement(new StmtSelect(ifexpr, ifstmt, ifelse), elsekw);
     }
 
-    return new StmtStatement(new Stmt_if(ifexpr, ifstmt, ifelse), from);
+    return new StmtStatement(new StmtSelect(ifexpr, ifstmt, ifelse), from);
   }
 
   private StmtStatement parseForLoop() {
@@ -162,7 +175,24 @@ public class ParseStatement {
     Ident collection = parser.getIdent();
 
     StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
-    return new StmtStatement(new Stmt_for(iter, collection, loop, from), from);
+    return new StmtStatement(new StmtForeach(iter, collection, loop, from), from);
+  }
+
+  private void shouldBeIfOrLeftBrace() {
+    if (parser.is(if_ident)) {
+      return;
+    }
+    if (parser.is(T.T_LEFT_BRACE)) {
+      return;
+    }
+    parser.perror("expected '{' or 'if', but was: " + parser.tok().getValue());
+  }
+
+  private void shouldBeLeftBrace() {
+    if (parser.is(T.T_LEFT_BRACE)) {
+      return;
+    }
+    parser.perror("expected '{', but was: " + parser.tok().getValue());
   }
 
 }

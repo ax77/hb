@@ -18,12 +18,15 @@ public class StmtBlock implements Serializable {
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
-
     this.blockStatements = blockStatements;
   }
 
   public List<StmtBlockItem> getBlockStatements() {
     return blockStatements;
+  }
+
+  public void put(StmtBlockItem item) {
+    this.blockStatements.add(item);
   }
 
   @Override
