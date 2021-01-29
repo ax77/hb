@@ -8,6 +8,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprArrayAccess;
 import ast_expr.ExprArrayCreation;
+import ast_expr.ExprArrayProperty;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprClassCreation;
@@ -289,10 +290,10 @@ public class SymExpressionApplier {
       if (!fieldName.equals(expectedProperty)) {
         ErrorLocation.errorExpression("array has no property: " + fieldNameToString, e);
       }
-      e.setResultType(TypeBindings.make_u64());
 
-      // remember array
-      fieldAccess.setArray(resultTypeOfObject.getArrayType());
+      final ExprArrayProperty arrayProperty = new ExprArrayProperty(fieldAccess.getObject(), expectedProperty);
+      e.replaceFieldAccessWithArrayProperty(arrayProperty);
+      e.setResultType(TypeBindings.make_u64());
     }
 
     // class-field access

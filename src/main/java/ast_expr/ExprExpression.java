@@ -30,12 +30,20 @@ public class ExprExpression implements Serializable, ILocation {
   private ExprSelf selfExpression;
   private ExprArrayAccess arrayAccess;
   private boolean booleanLiteral;
+  private ExprArrayProperty arrayProperty;
 
   //MIR:TREE:rewriter
   public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
     this.base = ExpressionBase.EFIELD_ACCESS;
     this.fieldAccess = fieldAccess;
     this.ident = null;
+  }
+
+  //MIR:TREE:rewriter
+  public void replaceFieldAccessWithArrayProperty(ExprArrayProperty arrayProperty) {
+    this.base = ExpressionBase.EARRAY_PROPERTY;
+    this.arrayProperty = arrayProperty;
+    this.fieldAccess = null;
   }
 
   public ExprExpression(boolean value, Token beginPos) {
@@ -196,6 +204,10 @@ public class ExprExpression implements Serializable, ILocation {
     return booleanLiteral;
   }
 
+  public ExprArrayProperty getArrayProperty() {
+    return arrayProperty;
+  }
+
   @Override
   public String toString() {
     if (base == ExpressionBase.EBINARY) {
@@ -245,6 +257,9 @@ public class ExprExpression implements Serializable, ILocation {
         return "true";
       }
       return "false";
+    }
+    if (base == ExpressionBase.EARRAY_PROPERTY) {
+      return arrayProperty.toString();
     }
     return base.toString();
   }

@@ -16,7 +16,7 @@ public class TestTokenizer {
     // 3:beg+end+eof
 
     assertEquals(4 + 3, new Stream(".", "+-*/").getTokenlist().size());
-    assertEquals(2 + 3, new Stream(".", ">>>>=").getTokenlist().size());
+    assertEquals(3 + 3, new Stream(".", ">>>>=").getTokenlist().size());
     assertEquals(8 + 3, new Stream(".", "+=-=*=/=>>=<<===!=").getTokenlist().size());
     assertEquals(8 + 3, new Stream(".", "abc a b c 123 1 2 3").getTokenlist().size());
     assertEquals(2 + 3, new Stream(".", "'1' \"0\"").getTokenlist().size());
