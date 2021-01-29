@@ -2,7 +2,16 @@ import tests.opt;
 
 class test_templates_rshift_handling
 {
-    var opt: opt<opt<opt<opt<i32>>>>;
+    var opt5: opt<opt<opt<opt<opt<i32>>>>>;
+    var opt4: opt<opt<opt<opt<i32>>>>;
+    var opt3: opt<opt<opt<i32>>>;
+    var opt2: opt<opt<i32>>;
+    var opt1: opt<i32>;
+    var optarr1: opt<[i32]>;
+    var optarr2: opt<opt<[i32]>>;
+    var optarr3: opt<opt<opt<[i32]>>>;
+    var optarr4: opt<opt<opt<opt<[i32]>>>>;
+    var optarr5: opt<opt<opt<opt<opt<[i32]>>>>>;
     var a: i32;
     var b: i32;
     var c: i32 = a >> b >> 1;

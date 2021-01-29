@@ -2,36 +2,31 @@ package ast_st1_templates;
 
 import java.util.List;
 
+import ast_class.ClassDeclaration;
 import ast_types.ArrayType;
+import ast_types.ClassType;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
 
 public abstract class NameBuilder {
 
+  /// new name will be generated as [class_name+type_parameters]
+  /// and each type-parameter will be generated recursively also
+  /// so: for [opt<opt<i32>>] we'll have [opt_opt_i32] and so on
+  ///
   public static String buildNewName(final Type from) {
-
-    final String origNameOfTemplateClass = from.getClassType().getIdentifier().getName();
-    final String classUniqueId = from.getClassType().getUniqueIdToString();
-    final List<Type> typeArguments = from.getTypeArguments();
-
-    StringBuilder sb = new StringBuilder();
-    sb.append(origNameOfTemplateClass);
-    sb.append("_");
-    sb.append(typeArgumentsToStringForGeneratedName(typeArguments));
-    sb.append("_");
-    sb.append(classUniqueId);
-    return sb.toString();
+    return classTypeRefToString(from.getClassTypeRef());
   }
 
-  // move toString() here, to guarantee that all names for generated templates will be unique
-  // and not depends on general toString() which we may change one day or other.
-  //
+  /// move toString() here, to guarantee that all names for generated templates will be unique
+  /// and does not depend on general toString() which we may change one day or another.
+  ///
   private static String typeToString(Type tp) {
-    boolean isPrimitive = tp.is_primitive();
-    boolean isReference = tp.is_class();
-    boolean isArray = tp.is_array();
-    boolean isOk = isPrimitive || isReference || isArray;
+    final boolean isPrimitive = tp.is_primitive();
+    final boolean isReference = tp.is_class();
+    final boolean isArray = tp.is_array();
+    final boolean isOk = isPrimitive || isReference || isArray;
 
     if (!isOk) {
       throw new AstParseException("expect primitive or reference type for name-generator");
@@ -42,20 +37,40 @@ public abstract class NameBuilder {
     }
 
     if (isArray) {
-      ArrayType array = tp.getArrayType();
-      return String.format("%d", array.getCount()) + "_arr"; // TODO:
+      return arrayToString(tp);
     }
 
-    return tp.getClassType().getIdentifier().getName() + "_"
-        + typeArgumentsToStringForGeneratedName(tp.getTypeArguments());
+    return classTypeRefToString(tp.getClassTypeRef());
   }
 
-  private static String typeArgumentsToStringForGeneratedName(List<Type> typeArguments) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < typeArguments.size(); i++) {
-      Type tp = typeArguments.get(i);
+  private static String classTypeRefToString(final ClassType classTypeRef) {
+    final ClassDeclaration clazz = classTypeRef.getClazz();
+    final StringBuilder sb = new StringBuilder();
+    sb.append(clazz.getIdentifier().getName());
+    sb.append("_");
+    sb.append(typeArgumentsToString(classTypeRef.getTypeArguments()));
+    return sb.toString();
+  }
+
+  private static String arrayToString(Type tp) {
+    final ArrayType array = tp.getArrayType();
+    final StringBuilder sb = new StringBuilder();
+    sb.append("array_of_");
+    final int count = array.getCount();
+    if (count > 0) {
+      sb.append(String.format("%d", count));
+      sb.append("_");
+    }
+    sb.append(typeToString(array.getArrayOf()));
+    return sb.toString();
+  }
+
+  private static String typeArgumentsToString(List<Type> typeArgs) {
+    final StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < typeArgs.size(); i++) {
+      Type tp = typeArgs.get(i);
       sb.append(typeToString(tp));
-      if (i + 1 < typeArguments.size()) {
+      if (i + 1 < typeArgs.size()) {
         sb.append("_");
       }
     }

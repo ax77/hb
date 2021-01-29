@@ -43,7 +43,15 @@ public class ArrayType implements Serializable {
 
   @Override
   public String toString() {
-    return "[" + String.format("%d", count) + ": " + arrayOf.toString() + "]";
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    if (count > 0) {
+      sb.append(String.format("%d", count));
+      sb.append(": ");
+    }
+    sb.append(arrayOf.toString());
+    sb.append("]");
+    return sb.toString();
   }
 
 }

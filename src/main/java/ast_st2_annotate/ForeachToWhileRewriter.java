@@ -136,7 +136,7 @@ public class ForeachToWhileRewriter {
 
   private Ident createNameForIteratorItself() {
     final String nextCount = String.format("%d", var_counter++);
-    return Hash_ident.getHashedIdent("__it" + nextCount + "__");
+    return Hash_ident.getHashedIdent("it_" + nextCount);
   }
 
   private VarDeclarator genMethodGetIterator(final Ident collectionObjectName, final Type iteratorType,

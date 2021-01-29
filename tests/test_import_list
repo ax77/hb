@@ -11,6 +11,9 @@ class test_import_list {
         
         for item in args {
             printf(s: item);
+            for nested in args {
+                printf(s: nested);
+            }
         }
         
         while true {}
