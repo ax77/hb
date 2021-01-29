@@ -15,5 +15,8 @@ class test_templates_rshift_handling
     var a: i32;
     var b: i32;
     var c: i32 = a >> b >> 1;
+    func fn() {
+    	c >>= b;
+    }
 }
 

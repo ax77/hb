@@ -10,11 +10,9 @@ import ast_main.PackageNameCutter;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_method.MethodParameter;
-import ast_method.MethodSignature;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
-import ast_types.ClassType;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.TypeDeclaration;
@@ -48,14 +46,14 @@ public class ParseTypeDeclarationsList {
 
   private ClassDeclaration parseClassDeclaration() {
 
-    Token classKw = parser.checkedMove(Keywords.class_ident);
-    Ident ident = parser.getIdent();
+    final Token classKw = parser.checkedMove(Keywords.class_ident);
+    final Ident ident = parser.getIdent();
 
     // class Thing<T> {
     // ......^....^
-    List<Type> tp = new ParseTypeParameters(parser).parse(); // maybe empty
+    final List<Type> tp = parseTypeParametersT(); // maybe empty
 
-    Token lbrace = parser.lbrace();
+    final Token lbrace = parser.lbrace();
 
     // we'll register this name for type-handling
     // we can't register the whole class, because our compiler is not a one-pass one ;)
@@ -64,7 +62,7 @@ public class ParseTypeDeclarationsList {
     // maybe I'm wrong here, and there is more clean and nice way, I'll think about it later.
     //
 
-    ClassDeclaration clazz = parser.getClassType(ident);
+    final ClassDeclaration clazz = parser.getClassType(ident);
     clazz.setTypeParametersT(tp);
     parser.setCurrentClass(clazz);
 
@@ -93,45 +91,18 @@ public class ParseTypeDeclarationsList {
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
-    // init
-    // 
-    boolean isConstructorDeclaration = parser.is(Keywords.init_ident);
-    if (isConstructorDeclaration) {
-      final Token tok = parser.checkedMove(Keywords.init_ident);
-      final List<MethodParameter> parameters = new ParseFormalParameterList(parser).parse();
-      final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
-      final MethodSignature signature = new MethodSignature(Keywords.init_ident, parameters);
-      final Type returnType = new Type(new ClassType(clazz, new ArrayList<>()));
-      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
-          signature, returnType, block, tok);
-
-      checkConstructorRedefinition(clazz, constructor);
-      clazz.addConstructor(constructor);
-      return;
+    if (parser.is(Keywords.init_ident)) {
+      putConstructor(clazz);
+    } else if (parser.is(Keywords.deinit_ident)) {
+      putDestructor(clazz);
+    } else if (parser.is(Keywords.func_ident)) {
+      putMethod(clazz);
+    } else {
+      putField(clazz);
     }
+  }
 
-    // deinit
-    //
-    boolean isDestructor = parser.is(Keywords.deinit_ident);
-    if (isDestructor) {
-      final Token tok = parser.checkedMove(Keywords.deinit_ident);
-      final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
-      final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, tok);
-
-      checkDestructorRedefinition(clazz);
-      clazz.setDestructor(destructor);
-      return;
-    }
-
-    // function
-    //
-    boolean isFunction = parser.is(Keywords.func_ident);
-    if (isFunction) {
-      ClassMethodDeclaration methodDeclaration = new ParseMethodDeclaration(parser).parse(clazz);
-      checkMethodRedefinition(clazz, methodDeclaration);
-      clazz.addMethod(methodDeclaration);
-      return;
-    }
+  private void putField(ClassDeclaration clazz) {
 
     // var
     // let
@@ -139,17 +110,66 @@ public class ParseTypeDeclarationsList {
     // private var
     // ...
 
-    boolean isCorrectVarBegin = IdentRecognizer.is_any_modifier(parser.tok()) || parser.is(Keywords.var_ident)
-        || parser.is(Keywords.let_ident);
-    if (!isCorrectVarBegin) {
-      parser.perror("expect variable - declaration");
-    }
+    checkShouldBeTheField();
 
-    VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD);
+    final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD);
     field.setClazz(clazz);
+
     checkFieldRedefinition(clazz, field);
     clazz.addField(field);
 
+  }
+
+  private void checkShouldBeTheField() {
+    final boolean isOk = IdentRecognizer.is_any_modifier(parser.tok());
+    if (!isOk) {
+      parser.perror("expect class-field, but was: " + parser.tok().getValue());
+    }
+  }
+
+  private void putMethod(ClassDeclaration clazz) {
+    final Token beginPos = parser.checkedMove(Keywords.func_ident);
+    final Ident ident = parser.getIdent();
+    final List<MethodParameter> parameters = parseMethodParameters();
+
+    //4)
+    Type returnType = new Type(); // void stub
+    if (parser.is(T.T_ARROW)) {
+      parser.checkedMove(T.T_ARROW);
+      if (parser.is(Keywords.void_ident)) {
+        parser.move(); // void stub
+      } else {
+        returnType = new ParseType(parser).getType();
+      }
+    }
+
+    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, clazz, ident, parameters,
+        returnType, block, beginPos);
+
+    checkMethodRedefinition(clazz, method);
+    clazz.addMethod(method);
+  }
+
+  private void putDestructor(ClassDeclaration clazz) {
+    final Token beginPos = parser.checkedMove(Keywords.deinit_ident);
+    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, beginPos);
+
+    checkDestructorRedefinition(clazz);
+    clazz.setDestructor(destructor);
+  }
+
+  private void putConstructor(ClassDeclaration clazz) {
+    final Token beginPos = parser.checkedMove(Keywords.init_ident);
+    final List<MethodParameter> parameters = parseMethodParameters();
+    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    final Type returnType = new Type(); // the return type of constructor is 'void'
+    final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
+        Keywords.init_ident, parameters, returnType, block, beginPos);
+
+    checkConstructorRedefinition(clazz, constructor);
+    clazz.addConstructor(constructor);
   }
 
   private void checkDestructorRedefinition(ClassDeclaration clazz) {
@@ -203,6 +223,58 @@ public class ParseTypeDeclarationsList {
       }
     }
     return true;
+  }
+
+  private List<Type> parseTypeParametersT() {
+
+    // class Thing<K, V> {
+    // ...........^
+
+    final List<Type> typenamesT = new ArrayList<>();
+
+    if (parser.is(T.T_LT)) {
+      Token open = parser.checkedMove(T.T_LT);
+
+      typenamesT.add(new Type(parser.getIdent()));
+      while (parser.is(T.T_COMMA)) {
+        parser.move();
+        typenamesT.add(new Type(parser.getIdent()));
+      }
+
+      Token close = parser.checkedMove(T.T_GT);
+    }
+
+    return typenamesT;
+  }
+
+  private List<MethodParameter> parseMethodParameters() {
+
+    // func name(param: int) -> int {  }
+
+    List<MethodParameter> parameters = new ArrayList<>();
+    Token lparen = parser.lparen();
+
+    if (parser.is(T.T_RIGHT_PAREN)) {
+      Token rparen = parser.rparen();
+      return parameters;
+    }
+
+    parameters.add(parseOneParam());
+    while (parser.is(T.T_COMMA)) {
+      Token comma = parser.moveget();
+      parameters.add(parseOneParam());
+    }
+
+    Token rparen = parser.rparen();
+    return parameters;
+  }
+
+  private MethodParameter parseOneParam() {
+    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident id = tok.getIdent();
+    final Token colon = parser.colon();
+    final Type type = new ParseType(parser).getType();
+    return new MethodParameter(id, type);
   }
 
 }

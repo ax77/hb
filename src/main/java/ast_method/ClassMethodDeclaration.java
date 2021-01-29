@@ -31,20 +31,22 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private final ClassMethodBase base;
   private final Token beginPos;
   private final ClassDeclaration clazz;
-  private final MethodSignature signature;
+  private final Ident identifier;
+  private final List<MethodParameter> parameters;
   private /*final*/ Type returnType;
   private final StmtBlock block;
   private final int uniqueId;
 
   // function/init
-  public ClassMethodDeclaration(ClassMethodBase base, ClassDeclaration clazz, MethodSignature signature,
-      Type returnType, StmtBlock block, Token beginPos) {
+  public ClassMethodDeclaration(ClassMethodBase base, ClassDeclaration clazz, Ident identifier,
+      List<MethodParameter> parameters, Type returnType, StmtBlock block, Token beginPos) {
 
-    NullChecker.check(clazz, signature, block, beginPos);
+    NullChecker.check(base, clazz, identifier, parameters, returnType, block, beginPos);
 
     this.base = base;
     this.clazz = clazz;
-    this.signature = signature;
+    this.identifier = identifier;
+    this.parameters = parameters;
     this.returnType = returnType;
     this.block = block;
     this.beginPos = beginPos;
@@ -59,7 +61,8 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
     this.clazz = clazz;
-    this.signature = new MethodSignature(Keywords.deinit_ident, new ArrayList<>());
+    this.identifier = Keywords.deinit_ident;
+    this.parameters = new ArrayList<>();
     this.returnType = new Type();
     this.block = block;
     this.beginPos = beginPos;
@@ -76,10 +79,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.returnType = typeToSet;
   }
 
-  public MethodSignature getSignature() {
-    return signature;
-  }
-
   public ClassMethodBase getBase() {
     return base;
   }
@@ -89,7 +88,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   }
 
   public List<MethodParameter> getParameters() {
-    return signature.getParameters();
+    return parameters;
   }
 
   public boolean isVoid() {
@@ -100,17 +99,36 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     return block;
   }
 
+  private String parametersToString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("(");
+
+    for (int i = 0; i < parameters.size(); i++) {
+      MethodParameter param = parameters.get(i);
+      sb.append(param.toString());
+
+      if (i + 1 < parameters.size()) {
+        sb.append(", ");
+      }
+    }
+
+    sb.append(")");
+    return sb.toString();
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
     if (isFunction()) {
       sb.append("func ");
-      sb.append(signature.toString());
+      sb.append(identifier);
+      sb.append(parametersToString());
     }
 
     if (isConstructor()) {
-      sb.append(signature.toString());
+      sb.append(identifier);
+      sb.append(parametersToString());
     }
 
     if (isDestructor()) {
@@ -139,7 +157,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   }
 
   public Ident getIdentifier() {
-    return signature.getMethodName();
+    return identifier;
   }
 
   @Override
