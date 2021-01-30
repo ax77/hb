@@ -7,13 +7,17 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import utils_oth.NullChecker;
 
-public class ClassType implements Serializable {
+public class ClassTypeRef implements Serializable {
   private static final long serialVersionUID = 7267823355463707870L;
 
+  /// instantiated class: [new list<i32>();]
+  /// where 'list' is a class with its type-parameters: class list<T> {  }
+  /// and type-arguments are 'real' given types we have to expand in templates
+  ///
   private final ClassDeclaration clazz;
   private /*final*/ List<Type> typeArguments;
 
-  public ClassType(ClassDeclaration clazz, List<Type> typeArguments) {
+  public ClassTypeRef(ClassDeclaration clazz, List<Type> typeArguments) {
     NullChecker.check(clazz, typeArguments);
 
     this.clazz = clazz;
@@ -39,7 +43,7 @@ public class ClassType implements Serializable {
     clazz.setTypeParametersT(new ArrayList<>());
   }
 
-  public boolean is_equal_to(ClassType another) {
+  public boolean is_equal_to(ClassTypeRef another) {
     if (this == another) {
       return true;
     }

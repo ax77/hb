@@ -1,0 +1,6 @@
+class map<K, V>
+{
+	let key: K;
+	let val: V;
+}
+

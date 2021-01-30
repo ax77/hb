@@ -5,13 +5,11 @@ import static ast_types.TypeBase.TP_BOOLEAN;
 import static ast_types.TypeBase.TP_CLASS;
 import static ast_types.TypeBase.TP_F32;
 import static ast_types.TypeBase.TP_F64;
-import static ast_types.TypeBase.TP_FUNCTION;
 import static ast_types.TypeBase.TP_I16;
 import static ast_types.TypeBase.TP_I32;
 import static ast_types.TypeBase.TP_I64;
 import static ast_types.TypeBase.TP_I8;
-import static ast_types.TypeBase.TP_TUPLE;
-import static ast_types.TypeBase.TP_TYPE_VARIABLE_TYPENAME_T;
+import static ast_types.TypeBase.TP_TYPENAME_ID;
 import static ast_types.TypeBase.TP_U16;
 import static ast_types.TypeBase.TP_U32;
 import static ast_types.TypeBase.TP_U64;
@@ -30,20 +28,31 @@ import utils_oth.NullChecker;
 public class Type implements Serializable, TypeApi {
   private static final long serialVersionUID = -4630043454712001308L;
 
+  /// main properties
   private int size;
   private int align;
-
   private TypeBase base;
-  private ClassType classType;
-  private Ident typeVariable;
+
+  /// instantiated class: [new list<i32>();]
+  /// where 'list' is a class with its type-parameters: class list<T> {  }
+  /// and type-arguments are 'real' given types we have to expand in templates
+  ///
+  private ClassTypeRef classTypeRef;
+
+  /// class list<T> {  } -> here 'T' is a 'typename T'
+  private Ident typenameId;
+
+  /// TODO: is array-length a property of the type or is not?
   private ArrayType arrayType;
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
 
+    this.size = another.size;
+    this.align = another.align;
     this.base = another.base;
-    this.classType = another.classType;
-    this.typeVariable = another.typeVariable;
+    this.classTypeRef = another.classTypeRef;
+    this.typenameId = another.typenameId;
     this.arrayType = another.arrayType;
   }
 
@@ -77,55 +86,51 @@ public class Type implements Serializable, TypeApi {
     this.align = this.size;
   }
 
-  public Type(ClassType ref) {
+  public Type(ClassTypeRef ref) {
     NullChecker.check(ref);
 
     this.base = TypeBase.TP_CLASS;
-    this.classType = ref;
+    this.classTypeRef = ref;
   }
 
-  public Type(Ident typeVariable) {
-    NullChecker.check(typeVariable);
+  public Type(Ident typenameId) {
+    NullChecker.check(typenameId);
 
-    this.base = TP_TYPE_VARIABLE_TYPENAME_T;
-    this.typeVariable = typeVariable;
+    this.base = TP_TYPENAME_ID;
+    this.typenameId = typenameId;
   }
 
   public ArrayType getArrayType() {
     return arrayType;
   }
 
-  public ClassDeclaration getClassType() {
+  public ClassTypeRef getClassTypeRef() {
+    return classTypeRef;
+  }
+
+  public ClassDeclaration getClassTypeFromRef() {
     if (!is_class()) {
       throw new AstParseException("is not a class");
     }
-    return classType.getClazz();
+    return classTypeRef.getClazz();
   }
 
-  public ClassType getClassTypeRef() {
-    return classType;
-  }
-
-  public List<Type> getTypeArguments() {
+  public List<Type> getTypeArgumentsFromRef() {
     if (!is_class()) {
       throw new AstParseException("is not a class");
     }
-    return classType.getTypeArguments();
+    return classTypeRef.getTypeArguments();
   }
 
-  public Ident getTypeVariable() {
-    return typeVariable;
+  public Ident getTypenameId() {
+    if (!is_typename_id()) {
+      throw new AstParseException("is not typename T");
+    }
+    return typenameId;
   }
 
   public TypeBase getBase() {
     return base;
-  }
-
-  public Ident getTypeParameter() {
-    if (!is_type_var()) {
-      throw new AstParseException("is not typename T");
-    }
-    return typeVariable;
   }
 
   public boolean is_primitive(TypeBase withBase) {
@@ -201,12 +206,12 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_VOID_STUB)) {
         return false;
       }
-    } else if (is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T)) {
-      if (!another.is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T)) {
+    } else if (is(TypeBase.TP_TYPENAME_ID)) {
+      if (!another.is(TypeBase.TP_TYPENAME_ID)) {
         return false;
       }
-      final Ident anotherTypeVariable = another.getTypeVariable();
-      final String name1 = typeVariable.getName();
+      final Ident anotherTypeVariable = another.getTypenameId();
+      final String name1 = typenameId.getName();
       final String name2 = anotherTypeVariable.getName();
       if (!name1.equals(name2)) {
         return false;
@@ -215,11 +220,7 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_CLASS)) {
         return false;
       }
-      if (!classType.is_equal_to(another.getClassTypeRef())) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_FUNCTION)) {
-      if (!another.is(TypeBase.TP_FUNCTION)) {
+      if (!classTypeRef.is_equal_to(another.getClassTypeRef())) {
         return false;
       }
     } else if (is(TypeBase.TP_ARRAY)) {
@@ -228,10 +229,6 @@ public class Type implements Serializable, TypeApi {
       }
       final ArrayType anotherArray = another.getArrayType();
       if (!arrayType.is_equal_to(anotherArray)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_TUPLE)) {
-      if (!another.is(TypeBase.TP_TUPLE)) {
         return false;
       }
     } else {
@@ -247,20 +244,17 @@ public class Type implements Serializable, TypeApi {
     if (is_primitive()) {
       return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(base);
     }
-    if (is_type_var()) {
-      return typeVariable.getName();
+    if (is_typename_id()) {
+      return typenameId.getName();
     }
     if (is_void_stub()) {
       return "void";
     }
     if (is_array()) {
-      if (arrayType == null) {
-        return "[???]";
-      }
       return arrayType.toString();
     }
     if (is_class()) {
-      return classType.toString();
+      return classTypeRef.toString();
     }
     return base.toString();
   }
@@ -291,9 +285,7 @@ public class Type implements Serializable, TypeApi {
   @Override public boolean is_f64()       { return is(TP_F64); }
   @Override public boolean is_boolean()   { return is(TP_BOOLEAN); }
   @Override public boolean is_void_stub() { return is(TP_VOID_STUB); }
-  @Override public boolean is_function()  { return is(TP_FUNCTION); }
   @Override public boolean is_array()     { return is(TP_ARRAY); }
-  @Override public boolean is_tuple()     { return is(TP_TUPLE); }
   //@formatter:on
 
   @Override
@@ -302,8 +294,8 @@ public class Type implements Serializable, TypeApi {
   }
 
   @Override
-  public boolean is_type_var() {
-    return is(TypeBase.TP_TYPE_VARIABLE_TYPENAME_T);
+  public boolean is_typename_id() {
+    return is(TP_TYPENAME_ID);
   }
 
   @Override
@@ -313,7 +305,7 @@ public class Type implements Serializable, TypeApi {
 
   @Override
   public boolean is_class_template() {
-    return is_class() && classType.isTemplate();
+    return is_class() && classTypeRef.isTemplate();
   }
 
   @Override

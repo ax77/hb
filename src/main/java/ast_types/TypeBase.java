@@ -14,9 +14,7 @@ public enum TypeBase {
   , TP_F64
   , TP_BOOLEAN
   , TP_VOID_STUB
-  , TP_TYPE_VARIABLE_TYPENAME_T
+  , TP_TYPENAME_ID
   , TP_CLASS
-  , TP_FUNCTION
   , TP_ARRAY
-  , TP_TUPLE
 }

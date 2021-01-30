@@ -4,7 +4,7 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_types.ArrayType;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
@@ -43,12 +43,17 @@ public abstract class NameBuilder {
     return classTypeRefToString(tp.getClassTypeRef());
   }
 
-  private static String classTypeRefToString(final ClassType classTypeRef) {
+  private static String classTypeRefToString(final ClassTypeRef classTypeRef) {
     final ClassDeclaration clazz = classTypeRef.getClazz();
     final StringBuilder sb = new StringBuilder();
     sb.append(clazz.getIdentifier().getName());
-    sb.append("_");
-    sb.append(typeArgumentsToString(classTypeRef.getTypeArguments()));
+
+    final List<Type> typeArguments = classTypeRef.getTypeArguments();
+    if (!typeArguments.isEmpty()) {
+      sb.append("_");
+      sb.append(typeArgumentsToString(typeArguments));
+    }
+
     return sb.toString();
   }
 
@@ -67,6 +72,7 @@ public abstract class NameBuilder {
 
   private static String typeArgumentsToString(List<Type> typeArgs) {
     final StringBuilder sb = new StringBuilder();
+    // sb.append("<");
     for (int i = 0; i < typeArgs.size(); i++) {
       Type tp = typeArgs.get(i);
       sb.append(typeToString(tp));
@@ -74,6 +80,7 @@ public abstract class NameBuilder {
         sb.append("_");
       }
     }
+    // sb.append(">");
     return sb.toString();
   }
 }

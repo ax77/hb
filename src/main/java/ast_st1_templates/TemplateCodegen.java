@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_unit.InstantiationUnit;
@@ -42,7 +42,7 @@ public class TemplateCodegen {
     }
 
     //anti-recursion
-    if (from.getClassType().isNoexpand()) {
+    if (from.getClassTypeFromRef().isNoexpand()) {
       return from;
     }
 
@@ -57,9 +57,18 @@ public class TemplateCodegen {
 
     final String newName = NameBuilder.buildNewName(from);
 
-    final ClassDeclaration templateClass = copyClazz(from.getClassType(), newName);
-    final List<Type> typeArguments = from.getTypeArguments();
+    final ClassDeclaration templateClass = copyClazz(from.getClassTypeFromRef(), newName);
+    final List<Type> typeArguments = from.getTypeArgumentsFromRef();
     final List<Type> typeParameters = templateClass.getTypeParametersT();
+
+    // we should store the original names of type-parameters:
+    // class pair<K, V> {  } -> the K and V as identifiers.
+    // bacause the typeParameters will be replaced, and we'll lose
+    // the information
+    final List<Ident> typeParametersNames = new ArrayList<>();
+    for (Type typeparm : typeParameters) {
+      typeParametersNames.add(typeparm.getTypenameId());
+    }
 
     //anti-recursion
     expansionState.add(0, templateClass);
@@ -77,13 +86,13 @@ public class TemplateCodegen {
     // II) replace
     for (int i = 0; i < typeParameters.size(); i++) {
       Type ref = typeArguments.get(i);
-      Ident typenameT = typeParameters.get(i).getTypeVariable();
+      Ident typenameT = typeParametersNames.get(i);
       Type typeToSet = getTypeFromTemplate(ref);
       replaceOneTypeParam(templateClass, typenameT, typeToSet);
     }
 
     templateClass.setTypeParametersT(new ArrayList<Type>());
-    final Type result = new Type(new ClassType(templateClass, new ArrayList<>()));
+    final Type result = new Type(new ClassTypeRef(templateClass, new ArrayList<>()));
 
     // TODO: how to do this more clean and precise?
     // if deep-nested templates generated many times, and they are the same
@@ -97,9 +106,10 @@ public class TemplateCodegen {
       return ready2;
     }
 
-    generatedClassesForReuse.put(from.getClassType().getIdentifier().getName(), new Dto(from, typeArguments, result));
+    generatedClassesForReuse.put(from.getClassTypeFromRef().getIdentifier().getName(),
+        new Dto(from, typeArguments, result));
     generatedClasses.add(result);
-    instantiationUnit.put(result.getClassType());
+    instantiationUnit.put(result.getClassTypeFromRef());
 
     return result;
   }
@@ -110,12 +120,12 @@ public class TemplateCodegen {
       throw new AstParseException("expect class-type");
     }
 
-    final ClassDeclaration classWeWantToFind = result.getClassType();
+    final ClassDeclaration classWeWantToFind = result.getClassTypeFromRef();
     final String name = classWeWantToFind.getIdentifier().getName();
 
     for (Type tp : generatedClasses) {
       if (tp.is_class()) {
-        final ClassDeclaration classAlreadyGenerated = tp.getClassType();
+        final ClassDeclaration classAlreadyGenerated = tp.getClassTypeFromRef();
         final boolean first = classAlreadyGenerated.getIdentifier().getName().equals(name);
         final boolean second = classAlreadyGenerated.getUniqueId() == classWeWantToFind.getUniqueId();
         if (first && second) {
@@ -137,7 +147,7 @@ public class TemplateCodegen {
       throw new AstParseException("expect class-type");
     }
 
-    final String name = from.getClassType().getIdentifier().getName();
+    final String name = from.getClassTypeFromRef().getIdentifier().getName();
     final Dto storedResult = generatedClassesForReuse.get(name);
 
     if (storedResult == null) {
@@ -145,7 +155,7 @@ public class TemplateCodegen {
     }
 
     final List<Type> previouslyExpandedArgs = storedResult.getTypeArguments();
-    final List<Type> currentGivenAgrs = from.getTypeArguments();
+    final List<Type> currentGivenAgrs = from.getTypeArgumentsFromRef();
     if (!TypeListsComparer.typeListsAreEqual(previouslyExpandedArgs, currentGivenAgrs)) {
       return null;
     }
@@ -206,11 +216,11 @@ public class TemplateCodegen {
 
   private boolean maybeReplaceTypenameWithType(Type typeToCheck, Ident typenameT) {
 
-    if (!typeToCheck.is_type_var()) {
+    if (!typeToCheck.is_typename_id()) {
       return false;
     }
 
-    final Ident typeParameterName = typeToCheck.getTypeParameter();
+    final Ident typeParameterName = typeToCheck.getTypenameId();
     if (typeParameterName.equals(typenameT)) {
       return true;
     }
@@ -224,7 +234,7 @@ public class TemplateCodegen {
       return;
     }
 
-    final ClassDeclaration nested = typeToCheck.getClassType();
+    final ClassDeclaration nested = typeToCheck.getClassTypeFromRef();
 
     if (nested.equals(object)) {
       nested.setTypeParametersT(new ArrayList<>());

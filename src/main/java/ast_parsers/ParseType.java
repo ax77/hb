@@ -8,7 +8,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
 import ast_types.ArrayType;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import literals.IntLiteral;
@@ -162,7 +162,7 @@ public class ParseType {
     }
 
     final List<Type> typeArguments = getTypeArguments();
-    final ClassType ref = new ClassType(parser.getClassType(typeName), typeArguments);
+    final ClassTypeRef ref = new ClassTypeRef(parser.getClassType(typeName), typeArguments);
     return new Type(ref);
   }
 

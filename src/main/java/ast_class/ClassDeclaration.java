@@ -33,10 +33,12 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   /// we store type-variables as original references to Type
   ///
-  /// each type-variable is an identifier like: class Pair<K, V> { K key; V value; Pair<K, V> hash; }
+  /// each type-variable is an identifier like: 
+  /// class Pair<K, V> { K key; V value; Pair<K, V> hash; }
   /// where type-variables are: K and V in this example
   ///
-  /// when we'll expand template, we'll replace each at once in every places it used by its pointer
+  /// when we'll expand template, 
+  /// we'll replace each at once in every places it used by its pointer
   /// it is important to not screw this reference up before
   ///
   private List<Type> typeParametersT;
@@ -200,7 +202,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   public boolean hasTypeParameter(Ident typenameT) {
     for (Type ref : typeParametersT) {
-      if (ref.getTypeVariable().equals(typenameT)) {
+      if (ref.getTypenameId().equals(typenameT)) {
         return true;
       }
     }
@@ -209,7 +211,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   public void setTypeParametersT(List<Type> typeParametersT) {
     for (Type tp : typeParametersT) {
-      if (!tp.is_type_var()) {
+      if (!tp.is_typename_id()) {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
@@ -339,7 +341,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   public Type getTypeParameter(Ident ident) {
     for (Type ref : typeParametersT) {
-      if (ref.getTypeVariable().equals(ident)) {
+      if (ref.getTypenameId().equals(ident)) {
         return ref;
       }
     }

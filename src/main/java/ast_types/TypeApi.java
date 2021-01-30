@@ -14,11 +14,9 @@ public interface TypeApi {
   public boolean is_f64();
   public boolean is_boolean();
   public boolean is_void_stub();
-  public boolean is_type_var();
+  public boolean is_typename_id();
   public boolean is_class();
-  public boolean is_function();
   public boolean is_array();
-  public boolean is_tuple();
   public int get_size();
   public int get_align();
   public boolean is_equal_to(Type another);

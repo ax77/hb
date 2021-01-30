@@ -11,21 +11,21 @@ import ast_unit.TypeDeclaration;
 
 public class InstatantiationUnitBuilder {
 
-  // we hold instantiation-unit in template-codegen, because we
-  // have to expand the whole unit, and we should know every template
-  // we expanded until the end of the source, because we reuse previously 
-  // expanded templates at new invocation places, and after expansion we
-  // store expanded class in instantiation-unit.
-  // why do we need this class?
-  // we traverse the whole syntax-tree, ignoring templated-classes, and
-  // for each class we collect its type-setters (places where type may will change)
-  // then - we try to expand this type if it is a template invocation
-  // if it doesn't - the type is returning the same as it was before
-  // as a result we have the whole classes - which was generated from templates,
-  // and the rest of classes - where each template was changed with its type at
-  // instantiation point.
-  // that is: we ignore here all templates from compilation-unit,
-  // expand all templates in normal classes, and collect the result
+  /// we hold instantiation-unit in template-codegen, because we
+  /// have to expand the whole unit, and we should know every template
+  /// we expanded until the end of the source, because we should reuse previously 
+  /// expanded templates at the new invocation places, and after expansion we
+  /// store expanded class in instantiation-unit.
+  /// why do we need this class?
+  /// we traverse the whole syntax-tree, ignoring templated-classes, and
+  /// for each class we collect its type-setters (places where type may will change)
+  /// then - we try to expand this type if it is a template invocation
+  /// if it doesn't - the type is returning the same as it was before.
+  /// as a result we have all bunch of classes - which was generated from templates,
+  /// and the rest of classes - where each template was changed with its type at
+  /// instantiation point.
+  /// that is: we ignore here all templates from compilation-unit,
+  /// expand all templates in normal classes, and collect the result
 
   private final TemplateCodegen templateCodegen;
 

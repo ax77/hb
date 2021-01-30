@@ -45,7 +45,7 @@ import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_symtab.Keywords;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import hashed.Hash_ident;
 import parse.Parse;
@@ -507,7 +507,7 @@ public class ParseExpression {
             new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(ExpressionBase.ESTRING_CONST, saved)));
 
         final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
-        final ClassType ref = new ClassType(stringClass, emptyTypeArgs);
+        final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
         final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
 
         return new ExprExpression(classCreation, saved);
@@ -544,7 +544,7 @@ public class ParseExpression {
 
         final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
         final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-        final ClassType ref = new ClassType(instantiatedClass, typeArguments);
+        final ClassTypeRef ref = new ClassTypeRef(instantiatedClass, typeArguments);
         final List<FuncArg> arguments = parseArglist();
         final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
 

@@ -22,7 +22,7 @@ import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
 import ast_types.ArrayType;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_vars.VarBase;
@@ -151,7 +151,7 @@ public class SymExpressionApplier {
   private void applySelfLiteral(final ExprExpression e) {
     final ClassDeclaration clazz = e.getSelfExpression().getClazz();
     final ArrayList<Type> typeArguments = new ArrayList<>();
-    final ClassType ref = new ClassType(clazz, typeArguments);
+    final ClassTypeRef ref = new ClassTypeRef(clazz, typeArguments);
     e.setResultType(new Type(ref));
   }
 
@@ -299,7 +299,7 @@ public class SymExpressionApplier {
     // class-field access
 
     else {
-      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassType();
+      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassTypeFromRef();
       final VarDeclarator field = whereWeWantToFindTheField.getField(fieldName);
 
       if (field == null) {
@@ -328,7 +328,7 @@ public class SymExpressionApplier {
       ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
     }
 
-    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassType();
+    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassTypeFromRef();
     final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
         methodInvocation.getArguments());
 

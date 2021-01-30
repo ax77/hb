@@ -35,7 +35,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_st2_annotate.Lvalue;
-import ast_types.ClassType;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBase;
 import ast_vars.VarDeclarator;
@@ -268,7 +268,7 @@ public class TestTac {
     else if (base == ESELF) {
       final ExprSelf exprSelf = e.getSelfExpression();
       final ClassDeclaration clazz = exprSelf.getClazz();
-      final Type classType = new Type(new ClassType(clazz, new ArrayList<>()));
+      final Type classType = new Type(new ClassTypeRef(clazz, new ArrayList<>()));
       quads(new Quad(QuadOpc.SELF_DECL, ht(), classType, h("self")));
     }
 

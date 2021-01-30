@@ -1,33 +1,39 @@
 import tests.opt;
+import tests.map;
+import tests.just_test;
 
 class test_templates_rshift_handling
 {
-    static var opt5: opt<opt<opt<opt<opt<i32>>>>>;
-    private var opt4: opt<opt<opt<opt<i32>>>>;
-    public var opt3: opt<opt<opt<i32>>>;
-    var opt2: opt<opt<i32>>;
-    var opt1: opt<i32>;
-    var optarr1: opt<[i32]>;
-    var optarr2: opt<opt<[i32]>>;
-    var optarr3: opt<opt<opt<[i32]>>>;
-    var optarr4: opt<opt<opt<opt<[i32]>>>>;
-    var optarr5: opt<opt<opt<opt<opt<[i32]>>>>>;
-    var a: i32;
-    var b: i32;
-    var c: i32 = a >> b >> 1;
-    var arrofgen1d: [opt<i32>];
-    let arrofgen2d: [[opt<i32>]];
-    static var arrofgen_of_gen1: [opt<opt<i32>>];
-    weak var arrofgen_of_gen2: [[opt<opt<i32>>]];
-    
-    private init() {
-    }
-    
-    public init(a: i32) {
-    }
-    
-    native func fn() {
-    	c >>= b;
-    }
+
+	var map: map<i32, opt<[opt<i32>]>>;
+	var just_test: just_test<u8,u16,u32,u64,f64>;
+
+    // static var opt5: opt<opt<opt<opt<opt<i32>>>>>;
+    // private var opt4: opt<opt<opt<opt<i32>>>>;
+    // public var opt3: opt<opt<opt<i32>>>;
+    // var opt2: opt<opt<i32>>;
+    // var opt1: opt<i32>;
+    // var optarr1: opt<[i32]>;
+    // var optarr2: opt<opt<[i32]>>;
+    // var optarr3: opt<opt<opt<[i32]>>>;
+    // var optarr4: opt<opt<opt<opt<[i32]>>>>;
+    // var optarr5: opt<opt<opt<opt<opt<[i32]>>>>>;
+    // var a: i32;
+    // var b: i32;
+    // var c: i32 = a >> b >> 1;
+    // var arrofgen1d: [opt<i32>];
+    // let arrofgen2d: [[opt<i32>]];
+    // static var arrofgen_of_gen1: [opt<opt<i32>>];
+    // weak var arrofgen_of_gen2: [[opt<opt<i32>>]];
+    // 
+    // private init() {
+    // }
+    // 
+    // public init(a: i32) {
+    // }
+    // 
+    // native func fn() {
+    // 	c >>= b;
+    // }
 }
 
