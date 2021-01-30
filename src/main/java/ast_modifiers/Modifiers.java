@@ -39,16 +39,20 @@ public class Modifiers implements Serializable {
 
   private void check(Ident mod) {
     final String name = mod.getName();
-    if (!Mods.isAnyModifier(mod)) {
+    if (!Mods.isAnyModifierId(mod)) {
       throw new AstParseException("not a modifier: " + name);
     }
-    if (has(mod)) {
+    if (contains(mod)) {
       throw new AstParseException("duplicate modifier: " + name);
     }
   }
 
-  public boolean has(Ident what) {
+  public boolean contains(Ident what) {
     return modifiers.contains(what);
+  }
+  
+  public boolean isEmpty() {
+    return modifiers.isEmpty();
   }
 
   public Set<Ident> getModifiers() {

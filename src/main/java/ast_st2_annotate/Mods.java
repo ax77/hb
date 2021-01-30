@@ -20,51 +20,93 @@ public abstract class Mods {
 
   //@formatter:off
   
+  public static final Ident ALL_MODS[] = { 
+      Keywords.weak_ident,  
+      Keywords.var_ident,   
+      Keywords.let_ident,    
+      Keywords.private_ident,
+      Keywords.public_ident, 
+      Keywords.native_ident, 
+      Keywords.static_ident, 
+  };
+  
+  public static final Ident METHOD_MODS[] = {
+      Keywords.private_ident, 
+      Keywords.public_ident,  
+      Keywords.native_ident,  
+      Keywords.static_ident,  
+  };
+  
+  public static final Ident FIELD_MODS[] = { 
+      Keywords.weak_ident,  
+      Keywords.var_ident,   
+      Keywords.let_ident,    
+      Keywords.private_ident,
+      Keywords.public_ident, 
+      Keywords.static_ident, 
+  };
+  
+  private static boolean in(Ident what, Ident[] where) {
+    for(Ident id: where) {
+      if(what.equals(id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   public static boolean isAnyModifier(Token what) {
-    return what.ofType(T.TOKEN_IDENT) && isAnyModifier(what.getIdent());
+    return what.ofType(T.TOKEN_IDENT) && isAnyModifierId(what.getIdent());
   }
   
-  public static boolean isAnyModifier(Ident what) {
-    return what.equals(Keywords.weak_ident) 
-        || what.equals(Keywords.var_ident) 
-        || what.equals(Keywords.let_ident)
-        || what.equals(Keywords.private_ident)
-        || what.equals(Keywords.public_ident)
-        || what.equals(Keywords.native_ident)
-        || what.equals(Keywords.static_ident)
-        ;
-  }
-  
-  public static boolean isMethodModifier(Token what) {
-    return what.isIdent(Keywords.private_ident)
-        || what.isIdent(Keywords.public_ident)
-        || what.isIdent(Keywords.native_ident)
-        || what.isIdent(Keywords.static_ident)
-        ;
-  }
-  
-  public static boolean isMethodParameterModifier(Token what) {
-    return what.isIdent(Keywords.var_ident) 
-        || what.isIdent(Keywords.let_ident)
-        ;
-  }
-  
-  public static boolean isClassFieldModifier(Token what) {
-    return what.isIdent(Keywords.weak_ident) 
-        || what.isIdent(Keywords.var_ident) 
-        || what.isIdent(Keywords.let_ident)
-        || what.isIdent(Keywords.private_ident)
-        || what.isIdent(Keywords.public_ident)
-        || what.isIdent(Keywords.static_ident)
-        ;
-  }
-  
-  public static boolean isConstructorModifier(Token what) {
-    return what.isIdent(Keywords.private_ident)
-        || what.isIdent(Keywords.public_ident)
-        ;
+  public static boolean isAnyModifierId(Ident what) {
+    return in(what, ALL_MODS);
   }
 
   //@formatter:on
+
+  private static boolean isMethodModifierId(Ident what) {
+    return in(what, METHOD_MODS);
+  }
+
+  // TODO:
+  private static boolean isMethodParameterModifierId(Ident what) {
+    return what.equals(Keywords.let_ident);
+  }
+
+  private static boolean isClassFieldModifierId(Ident what) {
+    return in(what, FIELD_MODS);
+  }
+
+  private static boolean isConstructorModifierId(Ident what) {
+    return what.equals(Keywords.private_ident) || what.equals(Keywords.public_ident);
+  }
+
+  public static boolean isCorrectMethodMods(Modifiers mods) {
+    for (Ident mod : mods.getModifiers()) {
+      if (!isMethodModifierId(mod)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public static boolean isCorrectFieldMods(Modifiers mods) {
+    for (Ident mod : mods.getModifiers()) {
+      if (!isClassFieldModifierId(mod)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public static boolean isCorrectConstructorMods(Modifiers mods) {
+    for (Ident mod : mods.getModifiers()) {
+      if (!isConstructorModifierId(mod)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
 }

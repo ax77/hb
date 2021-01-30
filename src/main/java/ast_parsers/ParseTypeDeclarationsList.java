@@ -101,6 +101,10 @@ public class ParseTypeDeclarationsList {
 
   private void putField(ClassDeclaration clazz, Modifiers modifiers) {
 
+    if (!Mods.isCorrectFieldMods(modifiers)) {
+      parser.perror("field modifiers are incorrect: " + modifiers.toString());
+    }
+
     final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD, modifiers);
     field.setClazz(clazz);
 
@@ -110,6 +114,10 @@ public class ParseTypeDeclarationsList {
   }
 
   private void putMethod(ClassDeclaration clazz, Modifiers modifiers) {
+
+    if (!Mods.isCorrectMethodMods(modifiers)) {
+      parser.perror("method modifiers are incorrect: " + modifiers.toString());
+    }
 
     final Token beginPos = parser.checkedMove(Keywords.func_ident);
     final Ident ident = parser.getIdent();
@@ -135,7 +143,7 @@ public class ParseTypeDeclarationsList {
   }
 
   private void putDestructor(ClassDeclaration clazz, Modifiers modifiers) {
-    if (!modifiers.getModifiers().isEmpty()) {
+    if (!modifiers.isEmpty()) {
       parser.perror("destructor with modifiers: " + modifiers.toString());
     }
 
@@ -148,6 +156,11 @@ public class ParseTypeDeclarationsList {
   }
 
   private void putConstructor(ClassDeclaration clazz, Modifiers modifiers) {
+
+    if (!Mods.isCorrectConstructorMods(modifiers)) {
+      parser.perror("constructor modifiers are incorrect: " + modifiers.toString());
+    }
+
     final Token beginPos = parser.checkedMove(Keywords.init_ident);
     final List<VarDeclarator> parameters = parseMethodParameters();
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);

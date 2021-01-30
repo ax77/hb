@@ -24,7 +24,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private static final long serialVersionUID = 2982374768194205119L;
 
   private final ClassMethodBase base;
-  private final Modifiers modifiers;
+  private final Modifiers mod;
   private final Token beginPos;
   private final ClassDeclaration clazz;
   private final Ident identifier;
@@ -34,13 +34,13 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private final int uniqueId;
 
   // function/init
-  public ClassMethodDeclaration(ClassMethodBase base, Modifiers modifiers, ClassDeclaration clazz, Ident identifier,
+  public ClassMethodDeclaration(ClassMethodBase base, Modifiers mod, ClassDeclaration clazz, Ident identifier,
       List<VarDeclarator> parameters, Type returnType, StmtBlock block, Token beginPos) {
 
-    NullChecker.check(base, clazz, modifiers, identifier, parameters, returnType, block, beginPos);
+    NullChecker.check(base, clazz, mod, identifier, parameters, returnType, block, beginPos);
 
     this.base = base;
-    this.modifiers = modifiers;
+    this.mod = mod;
     this.clazz = clazz;
     this.identifier = identifier;
     this.parameters = parameters;
@@ -57,7 +57,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     NullChecker.check(clazz, block, beginPos);
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
-    this.modifiers = new Modifiers();
+    this.mod = new Modifiers();
     this.clazz = clazz;
     this.identifier = Keywords.deinit_ident;
     this.parameters = new ArrayList<>();
@@ -119,14 +119,14 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     StringBuilder sb = new StringBuilder();
 
     if (isFunction()) {
-      sb.append(modifiers.toString());
+      sb.append(mod.toString());
       sb.append(" func ");
       sb.append(identifier);
       sb.append(parametersToString());
     }
 
     if (isConstructor()) {
-      sb.append(modifiers.toString());
+      sb.append(mod.toString());
       sb.append(" ");
       sb.append(identifier);
       sb.append(parametersToString());
@@ -186,7 +186,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   }
 
   public Modifiers getModifiers() {
-    return modifiers;
+    return mod;
   }
 
 }

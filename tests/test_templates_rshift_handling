@@ -16,10 +16,17 @@ class test_templates_rshift_handling
     var b: i32;
     var c: i32 = a >> b >> 1;
     var arrofgen1d: [opt<i32>];
-    var arrofgen2d: [[opt<i32>]];
-    var arrofgen_of_gen1: [opt<opt<i32>>];
-    var arrofgen_of_gen2: [[opt<opt<i32>>]];
-    private func fn() {
+    let arrofgen2d: [[opt<i32>]];
+    static var arrofgen_of_gen1: [opt<opt<i32>>];
+    weak var arrofgen_of_gen2: [[opt<opt<i32>>]];
+    
+    private init() {
+    }
+    
+    public init(a: i32) {
+    }
+    
+    native func fn() {
     	c >>= b;
     }
 }

@@ -18,7 +18,7 @@ public class ParseModifiers {
 
     while (Mods.isAnyModifier(parser.tok())) {
       final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-      if (mods.has(tok.getIdent())) {
+      if (mods.contains(tok.getIdent())) {
         parser.perror("duplicate modifier: " + tok.getValue());
       }
       mods.put(tok);
