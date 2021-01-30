@@ -11,20 +11,28 @@ import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import tokenize.Ident;
 import tokenize.Token;
+import utils_oth.NullChecker;
 
 public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   private static final long serialVersionUID = -364976996504280849L;
 
+  // main part, it may be the field, method-parameter, local-var, etc...
   private final VarBase base;
-  private final Token beginPos;
   private final Modifiers modifiers;
   private /*final*/ Type type;
   private final Ident identifier;
+  private final Token beginPos;
+
+  // for variables
   private ExprExpression simpleInitializer;
   private VarArrayInitializer arrayInitializer;
-  private ClassDeclaration clazz; // is it is a field
+
+  // is it is a field
+  private ClassDeclaration clazz;
 
   public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, Token beginPos) {
+    NullChecker.check(base, modifiers, type, identifier, beginPos);
+
     this.base = base;
     this.modifiers = modifiers;
     this.type = type;
@@ -73,11 +81,17 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
     sb.append(identifier.getName());
     sb.append(": ");
     sb.append(type.toString());
-    if (simpleInitializer != null) {
-      sb.append(" = ");
-      sb.append(simpleInitializer.toString());
+
+    if (!is(VarBase.METHOD_PARAMETER)) {
+
+      if (simpleInitializer != null) {
+        sb.append(" = ");
+        sb.append(simpleInitializer.toString());
+      }
+
+      sb.append("; ");
     }
-    sb.append("; ");
+
     return sb.toString();
   }
 

@@ -287,6 +287,14 @@ public class Parse {
   public Token colon() {
     return checkedMove(T_COLON);
   }
+  
+  public Token lt() {
+    return checkedMove(T.T_LT);
+  }
+  
+  public Token gt() {
+    return checkedMove(T.T_GT);
+  }
 
   //////////////////////////////////////////////////////////////////////
 

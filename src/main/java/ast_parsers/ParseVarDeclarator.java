@@ -33,15 +33,16 @@ public class ParseVarDeclarator {
 
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
-    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    final Ident id = tok.getIdent();
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident id = beginPos.getIdent();
 
-    final Token colon = parser.colon();
+    parser.colon();
+    
     final Type type = new ParseType(parser).getType();
-    final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, tok);
+    final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, beginPos);
 
     if (parser.is(T.T_ASSIGN)) {
-      Token assignTok = parser.moveget();
+      parser.move();
 
       if (type.is_array()) {
 

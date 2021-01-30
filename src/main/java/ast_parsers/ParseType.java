@@ -118,25 +118,30 @@ public class ParseType {
     Type arrayOf = new ParseType(parser).getType();
     parser.checkedMove(T.T_RIGHT_BRACKET);
 
+    // to handle the array forms like:
+    // var arr[list<i32>];
+    // var arr[list<list<i32>>];
+    // var arr[[list<list<i32>>]];
+    //
     final ArrayType array = new ArrayType(arrayOf, count);
     parser.getCurrentClass(true).registerTypeSetter(array);
     return new Type(array);
   }
 
   public long getArrayCount() {
-    ExprExpression count = new ParseExpression(parser).e_const_expr();
-    if (count.getBase() != ExpressionBase.EPRIMARY_NUMBER) {
-      parser.perror("expect array size.");
+    final ExprExpression count = new ParseExpression(parser).e_const_expr();
+    if (!count.is(ExpressionBase.EPRIMARY_NUMBER)) {
+      parser.perror("expected array size.");
     }
-    //TODO:
-    IntLiteral num = count.getNumber();
-    // if (!num.isInteger()) {
-    //   parser.perror("expect array size integer.");
-    // }
-    // if (num.getClong() <= 0) {
-    //   parser.perror("zero or negative array size are not supported");
-    // }
-    return num.getInteger();
+    final IntLiteral num = count.getNumber();
+    if (!num.getType().is_integer()) {
+      parser.perror("array-size must be an integer.");
+    }
+    final long intvalue = num.getInteger();
+    if (intvalue <= 0) {
+      parser.perror("zero or negative array size.");
+    }
+    return intvalue;
   }
 
   private boolean isRefTypenameT(Ident typeName) {
@@ -165,7 +170,7 @@ public class ParseType {
     List<Type> typeArguments = new ArrayList<Type>();
 
     if (parser.is(T.T_LT)) {
-      Token begin = parser.checkedMove(T.T_LT);
+      parser.lt();
 
       typeArguments.add(getTypeArgument());
       while (parser.is(T.T_COMMA)) {
@@ -173,9 +178,7 @@ public class ParseType {
         typeArguments.add(getTypeArgument());
       }
 
-      // TODO: ambiguous between '>' and '>>' in template arguments
-      // if (parser.is(T.T_GT) || parser.is(T.T_RSHIFT)) {
-      Token end = parser.checkedMove(T.T_GT);
+      parser.gt();
     }
 
     return typeArguments;

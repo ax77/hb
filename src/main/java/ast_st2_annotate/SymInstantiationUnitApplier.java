@@ -2,7 +2,6 @@ package ast_st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_method.MethodParameter;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
@@ -64,7 +63,7 @@ public class SymInstantiationUnitApplier {
     symtabApplier.openMethodScope(sb.toString());
 
     if (!method.isDestructor()) {
-      for (MethodParameter fp : method.getParameters()) {
+      for (VarDeclarator fp : method.getParameters()) {
         symtabApplier.defineFunctionParameter(method, fp);
       }
     }

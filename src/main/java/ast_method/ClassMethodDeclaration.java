@@ -13,6 +13,7 @@ import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
+import ast_vars.VarDeclarator;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -32,14 +33,14 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private final Token beginPos;
   private final ClassDeclaration clazz;
   private final Ident identifier;
-  private final List<MethodParameter> parameters;
+  private final List<VarDeclarator> parameters;
   private /*final*/ Type returnType;
   private final StmtBlock block;
   private final int uniqueId;
 
   // function/init
   public ClassMethodDeclaration(ClassMethodBase base, ClassDeclaration clazz, Ident identifier,
-      List<MethodParameter> parameters, Type returnType, StmtBlock block, Token beginPos) {
+      List<VarDeclarator> parameters, Type returnType, StmtBlock block, Token beginPos) {
 
     NullChecker.check(base, clazz, identifier, parameters, returnType, block, beginPos);
 
@@ -87,7 +88,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     return clazz;
   }
 
-  public List<MethodParameter> getParameters() {
+  public List<VarDeclarator> getParameters() {
     return parameters;
   }
 
@@ -104,7 +105,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     sb.append("(");
 
     for (int i = 0; i < parameters.size(); i++) {
-      MethodParameter param = parameters.get(i);
+      VarDeclarator param = parameters.get(i);
       sb.append(param.toString());
 
       if (i + 1 < parameters.size()) {

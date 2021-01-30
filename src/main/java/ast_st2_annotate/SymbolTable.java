@@ -2,11 +2,8 @@ package ast_st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_method.MethodParameter;
-import ast_modifiers.Modifiers;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
-import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
 import tokenize.Ident;
@@ -106,14 +103,10 @@ public class SymbolTable {
 
   // SYMTAB
 
-  public void defineFunctionParameter(ClassMethodDeclaration method, MethodParameter param) {
-    final Modifiers mod = Mods.letModifiers();
-    VarDeclarator var = new VarDeclarator(VarBase.METHOD_PARAMETER, mod, param.getType(), param.getName(),
-        method.getBeginPos());
-
+  public void defineFunctionParameter(ClassMethodDeclaration method,  VarDeclarator var) {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
-    variablesMethod.addsym(param.getName(), varsym(var));
+    variablesMethod.addsym(var.getIdentifier(), varsym(var));
   }
 
   public void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {

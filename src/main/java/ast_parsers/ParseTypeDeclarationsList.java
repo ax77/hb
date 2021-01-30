@@ -9,8 +9,8 @@ import ast_class.ClassDeclaration;
 import ast_main.PackageNameCutter;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
-import ast_method.MethodParameter;
 import ast_modifiers.Modifiers;
+import ast_st2_annotate.Mods;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
@@ -46,14 +46,13 @@ public class ParseTypeDeclarationsList {
 
   private ClassDeclaration parseClassDeclaration() {
 
-    final Token classKw = parser.checkedMove(Keywords.class_ident);
+    parser.checkedMove(Keywords.class_ident);
     final Ident ident = parser.getIdent();
 
     // class Thing<T> {
     // ......^....^
     final List<Type> tp = parseTypeParametersT(); // maybe empty
-
-    final Token lbrace = parser.lbrace();
+    parser.lbrace();
 
     // we'll register this name for type-handling
     // we can't register the whole class, because our compiler is not a one-pass one ;)
@@ -69,27 +68,26 @@ public class ParseTypeDeclarationsList {
     // class C { }
     // ..........^
     if (parser.is(T.T_RIGHT_BRACE)) {
-      Token rbrace = parser.rbrace();
+      parser.rbrace();
       parser.setCurrentClass(null);
       return clazz;
     }
 
     while (!parser.isEof()) {
       putConstructorOrFieldOrMethodIntoClass(clazz);
-
       if (parser.is(T.T_RIGHT_BRACE)) {
         break;
       }
-
     }
 
-    Token rbrace = parser.rbrace();
-
+    parser.rbrace();
     parser.setCurrentClass(null);
     return clazz;
   }
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
+
+    // TODO: modifiers here for init/field/func
 
     if (parser.is(Keywords.init_ident)) {
       putConstructor(clazz);
@@ -130,7 +128,7 @@ public class ParseTypeDeclarationsList {
   private void putMethod(ClassDeclaration clazz) {
     final Token beginPos = parser.checkedMove(Keywords.func_ident);
     final Ident ident = parser.getIdent();
-    final List<MethodParameter> parameters = parseMethodParameters();
+    final List<VarDeclarator> parameters = parseMethodParameters();
 
     //4)
     Type returnType = new Type(); // void stub
@@ -162,7 +160,7 @@ public class ParseTypeDeclarationsList {
 
   private void putConstructor(ClassDeclaration clazz) {
     final Token beginPos = parser.checkedMove(Keywords.init_ident);
-    final List<MethodParameter> parameters = parseMethodParameters();
+    final List<VarDeclarator> parameters = parseMethodParameters();
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     final Type returnType = new Type(); // the return type of constructor is 'void'
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
@@ -180,8 +178,8 @@ public class ParseTypeDeclarationsList {
 
   private void checkConstructorRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration constructor : clazz.getConstructors()) {
-      final List<MethodParameter> fp1 = constructor.getParameters();
-      final List<MethodParameter> fp2 = another.getParameters();
+      final List<VarDeclarator> fp1 = constructor.getParameters();
+      final List<VarDeclarator> fp2 = another.getParameters();
       if (parametersListsAreEqualByTypes(fp1, fp2)) {
         parser.perror("duplicate constructor with the same formal parameters");
       }
@@ -191,8 +189,8 @@ public class ParseTypeDeclarationsList {
   private void checkMethodRedefinition(ClassDeclaration clazz, ClassMethodDeclaration another) {
     for (ClassMethodDeclaration method : clazz.getMethods()) {
       if (method.getIdentifier().equals(another.getIdentifier())) {
-        final List<MethodParameter> fp1 = method.getParameters();
-        final List<MethodParameter> fp2 = another.getParameters();
+        final List<VarDeclarator> fp1 = method.getParameters();
+        final List<VarDeclarator> fp2 = another.getParameters();
         if (parametersListsAreEqualByTypes(fp1, fp2)) {
           parser.perror("duplicate methods with the same formal parameters");
         }
@@ -210,7 +208,7 @@ public class ParseTypeDeclarationsList {
     }
   }
 
-  private boolean parametersListsAreEqualByTypes(List<MethodParameter> first, List<MethodParameter> another) {
+  private boolean parametersListsAreEqualByTypes(List<VarDeclarator> first, List<VarDeclarator> another) {
     final int bound = first.size();
     if (bound != another.size()) {
       return false;
@@ -233,7 +231,7 @@ public class ParseTypeDeclarationsList {
     final List<Type> typenamesT = new ArrayList<>();
 
     if (parser.is(T.T_LT)) {
-      Token open = parser.checkedMove(T.T_LT);
+      parser.lt();
 
       typenamesT.add(new Type(parser.getIdent()));
       while (parser.is(T.T_COMMA)) {
@@ -241,40 +239,44 @@ public class ParseTypeDeclarationsList {
         typenamesT.add(new Type(parser.getIdent()));
       }
 
-      Token close = parser.checkedMove(T.T_GT);
+      parser.gt();
     }
 
     return typenamesT;
   }
 
-  private List<MethodParameter> parseMethodParameters() {
+  private List<VarDeclarator> parseMethodParameters() {
 
     // func name(param: int) -> int {  }
 
-    List<MethodParameter> parameters = new ArrayList<>();
-    Token lparen = parser.lparen();
+    List<VarDeclarator> parameters = new ArrayList<>();
+    parser.lparen();
 
     if (parser.is(T.T_RIGHT_PAREN)) {
-      Token rparen = parser.rparen();
+      parser.rparen();
       return parameters;
     }
 
     parameters.add(parseOneParam());
     while (parser.is(T.T_COMMA)) {
-      Token comma = parser.moveget();
+      parser.move();
       parameters.add(parseOneParam());
     }
 
-    Token rparen = parser.rparen();
+    parser.rparen();
     return parameters;
   }
 
-  private MethodParameter parseOneParam() {
+  private VarDeclarator parseOneParam() {
+
+    // TODO: modifiers
+    final Modifiers mods = Mods.letModifiers();
+    
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = tok.getIdent();
-    final Token colon = parser.colon();
+    parser.colon();
     final Type type = new ParseType(parser).getType();
-    return new MethodParameter(id, type);
+    return new VarDeclarator(VarBase.METHOD_PARAMETER, mods, type, id, tok);
   }
 
 }

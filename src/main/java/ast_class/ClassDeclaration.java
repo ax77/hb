@@ -9,7 +9,6 @@ import ast.IUniqueId;
 import ast.UniqueCounter;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
-import ast_method.MethodParameter;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
@@ -178,7 +177,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   }
 
   public void registerMethodParameters(ClassMethodDeclaration e) {
-    for (MethodParameter param : e.getParameters()) {
+    for (VarDeclarator param : e.getParameters()) {
       registerTypeSetter(param);
     }
   }
@@ -237,7 +236,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
 
   // TODO:
   private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<FuncArg> arguments) {
-    List<MethodParameter> formalParameters = method.getParameters();
+    List<VarDeclarator> formalParameters = method.getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }
