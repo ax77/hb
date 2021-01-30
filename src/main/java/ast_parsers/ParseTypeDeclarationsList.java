@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_checkers.IdentRecognizer;
 import ast_class.ClassDeclaration;
 import ast_main.PackageNameCutter;
 import ast_method.ClassMethodBase;
@@ -87,30 +86,22 @@ public class ParseTypeDeclarationsList {
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
-    // TODO: modifiers here for init/field/func
+    final Modifiers modifiers = new ParseModifiers(parser).parse();
 
     if (parser.is(Keywords.init_ident)) {
-      putConstructor(clazz);
+      putConstructor(clazz, modifiers);
     } else if (parser.is(Keywords.deinit_ident)) {
-      putDestructor(clazz);
+      putDestructor(clazz, modifiers);
     } else if (parser.is(Keywords.func_ident)) {
-      putMethod(clazz);
+      putMethod(clazz, modifiers);
     } else {
-      putField(clazz);
+      putField(clazz, modifiers);
     }
   }
 
-  private void putField(ClassDeclaration clazz) {
+  private void putField(ClassDeclaration clazz, Modifiers modifiers) {
 
-    // var
-    // let
-    // weak var
-    // private var
-    // ...
-
-    checkShouldBeTheField();
-
-    final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD);
+    final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD, modifiers);
     field.setClazz(clazz);
 
     checkFieldRedefinition(clazz, field);
@@ -118,14 +109,8 @@ public class ParseTypeDeclarationsList {
 
   }
 
-  private void checkShouldBeTheField() {
-    final boolean isOk = IdentRecognizer.isAnyModifier(parser.tok());
-    if (!isOk) {
-      parser.perror("expect class-field, but was: " + parser.tok().getValue());
-    }
-  }
+  private void putMethod(ClassDeclaration clazz, Modifiers modifiers) {
 
-  private void putMethod(ClassDeclaration clazz) {
     final Token beginPos = parser.checkedMove(Keywords.func_ident);
     final Ident ident = parser.getIdent();
     final List<VarDeclarator> parameters = parseMethodParameters();
@@ -142,14 +127,18 @@ public class ParseTypeDeclarationsList {
     }
 
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
-    final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, clazz, ident, parameters,
-        returnType, block, beginPos);
+    final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, modifiers, clazz, ident,
+        parameters, returnType, block, beginPos);
 
     checkMethodRedefinition(clazz, method);
     clazz.addMethod(method);
   }
 
-  private void putDestructor(ClassDeclaration clazz) {
+  private void putDestructor(ClassDeclaration clazz, Modifiers modifiers) {
+    if (!modifiers.getModifiers().isEmpty()) {
+      parser.perror("destructor with modifiers: " + modifiers.toString());
+    }
+
     final Token beginPos = parser.checkedMove(Keywords.deinit_ident);
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, beginPos);
@@ -158,13 +147,13 @@ public class ParseTypeDeclarationsList {
     clazz.setDestructor(destructor);
   }
 
-  private void putConstructor(ClassDeclaration clazz) {
+  private void putConstructor(ClassDeclaration clazz, Modifiers modifiers) {
     final Token beginPos = parser.checkedMove(Keywords.init_ident);
     final List<VarDeclarator> parameters = parseMethodParameters();
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     final Type returnType = new Type(); // the return type of constructor is 'void'
-    final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, clazz,
-        Keywords.init_ident, parameters, returnType, block, beginPos);
+    final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, modifiers,
+        clazz, Keywords.init_ident, parameters, returnType, block, beginPos);
 
     checkConstructorRedefinition(clazz, constructor);
     clazz.addConstructor(constructor);
@@ -268,10 +257,7 @@ public class ParseTypeDeclarationsList {
   }
 
   private VarDeclarator parseOneParam() {
-
-    // TODO: modifiers
-    final Modifiers mods = Mods.letModifiers();
-    
+    final Modifiers mods = Mods.letMods();
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = tok.getIdent();
     parser.colon();

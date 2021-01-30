@@ -21,8 +21,8 @@ import static ast_types.TypeBase.TP_VOID_STUB;
 import java.io.Serializable;
 import java.util.List;
 
-import ast_checkers.IteratorChecker;
 import ast_class.ClassDeclaration;
+import ast_st2_annotate.IteratorChecker;
 import errors.AstParseException;
 import tokenize.Ident;
 import utils_oth.NullChecker;

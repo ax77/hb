@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ast_checkers.IdentRecognizer;
 import ast_class.ClassDeclaration;
 import ast_parsers.ParseType;
 import ast_parsers.ParseTypeDeclarationsList;
+import ast_st2_annotate.Mods;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -122,7 +122,7 @@ public class Parse {
   }
 
   public boolean isTypeWithOptModifiersBegin() {
-    return isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.isAnyModifier(tok());
+    return isPrimitiveOrReferenceTypeBegin() || Mods.isAnyModifier(tok());
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -287,11 +287,11 @@ public class Parse {
   public Token colon() {
     return checkedMove(T_COLON);
   }
-  
+
   public Token lt() {
     return checkedMove(T.T_LT);
   }
-  
+
   public Token gt() {
     return checkedMove(T.T_GT);
   }

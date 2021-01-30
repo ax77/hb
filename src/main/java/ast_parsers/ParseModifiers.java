@@ -1,8 +1,9 @@
 package ast_parsers;
 
-import ast_checkers.IdentRecognizer;
 import ast_modifiers.Modifiers;
+import ast_st2_annotate.Mods;
 import parse.Parse;
+import tokenize.T;
 import tokenize.Token;
 
 public class ParseModifiers {
@@ -13,14 +14,17 @@ public class ParseModifiers {
   }
 
   public Modifiers parse() {
-    Modifiers res = new Modifiers();
+    Modifiers mods = new Modifiers();
 
-    while (IdentRecognizer.isAnyModifier(parser.tok())) {
-      Token tok = parser.moveget();
-      res.put(tok);
+    while (Mods.isAnyModifier(parser.tok())) {
+      final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+      if (mods.has(tok.getIdent())) {
+        parser.perror("duplicate modifier: " + tok.getValue());
+      }
+      mods.put(tok);
     }
 
-    return res;
+    return mods;
   }
 
 }

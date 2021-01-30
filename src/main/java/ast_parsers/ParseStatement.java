@@ -13,6 +13,7 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
+import ast_modifiers.Modifiers;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -57,9 +58,10 @@ public class ParseStatement {
   private StmtBlockItem parseOneBlock(VarBase varBase) {
 
     if (parser.isTypeWithOptModifiersBegin()) {
-      VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase);
+      final Modifiers mods = new ParseModifiers(parser).parse();
+      final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods);
 
-      ClassDeclaration currentClass = parser.getCurrentClass(true);
+      final ClassDeclaration currentClass = parser.getCurrentClass(true);
       currentClass.registerTypeSetter(localVar);
 
       return new StmtBlockItem(localVar);

@@ -19,7 +19,7 @@ class test_templates_rshift_handling
     var arrofgen2d: [[opt<i32>]];
     var arrofgen_of_gen1: [opt<opt<i32>>];
     var arrofgen_of_gen2: [[opt<opt<i32>>]];
-    func fn() {
+    private func fn() {
     	c >>= b;
     }
 }

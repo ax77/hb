@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import ast_checkers.IdentRecognizer;
+import ast_st2_annotate.Mods;
 import ast_symtab.Keywords;
 import errors.AstParseException;
 import tokenize.Ident;
+import tokenize.T;
 import tokenize.Token;
 
 public class Modifiers implements Serializable {
@@ -22,20 +23,32 @@ public class Modifiers implements Serializable {
   public Modifiers(Ident[] mods) {
     this.modifiers = new LinkedHashSet<>();
     for (Ident mod : mods) {
+      check(mod);
       modifiers.add(mod);
     }
   }
 
   public void put(Token tok) {
-    final String value = tok.getValue();
-    final Ident ident = tok.getIdent();
-    if (!IdentRecognizer.isAnyModifier(tok)) {
-      throw new AstParseException("not a modifier: " + value);
+    if (!tok.ofType(T.TOKEN_IDENT)) {
+      throw new AstParseException("aux-error. not a modifier: " + tok.getValue());
     }
-    if (modifiers.contains(ident)) {
-      throw new AstParseException("duplicate modifier: " + value);
+    final Ident mod = tok.getIdent();
+    check(mod);
+    modifiers.add(mod);
+  }
+
+  private void check(Ident mod) {
+    final String name = mod.getName();
+    if (!Mods.isAnyModifier(mod)) {
+      throw new AstParseException("not a modifier: " + name);
     }
-    modifiers.add(ident);
+    if (has(mod)) {
+      throw new AstParseException("duplicate modifier: " + name);
+    }
+  }
+
+  public boolean has(Ident what) {
+    return modifiers.contains(what);
   }
 
   public Set<Ident> getModifiers() {
@@ -51,8 +64,9 @@ public class Modifiers implements Serializable {
     }
     return sb.toString().trim();
   }
-  
+
   //@formatter:off
+  
   public boolean isWeak()    { return modifiers.contains(Keywords.weak_ident); }
   public boolean isVar()     { return modifiers.contains(Keywords.var_ident); }
   public boolean isLet()     { return modifiers.contains(Keywords.let_ident); }
@@ -60,6 +74,7 @@ public class Modifiers implements Serializable {
   public boolean isPublic()  { return modifiers.contains(Keywords.public_ident); }
   public boolean isNative()  { return modifiers.contains(Keywords.native_ident); }
   public boolean isStatic()  { return modifiers.contains(Keywords.static_ident); }
+  
   //@formatter:on
 
 }

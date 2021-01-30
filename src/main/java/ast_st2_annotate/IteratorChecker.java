@@ -1,8 +1,8 @@
-package ast_checkers;
+package ast_st2_annotate;
 
-import static ast_st2_annotate.PredefinedNamesForRewriters.GET_ITERATOR_METHOD_NAME;
-import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_GET_NEXT_METHOD_NAME;
-import static ast_st2_annotate.PredefinedNamesForRewriters.ITERATOR_HAS_NEXT_METHOD_NAME;
+import static ast_st2_annotate.IteratorNames.GET_ITERATOR_METHOD_NAME;
+import static ast_st2_annotate.IteratorNames.ITERATOR_GET_NEXT_METHOD_NAME;
+import static ast_st2_annotate.IteratorNames.ITERATOR_HAS_NEXT_METHOD_NAME;
 
 import java.util.ArrayList;
 
@@ -51,7 +51,6 @@ public class IteratorChecker {
     /// 2) this method has no parameters
     /// 3) this method should return class-type
     /// 4) the returned class type should have three methods:
-    ///    func current() -> (return the type of element in colection)
     ///    func has_next() -> (return boolean)
     ///    func get_next() -> (return the type of element in colection)
     /// 5) these methods shouldn't have parameters

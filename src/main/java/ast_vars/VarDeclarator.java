@@ -18,7 +18,7 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
 
   // main part, it may be the field, method-parameter, local-var, etc...
   private final VarBase base;
-  private final Modifiers modifiers;
+  private final Modifiers mod;
   private /*final*/ Type type;
   private final Ident identifier;
   private final Token beginPos;
@@ -30,11 +30,11 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   // is it is a field
   private ClassDeclaration clazz;
 
-  public VarDeclarator(VarBase base, Modifiers modifiers, Type type, Ident identifier, Token beginPos) {
-    NullChecker.check(base, modifiers, type, identifier, beginPos);
+  public VarDeclarator(VarBase base, Modifiers mod, Type type, Ident identifier, Token beginPos) {
+    NullChecker.check(base, mod, type, identifier, beginPos);
 
     this.base = base;
-    this.modifiers = modifiers;
+    this.mod = mod;
     this.type = type;
     this.identifier = identifier;
     this.beginPos = beginPos;
@@ -77,7 +77,8 @@ public class VarDeclarator implements Serializable, TypeSetter, ILocation {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(modifiers.toString() + " ");
+    sb.append(mod.toString());
+    sb.append(" ");
     sb.append(identifier.getName());
     sb.append(": ");
     sb.append(type.toString());

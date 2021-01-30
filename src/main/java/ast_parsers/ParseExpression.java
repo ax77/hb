@@ -22,7 +22,6 @@ import static tokenize.T.T_PERCENT;
 import static tokenize.T.T_PLUS;
 import static tokenize.T.T_QUESTION;
 import static tokenize.T.T_RIGHT_PAREN;
-import static tokenize.T.T_RSHIFT;
 import static tokenize.T.T_TILDE;
 import static tokenize.T.T_TIMES;
 import static tokenize.T.T_XOR;

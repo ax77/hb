@@ -5,13 +5,12 @@ import java.util.List;
 
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_st2_annotate.Mods;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarArrayInitializer;
+import ast_vars.VarArrayInitializerItem;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
-import ast_vars.VarArrayInitializerItem;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -24,7 +23,7 @@ public class ParseVarDeclarator {
     this.parser = parser;
   }
 
-  public VarDeclarator parse(VarBase base) {
+  public VarDeclarator parse(VarBase base, Modifiers modifiers) {
 
     // we don't support comma-initialization like: int a=1, b=a, c=32;
     // it is easy to make a mess in your code with this.
@@ -32,13 +31,11 @@ public class ParseVarDeclarator {
     // var counter: int = 0;
     // let counter: int = 0;
 
-    final Modifiers modifiers = new ParseModifiers(parser).parse();
-
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident id = beginPos.getIdent();
 
     parser.colon();
-    
+
     final Type type = new ParseType(parser).getType();
     final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, beginPos);
 
