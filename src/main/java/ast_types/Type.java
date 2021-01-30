@@ -60,8 +60,8 @@ public class Type implements Serializable, TypeApi {
     this.arrayType = array;
 
     //size
-    this.size = arrayType.getCount() * arrayType.getArrayOf().get_size();
-    this.align = arrayType.getArrayOf().get_align();
+    this.size = arrayType.getCount() * arrayType.getType().get_size();
+    this.align = arrayType.getType().get_align();
   }
 
   public Type(TypeBase primitiveType) {

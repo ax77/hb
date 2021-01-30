@@ -80,7 +80,7 @@ public class ParseVarDeclarator {
       parser.checkedMove(T.T_LEFT_BRACKET);
       long arlen = ty.getArrayType().getCount();
 
-      Type sub = ty.getArrayType().getArrayOf();
+      Type sub = ty.getArrayType().getType();
       int elsize = 0; // TODO :) sub.getSize();
 
       // recursion implement nested loop

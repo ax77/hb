@@ -118,7 +118,9 @@ public class ParseType {
     Type arrayOf = new ParseType(parser).getType();
     parser.checkedMove(T.T_RIGHT_BRACKET);
 
-    return new Type(new ArrayType(arrayOf, count));
+    final ArrayType array = new ArrayType(arrayOf, count);
+    parser.getCurrentClass(true).registerTypeSetter(array);
+    return new Type(array);
   }
 
   public long getArrayCount() {

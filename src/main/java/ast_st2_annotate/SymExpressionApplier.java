@@ -131,8 +131,8 @@ public class SymExpressionApplier {
     if (array.getCount() == 0) {
       ErrorLocation.errorExpression("array-creation with zero-size", e);
     }
-    if (array.getArrayOf().is_array()) {
-      checkArraySize(array.getArrayOf().getArrayType(), e);
+    if (array.getType().is_array()) {
+      checkArraySize(array.getType().getArrayType(), e);
     }
   }
 
@@ -169,7 +169,7 @@ public class SymExpressionApplier {
     if (!arrtype.is_array()) {
       ErrorLocation.errorExpression("expect array", e);
     }
-    Type arrof = arrtype.getArrayType().getArrayOf();
+    Type arrof = arrtype.getArrayType().getType();
     e.setResultType(arrof);
   }
 

@@ -2,19 +2,17 @@ package ast_types;
 
 import java.io.Serializable;
 
-public class ArrayType implements Serializable {
+import ast_st1_templates.TypeSetter;
+
+public class ArrayType implements Serializable, TypeSetter {
   private static final long serialVersionUID = 3421706133636460085L;
 
-  private final Type arrayOf;
+  private /*final*/ Type arrayOf;
   private int count;
 
   public ArrayType(Type arrayOf, int count) {
     this.arrayOf = arrayOf;
     this.count = count;
-  }
-
-  public Type getArrayOf() {
-    return arrayOf;
   }
 
   public int getCount() {
@@ -33,8 +31,8 @@ public class ArrayType implements Serializable {
     if (getCount() != another.getCount()) {
       return false;
     }
-    final Type sub1 = getArrayOf();
-    final Type sub2 = another.getArrayOf();
+    final Type sub1 = getType();
+    final Type sub2 = another.getType();
     if (!sub1.is_equal_to(sub2)) {
       return false;
     }
@@ -52,6 +50,16 @@ public class ArrayType implements Serializable {
     sb.append(arrayOf.toString());
     sb.append("]");
     return sb.toString();
+  }
+
+  @Override
+  public void setType(Type typeToSet) {
+    this.arrayOf = typeToSet;
+  }
+
+  @Override
+  public Type getType() {
+    return arrayOf;
   }
 
 }

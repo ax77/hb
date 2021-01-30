@@ -61,7 +61,7 @@ public abstract class NameBuilder {
       sb.append(String.format("%d", count));
       sb.append("_");
     }
-    sb.append(typeToString(array.getArrayOf()));
+    sb.append(typeToString(array.getType()));
     return sb.toString();
   }
 
