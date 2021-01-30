@@ -22,13 +22,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
   private static final long serialVersionUID = 2982374768194205119L;
 
-  /// Definition: 
-  /// Two of the components of a method declaration comprise the method signature—the method's name and the parameter types.
-
-  // init: clazz, parameters, body
-  // deinit: clazz, body
-  // func: clazz, header, parameters, body
-
   private final ClassMethodBase base;
   private final Token beginPos;
   private final ClassDeclaration clazz;
@@ -93,7 +86,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   }
 
   public boolean isVoid() {
-    return isFunction() && getType().is_void_stub();
+    return returnType.is_void_stub();
   }
 
   public StmtBlock getBlock() {
@@ -138,7 +131,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
     if (isFunction() && !isVoid()) {
       sb.append(" -> ");
-      sb.append(getType().toString());
+      sb.append(returnType.toString());
     }
 
     sb.append(block.toString());

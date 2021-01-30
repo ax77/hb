@@ -5,7 +5,10 @@ import tokenize.Ident;
 
 public final class Keywords {
 
-  // you may put here ONLY keywords... nothings else...
+  /// you may put here ONLY keywords... nothings else...
+  /// each field will be processed by reflection at ParserMain
+  /// initialization, and it will be formed as an
+  /// keyword in a symbol-table.
 
   private static Ident g(String name) {
     return Hash_ident.getHashedIdent(name, 32);

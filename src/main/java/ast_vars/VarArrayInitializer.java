@@ -3,13 +3,13 @@ package ast_vars;
 import java.util.List;
 
 public class VarArrayInitializer {
-  private final List<VarInitializer> initializers;
+  private final List<VarArrayInitializerItem> initializers;
 
-  public VarArrayInitializer(List<VarInitializer> initializers) {
+  public VarArrayInitializer(List<VarArrayInitializerItem> initializers) {
     this.initializers = initializers;
   }
 
-  public List<VarInitializer> getInitializers() {
+  public List<VarArrayInitializerItem> getInitializers() {
     return initializers;
   }
 
@@ -19,7 +19,7 @@ public class VarArrayInitializer {
     final int size = initializers.size();
     sb.append("[");
     for (int i = 0; i < size; i++) {
-      VarInitializer init = initializers.get(i);
+      VarArrayInitializerItem init = initializers.get(i);
       sb.append(init.toString());
       if (i + 1 < size) {
         sb.append(", ");

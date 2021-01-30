@@ -15,7 +15,7 @@ public class ParseModifiers {
   public Modifiers parse() {
     Modifiers res = new Modifiers();
 
-    while (IdentRecognizer.is_any_modifier(parser.tok())) {
+    while (IdentRecognizer.isAnyModifier(parser.tok())) {
       Token tok = parser.moveget();
       res.put(tok);
     }

@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 import ast_expr.ExprExpression;
 
-public class VarInitializer implements Serializable {
+public class VarArrayInitializerItem implements Serializable {
   private static final long serialVersionUID = -794305928505278466L;
 
   private final ExprExpression init;
   private final int offset;
 
-  public VarInitializer(ExprExpression init, int offset) {
+  public VarArrayInitializerItem(ExprExpression init, int offset) {
     this.init = init;
     this.offset = offset;
   }

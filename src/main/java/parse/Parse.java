@@ -122,7 +122,7 @@ public class Parse {
   }
 
   public boolean isTypeWithOptModifiersBegin() {
-    return isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.is_any_modifier(tok());
+    return isPrimitiveOrReferenceTypeBegin() || IdentRecognizer.isAnyModifier(tok());
   }
 
   //////////////////////////////////////////////////////////////////////

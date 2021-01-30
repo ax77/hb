@@ -5,12 +5,13 @@ import java.util.List;
 
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
+import ast_st2_annotate.Mods;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarArrayInitializer;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
-import ast_vars.VarInitializer;
+import ast_vars.VarArrayInitializerItem;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -51,7 +52,7 @@ public class ParseVarDeclarator {
         }
 
         else {
-          List<VarInitializer> inits = new ArrayList<>();
+          List<VarArrayInitializerItem> inits = new ArrayList<>();
           readInitializerListInternal(inits, type, 0);
           var.setArrayInitializer(new VarArrayInitializer(inits));
         }
@@ -68,7 +69,7 @@ public class ParseVarDeclarator {
     return var;
   }
 
-  private void readInitializerListInternal(List<VarInitializer> inits, Type ty, int off) {
+  private void readInitializerListInternal(List<VarArrayInitializerItem> inits, Type ty, int off) {
 
     // check recursion deep, to prevent stack overflow.
 
@@ -82,7 +83,7 @@ public class ParseVarDeclarator {
       long arlen = ty.getArrayType().getCount();
 
       Type sub = ty.getArrayType().getType();
-      int elsize = 0; // TODO :) sub.getSize();
+      int elsize = sub.get_size();
 
       // recursion implement nested loop
       // for array: int x[3][2][2] this loop look like this:
@@ -111,7 +112,7 @@ public class ParseVarDeclarator {
 
         if (!nestedExpansion) {
           ExprExpression expr = new ParseExpression(parser).e_assign();
-          inits.add(new VarInitializer(expr, offsetOf));
+          inits.add(new VarArrayInitializerItem(expr, offsetOf));
 
           parser.moveOptional(T.T_COMMA);
           continue;

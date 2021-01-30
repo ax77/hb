@@ -119,7 +119,7 @@ public class ParseTypeDeclarationsList {
   }
 
   private void checkShouldBeTheField() {
-    final boolean isOk = IdentRecognizer.is_any_modifier(parser.tok());
+    final boolean isOk = IdentRecognizer.isAnyModifier(parser.tok());
     if (!isOk) {
       parser.perror("expect class-field, but was: " + parser.tok().getValue());
     }
