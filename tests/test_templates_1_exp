@@ -1,0 +1,17 @@
+class node_i32
+{
+  var prev: node_i32;
+  var next: node_i32;
+  var item: i32;
+}
+
+class list_i32
+{
+  var first: node_i32;
+  var last: node_i32;
+}
+
+class test
+{
+  var args: list_i32;
+}

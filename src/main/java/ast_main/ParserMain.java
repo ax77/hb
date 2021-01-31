@@ -65,16 +65,25 @@ public class ParserMain implements ParserMainApi {
   @Override
   public InstantiationUnit parseInstantiationUnit() throws IOException {
     final CompilationUnit unit = parseCompilationUnit();
-    for (ClassDeclaration clazz : unit.getClasses()) {
-      if (!clazz.isComplete()) {
-        throw new AstParseException("incomplete class: " + clazz.getIdentifier());
-      }
-    }
+    checkAllClassesAreComplete(unit);
 
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
     final InstantiationUnit result = unitBuilder.getInstantiationUnit();
 
     return result;
+  }
+
+  private void checkAllClassesAreComplete(final CompilationUnit unit) {
+    for (ClassDeclaration clazz : unit.getClasses()) {
+      if (!clazz.isComplete()) {
+        throw new AstParseException("incomplete class: " + clazz.getIdentifier());
+      }
+    }
+    for (ClassDeclaration clazz : unit.getTemplates()) {
+      if (!clazz.isComplete()) {
+        throw new AstParseException("incomplete template: " + clazz.getIdentifier());
+      }
+    }
   }
 
   // we have to initialize it here because of the static-laziness

@@ -1,0 +1,80 @@
+class aux_union_u8_u16_u32_u64_f64
+{
+  let a: u8;
+  let b: u16;
+  let c: u32;
+  let d: u64;
+  let e: f64;
+}
+
+class opt_i32
+{
+  let elem: i32;
+}
+
+class opt_opt_i32
+{
+  let elem: opt_i32;
+}
+
+class opt_opt_opt_i32
+{
+  let elem: opt_opt_i32;
+}
+
+class opt_opt_opt_opt_i32
+{
+  let elem: opt_opt_opt_i32;
+}
+
+class opt_opt_opt_opt_opt_i32
+{
+  let elem: opt_opt_opt_opt_i32;
+}
+
+class opt_array_of_i32
+{
+  let elem: [i32];
+}
+
+class opt_opt_array_of_i32
+{
+  let elem: opt_array_of_i32;
+}
+
+class opt_opt_opt_array_of_i32
+{
+  let elem: opt_opt_array_of_i32;
+}
+
+class opt_opt_opt_opt_array_of_i32
+{
+  let elem: opt_opt_opt_array_of_i32;
+}
+
+class opt_opt_opt_opt_opt_array_of_i32
+{
+  let elem: opt_opt_opt_opt_array_of_i32;
+}
+
+class test
+{
+  var aux_union: aux_union_u8_u16_u32_u64_f64;
+  var opt5: opt_opt_opt_opt_opt_i32;
+  var opt4: opt_opt_opt_opt_i32;
+  var opt3: opt_opt_opt_i32;
+  var opt2: opt_opt_i32;
+  var opt1: opt_i32;
+  var optarr1: opt_array_of_i32;
+  var optarr2: opt_opt_array_of_i32;
+  var optarr3: opt_opt_opt_array_of_i32;
+  var optarr4: opt_opt_opt_opt_array_of_i32;
+  var optarr5: opt_opt_opt_opt_opt_array_of_i32;
+  var a: i32;
+  var b: i32;
+  var c: i32 = a >> b >> 1;
+  var arrofgen1d: [opt_i32];
+  let arrofgen2d: [[opt_i32]];
+  var arrofgen_of_gen1: [opt_opt_i32];
+  var arrofgen_of_gen2: [[opt_opt_i32]];
+}
