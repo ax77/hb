@@ -1,6 +1,7 @@
 package ast_unit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -56,6 +57,12 @@ public class CompilationUnit {
       }
     }
     throw new AstParseException("has no class with name: " + name);
+  }
+
+  // not necessary, only for debug 
+  public void sort() {
+    Collections.sort(classes);
+    Collections.sort(templates);
   }
 
 }

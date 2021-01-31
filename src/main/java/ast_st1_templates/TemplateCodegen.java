@@ -1,26 +1,30 @@
 package ast_st1_templates;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import ast_types.TypeListsComparer;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
-import hashed.Hash_ident;
 import tokenize.Ident;
+import utils_oth.NullChecker;
 import utils_ser.SerializationUtils;
 
 public class TemplateCodegen {
 
-  private final List<Type> generatedClasses;
+  // hashed results, already expanded classes
+  private final HashMap<Type, List<Type>> generatedClasses;
 
   // output for generated
   private final InstantiationUnit instantiationUnit;
 
   public TemplateCodegen() {
-    this.generatedClasses = new ArrayList<>();
+    this.generatedClasses = new HashMap<>();
     this.instantiationUnit = new InstantiationUnit();
   }
 
@@ -44,17 +48,16 @@ public class TemplateCodegen {
       return copyof;
     }
 
-    final String newName = NameBuilder.buildNewName(from);
-    final ClassDeclaration template = copyClazz(from.getClassTypeFromRef(), newName);
-    final List<Type> givenTypes = from.getTypeArgumentsFromRef();
+    final ClassDeclaration template = copyClazz(from.getClassTypeFromRef());
+    final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
 
-    if (givenTypes.size() != template.getTypeParametersT().size()) {
+    if (typeArguments.size() != template.getTypeParametersT().size()) {
       throw new AstParseException("type parameters and type arguments are different by count.");
     }
 
-    for (int i = 0; i < givenTypes.size(); i++) {
+    for (int i = 0; i < typeArguments.size(); i++) {
       // replace 'T' with given type like i32, [i32], list<i32>, etc...
-      template.getTypeParametersT().get(i).fillPropValues(givenTypes.get(i));
+      template.getTypeParametersT().get(i).fillPropValues(typeArguments.get(i));
     }
 
     // we should hide template before substitution
@@ -73,56 +76,58 @@ public class TemplateCodegen {
       ts.setType(getTypeFromTemplate(maybeShouldExpandIt));
     }
 
-    template.setTypeParametersT(new ArrayList<>());
-    final Type result = new Type(new ClassTypeRef(template, new ArrayList<>()));
+    // template.setTypeParametersT(new ArrayList<>());
+    final Type result = new Type(new ClassTypeRef(template, typeArguments));
 
     // if deep-nested templates generated many times, and they are the same
-    // we can find them by their names only.
-    // can we guarantee that it is a proper way to do this?
-    // need more tests with code-review.
+    // we can find them by their names and previously given type-arguments.
     //
-    final Type alreadyGenerated = presentedInGenerated(result);
+    final Type alreadyGenerated = presentedInGenerated(result, typeArguments);
     if (alreadyGenerated != null) {
       return alreadyGenerated;
     }
 
-    generatedClasses.add(result);
+    generatedClasses.put(result, typeArguments);
     instantiationUnit.put(result.getClassTypeFromRef());
 
     return result;
   }
 
-  private Type presentedInGenerated(Type result) {
-
-    if (!result.is_class()) {
-      throw new AstParseException("expect class-type");
-    }
+  private Type presentedInGenerated(Type result, List<Type> typeArguments) {
+    checkIsClass(result);
 
     final ClassDeclaration classWeWantToFind = result.getClassTypeFromRef();
-    final Ident classWeWatnToFindId = classWeWantToFind.getIdentifier();
+    final Ident classWeWantToFindId = classWeWantToFind.getIdentifier();
 
-    for (Type tp : generatedClasses) {
-      if (!tp.is_class()) {
-        continue;
-      }
-      final ClassDeclaration classAlreadyGenerated = tp.getClassTypeFromRef();
-      final Ident alreadyGeneratedId = classAlreadyGenerated.getIdentifier();
-      if (alreadyGeneratedId.equals(classWeWatnToFindId)) {
-        return tp;
+    for (Entry<Type, List<Type>> hashed : generatedClasses.entrySet()) {
+      final Type prevType = hashed.getKey();
+      checkIsClass(prevType);
+
+      final ClassDeclaration prevClazz = prevType.getClassTypeFromRef();
+      final Ident prevIdent = prevClazz.getIdentifier();
+      if (prevIdent.equals(classWeWantToFindId)) {
+        if (TypeListsComparer.typeListsAreEqual(hashed.getValue(), typeArguments)) {
+          return prevType;
+        }
       }
     }
 
     return null;
   }
 
+  private void checkIsClass(Type result) {
+    NullChecker.check(result);
+    if (!result.is_class()) {
+      throw new AstParseException("expect class-type, but was: " + result.toString());
+    }
+  }
+
   private Type copyType(Type given) {
     return (Type) SerializationUtils.clone(given);
   }
 
-  private ClassDeclaration copyClazz(ClassDeclaration given, String newName) {
-    final ClassDeclaration object = (ClassDeclaration) SerializationUtils.clone(given);
-    object.setIdentifier(Hash_ident.getHashedIdent(newName));
-    return object;
+  private ClassDeclaration copyClazz(ClassDeclaration given) {
+    return (ClassDeclaration) SerializationUtils.clone(given);
   }
 
 }

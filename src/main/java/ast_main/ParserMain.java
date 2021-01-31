@@ -72,6 +72,7 @@ public class ParserMain implements ParserMainApi {
   public InstantiationUnit parseInstantiationUnit() throws IOException {
     final CompilationUnit unit = parseCompilationUnit();
     checkAllClassesAreComplete(unit);
+    unit.sort();
 
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
     final InstantiationUnit result = unitBuilder.getInstantiationUnit();

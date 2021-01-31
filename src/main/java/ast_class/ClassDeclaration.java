@@ -12,22 +12,27 @@ import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
+import ast_types.TypePrinters;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassDeclaration implements Serializable, ILocation {
+public class ClassDeclaration implements Serializable, ILocation, Comparable<ClassDeclaration> {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
   private final Token beginPos;
-  private Ident identifier;
+  private final Ident identifier;
   private List<ClassMethodDeclaration> constructors;
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
+
+  /// forward-declarations
+  /// class is not 'complete' before '}'
+  /// TODO:
   private boolean isComplete;
 
   /// anti-recursion handling in template-expansion
@@ -235,11 +240,6 @@ public class ClassDeclaration implements Serializable, ILocation {
     this.typeParametersT = Collections.unmodifiableList(typeParametersT);
   }
 
-  public void setIdentifier(Ident identifier) {
-    NullChecker.check(identifier);
-    this.identifier = identifier;
-  }
-
   public boolean isTemplate() {
     return !typeParametersT.isEmpty();
   }
@@ -323,6 +323,10 @@ public class ClassDeclaration implements Serializable, ILocation {
     sb.append("class ");
     sb.append(identifier.getName());
 
+    if (!typeParametersT.isEmpty()) {
+      sb.append(TypePrinters.typeArgumentsToString(typeParametersT));
+    }
+
     sb.append("\n{\n");
 
     for (VarDeclarator var : fields) {
@@ -368,6 +372,17 @@ public class ClassDeclaration implements Serializable, ILocation {
   @Override
   public Token getBeginPos() {
     return beginPos;
+  }
+
+  @Override
+  public int compareTo(ClassDeclaration o) {
+    if (typeParametersT.size() < o.getTypeParametersT().size()) {
+      return -1;
+    }
+    if (typeParametersT.size() > o.getTypeParametersT().size()) {
+      return 1;
+    }
+    return 0;
   }
 
 }

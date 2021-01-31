@@ -15,7 +15,7 @@ public class ClassTypeRef implements Serializable {
   /// and type-arguments are 'real' given types we have to expand in templates
   ///
   private final ClassDeclaration clazz;
-  private /*final*/ List<Type> typeArguments;
+  private final List<Type> typeArguments;
 
   public ClassTypeRef(ClassDeclaration clazz, List<Type> typeArguments) {
     NullChecker.check(clazz, typeArguments);
@@ -34,13 +34,7 @@ public class ClassTypeRef implements Serializable {
 
   public void putTypeArgument(Type e) {
     NullChecker.check(e);
-
     this.typeArguments.add(e);
-  }
-
-  public void forgetTemplateHistory() {
-    this.typeArguments = new ArrayList<>();
-    clazz.setTypeParametersT(new ArrayList<>());
   }
 
   public boolean is_equal_to(ClassTypeRef another) {
@@ -62,6 +56,9 @@ public class ClassTypeRef implements Serializable {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(clazz.getIdentifier().getName());
+    if (!typeArguments.isEmpty()) {
+      sb.append(TypePrinters.typeArgumentsToString(typeArguments));
+    }
     return sb.toString();
   }
 

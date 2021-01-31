@@ -4,7 +4,6 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_st2_annotate.SymInstantiationUnitApplier;
-import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 
@@ -35,20 +34,6 @@ public class InstatantiationUnitBuilder {
 
   public InstantiationUnit getInstantiationUnit() {
     final InstantiationUnit instantiationUnit = templateCodegen.getInstantiationUnit();
-
-    // we should clear type-arguments, because we'll compare these
-    // classes between each other later, and actually those classes
-    // are fully expanded from template, and their type-arguments are
-    // not necessary
-    for (ClassDeclaration cd : instantiationUnit.getClasses()) {
-      final List<TypeSetter> typeSetters = cd.getTypeSetters();
-      for (TypeSetter ts : typeSetters) {
-        final Type tp = ts.getType();
-        if (tp.is_class()) {
-          tp.getClassTypeRef().forgetTemplateHistory();
-        }
-      }
-    }
 
     // resolve all symbols, identifiers, with scope rules,
     // and add result-type to each expression.

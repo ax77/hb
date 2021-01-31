@@ -4,10 +4,7 @@ import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
-import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
-import ast_vars.VarDeclarator;
-import hashed.Hash_ident;
 import utils.UtilSrcToStringLevel;
 
 public class PrepareSourceForReview {
@@ -21,7 +18,7 @@ public class PrepareSourceForReview {
 
     InstantiationUnit unit = new ParserMain("tests/test_templates_3").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
-      System.out.println(c);
+      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
   }
 }
