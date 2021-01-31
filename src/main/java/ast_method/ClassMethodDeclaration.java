@@ -166,6 +166,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     return beginPos.getLocationToString();
   }
 
+  @Override
   public Token getBeginPos() {
     return beginPos;
   }

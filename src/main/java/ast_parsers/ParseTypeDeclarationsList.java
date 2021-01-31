@@ -41,13 +41,16 @@ public class ParseTypeDeclarationsList {
         unit.putClazz(clazz);
       }
     } else if (parser.is(Keywords.import_ident)) {
-      PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
+      // PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
+      parser.perror("import is unimpl.");
     } else if (parser.is(Keywords.forward_ident)) {
       parser.checkedMove(Keywords.forward_ident);
       parser.checkedMove(Keywords.class_ident);
       Token tok = parser.checkedMove(T.TOKEN_IDENT);
       parser.semicolon();
-      parser.defineClassName(new ClassDeclaration(tok.getIdent()));
+      final ClassDeclaration forwardDeclaration = new ClassDeclaration(tok.getIdent(), tok);
+      unit.putForward(forwardDeclaration);
+      parser.defineClassName(forwardDeclaration);
     } else {
       parser.perror("unimpl");
     }

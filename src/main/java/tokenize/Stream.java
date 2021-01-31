@@ -394,7 +394,7 @@ public class Stream {
   }
 
   private void tokenize() {
-    markbegin();
+    //markbegin();
 
     LinkedList<Token> line = new LinkedList<Token>();
     boolean nextws = false;
@@ -405,7 +405,7 @@ public class Stream {
       if (t.ofType(TOKEN_EOF)) {
 
         tokenlist.addAll(line);
-        markend(); // eostream
+        //markend(); // eostream
         tokenlist.add(t); // eof
 
         break;

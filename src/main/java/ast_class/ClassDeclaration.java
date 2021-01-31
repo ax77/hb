@@ -7,18 +7,22 @@ import java.util.List;
 
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
+import ast_sourceloc.ILocation;
+import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
+import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassDeclaration implements Serializable {
+public class ClassDeclaration implements Serializable, ILocation {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
+  private final Token beginPos;
   private Ident identifier;
   private List<ClassMethodDeclaration> constructors;
   private List<VarDeclarator> fields;
@@ -92,8 +96,9 @@ public class ClassDeclaration implements Serializable {
     this.isNoexpand = isNoexpand;
   }
 
-  public ClassDeclaration(Ident identifier) {
+  public ClassDeclaration(Ident identifier, Token beginPos) {
     this.identifier = identifier;
+    this.beginPos = beginPos;
     initLists();
   }
 
@@ -338,6 +343,21 @@ public class ClassDeclaration implements Serializable {
       }
     }
     throw new AstParseException("unknown typename: " + ident.getName());
+  }
+
+  @Override
+  public SourceLocation getLocation() {
+    return beginPos.getLocation();
+  }
+
+  @Override
+  public String getLocationToString() {
+    return beginPos.getLocationToString();
+  }
+
+  @Override
+  public Token getBeginPos() {
+    return beginPos;
   }
 
 }

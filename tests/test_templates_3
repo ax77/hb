@@ -1,0 +1,117 @@
+
+/// because we should know all the classes
+/// and we should have all classes completely parsed before
+/// templates instantiations
+
+forward class array;
+forward class opt;
+forward class key_value;
+forward class map;
+forward class node;
+forward class list;
+forward class list_iter;
+forward class aux_union;
+forward class test;
+
+class array<T> 
+{
+  var table: [T];
+}
+
+class opt<I>
+{
+  let elem: I;
+}
+
+class key_value<K, V>
+{
+  let key: K;
+  let val: V;
+}
+
+class map<K, V>
+{
+  var table: array<key_value<K, V>>;
+  let bytes: map<u64, u8>;
+}
+
+class node<E> 
+{
+  var prev: node<E>;
+  var next: node<E>;
+  var item: E;
+}
+
+class list<T> 
+{
+  var first: node<T>;
+  var last: node<T>;
+}
+
+class list_iter<T>
+{
+  var collection: list<T>;
+  var last_returned: node<T>;
+  var next: node<T>;
+  var next_index: i32;
+}
+
+class aux_union<A, B, C, D, E>
+{
+  let a: A;
+  let b: B;
+  let c: C;
+  let d: D;
+  let e: E;
+}
+
+class test
+{   
+  var x1: opt<i32>;
+    
+  // var aux_union: aux_union<u8,u16,u32,u64,f64>;
+  // var opt5: opt<opt<opt<opt<opt<i32>>>>>;
+  // var opt4: opt<opt<opt<opt<i32>>>>;
+  // var opt3: opt<opt<opt<i32>>>;
+  // var opt2: opt<opt<i32>>;
+  // var opt1: opt<i32>;
+  // var optarr1: opt<[i32]>;
+  // var optarr2: opt<opt<[i32]>>;
+  // var optarr3: opt<opt<opt<[i32]>>>;
+  // var optarr4: opt<opt<opt<opt<[i32]>>>>;
+  // var optarr5: opt<opt<opt<opt<opt<[i32]>>>>>;
+  // var a: i32;
+  // var b: i32;
+  // var c: i32 = a >> b >> 1;
+  // var arrofgen1d: [opt<i32>];
+  // let arrofgen2d: [[opt<i32>]];
+  // var arrofgen_of_gen1: [opt<opt<i32>>];
+  // var arrofgen_of_gen2: [[opt<opt<i32>>]];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
