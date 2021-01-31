@@ -15,9 +15,13 @@ public class PrepareSourceForReview {
   @Test
   public void testTestTemplatesRshiftHandling() throws Exception {
 
-    CompilationUnit unit = new ParserMain("tests/test_templates_3").parseCompilationUnit();
-    ClassDeclaration test = unit.getClassByName("test");
-    VarDeclarator x1 = test.getField(Hash_ident.getHashedIdent("x1"));
+    // CompilationUnit unit = new ParserMain("tests/test_templates_3").parseCompilationUnit();
+    // ClassDeclaration test = unit.getClassByName("test");
+    // VarDeclarator x1 = test.getField(Hash_ident.getHashedIdent("x1"));
 
+    InstantiationUnit unit = new ParserMain("tests/test_templates_3").parseInstantiationUnit();
+    for (ClassDeclaration c : unit.getClasses()) {
+      System.out.println(c);
+    }
   }
 }

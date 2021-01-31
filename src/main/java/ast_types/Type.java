@@ -45,6 +45,8 @@ public class Type implements Serializable, TypeApi {
   /// TODO: is array-length a property of the type or is not?
   private ArrayType arrayType;
 
+  private boolean isPainted;
+
   public void fillPropValues(Type another) {
     NullChecker.check(another);
 
@@ -60,6 +62,14 @@ public class Type implements Serializable, TypeApi {
     this.base = TypeBase.TP_VOID_STUB;
     this.size = 1;
     this.align = 1;
+  }
+
+  public void paint() {
+    this.isPainted = true;
+  }
+
+  public boolean isPainted() {
+    return isPainted;
   }
 
   public Type(ArrayType array) {

@@ -67,7 +67,7 @@ class aux_union<A, B, C, D, E>
 
 class test
 {   
-  var x1: opt<i32>;
+  var x1: map<f32, f64>;
     
   // var aux_union: aux_union<u8,u16,u32,u64,f64>;
   // var opt5: opt<opt<opt<opt<opt<i32>>>>>;

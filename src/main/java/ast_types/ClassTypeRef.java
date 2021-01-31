@@ -60,7 +60,9 @@ public class ClassTypeRef implements Serializable {
 
   @Override
   public String toString() {
-    return clazz.getIdentifier().getName();
+    StringBuilder sb = new StringBuilder();
+    sb.append(clazz.getIdentifier().getName());
+    return sb.toString();
   }
 
   public boolean isTemplate() {
