@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast.IUniqueId;
-import ast.UniqueCounter;
 import ast_class.ClassDeclaration;
 import ast_modifiers.Modifiers;
 import ast_sourceloc.ILocation;
@@ -19,7 +17,7 @@ import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocation, IUniqueId {
+public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocation {
 
   private static final long serialVersionUID = 2982374768194205119L;
 
@@ -31,7 +29,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
   private final List<VarDeclarator> parameters;
   private /*final*/ Type returnType;
   private final StmtBlock block;
-  private final int uniqueId;
 
   // function/init
   public ClassMethodDeclaration(ClassMethodBase base, Modifiers mod, ClassDeclaration clazz, Ident identifier,
@@ -47,7 +44,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.returnType = returnType;
     this.block = block;
     this.beginPos = beginPos;
-    this.uniqueId = UniqueCounter.getUniqueId();
 
   }
 
@@ -64,7 +60,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.returnType = new Type();
     this.block = block;
     this.beginPos = beginPos;
-    this.uniqueId = UniqueCounter.getUniqueId();
   }
 
   @Override
@@ -173,16 +168,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
 
   public Token getBeginPos() {
     return beginPos;
-  }
-
-  @Override
-  public String getUniqueIdToString() {
-    return String.format("%d", uniqueId);
-  }
-
-  @Override
-  public int getUniqueId() {
-    return uniqueId;
   }
 
   public Modifiers getModifiers() {

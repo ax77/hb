@@ -57,8 +57,8 @@ public class SymInstantiationUnitApplier {
     sb.append(object.getIdentifier().getName());
     sb.append("_");
     sb.append(method.getBase().toString());
-    sb.append("_");
-    sb.append(method.getUniqueIdToString());
+    //sb.append("_");
+    //sb.append(method.getUniqueIdToString());
 
     symtabApplier.openMethodScope(sb.toString());
 

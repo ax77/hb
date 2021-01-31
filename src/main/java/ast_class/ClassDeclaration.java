@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ast.IUniqueId;
-import ast.UniqueCounter;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
 import ast_st1_templates.TypeSetter;
@@ -17,7 +15,7 @@ import errors.AstParseException;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ClassDeclaration implements Serializable, IUniqueId {
+public class ClassDeclaration implements Serializable {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
@@ -26,10 +24,7 @@ public class ClassDeclaration implements Serializable, IUniqueId {
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
-
-  /// we'll use unique-id when we'll generate the code
-  ///
-  private final int uniqueId;
+  private boolean isComplete;
 
   /// we store type-variables as original references to Type
   ///
@@ -85,12 +80,19 @@ public class ClassDeclaration implements Serializable, IUniqueId {
     return isNoexpand;
   }
 
+  public boolean isComplete() {
+    return isComplete;
+  }
+
+  public void setComplete(boolean isComplete) {
+    this.isComplete = isComplete;
+  }
+
   public void setNoexpand(boolean isNoexpand) {
     this.isNoexpand = isNoexpand;
   }
 
   public ClassDeclaration(Ident identifier) {
-    this.uniqueId = UniqueCounter.getUniqueId();
     this.identifier = identifier;
     initLists();
   }
@@ -250,16 +252,6 @@ public class ClassDeclaration implements Serializable, IUniqueId {
       }
     }
     return true;
-  }
-
-  @Override
-  public String getUniqueIdToString() {
-    return String.format("%d", uniqueId);
-  }
-
-  @Override
-  public int getUniqueId() {
-    return uniqueId;
   }
 
   public ClassMethodDeclaration getMethod(Ident name, List<FuncArg> arguments) {

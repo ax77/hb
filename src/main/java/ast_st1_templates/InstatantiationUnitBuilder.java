@@ -7,7 +7,6 @@ import ast_st2_annotate.SymInstantiationUnitApplier;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
-import ast_unit.TypeDeclaration;
 
 public class InstatantiationUnitBuilder {
 
@@ -60,12 +59,7 @@ public class InstatantiationUnitBuilder {
   }
 
   private void expandTemplates(CompilationUnit compilationUnit) {
-    for (TypeDeclaration td : compilationUnit.getTypeDeclarations()) {
-      final ClassDeclaration classDeclaration = td.getClassDeclaration();
-      if (classDeclaration.isTemplate()) {
-        continue;
-      }
-
+    for (ClassDeclaration classDeclaration : compilationUnit.getClasses()) {
       List<TypeSetter> typeSetters = classDeclaration.getTypeSetters();
       for (TypeSetter ts : typeSetters) {
         typeset(ts);

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-public class Test_ConstExprEval {
+public class TestConstExprEval {
 
   @Test
   public void ceEval() throws IOException {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_parsers.ParseType;
@@ -90,6 +91,11 @@ public class Parse {
   }
 
   public void defineClassName(ClassDeclaration cd) {
+    for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
+      if (ent.getKey().equals(cd.getIdentifier())) {
+        perror("duplicate: " + cd.getIdentifier());
+      }
+    }
     this.referenceTypes.put(cd.getIdentifier(), cd);
   }
 

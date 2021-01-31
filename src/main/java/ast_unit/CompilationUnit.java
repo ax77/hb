@@ -3,20 +3,32 @@ package ast_unit;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_class.ClassDeclaration;
+
 public class CompilationUnit {
 
-  private List<TypeDeclaration> typeDeclarations;
+  private final List<ClassDeclaration> classes;
+  private final List<ClassDeclaration> templates;
 
   public CompilationUnit() {
-    this.typeDeclarations = new ArrayList<TypeDeclaration>();
+    this.classes = new ArrayList<>();
+    this.templates = new ArrayList<>();
   }
 
-  public void put(TypeDeclaration typeDeclaration) {
-    this.typeDeclarations.add(typeDeclaration);
+  public void putClazz(ClassDeclaration typeDeclaration) {
+    this.classes.add(typeDeclaration);
   }
 
-  public List<TypeDeclaration> getTypeDeclarations() {
-    return typeDeclarations;
+  public void putTemplate(ClassDeclaration typeDeclaration) {
+    this.templates.add(typeDeclaration);
+  }
+
+  public List<ClassDeclaration> getClasses() {
+    return classes;
+  }
+
+  public List<ClassDeclaration> getTemplates() {
+    return templates;
   }
 
 }

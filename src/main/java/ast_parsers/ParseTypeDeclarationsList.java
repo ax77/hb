@@ -14,7 +14,6 @@ import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
-import ast_unit.TypeDeclaration;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import parse.Parse;
@@ -35,9 +34,20 @@ public class ParseTypeDeclarationsList {
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
     if (parser.is(Keywords.class_ident)) {
-      unit.put(new TypeDeclaration(parseClassDeclaration()));
+      final ClassDeclaration clazz = parseClassDeclaration();
+      if (clazz.isTemplate()) {
+        unit.putTemplate(clazz);
+      } else {
+        unit.putClazz(clazz);
+      }
     } else if (parser.is(Keywords.import_ident)) {
       PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
+    } else if (parser.is(Keywords.forward_ident)) {
+      parser.checkedMove(Keywords.forward_ident);
+      parser.checkedMove(Keywords.class_ident);
+      Token tok = parser.checkedMove(T.TOKEN_IDENT);
+      parser.semicolon();
+      parser.defineClassName(new ClassDeclaration(tok.getIdent()));
     } else {
       parser.perror("unimpl");
     }
@@ -81,6 +91,8 @@ public class ParseTypeDeclarationsList {
 
     parser.rbrace();
     parser.setCurrentClass(null);
+
+    clazz.setComplete(true);
     return clazz;
   }
 

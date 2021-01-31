@@ -121,14 +121,13 @@ public class TemplateCodegen {
     }
 
     final ClassDeclaration classWeWantToFind = result.getClassTypeFromRef();
-    final String name = classWeWantToFind.getIdentifier().getName();
+    final Ident classWeWantToFindId = classWeWantToFind.getIdentifier();
 
     for (Type tp : generatedClasses) {
       if (tp.is_class()) {
         final ClassDeclaration classAlreadyGenerated = tp.getClassTypeFromRef();
-        final boolean first = classAlreadyGenerated.getIdentifier().getName().equals(name);
-        final boolean second = classAlreadyGenerated.getUniqueId() == classWeWantToFind.getUniqueId();
-        if (first && second) {
+        final Ident classAlreadyGeneratedId = classAlreadyGenerated.getIdentifier();
+        if (classAlreadyGeneratedId.equals(classWeWantToFindId)) {
           return tp;
         }
       }

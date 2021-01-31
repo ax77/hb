@@ -65,6 +65,12 @@ public class ParserMain implements ParserMainApi {
   @Override
   public InstantiationUnit parseInstantiationUnit() throws IOException {
     final CompilationUnit unit = parseCompilationUnit();
+    for (ClassDeclaration clazz : unit.getClasses()) {
+      if (!clazz.isComplete()) {
+        throw new AstParseException("incomplete class: " + clazz.getIdentifier());
+      }
+    }
+
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
     final InstantiationUnit result = unitBuilder.getInstantiationUnit();
 

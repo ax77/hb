@@ -64,6 +64,7 @@ public final class Keywords {
   public static final Ident void_ident           = g("void");
   public static final Ident class_ident          = g("class");
   public static final Ident func_ident           = g("func");
+  public static final Ident forward_ident        = g("forward");
   
   //@formatter:on
 
