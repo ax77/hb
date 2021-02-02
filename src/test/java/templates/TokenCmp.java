@@ -10,7 +10,6 @@ import ast_unit.InstantiationUnit;
 import tokenize.Stream;
 import tokenize.T;
 import tokenize.Token;
-import utils.UtilSrcToStringLevel;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
 

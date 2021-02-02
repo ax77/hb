@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
-import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
 

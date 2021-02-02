@@ -50,7 +50,7 @@ public class Modifiers implements Serializable {
   public boolean contains(Ident what) {
     return modifiers.contains(what);
   }
-  
+
   public boolean isEmpty() {
     return modifiers.isEmpty();
   }

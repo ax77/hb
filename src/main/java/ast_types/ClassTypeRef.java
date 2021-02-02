@@ -1,7 +1,6 @@
 package ast_types;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;

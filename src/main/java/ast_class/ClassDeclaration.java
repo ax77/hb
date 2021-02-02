@@ -13,14 +13,13 @@ import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_types.TypePrinters;
-import ast_types.TypeUnresolvedId;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassDeclaration implements Serializable, ILocation, Comparable<ClassDeclaration> {
+public class ClassDeclaration implements Serializable, ILocation {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
@@ -284,17 +283,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
   @Override
   public Token getBeginPos() {
     return beginPos;
-  }
-
-  @Override
-  public int compareTo(ClassDeclaration o) {
-    if (typeParametersT.size() < o.getTypeParametersT().size()) {
-      return -1;
-    }
-    if (typeParametersT.size() > o.getTypeParametersT().size()) {
-      return 1;
-    }
-    return 0;
   }
 
 }

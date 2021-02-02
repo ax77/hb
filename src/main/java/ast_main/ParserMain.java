@@ -31,30 +31,13 @@ public class ParserMain implements ParserMainApi {
   public Parse initiateParse() throws IOException {
     initIdents();
 
-    // final UnitInfo info = new UnitInfo(filename);
-    // final List<Token> tokens = info.getTokenlist();
-    // 
-    // // for sure!
-    // if (!tokens.isEmpty()) {
-    //   Token last = tokens.get(tokens.size() - 1);
-    //   if (!last.ofType(T.TOKEN_EOF)) {
-    //     throw new AstParseException("token-list without EOF");
-    //   }
-    // }
-
     FileWrapper fw = new FileWrapper(filename);
     fw.assertIsExists();
     fw.assertIsFile();
-    Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
 
+    final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
     final List<Token> tokenlist = s.getTokenlist();
     final Parse parser = new Parse(new Tokenlist(tokenlist));
-
-    // for (Entry<String, String> e : info.getClassLocations().entrySet()) {
-    //   final Ident className = Hash_ident.getHashedIdent(e.getKey());
-    //   final ClassDeclaration clazz = new ClassDeclaration(className);
-    //   parser.defineClassName(clazz);
-    // }
 
     return parser;
   }
@@ -66,7 +49,6 @@ public class ParserMain implements ParserMainApi {
     final CompilationUnit result = parser.parse();
     BindUnresolved.bind(result);
 
-    result.sort();
     return result;
   }
 

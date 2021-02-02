@@ -103,7 +103,7 @@ public class SymbolTable {
 
   // SYMTAB
 
-  public void defineFunctionParameter(ClassMethodDeclaration method,  VarDeclarator var) {
+  public void defineFunctionParameter(ClassMethodDeclaration method, VarDeclarator var) {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
