@@ -500,7 +500,7 @@ public class ParseExpression {
 
         // TODO:__string__
 
-        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"), saved);
+        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"), new ArrayList<>(), saved);
 
         final List<FuncArg> argums = new ArrayList<>();
         argums.add(

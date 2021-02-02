@@ -59,26 +59,19 @@ public class ParseTypeDeclarations {
 
     // class Thing<T> {
     // ......^....^
-    final List<Type> tp = parseTypeParametersT(); // maybe empty
+    final List<Type> typeParameters = parseTypeParametersT();
     parser.lbrace();
 
-    // we'll register this name for type-handling
-    // we can't register the whole class, because our compiler is not a one-pass one ;)
-    // we'll resolve all methods, fields later, right now we need to know that this simple
-    // identifier is a class name, and nothing more...
-    // maybe I'm wrong here, and there is more clean and nice way, I'll think about it later.
-    //
-
+    // it may be a previously fully-parsed class, or a new one.
     ClassDeclaration clazz = null;
-    if (parser.isClassName()) {
+    if (parser.isClassName(ident)) {
       clazz = parser.getClassType(ident);
     }
     if (clazz == null) {
-      clazz = new ClassDeclaration(ident, beginPos);
+      clazz = new ClassDeclaration(ident, typeParameters, beginPos);
     }
 
     parser.defineClassName(clazz);
-    clazz.setTypeParametersT(tp);
     parser.setCurrentClass(clazz);
 
     // class C { }

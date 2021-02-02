@@ -40,7 +40,7 @@ public class ClassDeclaration implements Serializable, ILocation {
   /// we'll replace each at once in every places it used by its pointer
   /// it is important to not screw this reference up before
   ///
-  private List<Type> typeParametersT;
+  private final List<Type> typeParametersT;
 
   /// we'll collect all type-setters here
   /// type-setter is an variable, new-expression, method-parameter, etc...
@@ -59,8 +59,16 @@ public class ClassDeclaration implements Serializable, ILocation {
   ///
   private List<TypeSetter> typeSetters;
 
-  public ClassDeclaration(Ident identifier, Token beginPos) {
+  public ClassDeclaration(Ident identifier, List<Type> typeParametersT, Token beginPos) {
+    NullChecker.check(identifier, typeParametersT, beginPos);
+    for (Type tp : typeParametersT) {
+      if (!tp.is_typename_id()) {
+        throw new AstParseException("expect type-parameter, but was: " + tp.toString());
+      }
+    }
+
     this.identifier = identifier;
+    this.typeParametersT = Collections.unmodifiableList(typeParametersT);
     this.beginPos = beginPos;
     initLists();
   }
@@ -78,7 +86,6 @@ public class ClassDeclaration implements Serializable, ILocation {
     this.constructors = new ArrayList<>();
     this.fields = new ArrayList<>();
     this.methods = new ArrayList<>();
-    this.typeParametersT = new ArrayList<>();
     this.typeSetters = new ArrayList<>();
   }
 
@@ -177,15 +184,6 @@ public class ClassDeclaration implements Serializable, ILocation {
       }
     }
     return false;
-  }
-
-  public void setTypeParametersT(List<Type> typeParametersT) {
-    for (Type tp : typeParametersT) {
-      if (!tp.is_typename_id()) {
-        throw new AstParseException("expect type-parameter, but was: " + tp.toString());
-      }
-    }
-    this.typeParametersT = Collections.unmodifiableList(typeParametersT);
   }
 
   public boolean isTemplate() {
