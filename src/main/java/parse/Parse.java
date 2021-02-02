@@ -14,8 +14,13 @@ import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_parsers.ParseType;
-import ast_parsers.ParseTypeDeclarationsList;
+import ast_parsers.ParseTypeDeclarations;
+import ast_st1_templates.TypeSetter;
 import ast_st2_annotate.Mods;
+import ast_types.ClassTypeRef;
+import ast_types.Type;
+import ast_types.TypeBase;
+import ast_types.TypeUnresolvedId;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -334,27 +339,18 @@ public class Parse {
     if (is(T.T_SEMI_COLON)) {
       perror("stray semicolons [;] are deprecated by design.");
     }
-    // while (tp() == T.T_SEMI_COLON) {
-    //   move();
-    // }
   }
 
   public CompilationUnit parse() throws IOException {
-    CompilationUnit tu = new CompilationUnit();
+    CompilationUnit unit = new CompilationUnit();
 
-    // top-level
     errorStraySemicolon();
-
     while (!tok.ofType(TOKEN_EOF)) {
-
-      // before each function or global declaration
       errorStraySemicolon();
-
-      new ParseTypeDeclarationsList(this).parse(tu);
-
+      new ParseTypeDeclarations(this).parse(unit);
     }
 
-    return tu;
+    return unit;
   }
 
 }

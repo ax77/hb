@@ -17,4 +17,5 @@ public enum TypeBase {
   , TP_TYPENAME_ID
   , TP_CLASS
   , TP_ARRAY
+  , TP_UNRESOLVED_ID
 }

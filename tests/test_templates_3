@@ -1,6 +1,3 @@
-forward class opt;
-forward class test;
-
 class opt<I>
 {
   let item: I;

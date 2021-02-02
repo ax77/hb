@@ -13,12 +13,10 @@ public class CompilationUnit {
 
   private final List<ClassDeclaration> classes;
   private final List<ClassDeclaration> templates;
-  private final List<ClassDeclaration> forwards;
 
   public CompilationUnit() {
     this.classes = new ArrayList<>();
     this.templates = new ArrayList<>();
-    this.forwards = new ArrayList<>();
   }
 
   public void putClazz(ClassDeclaration clazz) {
@@ -29,20 +27,12 @@ public class CompilationUnit {
     this.templates.add(clazz);
   }
 
-  public void putForward(ClassDeclaration clazz) {
-    this.forwards.add(clazz);
-  }
-
   public List<ClassDeclaration> getClasses() {
     return classes;
   }
 
   public List<ClassDeclaration> getTemplates() {
     return templates;
-  }
-
-  public List<ClassDeclaration> getForwards() {
-    return forwards;
   }
 
   // for unit-tests

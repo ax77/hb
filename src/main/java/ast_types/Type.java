@@ -45,6 +45,8 @@ public class Type implements Serializable, TypeApi {
   /// TODO: is array-length a property of the type or is not?
   private ArrayType arrayType;
 
+  private TypeUnresolvedId unresolvedId;
+
   public void fillPropValues(Type another) {
     NullChecker.check(another);
 
@@ -86,6 +88,13 @@ public class Type implements Serializable, TypeApi {
     this.align = this.size;
   }
 
+  public Type(TypeUnresolvedId unresolvedId) {
+    this.base = TypeBase.TP_UNRESOLVED_ID;
+    this.unresolvedId = unresolvedId;
+    this.size = -1;
+    this.align = -1;
+  }
+
   public Type(ClassTypeRef ref) {
     NullChecker.check(ref);
 
@@ -106,6 +115,10 @@ public class Type implements Serializable, TypeApi {
 
   public ClassTypeRef getClassTypeRef() {
     return classTypeRef;
+  }
+
+  public TypeUnresolvedId getUnresolvedId() {
+    return unresolvedId;
   }
 
   public ClassDeclaration getClassTypeFromRef() {

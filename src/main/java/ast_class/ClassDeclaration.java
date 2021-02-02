@@ -13,6 +13,7 @@ import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_types.TypePrinters;
+import ast_types.TypeUnresolvedId;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -29,11 +30,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
   private List<VarDeclarator> fields;
   private List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
-
-  /// forward-declarations
-  /// class is not 'complete' before '}'
-  /// TODO:
-  private boolean isComplete;
 
   /// we store type-variables as original references to Type
   ///
@@ -63,14 +59,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
   /// its name ('T')
   ///
   private List<TypeSetter> typeSetters;
-
-  public boolean isComplete() {
-    return isComplete;
-  }
-
-  public void setComplete(boolean isComplete) {
-    this.isComplete = isComplete;
-  }
 
   public ClassDeclaration(Ident identifier, Token beginPos) {
     this.identifier = identifier;
@@ -239,43 +227,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
       }
     }
     return null;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-    result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
-    result = prime * result + ((typeParametersT == null) ? 0 : typeParametersT.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    ClassDeclaration other = (ClassDeclaration) obj;
-    if (fields == null) {
-      if (other.fields != null)
-        return false;
-    } else if (!fields.equals(other.fields))
-      return false;
-    if (identifier == null) {
-      if (other.identifier != null)
-        return false;
-    } else if (!identifier.equals(other.identifier))
-      return false;
-    if (typeParametersT == null) {
-      if (other.typeParametersT != null)
-        return false;
-    } else if (!typeParametersT.equals(other.typeParametersT))
-      return false;
-    return true;
   }
 
   @Override

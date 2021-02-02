@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_main.PackageNameCutter;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
@@ -21,10 +20,10 @@ import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 
-public class ParseTypeDeclarationsList {
+public class ParseTypeDeclarations {
   private final Parse parser;
 
-  public ParseTypeDeclarationsList(Parse parser) {
+  public ParseTypeDeclarations(Parse parser) {
     this.parser = parser;
   }
 
@@ -40,18 +39,14 @@ public class ParseTypeDeclarationsList {
       } else {
         unit.putClazz(clazz);
       }
-    } else if (parser.is(Keywords.import_ident)) {
+    }
+
+    else if (parser.is(Keywords.import_ident)) {
       // PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
       parser.perror("import is unimpl.");
-    } else if (parser.is(Keywords.forward_ident)) {
-      parser.checkedMove(Keywords.forward_ident);
-      parser.checkedMove(Keywords.class_ident);
-      Token tok = parser.checkedMove(T.TOKEN_IDENT);
-      parser.semicolon();
-      final ClassDeclaration forwardDeclaration = new ClassDeclaration(tok.getIdent(), tok);
-      unit.putForward(forwardDeclaration);
-      parser.defineClassName(forwardDeclaration);
-    } else {
+    }
+
+    else {
       parser.perror("unimpl");
     }
   }
@@ -59,7 +54,8 @@ public class ParseTypeDeclarationsList {
   private ClassDeclaration parseClassDeclaration() {
 
     parser.checkedMove(Keywords.class_ident);
-    final Ident ident = parser.getIdent();
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident ident = beginPos.getIdent();
 
     // class Thing<T> {
     // ......^....^
@@ -73,7 +69,15 @@ public class ParseTypeDeclarationsList {
     // maybe I'm wrong here, and there is more clean and nice way, I'll think about it later.
     //
 
-    final ClassDeclaration clazz = parser.getClassType(ident);
+    ClassDeclaration clazz = null;
+    if (parser.isClassName()) {
+      clazz = parser.getClassType(ident);
+    }
+    if (clazz == null) {
+      clazz = new ClassDeclaration(ident, beginPos);
+    }
+
+    parser.defineClassName(clazz);
     clazz.setTypeParametersT(tp);
     parser.setCurrentClass(clazz);
 
@@ -94,8 +98,6 @@ public class ParseTypeDeclarationsList {
 
     parser.rbrace();
     parser.setCurrentClass(null);
-
-    clazz.setComplete(true);
     return clazz;
   }
 

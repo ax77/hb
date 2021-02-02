@@ -1,4 +1,4 @@
-package njast;
+package tokenizers;
 
 import static org.junit.Assert.*;
 

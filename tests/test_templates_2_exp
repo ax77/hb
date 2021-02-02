@@ -79,4 +79,3 @@ class test
   var arrofgen_of_gen2: [[opt<opt<i32>>]];
 }
 
-

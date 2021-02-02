@@ -1,0 +1,10 @@
+
+class token
+{
+  let type: token_type;
+}
+
+class token_type 
+{
+  let value: u8;
+}

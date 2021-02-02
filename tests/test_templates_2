@@ -1,18 +1,3 @@
-
-/// because we should know all the classes
-/// and we should have all classes completely parsed before
-/// templates instantiations
-
-forward class array;
-forward class opt;
-forward class key_value;
-forward class map;
-forward class node;
-forward class list;
-forward class list_iter;
-forward class aux_union;
-forward class test;
-
 class array<T> 
 {
   var table: [T];

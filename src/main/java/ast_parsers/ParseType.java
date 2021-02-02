@@ -11,6 +11,7 @@ import ast_types.ArrayType;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
+import ast_types.TypeUnresolvedId;
 import literals.IntLiteral;
 import parse.Parse;
 import tokenize.Ident;
@@ -25,6 +26,7 @@ public class ParseType {
   private boolean isReference;
   private boolean isTypeParameter;
   private boolean isArray;
+  private boolean isUnresolverId;
 
   public ParseType(Parse parser) {
 
@@ -41,33 +43,32 @@ public class ParseType {
       this.isPrimitive = true;
     }
 
-    // II
-    else {
+    if (!typeWasFound) {
       typeWasFound = parser.isClassName();
       if (typeWasFound) {
         this.isReference = true;
       }
+    }
 
-      // III
-      else {
-        ClassDeclaration classDeclaration = parser.getCurrentClass(true);
-        typeWasFound = classDeclaration.hasTypeParameter(parser.tok().getIdent());
-        if (typeWasFound) {
-          this.isTypeParameter = true;
-        }
+    if (!typeWasFound) {
+      ClassDeclaration classDeclaration = parser.getCurrentClass(true);
+      typeWasFound = classDeclaration.hasTypeParameter(parser.tok().getIdent());
+      if (typeWasFound) {
+        this.isTypeParameter = true;
+      }
+    }
 
-        // IV
-        else {
-          typeWasFound = parser.is(T.T_LEFT_BRACKET);
-          if (typeWasFound) {
-            this.isArray = true;
-          }
+    if (!typeWasFound) {
+      typeWasFound = parser.is(T.T_LEFT_BRACKET);
+      if (typeWasFound) {
+        this.isArray = true;
+      }
+    }
 
-          // V?
-          else {
-
-          }
-        }
+    if (!typeWasFound) {
+      typeWasFound = parser.isUserDefinedIdentNoKeyword(parser.tok());
+      if (typeWasFound) {
+        this.isUnresolverId = true;
       }
     }
 
@@ -77,6 +78,14 @@ public class ParseType {
 
     if (!isType()) {
       parser.perror("type is not recognized");
+    }
+
+    // -1
+    if (isUnresolverId()) {
+      final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+      final Ident typeName = beginPos.getIdent();
+      final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, beginPos);
+      return new Type(unresolvedId);
     }
 
     // 0)
@@ -205,7 +214,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isArray;
+    return isPrimitive || isReference || isTypeParameter || isArray || isUnresolverId;
   }
 
   public boolean isPrimitive() {
@@ -222,6 +231,10 @@ public class ParseType {
 
   public boolean isArray() {
     return isArray;
+  }
+
+  public boolean isUnresolverId() {
+    return isUnresolverId;
   }
 
   //@formatter:off

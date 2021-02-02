@@ -2,17 +2,24 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_st1_templates.InstatantiationUnitBuilder;
+import ast_st1_templates.TypeSetter;
 import ast_symtab.Keywords;
+import ast_types.ClassTypeRef;
+import ast_types.Type;
+import ast_types.TypeBase;
+import ast_types.TypeUnresolvedId;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
+import tokenize.Ident;
 import tokenize.Stream;
 import tokenize.Token;
 import utils_fio.FileReadKind;
@@ -60,42 +67,53 @@ public class ParserMain implements ParserMainApi {
     return parser;
   }
 
+  private void bind(CompilationUnit tu) {
+    final List<ClassDeclaration> classes = tu.getClasses();
+    for (ClassDeclaration c : classes) {
+      List<TypeSetter> typeSetters = c.getTypeSetters();
+      for (TypeSetter ts : typeSetters) {
+        final Type tp = ts.getType();
+        if (tp.is(TypeBase.TP_UNRESOLVED_ID)) {
+          final TypeUnresolvedId unresolved = tp.getUnresolvedId();
+          final ClassDeclaration realtype = find(unresolved, classes);
+          if (realtype == null) {
+            throw new AstParseException("cannot find and bind class: " + unresolved.getTypeName().toString());
+          }
+          ts.setType(new Type(new ClassTypeRef(realtype, new ArrayList<>())));
+        }
+      }
+    }
+  }
+
+  private ClassDeclaration find(TypeUnresolvedId unresolved, List<ClassDeclaration> classes) {
+    final Ident typeName = unresolved.getTypeName();
+    for (ClassDeclaration c : classes) {
+      if (typeName.equals(c.getIdentifier())) {
+        return c;
+      }
+    }
+    return null;
+
+  }
+
   @Override
   public CompilationUnit parseCompilationUnit() throws IOException {
     Parse parser = initiateParse();
     final CompilationUnit result = parser.parse();
 
+    bind(result);
     return result;
   }
 
   @Override
   public InstantiationUnit parseInstantiationUnit() throws IOException {
     final CompilationUnit unit = parseCompilationUnit();
-    checkAllClassesAreComplete(unit);
     unit.sort();
 
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
     final InstantiationUnit result = unitBuilder.getInstantiationUnit();
 
     return result;
-  }
-
-  private void checkAllClassesAreComplete(final CompilationUnit unit) {
-    for (ClassDeclaration clazz : unit.getClasses()) {
-      if (!clazz.isComplete()) {
-        errorIncomplete(clazz, "incomplete class");
-      }
-    }
-    for (ClassDeclaration clazz : unit.getTemplates()) {
-      if (!clazz.isComplete()) {
-        errorIncomplete(clazz, "incomplete template");
-      }
-    }
-    for (ClassDeclaration clazz : unit.getForwards()) {
-      if (!clazz.isComplete()) {
-        errorIncomplete(clazz, "unused forward declaration");
-      }
-    }
   }
 
   private void errorIncomplete(ClassDeclaration clazz, String msg) {
