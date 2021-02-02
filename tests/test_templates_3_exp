@@ -1,0 +1,16 @@
+class opt<u8>
+{
+  let item: u8;
+  let bytes: opt<u8>;
+}
+
+class opt<f64>
+{
+  let item: f64;
+  let bytes: opt<u8>;
+}
+
+class test
+{
+  var x1: opt<f64>;
+}

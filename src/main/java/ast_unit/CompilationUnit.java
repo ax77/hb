@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_st1_templates.TypeSpecialUnhide;
 import errors.AstParseException;
 import hashed.Hash_ident;
 import tokenize.Ident;
@@ -24,12 +23,10 @@ public class CompilationUnit {
 
   public void putClazz(ClassDeclaration clazz) {
     this.classes.add(clazz);
-    clazz.getTypeSetters().add(new TypeSpecialUnhide(clazz));
   }
 
   public void putTemplate(ClassDeclaration clazz) {
     this.templates.add(clazz);
-    clazz.getTypeSetters().add(new TypeSpecialUnhide(clazz));
   }
 
   public void putForward(ClassDeclaration clazz) {

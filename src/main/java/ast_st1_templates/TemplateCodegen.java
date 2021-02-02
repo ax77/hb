@@ -18,14 +18,16 @@ import utils_ser.SerializationUtils;
 public class TemplateCodegen {
 
   // hashed results, already expanded classes
-  private final HashMap<Type, List<Type>> generatedClasses;
+  private final HashMap<Type, List<Type>> generatedClassesResult;
+  private final HashMap<Type, List<Type>> generatedClassesTemporary;
 
   // output for generated
   private final InstantiationUnit instantiationUnit;
 
   public TemplateCodegen() {
-    this.generatedClasses = new HashMap<>();
+    this.generatedClassesResult = new HashMap<>();
     this.instantiationUnit = new InstantiationUnit();
+    this.generatedClassesTemporary = new HashMap<>();
   }
 
   public InstantiationUnit getInstantiationUnit() {
@@ -38,15 +40,15 @@ public class TemplateCodegen {
       return from;
     }
 
-    if (from.isPainted()) {
-      return from;
+    // if deep-nested templates generated many times, and they are the same
+    // we can find them by their names and previously given type-arguments.
+    //
+    final Type alreadyGenerated1 = presentedInGenerated(from, from.getTypeArgumentsFromRef(),
+        generatedClassesTemporary);
+    if (alreadyGenerated1 != null) {
+      return alreadyGenerated1;
     }
-
-    if (from.getClassTypeFromRef().isHidden()) {
-      Type copyof = copyType(from);
-      copyof.paint();
-      return copyof;
-    }
+    generatedClassesTemporary.put(from, from.getTypeArgumentsFromRef());
 
     final ClassDeclaration template = copyClazz(from.getClassTypeFromRef());
     final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
@@ -60,40 +62,31 @@ public class TemplateCodegen {
       template.getTypeParametersT().get(i).fillPropValues(typeArguments.get(i));
     }
 
-    // we should hide template before substitution
-    // now we have all promoted typenames
-    // 
-    template.hide();
-
     // expand the whole template type-setters recursively
     final List<TypeSetter> typeSetters = template.getTypeSetters();
     for (final TypeSetter ts : typeSetters) {
-      if (ts instanceof TypeSpecialUnhide) {
-        TypeSpecialUnhide specUnhide = (TypeSpecialUnhide) ts;
-        specUnhide.unhide();
-      }
       final Type maybeShouldExpandIt = ts.getType();
       ts.setType(getTypeFromTemplate(maybeShouldExpandIt));
+    }
+
+    // if deep-nested templates generated many times, and they are the same
+    // we can find them by their names and previously given type-arguments.
+    //
+    final Type alreadyGenerated2 = presentedInGenerated(from, typeArguments, generatedClassesResult);
+    if (alreadyGenerated2 != null) {
+      return alreadyGenerated2;
     }
 
     // template.setTypeParametersT(new ArrayList<>());
     final Type result = new Type(new ClassTypeRef(template, typeArguments));
 
-    // if deep-nested templates generated many times, and they are the same
-    // we can find them by their names and previously given type-arguments.
-    //
-    final Type alreadyGenerated = presentedInGenerated(result, typeArguments);
-    if (alreadyGenerated != null) {
-      return alreadyGenerated;
-    }
-
-    generatedClasses.put(result, typeArguments);
+    generatedClassesResult.put(result, typeArguments);
     instantiationUnit.put(result.getClassTypeFromRef());
 
     return result;
   }
 
-  private Type presentedInGenerated(Type result, List<Type> typeArguments) {
+  private Type presentedInGenerated(Type result, List<Type> typeArguments, HashMap<Type, List<Type>> generatedClasses) {
     checkIsClass(result);
 
     final ClassDeclaration classWeWantToFind = result.getClassTypeFromRef();

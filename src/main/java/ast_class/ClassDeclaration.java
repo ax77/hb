@@ -35,27 +35,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
   /// TODO:
   private boolean isComplete;
 
-  /// anti-recursion handling in template-expansion
-  /// we may have a different cases where templated classes are 
-  /// recursively depends on each other.
-  /// for example:
-  ///
-  /// class list<T> { var iterator: list_iterator<T>; }
-  /// class list_iterator<T> { var collection: list<T>; }
-  ///
-  /// for human it is easy to recognize that we should promote the given type
-  /// within each class, and it will be the result:
-  /// var flags: list<i32>;
-  /// it seems that we should easily paste 'i32' instead of each type-parameter
-  /// and it seems easy, but it's not.
-  /// it will cause recursion -> we should expand the 'list', and
-  /// in an expansion state we'll find that we should expand 'list_iterator' and
-  /// in an expansion state we'll find that we should expand 'list', and so on.
-  /// so: once expanded class won't never expand again, because we'll mark it 
-  /// as NOEXPAND.
-  //
-  private boolean isHidden;
-
   /// we store type-variables as original references to Type
   ///
   /// each type-variable is an identifier like: 
@@ -91,24 +70,6 @@ public class ClassDeclaration implements Serializable, ILocation, Comparable<Cla
 
   public void setComplete(boolean isComplete) {
     this.isComplete = isComplete;
-  }
-
-  public void hide() {
-    if (isHidden) {
-      throw new AstParseException("already hidden");
-    }
-    this.isHidden = true;
-  }
-
-  public void unhide() {
-    if (!isHidden) {
-      throw new AstParseException("is not hidden");
-    }
-    this.isHidden = false;
-  }
-
-  public boolean isHidden() {
-    return isHidden;
   }
 
   public ClassDeclaration(Ident identifier, Token beginPos) {

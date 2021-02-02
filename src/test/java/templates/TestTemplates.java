@@ -18,6 +18,7 @@ public class TestTemplates {
     final LinkedHashMap<String, String> paths = new LinkedHashMap<>();
     paths.put(dir + "/tests/test_templates_1", dir + "/tests/test_templates_1_exp");
     paths.put(dir + "/tests/test_templates_2", dir + "/tests/test_templates_2_exp");
+    paths.put(dir + "/tests/test_templates_3", dir + "/tests/test_templates_3_exp");
 
     for (Entry<String, String> ent : paths.entrySet()) {
       check(ent.getValue());
