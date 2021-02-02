@@ -1,15 +1,26 @@
 package ast_types;
 
+import java.io.Serializable;
+import java.util.List;
+
 import tokenize.Ident;
 import tokenize.Token;
 
-public class TypeUnresolvedId {
-  private final Ident typeName; 
-  private final Token beginPos;
+public class TypeUnresolvedId implements Serializable {
+  private static final long serialVersionUID = 8959530510216631676L;
 
-  public TypeUnresolvedId(Ident typeName, Token beginPos) {
+  private final Ident typeName;
+  private final Token beginPos;
+  private final List<Type> typeArguments;
+
+  public TypeUnresolvedId(Ident typeName, List<Type> typeArguments, Token beginPos) {
     this.typeName = typeName;
+    this.typeArguments = typeArguments;
     this.beginPos = beginPos;
+  }
+
+  public List<Type> getTypeArguments() {
+    return typeArguments;
   }
 
   public Ident getTypeName() {

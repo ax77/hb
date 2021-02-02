@@ -1,14 +1,14 @@
+class list<T> 
+{
+  var first: node<T>;
+  var last: node<T>;
+}
+
 class node<E> 
 {
   var prev: node<E>;
   var next: node<E>;
   var item: E;
-}
-
-class list<T> 
-{
-  var first: node<T>;
-  var last: node<T>;
 }
 
 class test

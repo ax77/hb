@@ -2,10 +2,12 @@ package templates;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import utils_fio.FileSearchKind;
 import utils_fio.FileWrapper;
 
 public class TestTemplates {
@@ -14,19 +16,35 @@ public class TestTemplates {
   public void test() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-
     final LinkedHashMap<String, String> paths = new LinkedHashMap<>();
-    paths.put(dir + "/tests/test_templates_1", dir + "/tests/test_templates_1_exp");
-    paths.put(dir + "/tests/test_templates_2", dir + "/tests/test_templates_2_exp");
-    paths.put(dir + "/tests/test_templates_3", dir + "/tests/test_templates_3_exp");
+
+    // test_templates_1
+    // test_templates_1_exp
+
+    List<FileWrapper> files = new FileWrapper(dir + "/tests/").allFilesInThisDirectory(FileSearchKind.FILES_ONLY);
+    for (FileWrapper fw : files) {
+      final String basename = fw.getBasename();
+
+      final boolean isOk = basename.startsWith("test_templates_") && !basename.endsWith("_exp");
+      if (!isOk) {
+        continue;
+      }
+
+      final String fullname = fw.getFullname();
+      paths.put(fullname, fullname + "_exp");
+    }
 
     for (Entry<String, String> ent : paths.entrySet()) {
-      check(ent.getValue());
+      final String source = ent.getKey();
+      final String expect = ent.getValue();
 
-      TokenCmp cmp = new TokenCmp(ent.getKey(), ent.getValue());
+      check(source);
+      check(expect);
+
+      final TokenCmp cmp = new TokenCmp(source, expect);
       cmp.compare();
 
-      System.out.println("OK: " + ent.getKey());
+      System.out.println("OK: " + source);
     }
 
   }

@@ -84,7 +84,8 @@ public class ParseType {
     if (isUnresolverId()) {
       final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
       final Ident typeName = beginPos.getIdent();
-      final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, beginPos);
+      final List<Type> typeArguments = getTypeArguments();
+      final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
       return new Type(unresolvedId);
     }
 
