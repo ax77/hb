@@ -65,12 +65,7 @@ public class Parse {
   }
 
   public void move() {
-
     tok = tokenlist.next();
-    if (tok.ofType(T.TOKEN_STREAMBEGIN) || tok.ofType(T.TOKEN_STREAMEND)) {
-      tok = tokenlist.next();
-    }
-
     addLoc();
   }
 

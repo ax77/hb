@@ -6,10 +6,8 @@ public enum T {
   // special
   TOKEN_EOF,
   TOKEN_ERROR,
-  TOKEN_STREAMBEGIN,
-  TOKEN_STREAMEND,
 
-  //
+  // literals
   TOKEN_IDENT,
   TOKEN_NUMBER,
   TOKEN_CHAR,

@@ -1,8 +1,5 @@
 package ast_parsers;
 
-import static tokenize.T.TOKEN_CHAR;
-import static tokenize.T.TOKEN_NUMBER;
-import static tokenize.T.TOKEN_STRING;
 import static tokenize.T.T_AND;
 import static tokenize.T.T_AND_AND;
 import static tokenize.T.T_DIVIDE;
@@ -21,7 +18,6 @@ import static tokenize.T.T_OR_OR;
 import static tokenize.T.T_PERCENT;
 import static tokenize.T.T_PLUS;
 import static tokenize.T.T_QUESTION;
-import static tokenize.T.T_RIGHT_PAREN;
 import static tokenize.T.T_TILDE;
 import static tokenize.T.T_TIMES;
 import static tokenize.T.T_XOR;
@@ -34,6 +30,7 @@ import ast_expr.ExprArrayAccess;
 import ast_expr.ExprArrayCreation;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -323,29 +320,23 @@ public class ParseExpression {
 
   private ExprExpression e_cast() {
 
-    //    if (parser.tp() == T_LEFT_PAREN) {
-    //      ParseState state = new ParseState(parser);
-    //
-    //      Token peek = parser.peek();
-    //      if (parser.isDeclSpecStart(peek)) {
-    //
-    //        Token lparen = parser.lparen();
-    //        CType typeName = parser.parseTypename();
-    //        parser.rparen();
-    //
-    //        // ambiguous
-    //        // "(" type-name ")" "{" initializer-list "}"
-    //        // "(" type-name ")" "{" initializer-list "," "}"
-    //
-    //        if (parser.tp() != T.T_LEFT_BRACE) {
-    //          final CExpression tocast = e_cast();
-    //          return build_cast(parser, typeName, tocast, lparen);
-    //        }
-    //      }
-    //
-    //      parser.restoreState(state);
-    //
-    //    }
+    if (parser.is(T.T_LEFT_PAREN)) {
+
+      final ParseState state = new ParseState(parser);
+      final Token beginPos = parser.lparen();
+
+      final ParseType typeRecornizer = new ParseType(parser);
+      if (typeRecornizer.isType()) {
+
+        final Type toType = typeRecornizer.getType();
+        parser.rparen();
+
+        ExprExpression expressionForCast = e_unary(); // TODO: UNARY or CAST?
+        return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
+      }
+
+      parser.restoreState(state);
+    }
 
     return e_unary();
   }
@@ -375,7 +366,7 @@ public class ParseExpression {
 
         ParseState parseState = new ParseState(parser);
 
-        final Token dot = parser.moveget();
+        parser.checkedMove(T.T_DOT);
         final Token peek = parser.peek();
 
         final boolean dot_ident_lparen = parser.isUserDefinedIdentNoKeyword(parser.tok())
@@ -417,9 +408,6 @@ public class ParseExpression {
       // array-subscript
       //
       else if (parser.is(T.T_LEFT_BRACKET)) {
-        // parser.lbracket();
-        // lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()));
-        // parser.rbracket();
 
         while (parser.is(T.T_LEFT_BRACKET)) {
           Token saved = parser.lbracket();
@@ -469,25 +457,27 @@ public class ParseExpression {
 
   private List<FuncArg> parseArglist() {
 
-    Token lparen = parser.lparen();
-    List<FuncArg> arglist = new ArrayList<>();
+    parser.lparen();
+    final List<FuncArg> arglist = new ArrayList<>();
 
-    if (parser.tp() != T_RIGHT_PAREN) {
-      arglist.add(getOneArg());
-
-      while (parser.tp() == T.T_COMMA) {
-        parser.move();
-        arglist.add(getOneArg());
-      }
+    if (parser.is(T.T_RIGHT_PAREN)) {
+      parser.rparen();
+      return arglist;
     }
 
-    Token rparen = parser.rparen();
+    arglist.add(getOneArg());
+    while (parser.is(T.T_COMMA)) {
+      parser.move();
+      arglist.add(getOneArg());
+    }
+
+    parser.rparen();
     return arglist;
   }
 
   private FuncArg getOneArg() {
     Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    Token colon = parser.colon();
+    parser.colon();
 
     ExprExpression onearg = e_assign();
     return new FuncArg(tok.getIdent(), onearg);
@@ -495,71 +485,25 @@ public class ParseExpression {
 
   private ExprExpression e_prim() {
 
-    if (parser.tp() == TOKEN_NUMBER || parser.tp() == TOKEN_CHAR || parser.tp() == TOKEN_STRING) {
+    if (parser.is(T.TOKEN_STRING)) {
+      return parseStringLiteral();
+    }
+
+    if (parser.is(T.TOKEN_NUMBER)) {
       Token saved = parser.moveget();
-      if (saved.ofType(TOKEN_STRING)) {
+      return new ExprExpression(saved.getNumconst(), saved);
+    }
 
-        // TODO:__string__
-
-        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"),
-            new ArrayList<>(), saved);
-
-        final List<FuncArg> argums = new ArrayList<>();
-        argums.add(
-            new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(ExpressionBase.ESTRING_CONST, saved)));
-
-        final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
-        final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
-        final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
-
-        return new ExprExpression(classCreation, saved);
-      }
-
-      else if (saved.ofType(TOKEN_CHAR)) {
-
-        // TODO:__string__
-
-        return new ExprExpression(ExpressionBase.ECHAR_CONST, saved);
-      }
-
-      else {
-        return new ExprExpression(saved.getNumconst(), saved);
-      }
+    if (parser.is(T.TOKEN_CHAR)) {
+      // TODO:
+      Token saved = parser.moveget();
+      return new ExprExpression(ExpressionBase.ECHAR_CONST, saved);
     }
 
     // new ClassName<i32>(x, y, z) 
+    // new [2: i32]
     if (parser.is(Keywords.new_ident)) {
-      Token saved = parser.moveget();
-
-      // new [2:int] 
-      if (parser.is(T.T_LEFT_BRACKET)) {
-        parser.setBit(ParseFlags.f_expect_array_length);
-
-        final Type arrayCreator = new ParseType(parser).getType();
-        final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
-
-        // it is important to register type-setter for `current` class
-        // not for the class is created in `new` expression 
-        parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
-
-        parser.clearBit(ParseFlags.f_expect_array_length);
-        return new ExprExpression(arrayCreation, saved);
-      }
-
-      else {
-
-        final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
-        final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-        final ClassTypeRef ref = new ClassTypeRef(instantiatedClass, typeArguments);
-        final List<FuncArg> arguments = parseArglist();
-        final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
-
-        // it is important to register type-setter for `current` class
-        // not for the class is created in `new` expression 
-        parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
-        return new ExprExpression(classInstanceCreation, saved);
-      }
-
+      return parseNewExpression();
     }
 
     if (parser.is(Keywords.self_ident)) {
@@ -592,15 +536,70 @@ public class ParseExpression {
 
     // ( expression )
     if (parser.tp() == T_LEFT_PAREN) {
-      Token lparen = parser.moveget();
+      parser.lparen();
       ExprExpression e = e_expression();
-      Token rparen = parser.checkedMove(T_RIGHT_PAREN);
+      parser.rparen();
       return e;
     }
 
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
+  }
+
+  private ExprExpression parseStringLiteral() {
+
+    Token saved = parser.moveget();
+
+    // TODO:__string__
+
+    final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"), new ArrayList<>(),
+        saved);
+
+    final List<FuncArg> argums = new ArrayList<>();
+    argums
+        .add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(ExpressionBase.ESTRING_CONST, saved)));
+
+    final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
+    final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
+    final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
+
+    return new ExprExpression(classCreation, saved);
+  }
+
+  private ExprExpression parseNewExpression() {
+
+    Token saved = parser.moveget();
+
+    // new [2: i32] 
+    if (parser.is(T.T_LEFT_BRACKET)) {
+      parser.setBit(ParseFlags.f_expect_array_length);
+
+      final Type arrayCreator = new ParseType(parser).getType();
+      final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
+
+      // it is important to register type-setter for `current` class
+      // not for the class is created in `new` expression 
+      parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
+
+      parser.clearBit(ParseFlags.f_expect_array_length);
+      return new ExprExpression(arrayCreation, saved);
+    }
+
+    // new list<i32>(0)
+    else {
+
+      final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
+      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
+      final ClassTypeRef ref = new ClassTypeRef(instantiatedClass, typeArguments);
+      final List<FuncArg> arguments = parseArglist();
+      final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
+
+      // it is important to register type-setter for `current` class
+      // not for the class is created in `new` expression 
+      parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
+      return new ExprExpression(classInstanceCreation, saved);
+    }
   }
 
 }

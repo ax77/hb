@@ -1,9 +1,5 @@
 package tokenize;
 
-import static tokenize.Fposition.fatbol;
-import static tokenize.Fposition.fleadws;
-import static tokenize.Fposition.fnewline;
-
 import java.io.Serializable;
 
 import ast_sourceloc.SourceLocation;
@@ -13,11 +9,17 @@ import utils_oth.NullChecker;
 public class Token implements Serializable {
   private static final long serialVersionUID = -6400923302892741933L;
 
+  // position flags
+  public static final int fnewline = 1 << 0;
+  public static final int fleadws = 1 << 1;
+  public static final int fatbol = 1 << 2;
+
   // base
   private int fposition;
   private final String value;
   private final T type;
   private final SourceLocation location;
+  
   // literals
   private Ident ident;
   private char charconst;
@@ -186,7 +188,7 @@ public class Token implements Serializable {
   }
 
   public boolean typeIsSpecialStreamMarks() {
-    return this.ofType(T.TOKEN_EOF) || this.ofType(T.TOKEN_STREAMBEGIN) || this.ofType(T.TOKEN_STREAMEND);
+    return this.ofType(T.TOKEN_EOF);
   }
 
   public T getType() {

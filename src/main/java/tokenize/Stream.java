@@ -383,18 +383,7 @@ public class Stream {
     return tokenlist;
   }
 
-  private void markbegin() {
-    Token t = new Token("", T.TOKEN_STREAMBEGIN, builtinZeroLocation(T.TOKEN_STREAMBEGIN));
-    tokenlist.add(t);
-  }
-
-  private void markend() {
-    Token t = new Token("", T.TOKEN_STREAMEND, builtinZeroLocation(T.TOKEN_STREAMEND));
-    tokenlist.add(t);
-  }
-
   private void tokenize() {
-    //markbegin();
 
     LinkedList<Token> line = new LinkedList<Token>();
     boolean nextws = false;
@@ -405,7 +394,6 @@ public class Stream {
       if (t.ofType(TOKEN_EOF)) {
 
         tokenlist.addAll(line);
-        //markend(); // eostream
         tokenlist.add(t); // eof
 
         break;

@@ -1,30 +1,6 @@
-// class list<T> 
-// {
-//   var first: node<T>;
-//   var last: node<T>;
-//   func get_iterator() -> list_iter<T> {}
-// }
-// 
-// class node<E> 
-// {
-//   var prev: node<E>;
-//   var next: node<E>;
-//   var item: E;
-// }
-// 
-// class list_iter<T>
-// {
-//   var collection: list<T>;
-//   var last_returned: node<T>;
-//   var next: node<T>;
-//   var next_index: i32;
-// }
-
 class test
 {
-  // var args: list<list<i32>>;
-  let array1: [i32] = new [2: i32];
-  let array2: [i32];
+  let a: i64 = (i64) 1_i32;
 }
 
 
