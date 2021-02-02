@@ -25,9 +25,9 @@ public class ClassDeclaration implements Serializable, ILocation {
 
   private final Token beginPos;
   private final Ident identifier;
-  private List<ClassMethodDeclaration> constructors;
-  private List<VarDeclarator> fields;
-  private List<ClassMethodDeclaration> methods;
+  private final List<ClassMethodDeclaration> constructors;
+  private final List<VarDeclarator> fields;
+  private final List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
 
   /// we store type-variables as original references to Type
@@ -57,20 +57,29 @@ public class ClassDeclaration implements Serializable, ILocation {
   /// we'll iterate over each type-parameter, and set the real type (i32, u64) instead of
   /// its name ('T')
   ///
-  private List<TypeSetter> typeSetters;
+  private final List<TypeSetter> typeSetters;
 
   public ClassDeclaration(Ident identifier, List<Type> typeParametersT, Token beginPos) {
     NullChecker.check(identifier, typeParametersT, beginPos);
+    checkTypeParameters(typeParametersT);
+
+    this.identifier = identifier;
+    this.typeParametersT = Collections.unmodifiableList(typeParametersT);
+    this.beginPos = beginPos;
+
+    // lists
+    this.constructors = new ArrayList<>();
+    this.fields = new ArrayList<>();
+    this.methods = new ArrayList<>();
+    this.typeSetters = new ArrayList<>();
+  }
+
+  private void checkTypeParameters(List<Type> typeParametersT) {
     for (Type tp : typeParametersT) {
       if (!tp.is_typename_id()) {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
-
-    this.identifier = identifier;
-    this.typeParametersT = Collections.unmodifiableList(typeParametersT);
-    this.beginPos = beginPos;
-    initLists();
   }
 
   public ClassMethodDeclaration getDestructor() {
@@ -80,13 +89,6 @@ public class ClassDeclaration implements Serializable, ILocation {
   public void setDestructor(ClassMethodDeclaration destructor) {
     NullChecker.check(destructor);
     this.destructor = destructor;
-  }
-
-  private void initLists() {
-    this.constructors = new ArrayList<>();
-    this.fields = new ArrayList<>();
-    this.methods = new ArrayList<>();
-    this.typeSetters = new ArrayList<>();
   }
 
   public boolean is_equal_to(ClassDeclaration another) {
