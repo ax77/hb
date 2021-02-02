@@ -37,6 +37,8 @@ public class Parse {
   private Map<Ident, ClassDeclaration> referenceTypes;
   private ClassDeclaration currentClass;
 
+  private int flags = 0;
+
   public Parse(List<Token> tokens) {
     this.tokenlist = new Tokenlist(tokens);
     initParser();
@@ -74,6 +76,22 @@ public class Parse {
 
   public Token tok() {
     return tok;
+  }
+
+  public boolean hasBit(int m) {
+    return (flags & m) != 0;
+  }
+
+  public void setBit(int f) {
+    flags |= f;
+  }
+
+  public void clearBit(int f) {
+    flags &= ~f;
+  }
+
+  public int getFlags() {
+    return flags;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -308,13 +326,14 @@ public class Parse {
     return tok.ofType(T.TOKEN_EOF);
   }
 
-  public void restoreState(ParseState parseState) {
-    this.tokenlist.setOffset(parseState.getTokenlistOffset());
-    this.tok = parseState.getTok();
-    this.ringBuffer = new ArrayList<Token>(parseState.getRingBuffer());
-    this.lastloc = parseState.getLastloc();
-    this.prevtok = parseState.getPrevtok();
-    this.currentClass = parseState.getCurrentClass();
+  public void restoreState(ParseState state) {
+    this.tokenlist.setOffset(state.getTokenlistOffset());
+    this.tok = state.getTok();
+    this.ringBuffer = new ArrayList<Token>(state.getRingBuffer());
+    this.lastloc = state.getLastloc();
+    this.prevtok = state.getPrevtok();
+    this.currentClass = state.getCurrentClass();
+    this.flags = state.getFlags();
   }
 
   //////////////////////////////////////////////////////////////////////

@@ -49,6 +49,7 @@ import ast_types.ClassTypeRef;
 import ast_types.Type;
 import hashed.Hash_ident;
 import parse.Parse;
+import parse.ParseFlags;
 import parse.ParseState;
 import tokenize.Ident;
 import tokenize.T;
@@ -500,7 +501,8 @@ public class ParseExpression {
 
         // TODO:__string__
 
-        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"), new ArrayList<>(), saved);
+        final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"),
+            new ArrayList<>(), saved);
 
         final List<FuncArg> argums = new ArrayList<>();
         argums.add(
@@ -531,12 +533,16 @@ public class ParseExpression {
 
       // new [2:int] 
       if (parser.is(T.T_LEFT_BRACKET)) {
+        parser.setBit(ParseFlags.f_expect_array_length);
+
         final Type arrayCreator = new ParseType(parser).getType();
         final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
 
         // it is important to register type-setter for `current` class
         // not for the class is created in `new` expression 
         parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
+
+        parser.clearBit(ParseFlags.f_expect_array_length);
         return new ExprExpression(arrayCreation, saved);
       }
 

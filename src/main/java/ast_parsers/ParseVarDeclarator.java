@@ -77,7 +77,7 @@ public class ParseVarDeclarator {
     if (ty.is_array()) {
 
       parser.checkedMove(T.T_LEFT_BRACKET);
-      long arlen = ty.getArrayType().getCount();
+      long arlen = ty.getArrayType().getLength();
 
       Type sub = ty.getArrayType().getType();
       int elsize = sub.get_size();
@@ -125,8 +125,8 @@ public class ParseVarDeclarator {
       parser.checkedMove(T.T_RIGHT_BRACKET);
 
       // TODO: fixed/dynamic
-      if (ty.getArrayType().getCount() <= 0) {
-        ty.getArrayType().setCount(count);
+      if (ty.getArrayType().getLength() <= 0) {
+        ty.getArrayType().setLength(count);
         ty.set_size(elsize * count);
       }
 

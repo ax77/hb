@@ -128,7 +128,7 @@ public class SymExpressionApplier {
   }
 
   private void checkArraySize(final ArrayType array, final ExprExpression e) {
-    if (array.getCount() == 0) {
+    if (array.getLength() == 0) {
       ErrorLocation.errorExpression("array-creation with zero-size", e);
     }
     if (array.getType().is_array()) {

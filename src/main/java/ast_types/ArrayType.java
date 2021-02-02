@@ -7,20 +7,20 @@ import ast_st1_templates.TypeSetter;
 public class ArrayType implements Serializable, TypeSetter {
   private static final long serialVersionUID = 3421706133636460085L;
 
-  private /*final*/ Type arrayOf;
-  private int count;
+  private /*final*/ Type elementType;
+  private int length;
 
-  public ArrayType(Type arrayOf, int count) {
-    this.arrayOf = arrayOf;
-    this.count = count;
+  public ArrayType(Type elementType, int length) {
+    this.elementType = elementType;
+    this.length = length;
   }
 
-  public int getCount() {
-    return count;
+  public int getLength() {
+    return length;
   }
 
-  public void setCount(int count) {
-    this.count = count;
+  public void setLength(int count) {
+    this.length = count;
   }
 
   public boolean is_equal_to(ArrayType another) {
@@ -28,7 +28,7 @@ public class ArrayType implements Serializable, TypeSetter {
       return true;
     }
 
-    if (getCount() != another.getCount()) {
+    if (getLength() != another.getLength()) {
       return false;
     }
     final Type sub1 = getType();
@@ -43,23 +43,23 @@ public class ArrayType implements Serializable, TypeSetter {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    if (count > 0) {
-      sb.append(String.format("%d", count));
+    if (length > 0) {
+      sb.append(String.format("%d", length));
       sb.append(": ");
     }
-    sb.append(arrayOf.toString());
+    sb.append(elementType.toString());
     sb.append("]");
     return sb.toString();
   }
 
   @Override
   public void setType(Type typeToSet) {
-    this.arrayOf = typeToSet;
+    this.elementType = typeToSet;
   }
 
   @Override
   public Type getType() {
-    return arrayOf;
+    return elementType;
   }
 
 }

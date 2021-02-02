@@ -13,6 +13,7 @@ public class ParseState {
   private final String lastloc;
   private final Token prevtok;
   private final ClassDeclaration currentClass;
+  private final int flags;
 
   public ParseState(Parse parser) {
     this.tokenlistOffset = parser.getTokenlist().getOffset();
@@ -21,6 +22,7 @@ public class ParseState {
     this.lastloc = parser.getLastLoc();
     this.prevtok = parser.getPrevtok();
     this.currentClass = parser.getCurrentClass(false);
+    this.flags = parser.getFlags();
   }
 
   public ClassDeclaration getCurrentClass() {
@@ -45,6 +47,10 @@ public class ParseState {
 
   public Token getPrevtok() {
     return prevtok;
+  }
+
+  public int getFlags() {
+    return flags;
   }
 
 }

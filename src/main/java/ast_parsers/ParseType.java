@@ -14,6 +14,7 @@ import ast_types.TypeBindings;
 import ast_types.TypeUnresolvedId;
 import literals.IntLiteral;
 import parse.Parse;
+import parse.ParseFlags;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
@@ -82,11 +83,7 @@ public class ParseType {
 
     // -1
     if (isUnresolverId()) {
-      final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
-      final Ident typeName = beginPos.getIdent();
-      final List<Type> typeArguments = getTypeArguments();
-      final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
-      return new Type(unresolvedId);
+      return getUnresolvedIdentifier();
     }
 
     // 0)
@@ -113,19 +110,23 @@ public class ParseType {
     return referenceType;
   }
 
+  private Type getUnresolvedIdentifier() {
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident typeName = beginPos.getIdent();
+    final List<Type> typeArguments = getTypeArguments();
+    final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
+    return new Type(unresolvedId);
+  }
+
   private Type getArray() {
     // 1) fixed   [2:[2:i32]], [2: u64]
     // 2) dynamic [[i32]], [i8]
 
     parser.checkedMove(T.T_LEFT_BRACKET);
 
-    int count = 0;
-    if (parser.is(T.TOKEN_NUMBER)) {
-      count = (int) getArrayCount();
-      parser.colon();
-    }
+    final int length = getArrayLengthWithCheck();
+    final Type arrayOf = new ParseType(parser).getType();
 
-    Type arrayOf = new ParseType(parser).getType();
     parser.checkedMove(T.T_RIGHT_BRACKET);
 
     // to handle the array forms like:
@@ -133,24 +134,46 @@ public class ParseType {
     // var arr[list<list<i32>>];
     // var arr[[list<list<i32>>]];
     //
-    final ArrayType array = new ArrayType(arrayOf, count);
+    final ArrayType array = new ArrayType(arrayOf, length);
     parser.getCurrentClass(true).registerTypeSetter(array);
     return new Type(array);
   }
 
-  public long getArrayCount() {
+  private int getArrayLengthWithCheck() {
+    int length = 0;
+    if (parser.hasBit(ParseFlags.f_expect_array_length)) {
+      length = (int) getArrayLengthFromConstExpression();
+      parser.colon();
+    }
+
+    else {
+      if (parser.is(T.TOKEN_NUMBER)) {
+        parser.perror("array-length not expecting in this context. ");
+      }
+    }
+    return length;
+  }
+
+  public long getArrayLengthFromConstExpression() {
+    if (!parser.is(T.TOKEN_NUMBER)) {
+      parser.perror("expect array-size expression, must be an integer constant.");
+    }
+
     final ExprExpression count = new ParseExpression(parser).e_const_expr();
     if (!count.is(ExpressionBase.EPRIMARY_NUMBER)) {
       parser.perror("expected array size.");
     }
+
     final IntLiteral num = count.getNumber();
     if (!num.getType().is_integer()) {
       parser.perror("array-size must be an integer.");
     }
+
     final long intvalue = num.getInteger();
     if (intvalue <= 0) {
       parser.perror("zero or negative array size.");
     }
+
     return intvalue;
   }
 
