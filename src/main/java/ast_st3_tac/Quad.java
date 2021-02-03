@@ -208,8 +208,16 @@ public class Quad {
       return typeToStr + resultToStr + " = " + lhs + "[" + rhs + "]";
     }
 
+    if (base == QuadOpc.FIELD_ACCESS) {
+      return typeToStr + resultToStr + " = " + lhs + "." + rhs;
+    }
+
+    if (op == null) {
+      System.out.println("op==null.....?????");
+    }
+
     // bin|un
-    NullChecker.check(op);
+    //NullChecker.check(op);
     if (base == QuadOpc.UNOP) {
       return typeToStr + resultToStr + " = " + op + lhs;
     }

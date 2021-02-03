@@ -14,6 +14,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
+import ast_st2_annotate.Mods;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -57,7 +58,7 @@ public class ParseStatement {
 
   private StmtBlockItem parseOneBlock(VarBase varBase) {
 
-    if (parser.isTypeWithOptModifiersBegin()) {
+    if (Mods.isAnyModifier(parser.tok())) {
       final Modifiers mods = new ParseModifiers(parser).parse();
       final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods);
 

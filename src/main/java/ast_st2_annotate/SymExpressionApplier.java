@@ -257,6 +257,7 @@ public class SymExpressionApplier {
       final Ident fieldName = variable.getIdentifier();
       final ExprExpression selfExpression = new ExprExpression(new ExprSelf(object), variable.getBeginPos());
       final ExprFieldAccess fieldAccess = new ExprFieldAccess(selfExpression, fieldName);
+      fieldAccess.setField(variable);
       e.replaceIdentWithFieldAccess(fieldAccess);
       return true;
     }

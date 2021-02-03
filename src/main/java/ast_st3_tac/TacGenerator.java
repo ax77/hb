@@ -14,13 +14,9 @@ import static ast_expr.ExpressionBase.EPRIMARY_STRING;
 import static ast_expr.ExpressionBase.ESELF;
 import static ast_expr.ExpressionBase.EUNARY;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprArrayAccess;
@@ -43,21 +39,18 @@ import errors.AstParseException;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class TestTac {
+public class TacGenerator {
 
-  private static int counter = 0;
   private List<Quad> quadsTmp = new ArrayList<>();
   private HashMap<ResultName, Quad> allops = new HashMap<>();
   private List<Quad> quads = new ArrayList<>();
   private HashMap<String, ResultName> hashResultName = new HashMap<>();
 
-  @Before
-  public void before() {
-    counter = 0;
-    quadsTmp = new ArrayList<>();
-    allops = new HashMap<>();
-    quads = new ArrayList<>();
-    hashResultName = new HashMap<>();
+  public TacGenerator() {
+    this.quadsTmp = new ArrayList<>();
+    this.allops = new HashMap<>();
+    this.quads = new ArrayList<>();
+    this.hashResultName = new HashMap<>();
   }
 
   private ResultName h(String result) {
@@ -84,7 +77,7 @@ public class TestTac {
     return quad.getResult();
   }
 
-  private String txt1(String end) {
+  public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
     for (Quad s : quads) {
       sb.append(s.toString().trim() + end);
@@ -93,7 +86,7 @@ public class TestTac {
   }
 
   private String t() {
-    return String.format("t%d", counter++);
+    return String.format("t%d", Counter.next());
   }
 
   private ResultName ht() {
@@ -146,11 +139,12 @@ public class TestTac {
 
   }
 
+  @SuppressWarnings("unused")
   private void load(Type resultType) {
     // quads(new Quad(ht(), resultType, "LD", popResultName()));
   }
 
-  private void gen(ExprExpression e) {
+  public void gen(ExprExpression e) {
     NullChecker.check(e);
     ExpressionBase base = e.getBase();
 
@@ -291,77 +285,6 @@ public class TestTac {
     else {
       throw new RuntimeException(base.toString() + ": unimplemented");
     }
-
-  }
-
-  @Test
-  public void test5() throws IOException {
-
-    //@formatter:off
-    StringBuilder sb = new StringBuilder();
-    sb.append(" /*001*/  class token_type {                                      \n");
-    sb.append(" /*002*/      var tp: i32;                                        \n");
-    sb.append(" /*003*/      init (tp: i32)                                      \n");
-    sb.append(" /*004*/      {                                                   \n");
-    sb.append(" /*005*/          self.tp = tp;                                   \n");
-    sb.append(" /*006*/      }                                                   \n");
-    sb.append(" /*007*/      func get_tp(flag: i32) -> i32                                \n");
-    sb.append(" /*008*/      {                                                   \n");
-    sb.append(" /*009*/          return tp;                                      \n");
-    sb.append(" /*010*/      }  func set_tp(tp: i32) { self.tp = tp; }                                                 \n");
-    sb.append(" /*011*/  }                                                       \n");
-    sb.append(" /*012*/  class token {                                           \n");
-    sb.append(" /*013*/      var type: token_type;                               \n");
-    sb.append(" /*014*/      init (type: token_type)                             \n");
-    sb.append(" /*015*/      {                                                   \n");
-    sb.append(" /*016*/          self.type = type;                               \n");
-    sb.append(" /*017*/      }                                                   \n");
-    sb.append(" /*018*/      func get_type(x: i32, y: i32)                                     \n");
-    sb.append(" /*019*/          -> token_type                                   \n");
-    sb.append(" /*020*/      {                                                   \n");
-    sb.append(" /*021*/          return type;                                    \n");
-    sb.append(" /*022*/      }    func stub(f: i32) {}                                               \n");
-    sb.append(" /*023*/  }                                                       \n");
-    sb.append(" /*024*/  class test                                              \n");
-    sb.append(" /*025*/  {   var f: i32; var arr: [[i32]]; func fnz()->i32{return 0;}                                                   \n");
-    sb.append(" /*026*/      func fn4() -> i32                                   \n");
-    sb.append(" /*027*/      {                                                   \n");
-    sb.append(" /*028*/          var tp: token_type = new token_type(tp: 128);   \n");
-    sb.append(" /*029*/          var tok: token = new token(type: tp);           \n");
-    sb.append(" /*030*/          tok.type.tp = 12;                               \n");
-    sb.append(" /*031*/          var xxx: i32;                                   \n");
-    sb.append(" /*031*/          arr[1][2] = -1 + 1024;                         \n");
-    sb.append(" /*032*/          return xxx;                                     \n");
-    sb.append(" /*033*/      }                                                   \n");
-    sb.append(" /*034*/  }                                                       \n");
-    //@formatter:on
-
-    //    Parse mainParser = new ParserMain(new ImportsResolver(sb).getSource()).initiateParse();
-    //
-    //    CompilationUnit unit = mainParser.parse();
-    //    InstantiationUnit instantiationUnit = new InstatantiationUnitBuilder(unit).getInstantiationUnit();
-    //    ExprExpression expression2 = instantiationUnit.getClasses().get(2).getMethods().get(1).getBlock()
-    //        .getBlockStatements().get(4).getStatement().getExprStmt();
-    //
-    //    gen(expression2);
-    //
-    //    for (Entry<ResultName, Quad> e : allops.entrySet()) {
-    //      // System.out.println(e.getKey().toString() + "::" +e.getValue().getType().toString());
-    //    }
-    //
-    //    // // const folding: that is :)
-    //    // List<Quad> toRemove = new ArrayList<>();
-    //    // for (Quad q : quads) {
-    //    //   if (q.getBase() == QuadOpc.NUM_DECL) {
-    //    //     toRemove.add(q);
-    //    //     hashResultName.get(q.getResult().getResult()).setResult(q.getLhs().toString());
-    //    //   }
-    //    // }
-    //    // for (Quad q : toRemove) {
-    //    //   quads.remove(q);
-    //    // }
-    //
-    //    System.out.println(txt1(";\n"));
 
   }
 
