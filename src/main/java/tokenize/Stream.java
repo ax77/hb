@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import ast_sourceloc.SourceLocation;
+import errors.AstParseException;
 import errors.ScanExc;
 import hashed.Hash_ident;
 import literals.IntLiteral;
@@ -31,6 +32,8 @@ public class Stream {
   private static final Map<String, T> VALID_COMBINATIONS_3 = new HashMap<>();
   private static final Map<String, T> SINGLE_OPERATORS = new HashMap<>();
   private static final Map<String, T> OTHER_ASCII_CHARACTERS = new HashMap<>();
+
+  private static final char DOUBLE_QUOTE = '\"';
 
   static {
 
@@ -171,7 +174,7 @@ public class Stream {
       if (c2 == '/') {
         move();
         move();
-        for (;;) {
+        while (!buffer.isEof()) {
           int tmpch = buffer.nextc();
           if (tmpch == '\n') {
             return EOL_TOKEN;
@@ -183,10 +186,11 @@ public class Stream {
       }
 
       else if (c2 == '*') {
+        // throw new AstParseException("/* c-style comments */ are not supported.");
         move();
         move();
         int prevc = '\0';
-        for (;;) {
+        while (!buffer.isEof()) {
           int tmpch = buffer.nextc();
           if (tmpch == HC_FEOF) {
             throw new ScanExc(Integer.toString(buffer.getLine()));
@@ -200,9 +204,13 @@ public class Stream {
 
     }
 
+    // string begins with """
+    if (c1 == DOUBLE_QUOTE && c2 == DOUBLE_QUOTE && c3 == DOUBLE_QUOTE) {
+      return getMultilineString();
+    }
+
     // string|char
-    final boolean isStringStart = (c1 == '\'' || c1 == '\"');
-    if (isStringStart) {
+    if (c1 == '\'' || c1 == '\"') {
       return getString();
     }
 
@@ -229,6 +237,93 @@ public class Stream {
     }
 
     throw new ScanExc("unknown source: " + combineOp(c1, c2, c3));
+  }
+
+  private Token getString() {
+
+    final char endof = buffer.nextc(); // ' or "
+    final StringBuilder sb = new StringBuilder();
+
+    while (!buffer.isEof()) {
+      char nextc = buffer.nextc();
+
+      if (nextc == Env.HC_FEOF) {
+        throw new ScanExc(Integer.toString(buffer.getLine()));
+      }
+      if (nextc == '\n') {
+        throw new ScanExc(Integer.toString(buffer.getLine()));
+      }
+      if (nextc == endof) {
+        break;
+      }
+
+      if (nextc == '\\') {
+        // escaped character
+        sb.append("\\");
+        sb.append(buffer.nextc());
+      } else {
+        // normal symbol
+        sb.append(nextc);
+      }
+
+    }
+
+    // string
+
+    final String repr = endof + sb.toString() + endof;
+
+    if (endof == '\"') {
+      return new Token(repr, T.TOKEN_STRING, curLoc());
+    }
+
+    // chars
+
+    if (sb.toString().length() == 0) {
+      throw new ScanExc("" + " error : empty char constant");
+    }
+    return new Token(repr, T.TOKEN_CHAR, curLoc());
+
+  }
+
+  private void move(char expect) {
+    char c = buffer.nextc();
+    if (c != expect) {
+      throw new AstParseException("expect: " + expect + ", but was: " + c);
+    }
+  }
+
+  private Token getMultilineString() {
+    // """ this is a string """
+
+    moveThreeQuotes();
+    StringBuilder sb = new StringBuilder();
+
+    while (!buffer.isEof()) {
+      final char[] threechars = buffer.peekc3();
+      final char c1 = threechars[0];
+      final char c2 = threechars[1];
+      final char c3 = threechars[2];
+
+      if (c1 == HC_FEOF || c2 == HC_FEOF || c3 == HC_FEOF) {
+        throw new ScanExc(Integer.toString(buffer.getLine()));
+      }
+
+      if (c1 == DOUBLE_QUOTE && c2 == DOUBLE_QUOTE && c3 == DOUBLE_QUOTE) {
+        moveThreeQuotes();
+        break;
+      }
+
+      sb.append(buffer.nextc());
+    }
+
+    final String repr = "\"\"\"" + sb.toString() + "\"\"\"";
+    return new Token(repr, T.TOKEN_STRING, curLoc());
+  }
+
+  private void moveThreeQuotes() {
+    move(DOUBLE_QUOTE);
+    move(DOUBLE_QUOTE);
+    move(DOUBLE_QUOTE);
   }
 
   /// this function is not-optimized, of course
@@ -277,63 +372,16 @@ public class Stream {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (;;) {
+    while (!buffer.isEof()) {
       char peek1 = buffer.peekc();
       boolean isIdentifierTail = isLetter(peek1) || isDec(peek1);
       if (!isIdentifierTail) {
         break;
       }
-      sb.append((char) buffer.nextc());
+      sb.append(buffer.nextc());
     }
 
     return identToken(Hash_ident.getHashedIdent(sb.toString()));
-
-  }
-
-  private Token getString() {
-
-    char c = buffer.nextc();
-
-    final char endof = (c == '\"' ? '\"' : '\'');
-    final StringBuilder strbuf = new StringBuilder();
-
-    for (;;) {
-      int next1 = buffer.nextc();
-      if (next1 == Env.HC_FEOF) {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
-      }
-      if (next1 == '\n') {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
-      }
-      if (next1 == endof) {
-        break;
-      }
-      if (next1 != '\\') {
-        strbuf.append((char) next1);
-        continue;
-      }
-      int next2 = buffer.nextc();
-      strbuf.append("\\");
-      strbuf.append((char) next2);
-    }
-
-    // TODO:
-    final String repr = endof + strbuf.toString() + endof;
-    final int escaped[] = new CEscaper(new CBuf(strbuf.toString())).escape();
-
-    if (endof == '\"') {
-      return new Token(escaped, repr, curLoc());
-    }
-
-    // chars
-
-    if (escaped.length == 0) {
-      throw new ScanExc("" + " error : empty char constant");
-    }
-    if (escaped.length > 2) {
-    }
-
-    return new Token((char) escaped[0], curLoc());
 
   }
 
@@ -350,30 +398,30 @@ public class Stream {
      *   pp-number .
      */
 
-    StringBuilder strbuf = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
 
-    for (;;) {
-      int peekc = buffer.peekc();
+    while (!buffer.isEof()) {
+      char peekc = buffer.peekc();
       if (isDec(peekc)) {
-        strbuf.append((char) buffer.nextc());
+        sb.append(buffer.nextc());
         continue;
       } else if (peekc == 'e' || peekc == 'E' || peekc == 'p' || peekc == 'P') {
-        strbuf.append((char) buffer.nextc());
+        sb.append(buffer.nextc());
 
         peekc = buffer.peekc();
         if (peekc == '-' || peekc == '+') {
-          strbuf.append((char) buffer.nextc());
+          sb.append(buffer.nextc());
         }
         continue;
       } else if (peekc == '.' || isLetter(peekc)) {
-        strbuf.append((char) buffer.nextc());
+        sb.append(buffer.nextc());
         continue;
       }
 
       break;
     }
 
-    final String numstr = strbuf.toString();
+    final String numstr = sb.toString();
     final IntLiteral intLiteral = new ParseIntLiteral(numstr, EOL_TOKEN).parse(); // TODO: location
 
     return new Token(intLiteral, curLoc());
@@ -385,11 +433,11 @@ public class Stream {
 
   private void tokenize() {
 
-    LinkedList<Token> line = new LinkedList<Token>();
+    LinkedList<Token> line = new LinkedList<>();
     boolean nextws = false;
 
-    for (;;) {
-      Token t = nex2();
+    while (!buffer.isEof()) {
+      final Token t = nex2();
 
       if (t.ofType(TOKEN_EOF)) {
 
@@ -413,7 +461,7 @@ public class Stream {
         line.getFirst().setLeadingWhitespace(true);
 
         tokenlist.addAll(line);
-        line.clear();
+        line = new LinkedList<>();
         continue;
       }
 

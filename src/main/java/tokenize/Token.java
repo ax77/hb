@@ -10,20 +10,18 @@ public class Token implements Serializable {
   private static final long serialVersionUID = -6400923302892741933L;
 
   // position flags
-  public static final int fnewline = 1 << 0;
-  public static final int fleadws = 1 << 1;
-  public static final int fatbol = 1 << 2;
+  private static final int fnewline = 1 << 0;
+  private static final int fleadws = 1 << 1;
+  private static final int fatbol = 1 << 2;
 
   // base
   private int fposition;
   private final String value;
   private final T type;
   private final SourceLocation location;
-  
+
   // literals
   private Ident ident;
-  private char charconst;
-  private int[] strconst;
   private IntLiteral numconst;
 
   // simple copy constructor
@@ -35,8 +33,6 @@ public class Token implements Serializable {
     this.type = other.type;
     this.location = other.location;
     this.ident = other.ident;
-    this.charconst = other.charconst;
-    this.strconst = other.strconst;
     this.numconst = other.numconst;
   }
 
@@ -49,8 +45,6 @@ public class Token implements Serializable {
     this.type = type;
     this.location = other.location;
     this.ident = other.ident;
-    this.charconst = other.charconst;
-    this.strconst = other.strconst;
     this.numconst = other.numconst;
   }
 
@@ -80,25 +74,25 @@ public class Token implements Serializable {
     this.ident = ident;
   }
 
-  // char
-  public Token(char charconst, SourceLocation location) {
-    NullChecker.check(location);
-
-    this.type = T.TOKEN_CHAR;
-    this.value = String.format("%c", charconst);
-    this.charconst = charconst;
-    this.location = location;
-  }
-
-  // string
-  public Token(int[] strconst, String repr, SourceLocation location) {
-    NullChecker.check(location);
-
-    this.type = T.TOKEN_STRING;
-    this.value = repr;
-    this.strconst = strconst;
-    this.location = location;
-  }
+  // // char
+  // public Token(char charconst, SourceLocation location) {
+  //   NullChecker.check(location);
+  // 
+  //   this.type = T.TOKEN_CHAR;
+  //   this.value = String.format("%c", charconst);
+  //   this.charconst = charconst;
+  //   this.location = location;
+  // }
+  // 
+  // // string
+  // public Token(char[] strconst, String repr, SourceLocation location) {
+  //   NullChecker.check(location);
+  // 
+  //   this.type = T.TOKEN_STRING;
+  //   this.value = repr;
+  //   this.strconst = strconst;
+  //   this.location = location;
+  // }
 
   // numerics
   public Token(IntLiteral numconst, SourceLocation location) {
@@ -115,14 +109,6 @@ public class Token implements Serializable {
 
   public IntLiteral getNumconst() {
     return numconst;
-  }
-
-  public int getCharconst() {
-    return charconst;
-  }
-
-  public int[] getStrconst() {
-    return strconst;
   }
 
   // source - location routine

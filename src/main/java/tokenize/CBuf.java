@@ -3,6 +3,8 @@ package tokenize;
 import static tokenize.Env.HC_FEOF;
 
 public class CBuf {
+  private static final int EOFS_PADDING_BUFLEN = 8;
+
   private final char buffer[];
   private final int size;
   private int offset;
@@ -11,18 +13,24 @@ public class CBuf {
   private char prevc;
   private int eofs;
 
-  public CBuf(String b) {
-    b += "\0\0\0\0\0\0\0\0"; // this some bytes help us... we don't check IOOB sometimes...
-    buffer = b.toCharArray();
-    size = buffer.length;
-    setDefaults();
+  public CBuf(final String input) {
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append(input);
+    for (int i = 0; i < EOFS_PADDING_BUFLEN; i += 1) {
+      sb.append(HC_FEOF);
+    }
+
+    this.buffer = sb.toString().toCharArray();
+    this.size = buffer.length;
+    this.line = 1;
+    this.column = 0;
+    this.prevc = '\0';
+    this.eofs = -1;
   }
 
-  private void setDefaults() {
-    line = 1;
-    column = 0;
-    prevc = '\0';
-    eofs = -1;
+  public boolean isEof() {
+    return eofs >= EOFS_PADDING_BUFLEN;
   }
 
   public char peekc() {
@@ -76,12 +84,12 @@ public class CBuf {
 
     for (;;) {
 
-      if (eofs > 8) {
+      if (eofs > EOFS_PADDING_BUFLEN) {
         throw new RuntimeException("Infinite loop handling...");
       }
 
       if (prevc == '\n') {
-        line++;
+        line += 1;
         column = 0;
       }
 
@@ -120,16 +128,17 @@ public class CBuf {
       }
 
       if (offset == size) {
-        eofs++;
+        eofs += 1;
         return HC_FEOF; // '\0';
       }
 
-      char next = buffer[offset++];
-      column++;
+      char next = buffer[offset];
+      offset += 1;
+      column += 1;
       prevc = next;
 
       if (next == '\0') {
-        eofs++;
+        eofs += 1;
         return HC_FEOF; // '\0';
       }
 
