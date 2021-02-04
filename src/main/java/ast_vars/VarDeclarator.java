@@ -5,7 +5,7 @@ import java.io.Serializable;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
@@ -13,7 +13,7 @@ import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class VarDeclarator implements Serializable, TypeSetter, ILocation {
+public class VarDeclarator implements Serializable, TypeSetter, Location {
   private static final long serialVersionUID = -364976996504280849L;
 
   // main part, it may be the field, method-parameter, local-var, etc...

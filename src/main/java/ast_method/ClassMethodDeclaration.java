@@ -6,7 +6,7 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_modifiers.Modifiers;
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
@@ -17,7 +17,7 @@ import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocation {
+public class ClassMethodDeclaration implements Serializable, TypeSetter, Location {
 
   private static final long serialVersionUID = 2982374768194205119L;
 

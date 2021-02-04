@@ -2,14 +2,14 @@ package ast_expr;
 
 import java.io.Serializable;
 
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_types.Type;
 import literals.IntLiteral;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ExprExpression implements Serializable, ILocation {
+public class ExprExpression implements Serializable, Location {
   private static final long serialVersionUID = -2905880039842730533L;
 
   // main

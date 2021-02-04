@@ -7,7 +7,7 @@ import java.util.List;
 
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
@@ -19,7 +19,7 @@ import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class ClassDeclaration implements Serializable, ILocation {
+public class ClassDeclaration implements Serializable, Location {
 
   private static final long serialVersionUID = 6225743252762855961L;
 

@@ -20,18 +20,19 @@ import java.io.Serializable;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st2_annotate.IteratorChecker;
-import errors.AstParseException;
+import errors.ErrorLocation;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class Type implements Serializable, TypeApi, ILocation {
+public class Type implements Serializable, TypeApi, Location {
   private static final long serialVersionUID = -4630043454712001308L;
 
-  // location, for debug printing
+  /// location, for debug printing
+  /// 
   private /*final*/ Token beginPos;
 
   /// main properties
@@ -46,11 +47,16 @@ public class Type implements Serializable, TypeApi, ILocation {
   private ClassTypeRef classTypeRef;
 
   /// class list<T> {  } -> here 'T' is a 'typename T'
+  ///
   private Ident typenameId;
 
   /// TODO: is array-length a property of the type or is not?
+  ///
   private ArrayType arrayType;
 
+  /// this will be resolved before template expansion
+  /// it is a temporary identifier, which should be a type-name
+  ///
   private TypeUnresolvedId unresolvedId;
 
   public void fillPropValues(Type another) {
@@ -90,7 +96,7 @@ public class Type implements Serializable, TypeApi, ILocation {
     NullChecker.check(primitiveType);
 
     if (!is_primitive(primitiveType)) {
-      throw new AstParseException("expect primitive type");
+      ErrorLocation.errorType("expect primitive type", this);
     }
     this.base = primitiveType;
     this.beginPos = beginPos;
@@ -138,21 +144,21 @@ public class Type implements Serializable, TypeApi, ILocation {
 
   public ClassDeclaration getClassTypeFromRef() {
     if (!is_class()) {
-      throw new AstParseException("is not a class");
+      ErrorLocation.errorType("is not a class", this);
     }
     return classTypeRef.getClazz();
   }
 
   public List<Type> getTypeArgumentsFromRef() {
     if (!is_class()) {
-      throw new AstParseException("is not a class");
+      ErrorLocation.errorType("is not a class", this);
     }
     return classTypeRef.getTypeArguments();
   }
 
   public Ident getTypenameId() {
     if (!is_typename_id()) {
-      throw new AstParseException("is not typename T");
+      ErrorLocation.errorType("is not typename T", this);
     }
     return typenameId;
   }
@@ -260,7 +266,7 @@ public class Type implements Serializable, TypeApi, ILocation {
         return false;
       }
     } else {
-      throw new AstParseException("unimplemented comparison for base: " + base.toString());
+      ErrorLocation.errorType("unimplemented comparison for base: " + base.toString(), this);
     }
 
     return true;

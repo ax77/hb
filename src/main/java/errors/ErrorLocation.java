@@ -1,11 +1,12 @@
 package errors;
 
 import ast_expr.ExprExpression;
+import ast_types.Type;
 import ast_vars.VarDeclarator;
 
 public abstract class ErrorLocation {
 
-  public static void errorExpression(String message, ExprExpression expression) {
+  public static void errorExpression(String message, final ExprExpression expression) {
     String tail = "";
     if (expression != null) {
       tail = expression.toString();
@@ -32,6 +33,14 @@ public abstract class ErrorLocation {
     sb.append("\n");
 
     throw new AstParseException(sb.toString());
+  }
+
+  public static void errorType(String message, final Type type) {
+    String tail = "";
+    if (type != null) {
+      tail = type.toString();
+    }
+    throw new AstParseException("\n| " + type.getLocationToString() + "\n| error[" + message + "]\n| " + tail);
   }
 
 }

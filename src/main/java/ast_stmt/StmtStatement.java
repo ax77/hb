@@ -3,11 +3,11 @@ package ast_stmt;
 import java.io.Serializable;
 
 import ast_expr.ExprExpression;
-import ast_sourceloc.ILocation;
+import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import tokenize.Token;
 
-public class StmtStatement implements Serializable, ILocation {
+public class StmtStatement implements Serializable, Location {
   private static final long serialVersionUID = 2946438995245230886L;
 
   private /*final*/ StatementBase base;
