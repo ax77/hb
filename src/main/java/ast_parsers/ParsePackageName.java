@@ -1,15 +1,22 @@
-package ast_main;
+package ast_parsers;
 
+import ast_symtab.Keywords;
+import errors.AstParseException;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 
-public abstract class PackageNameCutter {
+public abstract class ParsePackageName {
 
-  public static String cutPackageName(Parse parser, Ident id) {
+  public static String parse(Parse parser, Ident id) {
 
-    final Token kw = parser.checkedMove(id); // import/package
+    boolean isOkStart = id.equals(Keywords.import_ident) || id.equals(Keywords.package_ident);
+    if (!isOkStart) {
+      throw new AstParseException("unexpected id: " + id.getName());
+    }
+
+    final Token beginPos = parser.checkedMove(id);
     final StringBuilder sb = new StringBuilder();
 
     while (!parser.isEof()) {

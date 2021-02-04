@@ -46,7 +46,8 @@ public class SymExpressionApplier {
       return;
     }
     if (e.getResultType() != null) {
-      return;
+      // we may rewrite some expressions, so: TODO:
+      // return;
     }
 
     if (e.is(ExpressionBase.EUNARY)) {

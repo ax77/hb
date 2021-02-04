@@ -30,6 +30,13 @@ public class ClassDeclaration implements Serializable, ILocation {
   private final List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
 
+  /// the class is incomplete before '}'
+  /// we will use this flag to be sure that
+  /// we can bind all unresolved identifiers to
+  /// fully-defined classes.
+  ///
+  private boolean isComplete;
+
   /// we store type-variables as original references to Type
   ///
   /// each type-variable is an identifier like: 
@@ -89,6 +96,14 @@ public class ClassDeclaration implements Serializable, ILocation {
   public void setDestructor(ClassMethodDeclaration destructor) {
     NullChecker.check(destructor);
     this.destructor = destructor;
+  }
+
+  public boolean isComplete() {
+    return isComplete;
+  }
+
+  public void setComplete(boolean isComplete) {
+    this.isComplete = isComplete;
   }
 
   public boolean is_equal_to(ClassDeclaration another) {

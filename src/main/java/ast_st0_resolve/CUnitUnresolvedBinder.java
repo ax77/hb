@@ -1,4 +1,4 @@
-package ast_main;
+package ast_st0_resolve;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
 
-public abstract class BindUnresolved {
+public abstract class CUnitUnresolvedBinder {
 
   public static void bind(CompilationUnit tu) {
     List<ClassDeclaration> all = new ArrayList<>();

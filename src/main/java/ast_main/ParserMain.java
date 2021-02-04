@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import ast_st0_resolve.CUnitCompleteChecker;
+import ast_st0_resolve.CUnitUnresolvedBinder;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
@@ -47,7 +49,10 @@ public class ParserMain implements ParserMainApi {
     Parse parser = initiateParse();
 
     final CompilationUnit result = parser.parse();
-    BindUnresolved.bind(result);
+
+    // prepare the unit
+    CUnitCompleteChecker.checkAllClassesAreComplete(result);
+    CUnitUnresolvedBinder.bind(result);
 
     return result;
   }

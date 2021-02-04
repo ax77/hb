@@ -1,36 +1,66 @@
-class token_type {                                      
-    var tp: i32;                                        
-    init (tp: i32)                                      
-    {                                                   
-        self.tp = tp;                                   
-    }                                                   
-    func get_tp(flag: i32) -> i32                                
-    {                                                   
-        return tp;                                      
-    }  func set_tp(tp: i32) { self.tp = tp; }                                                 
-}                                                       
-class token {                                           
-    var type: token_type;                               
-    init (type: token_type)                             
-    {                                                   
-        self.type = type;                               
-    }                                                   
-    func get_type(x: i32, y: i32)                                     
-        -> token_type                                   
-    {                                                   
-        return type;                                    
-    }    func stub(f: i32) {}                                               
-}                                                       
-class test                                              
-{   var f: i32; var arr: [[i32]]; func fnz()->i32{return 0;}                                                   
-    func fn4() -> i32                                   
-    {                                                   
-        var tp: token_type = new token_type(tp: 128);   
-        var tok: token = new token(type: tp);           
-        tok.type.tp = 12;                               
-        var xxx: i32;                                   
-        f = fnz() + 1024 + tok.type.tp;                         
-        return xxx;                                     
-    }                                                   
-}                                                       
+class token_type {
+    var tp: i32;
+
+    init (tp: i32)
+    {
+        self.tp = tp;
+    }
+
+    func get_tp(flag: i32) -> i32
+    {
+        return tp;
+    }
+
+    func set_tp(tp: i32) {
+        self.tp = tp;
+    }
+}
+
+class token {
+    var type: token_type;
+
+    init (type: token_type)
+    {
+        self.type = type;
+    }
+
+    func get_type(x: i32, y: i32) -> token_type
+    {
+        return type;
+    }
+
+    func stub(f: i32) {}
+}
+
+class test
+{   var f: i32; 
+    var arr: [[i32]]; 
+    
+    func fnz() ->i32 
+    {
+        return 0;
+    }
+    
+    func fn4() -> i32
+    {
+        var tp: token_type = new token_type(tp: 128);
+        var tok: token = new token(type: tp);
+        tok.type.tp = 12;
+        var xxx: i32;
+        arr[0][1] = 32; // fnz() + 1024 + tok.type.tp;
+        return xxx;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 

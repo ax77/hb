@@ -79,6 +79,8 @@ public class ParseTypeDeclarations {
     if (parser.is(T.T_RIGHT_BRACE)) {
       parser.rbrace();
       parser.setCurrentClass(null);
+
+      clazz.setComplete(true);
       return clazz;
     }
 
@@ -91,6 +93,8 @@ public class ParseTypeDeclarations {
 
     parser.rbrace();
     parser.setCurrentClass(null);
+
+    clazz.setComplete(true);
     return clazz;
   }
 
