@@ -17,7 +17,7 @@ public class PrepareSourceForReview {
     //   System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     // }
 
-    InstantiationUnit unit = new ParserMain("tests/test_class_resolver").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain("tests/test_templates_3").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
