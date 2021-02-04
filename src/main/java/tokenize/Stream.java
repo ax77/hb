@@ -374,7 +374,7 @@ public class Stream {
     }
 
     final String numstr = strbuf.toString();
-    final IntLiteral intLiteral = new ParseIntLiteral(numstr).parse();
+    final IntLiteral intLiteral = new ParseIntLiteral(numstr, EOL_TOKEN).parse(); // TODO: location
 
     return new Token(intLiteral, curLoc());
   }

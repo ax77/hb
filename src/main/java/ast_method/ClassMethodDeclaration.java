@@ -57,7 +57,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, ILocati
     this.clazz = clazz;
     this.identifier = Keywords.deinit_ident;
     this.parameters = new ArrayList<>();
-    this.returnType = new Type();
+    this.returnType = new Type(beginPos);
     this.block = block;
     this.beginPos = beginPos;
   }

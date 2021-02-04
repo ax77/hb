@@ -67,7 +67,7 @@ public class TemplateCodegen {
       ts.setType(getTypeFromTemplate(maybeShouldExpandIt));
     }
 
-    final Type result = new Type(new ClassTypeRef(template, typeArguments));
+    final Type result = new Type(new ClassTypeRef(template, typeArguments), template.getBeginPos());
     generatedClasses.add(template);
 
     return result;

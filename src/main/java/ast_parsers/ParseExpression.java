@@ -562,7 +562,7 @@ public class ParseExpression {
 
     final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
-    final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref), argums);
+    final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref, saved), argums);
 
     return new ExprExpression(classCreation, saved);
   }
@@ -593,7 +593,7 @@ public class ParseExpression {
       final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
       final ClassTypeRef ref = new ClassTypeRef(instantiatedClass, typeArguments);
       final List<FuncArg> arguments = parseArglist();
-      final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref), arguments);
+      final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref, saved), arguments);
 
       // it is important to register type-setter for `current` class
       // not for the class is created in `new` expression 

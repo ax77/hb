@@ -122,7 +122,7 @@ public class SymExpressionTypeResolver {
       // is_boolean|is_boolean
       // is_reference|is_reference
 
-      final Type resultType = TypeBindings.make_boolean();
+      final Type resultType = TypeBindings.make_boolean(e.getBeginPos());
 
       if (lhsType != null && rhsType != null) {
         if (!lhsType.is_equal_to(rhsType)) {
@@ -181,7 +181,7 @@ public class SymExpressionTypeResolver {
       // T_LT,T_LE,T_GT,T_GE->boolean
       // is_numeric|is_numeric
       if (lhsType.is_numeric() && rhsType.is_numeric()) {
-        e.setResultType(TypeBindings.make_boolean());
+        e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));
       }
     }
 

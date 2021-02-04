@@ -4,14 +4,17 @@ import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
 import tokenize.Env;
+import tokenize.Token;
 
 public class ParseIntLiteral {
   private final String buffer;
+  private final Token beginPos;
   private int offset;
   private char current;
 
-  public ParseIntLiteral(String buffer) {
+  public ParseIntLiteral(String buffer, Token beginPos) {
     this.buffer = buffer;
+    this.beginPos = beginPos;
   }
 
   public IntLiteral parse() {
@@ -25,7 +28,7 @@ public class ParseIntLiteral {
 
     // just zero
     if (c == '0' && nextchar == '\0') {
-      return new IntLiteral("0", TypeBindings.make_i32(), 0); //TODO:
+      return new IntLiteral("0", TypeBindings.make_i32(beginPos), 0); //TODO:
     }
 
     if (c == '0' && nextchar == 'b') {
@@ -102,9 +105,9 @@ public class ParseIntLiteral {
 
   private Type bindSuffixOrI32ByDefault(String suffix) {
     if (suffix.isEmpty()) {
-      return TypeBindings.make_i32(); // TODO:
+      return TypeBindings.make_i32(beginPos); // TODO:
     }
-    return TypeBindings.getTypeBySuffix(suffix);
+    return TypeBindings.getTypeBySuffix(suffix, beginPos);
   }
 
   private IntLiteral parseByRadix(int r) {

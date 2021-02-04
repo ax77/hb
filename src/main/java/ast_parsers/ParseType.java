@@ -115,14 +115,14 @@ public class ParseType {
     final Ident typeName = beginPos.getIdent();
     final List<Type> typeArguments = getTypeArguments();
     final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
-    return new Type(unresolvedId);
+    return new Type(unresolvedId, beginPos);
   }
 
   private Type getArray() {
     // 1) fixed   [2:[2:i32]], [2: u64]
     // 2) dynamic [[i32]], [i8]
 
-    parser.checkedMove(T.T_LEFT_BRACKET);
+    final Token beginPos = parser.checkedMove(T.T_LEFT_BRACKET);
 
     final int length = getArrayLengthWithCheck();
     final Type arrayOf = new ParseType(parser).getType();
@@ -136,7 +136,7 @@ public class ParseType {
     //
     final ArrayType array = new ArrayType(arrayOf, length);
     parser.getCurrentClass(true).registerTypeSetter(array);
-    return new Type(array);
+    return new Type(array, beginPos);
   }
 
   private int getArrayLengthWithCheck() {
@@ -187,7 +187,8 @@ public class ParseType {
     // 1) Node<String> - reference
     // 2) Node<T> - type-parameter (in template-class declaration)
 
-    Ident typeName = parser.getIdent();
+    Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    Ident typeName = tok.getIdent();
 
     if (isRefTypenameT(typeName)) {
       final ClassDeclaration currentClass = parser.getCurrentClass(true);
@@ -196,7 +197,7 @@ public class ParseType {
 
     final List<Type> typeArguments = getTypeArguments();
     final ClassTypeRef ref = new ClassTypeRef(parser.getClassType(typeName), typeArguments);
-    return new Type(ref);
+    return new Type(ref, tok);
   }
 
   public List<Type> getTypeArguments() {
@@ -229,8 +230,8 @@ public class ParseType {
   }
 
   private Type getPrimitive() {
-    Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    Type tp = TypeBindings.getTypeFromIdent(tok.getIdent());
+    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    final Type tp = TypeBindings.getTypeFromIdent(tok);
     if (tp == null) {
       parser.perror("type is not recognized");
     }

@@ -138,7 +138,7 @@ public class ParseTypeDeclarations {
     final List<VarDeclarator> parameters = parseMethodParameters();
 
     //4)
-    Type returnType = new Type(); // void stub
+    Type returnType = new Type(parser.tok()); // void stub
     if (parser.is(T.T_ARROW)) {
       parser.checkedMove(T.T_ARROW);
       if (parser.is(Keywords.void_ident)) {
@@ -178,7 +178,7 @@ public class ParseTypeDeclarations {
     final Token beginPos = parser.checkedMove(Keywords.init_ident);
     final List<VarDeclarator> parameters = parseMethodParameters();
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
-    final Type returnType = new Type(); // the return type of constructor is 'void'
+    final Type returnType = new Type(beginPos); // the return type of constructor is 'void'
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, modifiers,
         clazz, Keywords.init_ident, parameters, returnType, block, beginPos);
 
@@ -249,16 +249,21 @@ public class ParseTypeDeclarations {
     if (parser.is(T.T_LT)) {
       parser.lt();
 
-      typenamesT.add(new Type(parser.getIdent()));
+      typenamesT.add(getOneTypeParameter());
       while (parser.is(T.T_COMMA)) {
         parser.move();
-        typenamesT.add(new Type(parser.getIdent()));
+        typenamesT.add(getOneTypeParameter());
       }
 
       parser.gt();
     }
 
     return typenamesT;
+  }
+
+  private Type getOneTypeParameter() {
+    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    return new Type(tok.getIdent(), tok);
   }
 
   private List<VarDeclarator> parseMethodParameters() {

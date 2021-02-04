@@ -34,7 +34,7 @@ public abstract class CUnitUnresolvedBinder {
             throw new AstParseException("cannot find and bind class: " + unresolved.getTypeName().toString());
           }
           final List<Type> typeArguments = unresolved.getTypeArguments();
-          ts.setType(new Type(new ClassTypeRef(realtype, typeArguments)));
+          ts.setType(new Type(new ClassTypeRef(realtype, typeArguments), tp.getBeginPos()));
         }
       }
     }

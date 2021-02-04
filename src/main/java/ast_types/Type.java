@@ -20,13 +20,19 @@ import java.io.Serializable;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_sourceloc.ILocation;
+import ast_sourceloc.SourceLocation;
 import ast_st2_annotate.IteratorChecker;
 import errors.AstParseException;
 import tokenize.Ident;
+import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class Type implements Serializable, TypeApi {
+public class Type implements Serializable, TypeApi, ILocation {
   private static final long serialVersionUID = -4630043454712001308L;
+
+  // location, for debug printing
+  private /*final*/ Token beginPos;
 
   /// main properties
   private int size;
@@ -50,24 +56,29 @@ public class Type implements Serializable, TypeApi {
   public void fillPropValues(Type another) {
     NullChecker.check(another);
 
+    this.beginPos = another.beginPos;
     this.size = another.size;
     this.align = another.align;
     this.base = another.base;
     this.classTypeRef = another.classTypeRef;
     this.typenameId = another.typenameId;
     this.arrayType = another.arrayType;
+
   }
 
-  public Type() {
+  public Type(Token beginPos) {
     this.base = TypeBase.TP_VOID_STUB;
+    this.beginPos = beginPos;
+
     this.size = 1;
     this.align = 1;
   }
 
-  public Type(ArrayType array) {
+  public Type(ArrayType array, Token beginPos) {
     NullChecker.check(array);
 
     this.base = TypeBase.TP_ARRAY;
+    this.beginPos = beginPos;
     this.arrayType = array;
 
     //size
@@ -75,37 +86,41 @@ public class Type implements Serializable, TypeApi {
     this.align = arrayType.getType().get_align();
   }
 
-  public Type(TypeBase primitiveType) {
+  public Type(TypeBase primitiveType, Token beginPos) {
     NullChecker.check(primitiveType);
 
     if (!is_primitive(primitiveType)) {
       throw new AstParseException("expect primitive type");
     }
     this.base = primitiveType;
+    this.beginPos = beginPos;
 
     //size
     this.size = TypeBindings.getPrimitiveTypeSize(this);
     this.align = this.size;
   }
 
-  public Type(TypeUnresolvedId unresolvedId) {
+  public Type(TypeUnresolvedId unresolvedId, Token beginPos) {
     this.base = TypeBase.TP_UNRESOLVED_ID;
+    this.beginPos = beginPos;
     this.unresolvedId = unresolvedId;
     this.size = -1;
     this.align = -1;
   }
 
-  public Type(ClassTypeRef ref) {
+  public Type(ClassTypeRef ref, Token beginPos) {
     NullChecker.check(ref);
 
     this.base = TypeBase.TP_CLASS;
+    this.beginPos = beginPos;
     this.classTypeRef = ref;
   }
 
-  public Type(Ident typenameId) {
+  public Type(Ident typenameId, Token beginPos) {
     NullChecker.check(typenameId);
 
     this.base = TP_TYPENAME_ID;
+    this.beginPos = beginPos;
     this.typenameId = typenameId;
   }
 
@@ -375,5 +390,20 @@ public class Type implements Serializable, TypeApi {
 
   public void set_size(int i) {
     this.size = i;
+  }
+
+  @Override
+  public SourceLocation getLocation() {
+    return beginPos.getLocation();
+  }
+
+  @Override
+  public String getLocationToString() {
+    return beginPos.getLocationToString();
+  }
+
+  @Override
+  public Token getBeginPos() {
+    return beginPos;
   }
 }

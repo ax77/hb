@@ -18,6 +18,8 @@ import java.util.Map;
 import ast_symtab.Keywords;
 import errors.AstParseException;
 import tokenize.Ident;
+import tokenize.T;
+import tokenize.Token;
 
 public abstract class TypeBindings {
 
@@ -38,44 +40,48 @@ public abstract class TypeBindings {
 
   //@formatter:off
   
-  public static Type make_i8()      { return new Type(TP_I8); }
-  public static Type make_u8()      { return new Type(TP_U8); }
-  public static Type make_i16()     { return new Type(TP_I16); }
-  public static Type make_u16()     { return new Type(TP_U16); }
-  public static Type make_i32()     { return new Type(TP_I32); }
-  public static Type make_u32()     { return new Type(TP_U32); }
-  public static Type make_i64()     { return new Type(TP_I64); }
-  public static Type make_u64()     { return new Type(TP_U64); }
-  public static Type make_f32()     { return new Type(TP_F32); }
-  public static Type make_f64()     { return new Type(TP_F64); }
-  public static Type make_boolean() { return new Type(TP_BOOLEAN); }
+  public static Type make_i8 (Token beginPos)     { return new Type(TP_I8      , beginPos); }
+  public static Type make_u8 (Token beginPos)     { return new Type(TP_U8      , beginPos); }
+  public static Type make_i16(Token beginPos)     { return new Type(TP_I16     , beginPos); }
+  public static Type make_u16(Token beginPos)     { return new Type(TP_U16     , beginPos); }
+  public static Type make_i32(Token beginPos)     { return new Type(TP_I32     , beginPos); }
+  public static Type make_u32(Token beginPos)     { return new Type(TP_U32     , beginPos); }
+  public static Type make_i64(Token beginPos)     { return new Type(TP_I64     , beginPos); }
+  public static Type make_u64(Token beginPos)     { return new Type(TP_U64     , beginPos); }
+  public static Type make_f32(Token beginPos)     { return new Type(TP_F32     , beginPos); }
+  public static Type make_f64(Token beginPos)     { return new Type(TP_F64     , beginPos); }
+  public static Type make_boolean(Token beginPos) { return new Type(TP_BOOLEAN , beginPos); }
   
-  public static Type getTypeFromIdent(Ident ident) {
-         if(ident.equals(Keywords.i8_ident))      { return make_i8(); }
-    else if(ident.equals(Keywords.u8_ident))      { return make_u8(); }
-    else if(ident.equals(Keywords.i16_ident))     { return make_i16(); }
-    else if(ident.equals(Keywords.u16_ident))     { return make_u16(); }
-    else if(ident.equals(Keywords.i32_ident))     { return make_i32(); }
-    else if(ident.equals(Keywords.u32_ident))     { return make_u32(); }
-    else if(ident.equals(Keywords.i64_ident))     { return make_i64(); }
-    else if(ident.equals(Keywords.u64_ident))     { return make_u64(); }
-    else if(ident.equals(Keywords.f32_ident))     { return make_f32(); }
-    else if(ident.equals(Keywords.f64_ident))     { return make_f64(); }
-    else if(ident.equals(Keywords.boolean_ident)) { return make_boolean(); }
+  public static Type getTypeFromIdent(Token tok) {
+    if(!tok.ofType(T.TOKEN_IDENT)) {
+      throw new AstParseException("expected identifier, but was: " + tok.getValue());
+    }
+    Ident ident = tok.getIdent();
+         if(ident.equals(Keywords.i8_ident))      { return make_i8 (tok); }
+    else if(ident.equals(Keywords.u8_ident))      { return make_u8 (tok); }
+    else if(ident.equals(Keywords.i16_ident))     { return make_i16(tok); }
+    else if(ident.equals(Keywords.u16_ident))     { return make_u16(tok); }
+    else if(ident.equals(Keywords.i32_ident))     { return make_i32(tok); }
+    else if(ident.equals(Keywords.u32_ident))     { return make_u32(tok); }
+    else if(ident.equals(Keywords.i64_ident))     { return make_i64(tok); }
+    else if(ident.equals(Keywords.u64_ident))     { return make_u64(tok); }
+    else if(ident.equals(Keywords.f32_ident))     { return make_f32(tok); }
+    else if(ident.equals(Keywords.f64_ident))     { return make_f64(tok); }
+    else if(ident.equals(Keywords.boolean_ident)) { return make_boolean(tok); }
     throw new AstParseException("type not found for ident: " + ident.getName());
   }
   
-  public static Type getTypeBySuffix(String suff) {
-         if(suff.equals("i8"))  { return make_i8(); }
-    else if(suff.equals("u8"))  { return make_u8(); }
-    else if(suff.equals("i16")) { return make_i16(); }
-    else if(suff.equals("u16")) { return make_u16(); }
-    else if(suff.equals("i32")) { return make_i32(); }
-    else if(suff.equals("u32")) { return make_u32(); }
-    else if(suff.equals("i64")) { return make_i64(); }
-    else if(suff.equals("u64")) { return make_u64(); }
-    else if(suff.equals("f32")) { return make_f32(); }
-    else if(suff.equals("f64")) { return make_f64(); }
+  public static Type getTypeBySuffix(String suff, Token beginPos) {
+         if(suff.equals("i8"))  { return make_i8 (beginPos); }
+    else if(suff.equals("u8"))  { return make_u8 (beginPos); }
+    else if(suff.equals("i16")) { return make_i16(beginPos); }
+    else if(suff.equals("u16")) { return make_u16(beginPos); }
+    else if(suff.equals("i32")) { return make_i32(beginPos); }
+    else if(suff.equals("u32")) { return make_u32(beginPos); }
+    else if(suff.equals("i64")) { return make_i64(beginPos); }
+    else if(suff.equals("u64")) { return make_u64(beginPos); }
+    else if(suff.equals("f32")) { return make_f32(beginPos); }
+    else if(suff.equals("f64")) { return make_f64(beginPos); }
     throw new AstParseException("unknown suffix: " + suff.toString());
   }
   

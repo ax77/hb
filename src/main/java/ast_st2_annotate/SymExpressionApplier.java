@@ -111,11 +111,11 @@ public class SymExpressionApplier {
     }
 
     else if (e.is(ExpressionBase.ECHAR_CONST)) {
-      e.setResultType(TypeBindings.make_u8());
+      e.setResultType(TypeBindings.make_u8(e.getBeginPos()));
     }
 
     else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
-      e.setResultType(TypeBindings.make_boolean()); // TODO: ?
+      e.setResultType(TypeBindings.make_boolean(e.getBeginPos())); // TODO: ?
     }
 
     else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
@@ -153,13 +153,13 @@ public class SymExpressionApplier {
     final ClassDeclaration clazz = e.getSelfExpression().getClazz();
     final ArrayList<Type> typeArguments = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(clazz, typeArguments);
-    e.setResultType(new Type(ref));
+    e.setResultType(new Type(ref, e.getBeginPos()));
   }
 
   private void applyStringLiteral(final ExprExpression e) {
     String strconst = e.getBeginPos().getValue(); // TODO:__string__
-    ArrayType arrtype = new ArrayType(TypeBindings.make_u8(), strconst.length());
-    e.setResultType(new Type(arrtype));
+    ArrayType arrtype = new ArrayType(TypeBindings.make_u8(e.getBeginPos()), strconst.length());
+    e.setResultType(new Type(arrtype, e.getBeginPos()));
   }
 
   private void applyArrayAccess(final ClassDeclaration object, final ExprExpression e) {
@@ -295,7 +295,7 @@ public class SymExpressionApplier {
 
       final ExprArrayProperty arrayProperty = new ExprArrayProperty(fieldAccess.getObject(), expectedProperty);
       e.replaceFieldAccessWithArrayProperty(arrayProperty);
-      e.setResultType(TypeBindings.make_u64());
+      e.setResultType(TypeBindings.make_u64(e.getBeginPos()));
     }
 
     // class-field access

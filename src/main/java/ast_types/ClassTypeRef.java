@@ -1,6 +1,7 @@
 package ast_types;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -20,7 +21,7 @@ public class ClassTypeRef implements Serializable {
     NullChecker.check(clazz, typeArguments);
 
     this.clazz = clazz;
-    this.typeArguments = typeArguments;
+    this.typeArguments = Collections.unmodifiableList(typeArguments);
   }
 
   public ClassDeclaration getClazz() {
@@ -29,11 +30,6 @@ public class ClassTypeRef implements Serializable {
 
   public List<Type> getTypeArguments() {
     return typeArguments;
-  }
-
-  public void putTypeArgument(Type e) {
-    NullChecker.check(e);
-    this.typeArguments.add(e);
   }
 
   public boolean is_equal_to(ClassTypeRef another) {
