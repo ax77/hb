@@ -23,7 +23,7 @@ public class ClassDeclaration implements Serializable, Location {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
-  private final Token beginPos;
+  private /*final*/ Token beginPos;
   private final Ident identifier;
   private final List<ClassMethodDeclaration> constructors;
   private final List<VarDeclarator> fields;
@@ -90,7 +90,18 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   public void setTypeParametersT(List<Type> typeParametersT) {
+    NullChecker.check(typeParametersT);
+    for (Type tp : typeParametersT) {
+      if (!tp.is_typename_id()) {
+        throw new AstParseException("is not a type-parameter: " + tp.toString());
+      }
+    }
     this.typeParametersT = typeParametersT;
+  }
+
+  public void setBeginPos(Token beginPos) {
+    NullChecker.check(beginPos);
+    this.beginPos = beginPos;
   }
 
   public ClassMethodDeclaration getDestructor() {

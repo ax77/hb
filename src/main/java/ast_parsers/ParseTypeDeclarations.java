@@ -43,8 +43,8 @@ public class ParseTypeDeclarations {
     }
 
     else if (parser.is(Keywords.import_ident)) {
-      parser.perror("import is unimplemented.");
-      // ParsePackageName.parse(parser, Keywords.import_ident);
+      // parser.perror("import is unimplemented.");
+      ParsePackageName.parse(parser, Keywords.import_ident);
     }
 
     else if (parser.is(Keywords.forward_ident)) {
@@ -100,9 +100,10 @@ public class ParseTypeDeclarations {
       // and fill its type-parameters
       clazz = parser.getClassType(ident);
       clazz.setTypeParametersT(typeParameters);
+      clazz.setBeginPos(beginPos);
     } else {
       // define a newly-founded class
-      //
+      // with or without type-parameters, and WITH class body { ... }
       clazz = new ClassDeclaration(ident, typeParameters, beginPos);
       parser.defineClassName(clazz);
     }

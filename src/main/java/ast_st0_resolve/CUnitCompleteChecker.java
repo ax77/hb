@@ -9,17 +9,17 @@ public abstract class CUnitCompleteChecker {
   public static void checkAllClassesAreComplete(final CompilationUnit unit) {
     for (ClassDeclaration clazz : unit.getClasses()) {
       if (!clazz.isComplete()) {
-        throw new AstParseException("incomplete class: " + clazz.getIdentifier());
+        throw new AstParseException(clazz.getLocationToString() + ", incomplete class: " + clazz.getIdentifier());
       }
     }
     for (ClassDeclaration clazz : unit.getTemplates()) {
       if (!clazz.isComplete()) {
-        throw new AstParseException("incomplete template: " + clazz.getIdentifier());
+        throw new AstParseException(clazz.getLocationToString() + ", incomplete template: " + clazz.getIdentifier());
       }
     }
     for (ClassDeclaration clazz : unit.getForwards()) {
       if (!clazz.isComplete()) {
-        throw new AstParseException("unused forward: " + clazz.getIdentifier());
+        throw new AstParseException(clazz.getLocationToString() + ", unused forward: " + clazz.getIdentifier());
       }
     }
   }

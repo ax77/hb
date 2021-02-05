@@ -2,7 +2,11 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
+import ast_class.ClassDeclaration;
 import ast_st0_resolve.CUnitCompleteChecker;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
@@ -12,9 +16,8 @@ import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
-import tokenize.Stream;
-import utils_fio.FileReadKind;
-import utils_fio.FileWrapper;
+import tokenize.Env;
+import tokenize.Token;
 import utils_oth.NullChecker;
 
 public class ParserMain implements ParserMainApi {
@@ -30,12 +33,29 @@ public class ParserMain implements ParserMainApi {
   public Parse initiateParse() throws IOException {
     initIdents();
 
-    final FileWrapper fw = new FileWrapper(filename);
-    fw.assertIsExists();
-    fw.assertIsFile();
+    // final FileWrapper fw = new FileWrapper(filename);
+    // fw.assertIsExists();
+    // fw.assertIsFile();
+    // 
+    // final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
+    // return new Parse(new Tokenlist(s.getTokenlist()));
 
-    final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
-    return new Parse(new Tokenlist(s.getTokenlist()));
+    final UnitInfo info = new UnitInfo(filename);
+    final List<Token> tokens = info.getTokenlist();
+    final Parse parser = new Parse(new Tokenlist(tokens));
+
+    for (Entry<String, String> ent : info.getClassLocations().entrySet()) {
+      // EOF_TOKEN_ENTRY - it means nothing here, just a stub,
+      // because it will be rewritten when the 'real' class 
+      // at real position of the source
+      // when it will be founded and fully parsed.
+      // i.e. : in normal declaration like 'class name<T> { ... }'
+      ClassDeclaration forward = new ClassDeclaration(Hash_ident.getHashedIdent(ent.getKey()), new ArrayList<>(),
+          Env.EOF_TOKEN_ENTRY);
+      parser.defineClassName(forward);
+    }
+
+    return parser;
   }
 
   @Override
@@ -43,9 +63,8 @@ public class ParserMain implements ParserMainApi {
     Parse parser = initiateParse();
 
     final CompilationUnit result = parser.parse();
-
-    // prepare the unit
     CUnitCompleteChecker.checkAllClassesAreComplete(result);
+
     return result;
   }
 

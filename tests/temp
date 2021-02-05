@@ -1,3 +1,5 @@
+import std.array;
+
 forward class list;
 forward class list_iterator;
 forward class node;
@@ -85,6 +87,8 @@ class test
   {
     let list: list<i32> = new list<i32>();
     for item in list {}
+    
+    let array: array<u8> = new array<u8>();
   }
 }
 
