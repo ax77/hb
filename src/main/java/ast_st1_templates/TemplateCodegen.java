@@ -2,9 +2,7 @@ package ast_st1_templates;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_types.ClassTypeRef;
@@ -20,12 +18,8 @@ public class TemplateCodegen {
   // classes, that was created from templates
   private final List<ClassDeclaration> generatedClasses;
 
-  // hashed results, already expanded classes
-  private final HashMap<Type, List<Type>> generatedClassesTemporary;
-
   public TemplateCodegen() {
     this.generatedClasses = new ArrayList<>();
-    this.generatedClassesTemporary = new HashMap<>();
   }
 
   public List<ClassDeclaration> getGeneratedClasses() {
@@ -43,21 +37,13 @@ public class TemplateCodegen {
     //
     final Type alreadyGenerated = presentedInGenerated(from, from.getTypeArgumentsFromRef());
     if (alreadyGenerated != null) {
-      // we should find the class which had been fully expanded before.
-      for (ClassDeclaration c : generatedClasses) {
-        if (alreadyGenerated.getClassTypeFromRef().getIdentifier().equals(c.getIdentifier())) {
-          if (TypeListsComparer.typeListsAreEqual(alreadyGenerated.getTypeArgumentsFromRef(), c.getTypeParametersT())) {
-            return new Type(new ClassTypeRef(c, c.getTypeParametersT()), c.getBeginPos());
-          }
-        }
-      }
       return alreadyGenerated;
     }
-    generatedClassesTemporary.put(from, Collections.unmodifiableList(from.getTypeArgumentsFromRef()));
 
     final ClassDeclaration template = copyClazz(from.getClassTypeFromRef());
-    final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
+    generatedClasses.add(template);
 
+    final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
     if (typeArguments.size() != template.getTypeParametersT().size()) {
       throw new AstParseException("type parameters and type arguments are different by count.");
     }
@@ -75,10 +61,7 @@ public class TemplateCodegen {
       ts.setType(getTypeFromTemplate(maybeShouldExpandIt));
     }
 
-    final Type result = new Type(new ClassTypeRef(template, typeArguments), template.getBeginPos());
-    generatedClasses.add(template);
-
-    return result;
+    return new Type(new ClassTypeRef(template, typeArguments), template.getBeginPos());
   }
 
   private Type presentedInGenerated(final Type result, final List<Type> typeArguments) {
@@ -87,15 +70,11 @@ public class TemplateCodegen {
     final ClassDeclaration classWeWantToFind = result.getClassTypeFromRef();
     final Ident classWeWantToFindId = classWeWantToFind.getIdentifier();
 
-    for (Entry<Type, List<Type>> hashed : generatedClassesTemporary.entrySet()) {
-      final Type prevType = hashed.getKey();
-      checkIsClass(prevType);
-
-      final ClassDeclaration prevClazz = prevType.getClassTypeFromRef();
+    for (ClassDeclaration prevClazz : generatedClasses) {
       final Ident prevIdent = prevClazz.getIdentifier();
       if (prevIdent.equals(classWeWantToFindId)) {
-        if (TypeListsComparer.typeListsAreEqual(hashed.getValue(), typeArguments)) {
-          return prevType;
+        if (TypeListsComparer.typeListsAreEqual(prevClazz.getTypeParametersT(), typeArguments)) {
+          return new Type(new ClassTypeRef(prevClazz, prevClazz.getTypeParametersT()), prevClazz.getBeginPos());
         }
       }
     }
