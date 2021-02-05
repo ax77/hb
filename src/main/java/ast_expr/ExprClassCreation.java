@@ -32,7 +32,7 @@ public class ExprClassCreation implements Serializable, TypeSetter {
 
   @Override
   public String toString() {
-    return "new " + classtype.toString() + "(" + ExprUtil.exprListCommaToString1(arguments) + ")";
+    return "new " + classtype.toString() + ExprUtil.funcArgsToString(arguments);
   }
 
   @Override

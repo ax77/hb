@@ -42,7 +42,7 @@ public class ParseVarDeclarator {
     if (parser.is(T.T_ASSIGN)) {
       parser.move();
 
-      if (type.is_array()) {
+      if (type.is_array() && parser.is(T.T_LEFT_BRACKET)) {
 
         if (parser.is(Keywords.new_ident)) {
           var.setSimpleInitializer(parseInitializer());

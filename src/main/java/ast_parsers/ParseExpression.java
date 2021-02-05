@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_expr.BuiltinFnNames;
 import ast_expr.ExprArrayAccess;
 import ast_expr.ExprArrayCreation;
 import ast_expr.ExprAssign;
@@ -481,6 +482,10 @@ public class ParseExpression {
 
   private ExprExpression e_prim() {
 
+    if (parser.is(BuiltinFnNames.BUILTIN_IDENT)) {
+      return readBuiltinFn();
+    }
+
     if (parser.is(T.TOKEN_STRING)) {
       return parseStringLiteral();
     }
@@ -541,6 +546,31 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
+  }
+
+  private ExprExpression readBuiltinFn() {
+
+    // builtin .
+    final Token beginPos = parser.checkedMove(BuiltinFnNames.BUILTIN_IDENT);
+    parser.checkedMove(T.T_DOT);
+
+    final Ident funcname = parser.getIdent();
+    final List<FuncArg> arguments = parseArglist();
+
+    if (funcname.equals(BuiltinFnNames.BUILTIN_READ_FILE)) {
+      return new ExprExpression(BuiltinFnNames.read_file_fn(beginPos, arguments), beginPos);
+    }
+
+    if (funcname.equals(BuiltinFnNames.BUILTIN_WRITE_FILE)) {
+      return new ExprExpression(BuiltinFnNames.write_file_fn(beginPos, arguments), beginPos);
+    }
+
+    if (funcname.equals(BuiltinFnNames.BUILTIN_PANIC)) {
+      return new ExprExpression(BuiltinFnNames.panic_fn(beginPos, arguments), beginPos);
+    }
+
+    parser.perror("unimplemented builtin function: " + funcname.toString());
+    return null;
   }
 
   private ExprExpression parseStringLiteral() {

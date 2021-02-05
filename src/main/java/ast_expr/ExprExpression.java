@@ -32,6 +32,7 @@ public class ExprExpression implements Serializable, Location {
   private boolean booleanLiteral;
   private ExprArrayProperty arrayProperty;
   private ExprCast castExpression;
+  private ExprBuiltinFn builtinFn;
 
   //MIR:TREE:rewriter
   public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
@@ -45,6 +46,12 @@ public class ExprExpression implements Serializable, Location {
     this.base = ExpressionBase.EARRAY_PROPERTY;
     this.arrayProperty = arrayProperty;
     this.fieldAccess = null;
+  }
+
+  public ExprExpression(ExprBuiltinFn builtinFn, Token beginPos) {
+    this.base = ExpressionBase.EBUILTIN_FN;
+    this.beginPos = beginPos;
+    this.builtinFn = builtinFn;
   }
 
   public ExprExpression(ExprCast castExpression, Token beginPos) {
@@ -141,6 +148,10 @@ public class ExprExpression implements Serializable, Location {
 
     this.beginPos = beginPos;
     this.ident = symbol;
+  }
+
+  public ExprBuiltinFn getBuiltinFn() {
+    return builtinFn;
   }
 
   public ExprArrayAccess getArrayAccess() {
@@ -274,6 +285,9 @@ public class ExprExpression implements Serializable, Location {
     }
     if (base == ExpressionBase.ECAST) {
       return castExpression.toString();
+    }
+    if (base == ExpressionBase.EBUILTIN_FN) {
+      return builtinFn.toString();
     }
     return base.toString();
   }

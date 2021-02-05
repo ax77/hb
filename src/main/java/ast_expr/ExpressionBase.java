@@ -20,4 +20,5 @@ public enum ExpressionBase {
  , ECHAR_CONST
  , EBOOLEAN_LITERAL
  , EARRAY_PROPERTY // array.length, etc...
+ , EBUILTIN_FN
 }

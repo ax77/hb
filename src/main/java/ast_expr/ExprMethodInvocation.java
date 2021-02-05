@@ -56,9 +56,7 @@ public class ExprMethodInvocation implements Serializable {
     sb.append(".");
 
     sb.append(funcname.getName());
-    sb.append("(");
-    sb.append(ExprUtil.exprListCommaToString1(arguments));
-    sb.append(")");
+    sb.append(ExprUtil.funcArgsToString(arguments));
 
     return sb.toString();
   }

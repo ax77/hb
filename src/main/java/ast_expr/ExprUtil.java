@@ -42,8 +42,9 @@ public abstract class ExprUtil {
     return copyTokenAddNewType(from, T.T_ASSIGN, "=");
   }
 
-  public static String exprListCommaToString1(List<FuncArg> list) {
+  public static String funcArgsToString(List<FuncArg> list) {
     StringBuilder sb = new StringBuilder();
+    sb.append("(");
 
     for (int i = 0; i < list.size(); i++) {
       FuncArg param = list.get(i);
@@ -53,6 +54,7 @@ public abstract class ExprUtil {
       }
     }
 
+    sb.append(")");
     return sb.toString();
   }
 

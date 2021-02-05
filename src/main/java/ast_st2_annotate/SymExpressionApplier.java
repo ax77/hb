@@ -11,6 +11,7 @@ import ast_expr.ExprArrayCreation;
 import ast_expr.ExprArrayProperty;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
@@ -127,10 +128,20 @@ public class SymExpressionApplier {
       asslyCast(object, e);
     }
 
+    else if (e.is(ExpressionBase.EBUILTIN_FN)) {
+      applyBuiltinFn(object, e);
+    }
+
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
+    // TODO:
+    ExprBuiltinFn builtinFn = e.getBuiltinFn();
+    e.setResultType(builtinFn.getReturnType());
   }
 
   private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
