@@ -1,6 +1,7 @@
-class test
+class opt<u8>
 {
-  var x1: opt<f64>;
+  let item: u8;
+  let bytes: opt<u8>;
 }
 
 class opt<f64>
@@ -9,9 +10,8 @@ class opt<f64>
   let bytes: opt<u8>;
 }
 
-class opt<u8>
+class test
 {
-  let item: u8;
-  let bytes: opt<u8>;
+  var x1: opt<f64>;
 }
 

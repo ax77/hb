@@ -1,4 +1,6 @@
-import std.io;
+
+forward class node;
+forward class list_iterator;
 
 class list<T>
 {

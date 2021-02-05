@@ -17,7 +17,7 @@ public class Temp {
     //   System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     // }
 
-    InstantiationUnit unit = new ParserMain("tests/temp").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain("tests/test_templates_2").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

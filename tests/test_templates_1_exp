@@ -1,6 +1,8 @@
-class test
+class node<i32>
 {
-  var args: list<i32>;
+  var prev: node<i32>;
+  var next: node<i32>;
+  var item: i32;
 }
 
 class list<i32>
@@ -9,10 +11,8 @@ class list<i32>
   var last: node<i32>;
 }
 
-class node<i32>
+class test
 {
-  var prev: node<i32>;
-  var next: node<i32>;
-  var item: i32;
+  var args: list<i32>;
 }
 

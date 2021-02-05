@@ -9,7 +9,7 @@ public class InstantiationUnit {
   private final List<ClassDeclaration> classes;
 
   public InstantiationUnit() {
-    this.classes = new ArrayList<ClassDeclaration>();
+    this.classes = new ArrayList<>();
   }
 
   public List<ClassDeclaration> getClasses() {
@@ -17,7 +17,7 @@ public class InstantiationUnit {
   }
 
   public void put(ClassDeclaration e) {
-    this.classes.add(e);
+    this.classes.add(0, e);
   }
 
 }

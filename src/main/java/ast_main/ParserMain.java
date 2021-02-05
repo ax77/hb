@@ -10,6 +10,7 @@ import ast_class.ClassDeclaration;
 import ast_st0_resolve.CUnitCompleteChecker;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
+import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
@@ -17,6 +18,7 @@ import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
 import tokenize.Env;
+import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -50,8 +52,9 @@ public class ParserMain implements ParserMainApi {
       // at real position of the source
       // when it will be founded and fully parsed.
       // i.e. : in normal declaration like 'class name<T> { ... }'
-      ClassDeclaration forward = new ClassDeclaration(Hash_ident.getHashedIdent(ent.getKey()), new ArrayList<>(),
-          Env.EOF_TOKEN_ENTRY);
+      final Ident typename = Hash_ident.getHashedIdent(ent.getKey());
+      final ArrayList<Type> emptyTypeParams = new ArrayList<>();
+      final ClassDeclaration forward = new ClassDeclaration(typename, emptyTypeParams, Env.EOF_TOKEN_ENTRY);
       parser.defineClassName(forward);
     }
 
