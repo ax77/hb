@@ -1,11 +1,9 @@
 package ast_st2_annotate;
 
-import static ast_st2_annotate.IteratorNames.GET_ITERATOR_METHOD_NAME;
-import static ast_st2_annotate.IteratorNames.ITERATOR_GET_NEXT_METHOD_NAME;
-import static ast_st2_annotate.IteratorNames.ITERATOR_HAS_NEXT_METHOD_NAME;
 
 import java.util.ArrayList;
 
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
@@ -63,7 +61,7 @@ public class IteratorChecker {
     // check that we have a method which will return the iterator
     //
     final ClassDeclaration clazz = type.getClassTypeFromRef();
-    final ClassMethodDeclaration mGetIterator = clazz.getMethod(GET_ITERATOR_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mGetIterator = clazz.getMethod(BuiltinNames.GET_ITERATOR_METHOD_NAME, emptyArgs);
     if (mGetIterator == null) {
       return false;
     }
@@ -79,8 +77,8 @@ public class IteratorChecker {
     }
 
     final ClassDeclaration iteratorClazz = returnTypeOfGetIteratorMethod.getClassTypeFromRef();
-    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(ITERATOR_HAS_NEXT_METHOD_NAME, emptyArgs);
-    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(ITERATOR_GET_NEXT_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(BuiltinNames.ITERATOR_HAS_NEXT_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(BuiltinNames.ITERATOR_GET_NEXT_METHOD_NAME, emptyArgs);
     if (mHasNext == null || mGetNext == null) {
       return false;
     }

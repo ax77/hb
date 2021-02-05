@@ -25,8 +25,9 @@ import static tokenize.T.T_XOR;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_builtins.BuiltinFunctionsCreator;
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
-import ast_expr.BuiltinFnNames;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprCast;
@@ -474,7 +475,7 @@ public class ParseExpression {
 
   private ExprExpression e_prim() {
 
-    if (parser.is(BuiltinFnNames.BUILTIN_IDENT)) {
+    if (parser.is(BuiltinNames.BUILTIN_IDENT)) {
       return readBuiltinFn();
     }
 
@@ -543,22 +544,22 @@ public class ParseExpression {
   private ExprExpression readBuiltinFn() {
 
     // builtin .
-    final Token beginPos = parser.checkedMove(BuiltinFnNames.BUILTIN_IDENT);
+    final Token beginPos = parser.checkedMove(BuiltinNames.BUILTIN_IDENT);
     parser.checkedMove(T.T_DOT);
 
     final Ident funcname = parser.getIdent();
     final List<FuncArg> arguments = parseArglist();
 
-    if (funcname.equals(BuiltinFnNames.BUILTIN_READ_FILE)) {
-      return new ExprExpression(BuiltinFnNames.read_file_fn(beginPos, arguments), beginPos);
+    if (funcname.equals(BuiltinNames.BUILTIN_READ_FILE)) {
+      return new ExprExpression(BuiltinFunctionsCreator.read_file_fn(beginPos, arguments), beginPos);
     }
 
-    if (funcname.equals(BuiltinFnNames.BUILTIN_WRITE_FILE)) {
-      return new ExprExpression(BuiltinFnNames.write_file_fn(beginPos, arguments), beginPos);
+    if (funcname.equals(BuiltinNames.BUILTIN_WRITE_FILE)) {
+      return new ExprExpression(BuiltinFunctionsCreator.write_file_fn(beginPos, arguments), beginPos);
     }
 
-    if (funcname.equals(BuiltinFnNames.BUILTIN_PANIC)) {
-      return new ExprExpression(BuiltinFnNames.panic_fn(beginPos, arguments), beginPos);
+    if (funcname.equals(BuiltinNames.BUILTIN_PANIC)) {
+      return new ExprExpression(BuiltinFunctionsCreator.panic_fn(beginPos, arguments), beginPos);
     }
 
     parser.perror("unimplemented builtin function: " + funcname.toString());
@@ -571,7 +572,7 @@ public class ParseExpression {
 
     // TODO:__string__
 
-    final ClassDeclaration stringClass = new ClassDeclaration(Hash_ident.getHashedIdent("string"), new ArrayList<>(),
+    final ClassDeclaration stringClass = new ClassDeclaration(BuiltinNames.STRING_CLASS_IDENT, new ArrayList<>(),
         saved);
 
     final List<FuncArg> argums = new ArrayList<>();
@@ -590,23 +591,22 @@ public class ParseExpression {
     Token saved = parser.moveget();
 
     // new [2: i32] 
+    // this will be rewritten later:
+    // we can replace 'new [2: i32]' to 'new array<i32>()'
     if (parser.is(T.T_LEFT_BRACKET)) {
       parser.errorArray();
-      return null;
     }
 
     // new list<i32>(0)
-    else {
 
-      final Type classtype = new ParseType(parser).getType();
-      final List<FuncArg> arguments = parseArglist();
-      final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);
+    final Type classtype = new ParseType(parser).getType();
+    final List<FuncArg> arguments = parseArglist();
+    final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);
 
-      // it is important to register type-setter for `current` class
-      // not for the class is created in `new` expression 
-      parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
-      return new ExprExpression(classInstanceCreation, saved);
-    }
+    // it is important to register type-setter for `current` class
+    // not for the class is created in `new` expression 
+    parser.getCurrentClass(true).registerTypeSetter(classInstanceCreation);
+    return new ExprExpression(classInstanceCreation, saved);
   }
 
 }

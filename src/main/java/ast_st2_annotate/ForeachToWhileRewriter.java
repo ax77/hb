@@ -1,11 +1,8 @@
 package ast_st2_annotate;
 
-import static ast_st2_annotate.IteratorNames.GET_ITERATOR_METHOD_NAME;
-import static ast_st2_annotate.IteratorNames.ITERATOR_GET_NEXT_METHOD_NAME;
-import static ast_st2_annotate.IteratorNames.ITERATOR_HAS_NEXT_METHOD_NAME;
-
 import java.util.ArrayList;
 
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
@@ -111,13 +108,13 @@ public class ForeachToWhileRewriter {
 
   private ExprExpression genTest(final Ident iteratorVarName, Token beginPos) {
     // iter.has_next();
-    return call(ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName, beginPos);
+    return call(BuiltinNames.ITERATOR_HAS_NEXT_METHOD_NAME, iteratorVarName, beginPos);
   }
 
   private VarDeclarator genItemVar(final Type elemType, final Ident item, final Ident iteratorVarName, Token beginPos) {
     // let item = iter.get_next() ;
 
-    final ExprExpression rhs = call(ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName, beginPos);
+    final ExprExpression rhs = call(BuiltinNames.ITERATOR_GET_NEXT_METHOD_NAME, iteratorVarName, beginPos);
     final VarDeclarator var = new VarDeclarator(VarBase.LOCAL_VAR, Mods.letMods(), elemType, item, beginPos);
     var.setSimpleInitializer(rhs);
 
@@ -143,7 +140,8 @@ public class ForeachToWhileRewriter {
 
     final VarDeclarator iteratorVar = new VarDeclarator(VarBase.LOCAL_VAR, Mods.letMods(), iteratorType,
         iteratorVarName, beginPos);
-    final ExprExpression iteratorVarInitializer = call(GET_ITERATOR_METHOD_NAME, collectionObjectName, beginPos);
+    final ExprExpression iteratorVarInitializer = call(BuiltinNames.GET_ITERATOR_METHOD_NAME, collectionObjectName,
+        beginPos);
 
     iteratorVar.setSimpleInitializer(iteratorVarInitializer);
     return iteratorVar;

@@ -3,8 +3,9 @@ package ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_builtins.BuiltinFunctionsCreator;
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
-import ast_expr.BuiltinFnNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -23,7 +24,7 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isUnresolverId;
+  private boolean isUnresolvedId;
 
   public ParseType(Parse parser) {
 
@@ -65,7 +66,7 @@ public class ParseType {
     if (!typeWasFound) {
       typeWasFound = parser.isUserDefinedIdentNoKeyword(parser.tok());
       if (typeWasFound) {
-        this.isUnresolverId = true;
+        this.isUnresolvedId = true;
       }
     }
 
@@ -77,18 +78,13 @@ public class ParseType {
       parser.perror("type is not recognized");
     }
 
-    // -1
-    if (isUnresolverId()) {
-      if (parser.is(BuiltinFnNames.BUILTIN_IDENT)) {
+    // 0
+    if (isUnresolvedId()) {
+      if (parser.is(BuiltinNames.BUILTIN_IDENT)) {
         return builtinArray();
       }
       return getUnresolvedIdentifier();
     }
-
-    // // 0)
-    // if (isArray()) {
-    //   return getArray();
-    // }
 
     // 1)
     if (isPrimitive()) {
@@ -110,16 +106,19 @@ public class ParseType {
   }
 
   private Type builtinArray() {
-    ClassDeclaration currentc = parser.getCurrentClass(true);
-    if (!currentc.getIdentifier().equals(Hash_ident.getHashedIdent("array"))) {
+
+    // array<T> class
+    final ClassDeclaration currentc = parser.getCurrentClass(true);
+    if (!currentc.getIdentifier().equals(BuiltinNames.ARRAY_CLASS_IDENT)) {
       parser.perror("you cannot use builtin.array, this type is predefined only for array<T> class");
     }
 
-    Token beginPos = parser.checkedMove(BuiltinFnNames.BUILTIN_IDENT);
-    parser.checkedMove(T.T_DOT);
+    final Token beginPos = parser.checkedMove(BuiltinNames.BUILTIN_IDENT);
 
-    parser.checkedMove(Hash_ident.getHashedIdent("array_declare"));
-    List<Type> arguments = getTypeArguments();
+    parser.checkedMove(T.T_DOT);
+    parser.checkedMove(BuiltinNames.ARRAY_DECLARE_IDENT);
+
+    final List<Type> arguments = getTypeArguments();
     if (arguments.size() != 1) {
       parser.perror("expect type argument for array.");
     }
@@ -198,7 +197,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isUnresolverId;
+    return isPrimitive || isReference || isTypeParameter || isUnresolvedId;
   }
 
   public boolean isPrimitive() {
@@ -213,8 +212,8 @@ public class ParseType {
     return isTypeParameter;
   }
 
-  public boolean isUnresolverId() {
-    return isUnresolverId;
+  public boolean isUnresolvedId() {
+    return isUnresolvedId;
   }
 
   //@formatter:off
