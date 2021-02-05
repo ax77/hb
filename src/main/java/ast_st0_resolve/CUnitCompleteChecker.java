@@ -17,6 +17,11 @@ public abstract class CUnitCompleteChecker {
         throw new AstParseException("incomplete template: " + clazz.getIdentifier());
       }
     }
+    for (ClassDeclaration clazz : unit.getForwards()) {
+      if (!clazz.isComplete()) {
+        throw new AstParseException("unused forward: " + clazz.getIdentifier());
+      }
+    }
   }
 
 }
