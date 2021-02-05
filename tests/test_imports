@@ -1,0 +1,18 @@
+//import std.list;
+import std.array;
+
+class t
+{
+  func test1() {
+    
+    var arr: array<i32>;
+    for x in arr {
+    }
+    
+    // var args: list<u8>;
+    // for arg in args {
+    // 
+    // }
+    
+  }
+}

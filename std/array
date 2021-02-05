@@ -1,4 +1,39 @@
 
-class array<T> {
+class array<T> 
+{
 	var table: [T];
+	
+	func get_iterator() -> array_iterator<T>
+	{
+	  return new array_iterator<T>();
+	}
+	
+	func get_size() -> u64
+	{
+	  return table.length;
+	}
+	
+	func get(at: u64) -> T 
+	{
+	  // TODO: IOOB
+	  return table[at];
+	}
+}
+
+class array_iterator<T>
+{
+  let collection: array<T>;
+  let offset: u64;
+  
+  func has_next() -> boolean
+  {
+    return offset < collection.get_size();
+  }
+  
+  func get_next() -> T
+  {
+    let item: T = collection.get(at: offset);
+    offset += 1_u64;
+    return item;
+  }
 }

@@ -320,23 +320,23 @@ public class ParseExpression {
 
   private ExprExpression e_cast() {
 
-    if (parser.is(T.T_LEFT_PAREN)) {
-
-      final ParseState state = new ParseState(parser);
-      final Token beginPos = parser.lparen();
-
-      final ParseType typeRecornizer = new ParseType(parser);
-      if (typeRecornizer.isType()) {
-
-        final Type toType = typeRecornizer.getType();
-        parser.rparen();
-
-        ExprExpression expressionForCast = e_unary(); // TODO: UNARY or CAST?
-        return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
-      }
-
-      parser.restoreState(state);
-    }
+    // if (parser.is(T.T_LEFT_PAREN)) {
+    // 
+    //   final ParseState state = new ParseState(parser);
+    //   final Token beginPos = parser.lparen();
+    // 
+    //   final ParseType typeRecornizer = new ParseType(parser);
+    //   if (typeRecornizer.isType()) {
+    // 
+    //     final Type toType = typeRecornizer.getType();
+    //     parser.rparen();
+    // 
+    //     ExprExpression expressionForCast = e_unary(); // TODO: UNARY or CAST?
+    //     return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
+    //   }
+    // 
+    //   parser.restoreState(state);
+    // }
 
     return e_unary();
   }
@@ -588,12 +588,10 @@ public class ParseExpression {
 
     // new list<i32>(0)
     else {
-
-      final ClassDeclaration instantiatedClass = parser.getClassType(parser.getIdent());
-      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-      final ClassTypeRef ref = new ClassTypeRef(instantiatedClass, typeArguments);
+      
+      final Type classtype = new ParseType(parser).getType();
       final List<FuncArg> arguments = parseArglist();
-      final ExprClassCreation classInstanceCreation = new ExprClassCreation(new Type(ref, saved), arguments);
+      final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);
 
       // it is important to register type-setter for `current` class
       // not for the class is created in `new` expression 

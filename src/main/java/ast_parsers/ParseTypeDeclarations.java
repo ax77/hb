@@ -42,8 +42,7 @@ public class ParseTypeDeclarations {
     }
 
     else if (parser.is(Keywords.import_ident)) {
-      // PackageNameCutter.cutPackageName(parser, Keywords.import_ident);
-      parser.perror("import is unimpl.");
+      ParsePackageName.parse(parser, Keywords.import_ident);
     }
 
     else {

@@ -3,8 +3,16 @@ class string
 
 }
 
+class opt<I>
+{
+  let elem: I;
+}
+
 class test
 {
+
+  //let x: opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<i32>>>>>>>>>>>>>>>>>>>>;
+
   let a: string = 
     """ 
     a 

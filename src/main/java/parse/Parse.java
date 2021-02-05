@@ -39,14 +39,21 @@ public class Parse {
 
   private int flags = 0;
 
-  public Parse(List<Token> tokens) {
-    this.tokenlist = new Tokenlist(tokens);
+  public Parse(Tokenlist tokenlist) {
+    this.tokenlist = tokenlist;
+    checkItHasEOF();
     initParser();
   }
 
-  public Parse(Tokenlist tokenlist) {
-    this.tokenlist = tokenlist;
-    initParser();
+  private void checkItHasEOF() {
+    final List<Token> tokens = tokenlist.getList();
+    // for sure!
+    if (!tokens.isEmpty()) {
+      Token last = tokens.get(tokens.size() - 1);
+      if (!last.ofType(T.TOKEN_EOF)) {
+        throw new AstParseException("token-list without EOF");
+      }
+    }
   }
 
   private void initParser() {
@@ -106,7 +113,8 @@ public class Parse {
   public void defineClassName(ClassDeclaration cd) {
     for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
       if (ent.getKey().equals(cd.getIdentifier())) {
-        perror("duplicate: " + cd.getIdentifier());
+        perror("duplicate type-name: " + cd.getIdentifier() + ", previously defined here: "
+            + ent.getValue().getLocationToString());
       }
     }
     this.referenceTypes.put(cd.getIdentifier(), cd);

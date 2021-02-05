@@ -1,5 +1,4 @@
-import std.node;
-import std.list_iterator;
+import std.io;
 
 class list<T>
 {
@@ -32,3 +31,47 @@ class list<T>
     }
 }
 
+class list_iterator<E> {
+
+    var collection: list<E>;
+    var last_returned: node<E>;
+    var next: node<E>;
+    var next_index: i32;
+    
+    init(collection: list<E>)
+    {
+        self.collection = collection;
+        self.last_returned = collection.first;
+        self.next = collection.first;
+        self.next_index = 0;
+    }
+    
+    func has_next() -> boolean
+    {
+        return next_index < collection.size;
+    }
+    
+    func get_next() -> E
+    {
+        self.last_returned = next;
+        self.next = next.next;
+        self.next_index += 1;
+        return last_returned.item;
+    }
+}
+
+class node<T>
+{
+    weak var prev: node<T>;
+    var item: T;
+    var next: node<T>;
+    
+    init(prev: node<T>,
+         item: T,
+         next: node<T>)
+    {
+        self.prev = prev;
+        self.next = next;
+        self.item = item;
+    }
+}

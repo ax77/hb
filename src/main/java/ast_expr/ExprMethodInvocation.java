@@ -1,12 +1,14 @@
 package ast_expr;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ast_method.ClassMethodDeclaration;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ExprMethodInvocation {
+public class ExprMethodInvocation implements Serializable {
+  private static final long serialVersionUID = -6288485017757935715L;
 
   // object.funcname(arguments)
   private /*final*/ ExprExpression object;

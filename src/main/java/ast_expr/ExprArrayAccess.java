@@ -1,6 +1,10 @@
 package ast_expr;
 
-public class ExprArrayAccess {
+import java.io.Serializable;
+
+public class ExprArrayAccess implements Serializable {
+  private static final long serialVersionUID = -3791155341811163083L;
+
   private final ExprExpression array;
   private final ExprExpression index;
 

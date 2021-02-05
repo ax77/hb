@@ -43,6 +43,14 @@ public class TemplateCodegen {
     //
     final Type alreadyGenerated = presentedInGenerated(from, from.getTypeArgumentsFromRef());
     if (alreadyGenerated != null) {
+      // we should find the class which had been fully expanded before.
+      for (ClassDeclaration c : generatedClasses) {
+        if (alreadyGenerated.getClassTypeFromRef().getIdentifier().equals(c.getIdentifier())) {
+          if (TypeListsComparer.typeListsAreEqual(alreadyGenerated.getTypeArgumentsFromRef(), c.getTypeParametersT())) {
+            return new Type(new ClassTypeRef(c, c.getTypeParametersT()), c.getBeginPos());
+          }
+        }
+      }
       return alreadyGenerated;
     }
     generatedClassesTemporary.put(from, Collections.unmodifiableList(from.getTypeArgumentsFromRef()));

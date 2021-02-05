@@ -2,7 +2,8 @@ import std.list;
 import std.string;
 
 class io {
-	func read_file(path: string) -> string {}
+
+  native func read_file(path: string) -> string {}
 	
-	func read_file_lines(path: string) -> list<string> {}
+	native func read_file_lines(path: string) -> list<string> {}
 }
