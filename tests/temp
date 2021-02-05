@@ -1,0 +1,46 @@
+import std.string;
+import std.array;
+
+class test
+{
+  func test() 
+  {
+    var args: array<i32>;
+  
+    // var bytes: [u8] = builtin.read_file(path: "main.c");
+    // 
+    // let res: string = "1 2 3";
+    // builtin.write_file(path: "./output.txt", content: res);
+    // 
+    // if false {
+    //   builtin.panic(message: "nothing.....");
+    // }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

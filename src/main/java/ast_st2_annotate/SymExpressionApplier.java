@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprArrayAccess;
-import ast_expr.ExprArrayCreation;
-import ast_expr.ExprArrayProperty;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFn;
@@ -23,7 +20,6 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
-import ast_types.ArrayType;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -31,7 +27,6 @@ import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
-import hashed.Hash_ident;
 import tokenize.Ident;
 
 public class SymExpressionApplier {
@@ -108,20 +103,12 @@ public class SymExpressionApplier {
       applyStringLiteral(e);
     }
 
-    else if (e.is(ExpressionBase.EARRAY_ACCESS)) {
-      applyArrayAccess(object, e);
-    }
-
     else if (e.is(ExpressionBase.ECHAR_CONST)) {
       e.setResultType(TypeBindings.make_u8(e.getBeginPos()));
     }
 
     else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean(e.getBeginPos())); // TODO: ?
-    }
-
-    else if (e.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
-      applyArrayCreation(e);
     }
 
     else if (e.is(ExpressionBase.ECAST)) {
@@ -154,23 +141,6 @@ public class SymExpressionApplier {
     e.setResultType(toType);
   }
 
-  private void checkArraySize(final ArrayType array, final ExprExpression e) {
-    if (array.getLength() == 0) {
-      ErrorLocation.errorExpression("array-creation with zero-size", e);
-    }
-    if (array.getType().is_array()) {
-      checkArraySize(array.getType().getArrayType(), e);
-    }
-  }
-
-  private void applyArrayCreation(final ExprExpression e) {
-    final ExprArrayCreation arrayCreation = e.getArrayCreation();
-    final Type type = arrayCreation.getType();
-    final ArrayType array = type.getArrayType();
-    checkArraySize(array, e);
-    e.setResultType(type);
-  }
-
   private void applyNumericLiteral(final ExprExpression e) {
     e.setResultType(e.getNumber().getType());
   }
@@ -183,21 +153,7 @@ public class SymExpressionApplier {
   }
 
   private void applyStringLiteral(final ExprExpression e) {
-    String strconst = e.getBeginPos().getValue(); // TODO:__string__
-    ArrayType arrtype = new ArrayType(TypeBindings.make_u8(e.getBeginPos()), strconst.length());
-    e.setResultType(new Type(arrtype, e.getBeginPos()));
-  }
-
-  private void applyArrayAccess(final ClassDeclaration object, final ExprExpression e) {
-    ExprArrayAccess arrayAccess = e.getArrayAccess();
-    applyExpression(object, arrayAccess.getArray());
-    applyExpression(object, arrayAccess.getIndex());
-    Type arrtype = arrayAccess.getArray().getResultType();
-    if (!arrtype.is_array()) {
-      ErrorLocation.errorExpression("expect array", e);
-    }
-    Type arrof = arrtype.getArrayType().getType();
-    e.setResultType(arrof);
+    // TODO:
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {
@@ -305,40 +261,23 @@ public class SymExpressionApplier {
     if (resultTypeOfObject == null) {
       ErrorLocation.errorExpression("type unspecified for field-access expression:", e);
     }
-    boolean isOkAccess = resultTypeOfObject.is_class() || resultTypeOfObject.is_array();
+    boolean isOkAccess = resultTypeOfObject.is_class();
     if (!isOkAccess) {
       ErrorLocation
           .errorExpression("expect reference for field access like [a.b] -> a must be a class, or array.length", e);
     }
 
-    // array-property access
+    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassTypeFromRef();
+    final VarDeclarator field = whereWeWantToFindTheField.getField(fieldName);
 
-    if (resultTypeOfObject.is_array()) {
-      final Ident expectedProperty = Hash_ident.getHashedIdent("length");
-      if (!fieldName.equals(expectedProperty)) {
-        ErrorLocation.errorExpression("array has no property: " + fieldNameToString, e);
-      }
-
-      final ExprArrayProperty arrayProperty = new ExprArrayProperty(fieldAccess.getObject(), expectedProperty);
-      e.replaceFieldAccessWithArrayProperty(arrayProperty);
-      e.setResultType(TypeBindings.make_u64(e.getBeginPos()));
+    if (field == null) {
+      ErrorLocation.errorExpression("class has no field: " + fieldNameToString, e);
     }
 
-    // class-field access
+    e.setResultType(field.getType());
 
-    else {
-      final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassTypeFromRef();
-      final VarDeclarator field = whereWeWantToFindTheField.getField(fieldName);
-
-      if (field == null) {
-        ErrorLocation.errorExpression("class has no field: " + fieldNameToString, e);
-      }
-
-      e.setResultType(field.getType());
-
-      //MIR:TREE
-      fieldAccess.setField(field);
-    }
+    //MIR:TREE
+    fieldAccess.setField(field);
 
   }
 

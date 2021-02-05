@@ -31,10 +31,8 @@ public class SymInitializerApplier {
       throw new AstParseException("unexpected, initializer should be there: " + var.getLocationToString());
     }
 
-    //MIR:TREE
-    if (init.is(ExpressionBase.EARRAY_INSTANCE_CREATION)) {
-      init.getArrayCreation().setVar(var);
-    } else if (init.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+    if (init.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+      //MIR:TREE
       init.getClassCreation().setVar(var);
     }
 
@@ -64,7 +62,7 @@ public class SymInitializerApplier {
       var.setSimpleInitializer(zeroExpr);
     }
 
-    else if (tp.is_class() || tp.is_array()) {
+    else if (tp.is_class()) {
       ExprExpression nullExpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, beginPos);
       var.setSimpleInitializer(nullExpr);
     }

@@ -2,9 +2,7 @@ package ast_expr;
 
 import java.util.List;
 
-import ast_types.ArrayType;
 import ast_types.Type;
-import ast_types.TypeBindings;
 import hashed.Hash_ident;
 import tokenize.Ident;
 import tokenize.Token;
@@ -19,7 +17,7 @@ public abstract class BuiltinFnNames {
 
   public static final ExprBuiltinFn read_file_fn(Token beginPos, List<FuncArg> arguments) {
 
-    final Type returnType = new Type(new ArrayType(TypeBindings.make_u8(beginPos), -1), beginPos);
+    final Type returnType = new Type(/*new ArrayType(TypeBindings.make_u8(beginPos), -1), */beginPos);
 
     return new ExprBuiltinFn(BUILTIN_READ_FILE, arguments, returnType);
   }

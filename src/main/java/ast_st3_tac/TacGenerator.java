@@ -1,6 +1,5 @@
 package ast_st3_tac;
 
-import static ast_expr.ExpressionBase.EARRAY_INSTANCE_CREATION;
 import static ast_expr.ExpressionBase.EASSIGN;
 import static ast_expr.ExpressionBase.EBINARY;
 import static ast_expr.ExpressionBase.ECAST;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprArrayAccess;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
@@ -264,22 +262,6 @@ public class TacGenerator {
       final ClassDeclaration clazz = exprSelf.getClazz();
       final Type classType = new Type(new ClassTypeRef(clazz, new ArrayList<>()), e.getBeginPos());
       quads(new Quad(QuadOpc.SELF_DECL, ht(), classType, h("self")));
-    }
-
-    else if (base == EARRAY_INSTANCE_CREATION) {
-      throw new RuntimeException(base.toString() + " ???");
-
-    }
-
-    else if (base == ExpressionBase.EARRAY_ACCESS) {
-      ExprArrayAccess arrayAccess = e.getArrayAccess();
-      gen(arrayAccess.getArray());
-      gen(arrayAccess.getIndex());
-
-      Quad index = pop();
-      Quad array = pop();
-      Quad res = new Quad(QuadOpc.ARRAY_ACCESS, ht(), e.getResultType(), array.getResult(), index.getResult());
-      quads(res);
     }
 
     else {

@@ -27,8 +27,6 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_expr.BuiltinFnNames;
-import ast_expr.ExprArrayAccess;
-import ast_expr.ExprArrayCreation;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprCast;
@@ -47,7 +45,6 @@ import ast_types.ClassTypeRef;
 import ast_types.Type;
 import hashed.Hash_ident;
 import parse.Parse;
-import parse.ParseFlags;
 import parse.ParseState;
 import tokenize.Ident;
 import tokenize.T;
@@ -405,12 +402,7 @@ public class ParseExpression {
       // array-subscript
       //
       else if (parser.is(T.T_LEFT_BRACKET)) {
-
-        while (parser.is(T.T_LEFT_BRACKET)) {
-          Token saved = parser.lbracket();
-          lhs = new ExprExpression(new ExprArrayAccess(lhs, e_expression()), saved);
-          parser.rbracket();
-        }
+        parser.errorArray();
       }
 
       else {
@@ -599,17 +591,8 @@ public class ParseExpression {
 
     // new [2: i32] 
     if (parser.is(T.T_LEFT_BRACKET)) {
-      parser.setBit(ParseFlags.f_expect_array_length);
-
-      final Type arrayCreator = new ParseType(parser).getType();
-      final ExprArrayCreation arrayCreation = new ExprArrayCreation(arrayCreator);
-
-      // it is important to register type-setter for `current` class
-      // not for the class is created in `new` expression 
-      parser.getCurrentClass(true).registerTypeSetter(arrayCreation);
-
-      parser.clearBit(ParseFlags.f_expect_array_length);
-      return new ExprExpression(arrayCreation, saved);
+      parser.errorArray();
+      return null;
     }
 
     // new list<i32>(0)

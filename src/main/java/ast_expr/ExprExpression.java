@@ -26,11 +26,8 @@ public class ExprExpression implements Serializable, Location {
   private ExprFieldAccess fieldAccess;
   private ExprClassCreation classCreation;
   private ExprAssign assign;
-  private ExprArrayCreation arrayCreation;
   private ExprSelf selfExpression;
-  private ExprArrayAccess arrayAccess;
   private boolean booleanLiteral;
-  private ExprArrayProperty arrayProperty;
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
 
@@ -39,13 +36,6 @@ public class ExprExpression implements Serializable, Location {
     this.base = ExpressionBase.EFIELD_ACCESS;
     this.fieldAccess = fieldAccess;
     this.ident = null;
-  }
-
-  //MIR:TREE:rewriter
-  public void replaceFieldAccessWithArrayProperty(ExprArrayProperty arrayProperty) {
-    this.base = ExpressionBase.EARRAY_PROPERTY;
-    this.arrayProperty = arrayProperty;
-    this.fieldAccess = null;
   }
 
   public ExprExpression(ExprBuiltinFn builtinFn, Token beginPos) {
@@ -66,12 +56,6 @@ public class ExprExpression implements Serializable, Location {
     this.booleanLiteral = value;
   }
 
-  public ExprExpression(ExprArrayAccess arrayAccess, Token beginPos) {
-    this.base = ExpressionBase.EARRAY_ACCESS;
-    this.beginPos = beginPos;
-    this.arrayAccess = arrayAccess;
-  }
-
   public ExprExpression(ExprSelf selfExpression, Token beginPos) {
     this.base = ExpressionBase.ESELF;
 
@@ -84,13 +68,6 @@ public class ExprExpression implements Serializable, Location {
 
     this.beginPos = beginPos;
     this.assign = assign;
-  }
-
-  public ExprExpression(ExprArrayCreation arrayCreation, Token beginPos) {
-    this.base = ExpressionBase.EARRAY_INSTANCE_CREATION;
-
-    this.beginPos = beginPos;
-    this.arrayCreation = arrayCreation;
   }
 
   // string-literal, char-literal, null-literal
@@ -154,14 +131,6 @@ public class ExprExpression implements Serializable, Location {
     return builtinFn;
   }
 
-  public ExprArrayAccess getArrayAccess() {
-    return arrayAccess;
-  }
-
-  public ExprArrayCreation getArrayInstanceCreation() {
-    return arrayCreation;
-  }
-
   public ExprAssign getAssign() {
     return assign;
   }
@@ -210,20 +179,12 @@ public class ExprExpression implements Serializable, Location {
     return classCreation;
   }
 
-  public ExprArrayCreation getArrayCreation() {
-    return arrayCreation;
-  }
-
   public boolean is(ExpressionBase what) {
     return base.equals(what);
   }
 
   public boolean getBooleanLiteral() {
     return booleanLiteral;
-  }
-
-  public ExprArrayProperty getArrayProperty() {
-    return arrayProperty;
   }
 
   public ExprCast getCastExpression() {
@@ -259,14 +220,8 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
       return classCreation.toString();
     }
-    if (base == ExpressionBase.EARRAY_INSTANCE_CREATION) {
-      return arrayCreation.toString();
-    }
     if (base == ExpressionBase.ESTRING_CONST) {
       return beginPos.getValue(); // because of the bootstrap: '\0' etc...
-    }
-    if (base == ExpressionBase.EARRAY_ACCESS) {
-      return arrayAccess.toString();
     }
     if (base == ExpressionBase.EUNARY) {
       return unary.toString();
@@ -279,9 +234,6 @@ public class ExprExpression implements Serializable, Location {
         return "true";
       }
       return "false";
-    }
-    if (base == ExpressionBase.EARRAY_PROPERTY) {
-      return arrayProperty.toString();
     }
     if (base == ExpressionBase.ECAST) {
       return castExpression.toString();

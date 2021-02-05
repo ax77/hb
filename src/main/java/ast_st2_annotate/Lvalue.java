@@ -9,10 +9,9 @@ import errors.ErrorLocation;
 public abstract class Lvalue {
 
   public static void checkHard(ExprExpression e) {
-    final boolean isArrayAccess = e.is(ExpressionBase.EARRAY_ACCESS);
     final boolean isAnyIdentifier = e.is(EPRIMARY_IDENT);
     final boolean isFieldAccess = e.is(ExpressionBase.EFIELD_ACCESS);
-    final boolean isLvalue = isArrayAccess || isAnyIdentifier || isFieldAccess;
+    final boolean isLvalue = isAnyIdentifier || isFieldAccess;
     if (!isLvalue) {
       ErrorLocation.errorExpression("not an lvalue", e);
     }

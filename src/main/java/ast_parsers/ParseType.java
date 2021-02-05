@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprExpression;
-import ast_expr.ExpressionBase;
+import ast_expr.BuiltinFnNames;
 import ast_symtab.Keywords;
-import ast_types.ArrayType;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_types.TypeUnresolvedId;
-import literals.IntLiteral;
+import hashed.Hash_ident;
 import parse.Parse;
-import parse.ParseFlags;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
@@ -26,7 +23,6 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isArray;
   private boolean isUnresolverId;
 
   public ParseType(Parse parser) {
@@ -62,7 +58,7 @@ public class ParseType {
     if (!typeWasFound) {
       typeWasFound = parser.is(T.T_LEFT_BRACKET);
       if (typeWasFound) {
-        this.isArray = true;
+        parser.errorArray();
       }
     }
 
@@ -83,13 +79,16 @@ public class ParseType {
 
     // -1
     if (isUnresolverId()) {
+      if (parser.is(BuiltinFnNames.BUILTIN_IDENT)) {
+        return builtinArray();
+      }
       return getUnresolvedIdentifier();
     }
 
-    // 0)
-    if (isArray()) {
-      return getArray();
-    }
+    // // 0)
+    // if (isArray()) {
+    //   return getArray();
+    // }
 
     // 1)
     if (isPrimitive()) {
@@ -110,71 +109,31 @@ public class ParseType {
     return referenceType;
   }
 
+  private Type builtinArray() {
+    ClassDeclaration currentc = parser.getCurrentClass(true);
+    if (!currentc.getIdentifier().equals(Hash_ident.getHashedIdent("array"))) {
+      parser.perror("you cannot use builtin.array, this type is predefined only for array<T> class");
+    }
+
+    Token beginPos = parser.checkedMove(BuiltinFnNames.BUILTIN_IDENT);
+    parser.checkedMove(T.T_DOT);
+
+    parser.checkedMove(Hash_ident.getHashedIdent("array_declare"));
+    List<Type> arguments = getTypeArguments();
+    if (arguments.size() != 1) {
+      parser.perror("expect type argument for array.");
+    }
+
+    // TODO: how about type-setters?
+    return new Type(arguments.get(0), beginPos);
+  }
+
   private Type getUnresolvedIdentifier() {
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident typeName = beginPos.getIdent();
     final List<Type> typeArguments = getTypeArguments();
     final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
     return new Type(unresolvedId, beginPos);
-  }
-
-  private Type getArray() {
-    // 1) fixed   [2:[2:i32]], [2: u64]
-    // 2) dynamic [[i32]], [i8]
-
-    final Token beginPos = parser.checkedMove(T.T_LEFT_BRACKET);
-
-    final int length = getArrayLengthWithCheck();
-    final Type arrayOf = new ParseType(parser).getType();
-
-    parser.checkedMove(T.T_RIGHT_BRACKET);
-
-    // to handle the array forms like:
-    // var arr[list<i32>];
-    // var arr[list<list<i32>>];
-    // var arr[[list<list<i32>>]];
-    //
-    final ArrayType array = new ArrayType(arrayOf, length);
-    parser.getCurrentClass(true).registerTypeSetter(array);
-    return new Type(array, beginPos);
-  }
-
-  private int getArrayLengthWithCheck() {
-    int length = 0;
-    if (parser.hasBit(ParseFlags.f_expect_array_length)) {
-      length = (int) getArrayLengthFromConstExpression();
-      parser.colon();
-    }
-
-    else {
-      if (parser.is(T.TOKEN_NUMBER)) {
-        parser.perror("array-length not expecting in this context. ");
-      }
-    }
-    return length;
-  }
-
-  public long getArrayLengthFromConstExpression() {
-    if (!parser.is(T.TOKEN_NUMBER)) {
-      parser.perror("expect array-size expression, must be an integer constant.");
-    }
-
-    final ExprExpression count = new ParseExpression(parser).e_const_expr();
-    if (!count.is(ExpressionBase.EPRIMARY_NUMBER)) {
-      parser.perror("expected array size.");
-    }
-
-    final IntLiteral num = count.getNumber();
-    if (!num.getType().is_integer()) {
-      parser.perror("array-size must be an integer.");
-    }
-
-    final long intvalue = num.getInteger();
-    if (intvalue <= 0) {
-      parser.perror("zero or negative array size.");
-    }
-
-    return intvalue;
   }
 
   private boolean isRefTypenameT(Ident typeName) {
@@ -239,7 +198,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isArray || isUnresolverId;
+    return isPrimitive || isReference || isTypeParameter || isUnresolverId;
   }
 
   public boolean isPrimitive() {
@@ -252,10 +211,6 @@ public class ParseType {
 
   public boolean isTypeParameter() {
     return isTypeParameter;
-  }
-
-  public boolean isArray() {
-    return isArray;
   }
 
   public boolean isUnresolverId() {

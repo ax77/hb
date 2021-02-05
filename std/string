@@ -1,8 +1,10 @@
+import std.array;
+
 class string {
 
-	var buffer: [u8];
+	var buffer: array<u8>;
 
-	init(buffer: [u8]) {
+	init(buffer: array<u8>) {
 		self.buffer = buffer;
 	}
 	

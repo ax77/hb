@@ -1,4 +1,4 @@
-package templates;
+package _temp;
 
 import org.junit.Test;
 
@@ -7,10 +7,10 @@ import ast_main.ParserMain;
 import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
 
-public class PrepareSourceForReview {
+public class Temp {
 
   @Test
-  public void testTestTemplatesRshiftHandling() throws Exception {
+  public void temp() throws Exception {
 
     // CompilationUnit unit = new ParserMain("tests/test_class_resolver").parseCompilationUnit();
     // for (ClassDeclaration c : unit.getClasses()) {

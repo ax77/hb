@@ -352,6 +352,10 @@ public class Parse {
     }
   }
 
+  public void errorArray() {
+    perror("raw-arrays are unimplemented, you may use array<T> instead");
+  }
+
   public void errorStraySemicolon() {
     if (is(T.T_SEMI_COLON)) {
       perror("stray semicolons [;] are deprecated by design.");

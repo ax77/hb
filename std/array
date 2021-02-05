@@ -1,39 +1,54 @@
 
 class array<T> 
 {
-	var table: [T];
+	let table: builtin.array_declare<T>;
 	
-	func get_iterator() -> array_iterator<T>
-	{
-	  return new array_iterator<T>();
-	}
+	// func push_back(element: T) 
+	// {
+	//   builtin.array_add(T, table);
+	// }
+	// 
+	// func get_iterator() -> array_iterator<T>
+	// {
+	//   return new array_iterator<T>();
+	// }
+	// 
+	// func get_size() -> u64
+	// {
+	//   return builtin.array_size(T, table);
+	// }
+	// 
+	// func get(at: u64) -> T 
+	// {
+	//   return builtin.array_get(T, table, at);
+	// }
+	// 
+	// func set(at: u64, element: T)
+	// {
+	//   builtin.array_set(T, table, at, element);
+	// }
+	// 
+	// func insert(at: u64, element: T) 
+	// {
+	//   builtin.array_insert(T, table, at, element);
+	// }
 	
-	func get_size() -> u64
-	{
-	  return table.length;
-	}
-	
-	func get(at: u64) -> T 
-	{
-	  // TODO: IOOB
-	  return table[at];
-	}
 }
 
-class array_iterator<T>
-{
-  let collection: array<T>;
-  let offset: u64;
-  
-  func has_next() -> boolean
-  {
-    return offset < collection.get_size();
-  }
-  
-  func get_next() -> T
-  {
-    let item: T = collection.get(at: offset);
-    offset += 1_u64;
-    return item;
-  }
-}
+// class array_iterator<T>
+// {
+//   let collection: array<T>;
+//   var offset: u64;
+//   
+//   func has_next() -> boolean
+//   {
+//     return offset < collection.get_size();
+//   }
+//   
+//   func get_next() -> T
+//   {
+//     let item: T = collection.get(at: offset);
+//     offset += 1_u64;
+//     return item;
+//   }
+// }

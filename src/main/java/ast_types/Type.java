@@ -1,6 +1,5 @@
 package ast_types;
 
-import static ast_types.TypeBase.TP_ARRAY;
 import static ast_types.TypeBase.TP_BOOLEAN;
 import static ast_types.TypeBase.TP_CLASS;
 import static ast_types.TypeBase.TP_F32;
@@ -50,14 +49,19 @@ public class Type implements Serializable, TypeApi, Location {
   ///
   private Ident typenameId;
 
-  /// TODO: is array-length a property of the type or is not?
-  ///
-  private ArrayType arrayType;
-
   /// this will be resolved before template expansion
   /// it is a temporary identifier, which should be a type-name
   ///
   private TypeUnresolvedId unresolvedId;
+
+  /// only for array<T>
+  /// it is more clean by design to bootstrap the array only in this
+  /// class, with template type-parameters, and
+  /// in the future we can easily replace each declaration like 
+  /// let arr: [i32] to 'let arr: array<T>'
+  /// but this is later: it is syntax sugar only, and means nothing.
+  ///
+  private Type builtinArrayType;
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
@@ -68,8 +72,14 @@ public class Type implements Serializable, TypeApi, Location {
     this.base = another.base;
     this.classTypeRef = another.classTypeRef;
     this.typenameId = another.typenameId;
-    this.arrayType = another.arrayType;
+    this.builtinArrayType = another.builtinArrayType;
+  }
 
+  public Type(Type builtinArrayType, Token beginPos) {
+    this.base = TypeBase.TP_BUILTIN_ARRAY;
+    this.beginPos = beginPos;
+
+    this.builtinArrayType = builtinArrayType;
   }
 
   public Type(Token beginPos) {
@@ -78,18 +88,6 @@ public class Type implements Serializable, TypeApi, Location {
 
     this.size = 1;
     this.align = 1;
-  }
-
-  public Type(ArrayType array, Token beginPos) {
-    NullChecker.check(array);
-
-    this.base = TypeBase.TP_ARRAY;
-    this.beginPos = beginPos;
-    this.arrayType = array;
-
-    //size
-    this.size = arrayType.getLength() * arrayType.getType().get_size();
-    this.align = arrayType.getType().get_align();
   }
 
   public Type(TypeBase primitiveType, Token beginPos) {
@@ -130,8 +128,8 @@ public class Type implements Serializable, TypeApi, Location {
     this.typenameId = typenameId;
   }
 
-  public ArrayType getArrayType() {
-    return arrayType;
+  public Type getBuiltinArrayType() {
+    return builtinArrayType;
   }
 
   public ClassTypeRef getClassTypeRef() {
@@ -257,14 +255,6 @@ public class Type implements Serializable, TypeApi, Location {
       if (!classTypeRef.is_equal_to(another.getClassTypeRef())) {
         return false;
       }
-    } else if (is(TypeBase.TP_ARRAY)) {
-      if (!another.is(TypeBase.TP_ARRAY)) {
-        return false;
-      }
-      final ArrayType anotherArray = another.getArrayType();
-      if (!arrayType.is_equal_to(anotherArray)) {
-        return false;
-      }
     } else {
       ErrorLocation.errorType("unimplemented comparison for base: " + base.toString(), this);
     }
@@ -284,11 +274,11 @@ public class Type implements Serializable, TypeApi, Location {
     if (is_void_stub()) {
       return "void";
     }
-    if (is_array()) {
-      return arrayType.toString();
-    }
     if (is_class()) {
       return classTypeRef.toString();
+    }
+    if (base == TypeBase.TP_BUILTIN_ARRAY) {
+      return "builtin.array_declare(" + builtinArrayType.toString() + ")";
     }
     return base.toString();
   }
@@ -319,7 +309,6 @@ public class Type implements Serializable, TypeApi, Location {
   @Override public boolean is_f64()       { return is(TP_F64); }
   @Override public boolean is_boolean()   { return is(TP_BOOLEAN); }
   @Override public boolean is_void_stub() { return is(TP_VOID_STUB); }
-  @Override public boolean is_array()     { return is(TP_ARRAY); }
   //@formatter:on
 
   @Override
@@ -360,7 +349,7 @@ public class Type implements Serializable, TypeApi, Location {
 
   @Override
   public boolean is_reference() {
-    return is_class() || is_array();
+    return is_class();
   }
 
   @Override
