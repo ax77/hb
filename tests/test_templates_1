@@ -1,3 +1,5 @@
+forward class node;
+
 class list<T> 
 {
   var first: node<T>;

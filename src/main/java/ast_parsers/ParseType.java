@@ -3,15 +3,12 @@ package ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_builtins.BuiltinFunctionsCreator;
 import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
-import ast_types.TypeUnresolvedId;
-import hashed.Hash_ident;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -24,7 +21,7 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isUnresolvedId;
+  private boolean isBuiltinArray;
 
   public ParseType(Parse parser) {
 
@@ -64,9 +61,9 @@ public class ParseType {
     }
 
     if (!typeWasFound) {
-      typeWasFound = parser.isUserDefinedIdentNoKeyword(parser.tok());
+      typeWasFound = parser.is(BuiltinNames.builtin_ident);
       if (typeWasFound) {
-        this.isUnresolvedId = true;
+        this.isBuiltinArray = true;
       }
     }
 
@@ -79,11 +76,8 @@ public class ParseType {
     }
 
     // 0
-    if (isUnresolvedId()) {
-      if (parser.is(BuiltinNames.builtin_ident)) {
-        return builtinArray();
-      }
-      return getUnresolvedIdentifier();
+    if (isBuiltinArray()) {
+      return builtinArray();
     }
 
     // 1)
@@ -125,14 +119,6 @@ public class ParseType {
 
     // TODO: how about type-setters?
     return new Type(arguments.get(0), beginPos);
-  }
-
-  private Type getUnresolvedIdentifier() {
-    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
-    final Ident typeName = beginPos.getIdent();
-    final List<Type> typeArguments = getTypeArguments();
-    final TypeUnresolvedId unresolvedId = new TypeUnresolvedId(typeName, typeArguments, beginPos);
-    return new Type(unresolvedId, beginPos);
   }
 
   private boolean isRefTypenameT(Ident typeName) {
@@ -197,7 +183,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isUnresolvedId;
+    return isPrimitive || isReference || isTypeParameter || isBuiltinArray;
   }
 
   public boolean isPrimitive() {
@@ -212,8 +198,8 @@ public class ParseType {
     return isTypeParameter;
   }
 
-  public boolean isUnresolvedId() {
-    return isUnresolvedId;
+  public boolean isBuiltinArray() {
+    return isBuiltinArray;
   }
 
   //@formatter:off

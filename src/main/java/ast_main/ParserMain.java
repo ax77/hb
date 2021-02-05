@@ -2,10 +2,8 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 
 import ast_st0_resolve.CUnitCompleteChecker;
-import ast_st0_resolve.CUnitUnresolvedBinder;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
@@ -14,7 +12,9 @@ import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
-import tokenize.Token;
+import tokenize.Stream;
+import utils_fio.FileReadKind;
+import utils_fio.FileWrapper;
 import utils_oth.NullChecker;
 
 public class ParserMain implements ParserMainApi {
@@ -30,10 +30,12 @@ public class ParserMain implements ParserMainApi {
   public Parse initiateParse() throws IOException {
     initIdents();
 
-    final UnitInfo info = new UnitInfo(filename);
-    final List<Token> tokens = info.getTokenlist();
+    final FileWrapper fw = new FileWrapper(filename);
+    fw.assertIsExists();
+    fw.assertIsFile();
 
-    return new Parse(new Tokenlist(tokens));
+    final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
+    return new Parse(new Tokenlist(s.getTokenlist()));
   }
 
   @Override
@@ -44,8 +46,6 @@ public class ParserMain implements ParserMainApi {
 
     // prepare the unit
     CUnitCompleteChecker.checkAllClassesAreComplete(result);
-    CUnitUnresolvedBinder.bind(result);
-
     return result;
   }
 

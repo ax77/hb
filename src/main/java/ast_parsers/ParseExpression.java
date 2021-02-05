@@ -607,6 +607,10 @@ public class ParseExpression {
     // new list<i32>(0)
 
     final Type classtype = new ParseType(parser).getType();
+    if (!classtype.is_class()) {
+      parser.perror("expect class for 'new', but was: " + classtype.toString());
+    }
+
     final List<FuncArg> arguments = parseArglist();
     final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);
 

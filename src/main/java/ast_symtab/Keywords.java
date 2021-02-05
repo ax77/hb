@@ -51,6 +51,7 @@ public final class Keywords {
   public static final Ident self_ident           = g("self");
   public static final Ident in_ident             = g("in");
   public static final Ident cast_ident           = g("cast");
+  public static final Ident forward_ident        = g("forward");
   // types:
   public static final Ident i8_ident             = g("i8");
   public static final Ident u8_ident             = g("u8");

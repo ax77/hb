@@ -47,7 +47,7 @@ public class ClassDeclaration implements Serializable, Location {
   /// we'll replace each at once in every places it used by its pointer
   /// it is important to not screw this reference up before
   ///
-  private final List<Type> typeParametersT;
+  private /*final*/ List<Type> typeParametersT;
 
   /// we'll collect all type-setters here
   /// type-setter is an variable, new-expression, method-parameter, etc...
@@ -87,6 +87,10 @@ public class ClassDeclaration implements Serializable, Location {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
+  }
+
+  public void setTypeParametersT(List<Type> typeParametersT) {
+    this.typeParametersT = typeParametersT;
   }
 
   public ClassMethodDeclaration getDestructor() {

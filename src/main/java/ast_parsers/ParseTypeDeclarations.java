@@ -19,6 +19,7 @@ import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
+import utils_oth.NullChecker;
 
 public class ParseTypeDeclarations {
   private final Parse parser;
@@ -42,12 +43,31 @@ public class ParseTypeDeclarations {
     }
 
     else if (parser.is(Keywords.import_ident)) {
-      ParsePackageName.parse(parser, Keywords.import_ident);
+      parser.perror("import is unimplemented.");
+      // ParsePackageName.parse(parser, Keywords.import_ident);
+    }
+
+    else if (parser.is(Keywords.forward_ident)) {
+      unit.putForward(getForward());
     }
 
     else {
       parser.perror("unimpl");
     }
+  }
+
+  private ClassDeclaration getForward() {
+    parser.checkedMove(Keywords.forward_ident);
+    parser.checkedMove(Keywords.class_ident);
+
+    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident ident = tok.getIdent();
+
+    final ClassDeclaration cd = new ClassDeclaration(ident, new ArrayList<>(), tok);
+    parser.defineClassName(cd, false);
+
+    parser.semicolon();
+    return cd;
   }
 
   private ClassDeclaration parseClassDeclaration() {
@@ -61,16 +81,18 @@ public class ParseTypeDeclarations {
     final List<Type> typeParameters = parseTypeParametersT();
     parser.lbrace();
 
+    // TODO: what the ...
     // it may be a previously fully-parsed class, or a new one.
     ClassDeclaration clazz = null;
     if (parser.isClassName(ident)) {
       clazz = parser.getClassType(ident);
-    }
-    if (clazz == null) {
+      clazz.setTypeParametersT(typeParameters);
+    } else {
       clazz = new ClassDeclaration(ident, typeParameters, beginPos);
     }
+    NullChecker.check(clazz);
 
-    parser.defineClassName(clazz);
+    parser.defineClassName(clazz, true);
     parser.setCurrentClass(clazz);
 
     // class C { }

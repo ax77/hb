@@ -49,11 +49,6 @@ public class Type implements Serializable, TypeApi, Location {
   ///
   private Ident typenameId;
 
-  /// this will be resolved before template expansion
-  /// it is a temporary identifier, which should be a type-name
-  ///
-  private TypeUnresolvedId unresolvedId;
-
   /// only for array<T>
   /// it is more clean by design to bootstrap the array only in this
   /// class, with template type-parameters, and
@@ -104,14 +99,6 @@ public class Type implements Serializable, TypeApi, Location {
     this.align = this.size;
   }
 
-  public Type(TypeUnresolvedId unresolvedId, Token beginPos) {
-    this.base = TypeBase.TP_UNRESOLVED_ID;
-    this.beginPos = beginPos;
-    this.unresolvedId = unresolvedId;
-    this.size = -1;
-    this.align = -1;
-  }
-
   public Type(ClassTypeRef ref, Token beginPos) {
     NullChecker.check(ref);
 
@@ -134,10 +121,6 @@ public class Type implements Serializable, TypeApi, Location {
 
   public ClassTypeRef getClassTypeRef() {
     return classTypeRef;
-  }
-
-  public TypeUnresolvedId getUnresolvedId() {
-    return unresolvedId;
   }
 
   public ClassDeclaration getClassTypeFromRef() {
