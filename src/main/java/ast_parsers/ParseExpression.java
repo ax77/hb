@@ -319,25 +319,6 @@ public class ParseExpression {
   }
 
   private ExprExpression e_cast() {
-
-    // if (parser.is(T.T_LEFT_PAREN)) {
-    // 
-    //   final ParseState state = new ParseState(parser);
-    //   final Token beginPos = parser.lparen();
-    // 
-    //   final ParseType typeRecornizer = new ParseType(parser);
-    //   if (typeRecornizer.isType()) {
-    // 
-    //     final Type toType = typeRecornizer.getType();
-    //     parser.rparen();
-    // 
-    //     ExprExpression expressionForCast = e_unary(); // TODO: UNARY or CAST?
-    //     return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
-    //   }
-    // 
-    //   parser.restoreState(state);
-    // }
-
     return e_unary();
   }
 
@@ -347,11 +328,26 @@ public class ParseExpression {
     if (isUnaryOperator(parser.tok())) {
       Token operator = parser.tok();
       parser.move();
-      return build_unary(operator, e_cast());
+      return build_unary(operator, e_unary());
     }
 
+    // ++ --
     if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
       parser.perror("pre-increment/pre-decrement are deprecated by design.");
+    }
+
+    // cast(unary: type)
+    if (parser.is(Keywords.cast_ident)) {
+      final Token beginPos = parser.checkedMove(Keywords.cast_ident);
+      parser.lparen();
+
+      final ExprExpression expressionForCast = e_unary();
+      parser.checkedMove(T.T_COLON);
+
+      final Type toType = new ParseType(parser).getType();
+      parser.rparen();
+
+      return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
     }
 
     return e_postfix();
@@ -361,7 +357,7 @@ public class ParseExpression {
 
     ExprExpression lhs = e_prim();
 
-    for (;;) {
+    while (!parser.isEof()) {
       if (parser.is(T.T_DOT)) {
 
         ParseState parseState = new ParseState(parser);
@@ -588,7 +584,7 @@ public class ParseExpression {
 
     // new list<i32>(0)
     else {
-      
+
       final Type classtype = new ParseType(parser).getType();
       final List<FuncArg> arguments = parseArglist();
       final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);

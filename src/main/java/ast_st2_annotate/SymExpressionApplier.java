@@ -11,6 +11,7 @@ import ast_expr.ExprArrayCreation;
 import ast_expr.ExprArrayProperty;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -122,10 +123,24 @@ public class SymExpressionApplier {
       applyArrayCreation(e);
     }
 
+    else if (e.is(ExpressionBase.ECAST)) {
+      asslyCast(object, e);
+    }
+
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
+    // TODO:
+    final ExprCast castExpression = e.getCastExpression();
+    final Type toType = castExpression.getToType();
+    final ExprExpression expressionForCast = castExpression.getExpressionForCast();
+
+    applyExpression(object, expressionForCast);
+    e.setResultType(toType);
   }
 
   private void checkArraySize(final ArrayType array, final ExprExpression e) {

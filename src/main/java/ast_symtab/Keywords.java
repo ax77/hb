@@ -15,6 +15,7 @@ public final class Keywords {
   }
 
   //@formatter:off
+  
   public static final Ident abstract_ident       = g("abstract");
   public static final Ident break_ident          = g("break");
   public static final Ident catch_ident          = g("catch");
@@ -49,6 +50,7 @@ public final class Keywords {
   public static final Ident deinit_ident         = g("deinit");
   public static final Ident self_ident           = g("self");
   public static final Ident in_ident             = g("in");
+  public static final Ident cast_ident           = g("cast");
   // types:
   public static final Ident i8_ident             = g("i8");
   public static final Ident u8_ident             = g("u8");

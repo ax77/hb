@@ -1,35 +1,12 @@
-class string
-{
-
-}
-
-class opt<I>
-{
-  let elem: I;
-}
-
 class test
 {
-
-  //let x: opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<opt<i32>>>>>>>>>>>>>>>>>>>>;
-
-  let a: string = 
-    """ 
-    a 
-    b
-    """ ;
-    
-  let b: string = "1\\2\t3\n";
+  let a: u64;
+  let b: i32;
+  let c: u64;
   
-  let c: string = """ 1
-    
-    2 3
-    4
-    5
-    6
-    7 8 9 0 
-    
-    """;
+  func test() {
+    c = a + cast(cast(cast(cast(cast(cast(b: u64): u64): u64): u64): u64): u64) + cast(1: u64);
+  }
 }
 
 

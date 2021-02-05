@@ -21,7 +21,7 @@ public class ExprCast {
 
   @Override
   public String toString() {
-    return "(" + toType.toString() + ") " + expressionForCast.toString();
+    return "cast(" + expressionForCast.toString() + ": " + toType.toString() + ")";
   }
 
 }

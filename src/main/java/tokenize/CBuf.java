@@ -82,7 +82,7 @@ public class CBuf {
     // when you build buffer, allocate more space to avoid IOOB check
     // for example: source = { '1', '2', '3', '\0' }, buffer = { '1', '2', '3', '\0', '\0', '\0', '\0', '\0' }
 
-    for (;;) {
+    while (!isEof()) {
 
       if (eofs > EOFS_PADDING_BUFLEN) {
         throw new RuntimeException("Infinite loop handling...");
@@ -144,6 +144,8 @@ public class CBuf {
 
       return next;
     }
+
+    return HC_FEOF;
   }
 
   @Override
