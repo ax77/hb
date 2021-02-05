@@ -110,16 +110,14 @@ public class Parse {
     this.currentClass = currentClass;
   }
 
-  public void defineClassName(ClassDeclaration cd, boolean withRewrite) {
+  public void defineClassName(ClassDeclaration clazz) {
     for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
-      if (ent.getKey().equals(cd.getIdentifier())) {
-        if (!withRewrite) {
-          perror("duplicate type-name: " + cd.getIdentifier() + ", previously defined here: "
-              + ent.getValue().getLocationToString());
-        }
+      if (ent.getKey().equals(clazz.getIdentifier())) {
+        perror("duplicate type-name: " + clazz.getIdentifier() + ", previously defined here: "
+            + ent.getValue().getLocationToString());
       }
     }
-    this.referenceTypes.put(cd.getIdentifier(), cd);
+    this.referenceTypes.put(clazz.getIdentifier(), clazz);
   }
 
   public boolean isClassName(Ident ident) {

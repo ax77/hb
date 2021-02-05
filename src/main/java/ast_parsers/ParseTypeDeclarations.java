@@ -57,17 +57,29 @@ public class ParseTypeDeclarations {
   }
 
   private ClassDeclaration getForward() {
+    // a silly forward declaration of a class
+    // we should know its name, because of the templates
+    // all other identifiers will be binded by their types
+    // at the annotate stage.
+    // it is simple. that is.
+    // later it is easy to rewrite this thing properly
+    // with 'unresolved-id-type'...
+    // but by now, when all things so fragile, it is 
+    // unnecesary to make a LOT of mistakes with these
+    // 2-pass compilation things...
+    // forward class type-name-id ;
+
     parser.checkedMove(Keywords.forward_ident);
     parser.checkedMove(Keywords.class_ident);
 
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident ident = tok.getIdent();
 
-    final ClassDeclaration cd = new ClassDeclaration(ident, new ArrayList<>(), tok);
-    parser.defineClassName(cd, false);
+    final ClassDeclaration clazz = new ClassDeclaration(ident, new ArrayList<>(), tok);
+    parser.defineClassName(clazz);
 
     parser.semicolon();
-    return cd;
+    return clazz;
   }
 
   private ClassDeclaration parseClassDeclaration() {
@@ -81,18 +93,21 @@ public class ParseTypeDeclarations {
     final List<Type> typeParameters = parseTypeParametersT();
     parser.lbrace();
 
-    // TODO: what the ...
     // it may be a previously fully-parsed class, or a new one.
     ClassDeclaration clazz = null;
     if (parser.isClassName(ident)) {
+      // get previously defined with a 'forward' directive
+      // and fill its type-parameters
       clazz = parser.getClassType(ident);
       clazz.setTypeParametersT(typeParameters);
     } else {
+      // define a newly-founded class
+      //
       clazz = new ClassDeclaration(ident, typeParameters, beginPos);
+      parser.defineClassName(clazz);
     }
-    NullChecker.check(clazz);
 
-    parser.defineClassName(clazz, true);
+    NullChecker.check(clazz);
     parser.setCurrentClass(clazz);
 
     // class C { }
