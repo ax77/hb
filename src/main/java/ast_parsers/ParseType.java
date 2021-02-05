@@ -80,7 +80,7 @@ public class ParseType {
 
     // 0
     if (isUnresolvedId()) {
-      if (parser.is(BuiltinNames.BUILTIN_IDENT)) {
+      if (parser.is(BuiltinNames.builtin_ident)) {
         return builtinArray();
       }
       return getUnresolvedIdentifier();
@@ -109,14 +109,14 @@ public class ParseType {
 
     // array<T> class
     final ClassDeclaration currentc = parser.getCurrentClass(true);
-    if (!currentc.getIdentifier().equals(BuiltinNames.ARRAY_CLASS_IDENT)) {
+    if (!currentc.getIdentifier().equals(BuiltinNames.array_ident)) {
       parser.perror("you cannot use builtin.array, this type is predefined only for array<T> class");
     }
 
-    final Token beginPos = parser.checkedMove(BuiltinNames.BUILTIN_IDENT);
+    final Token beginPos = parser.checkedMove(BuiltinNames.builtin_ident);
 
     parser.checkedMove(T.T_DOT);
-    parser.checkedMove(BuiltinNames.ARRAY_DECLARE_IDENT);
+    parser.checkedMove(BuiltinNames.array_declare_ident);
 
     final List<Type> arguments = getTypeArguments();
     if (arguments.size() != 1) {

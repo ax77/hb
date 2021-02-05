@@ -1,8 +1,8 @@
 package ast_builtins;
 
-import static ast_builtins.BuiltinNames.BUILTIN_PANIC;
-import static ast_builtins.BuiltinNames.BUILTIN_READ_FILE;
-import static ast_builtins.BuiltinNames.BUILTIN_WRITE_FILE;
+import static ast_builtins.BuiltinNames.panic_ident;
+import static ast_builtins.BuiltinNames.read_file_ident;
+import static ast_builtins.BuiltinNames.write_file_ident;
 
 import java.util.List;
 
@@ -19,18 +19,18 @@ public abstract class BuiltinFunctionsCreator {
 
     final Type returnType = new Type(/*new ArrayType(TypeBindings.make_u8(beginPos), -1), */beginPos);
 
-    return new ExprBuiltinFn(BUILTIN_READ_FILE, arguments, returnType);
+    return new ExprBuiltinFn(read_file_ident, arguments, returnType);
   }
 
   /// builtin.write_file(path: "./output.txt", content: res);
   ///
   public static final ExprBuiltinFn write_file_fn(Token beginPos, List<FuncArg> arguments) {
-    return new ExprBuiltinFn(BUILTIN_WRITE_FILE, arguments, new Type(beginPos));
+    return new ExprBuiltinFn(write_file_ident, arguments, new Type(beginPos));
   }
 
   /// builtin.panic(message: "something.");
   ///
   public static final ExprBuiltinFn panic_fn(Token beginPos, List<FuncArg> arguments) {
-    return new ExprBuiltinFn(BUILTIN_PANIC, arguments, new Type(beginPos));
+    return new ExprBuiltinFn(panic_ident, arguments, new Type(beginPos));
   }
 }

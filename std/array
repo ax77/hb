@@ -3,34 +3,34 @@ class array<T>
 {
 	let table: builtin.array_declare<T>;
 	
+  // func get_iterator() -> array_iterator<T>
+  // {
+  //   return new array_iterator<T>();
+  // }
+	
 	// func push_back(element: T) 
 	// {
-	//   builtin.array_add(T, table);
-	// }
-	// 
-	// func get_iterator() -> array_iterator<T>
-	// {
-	//   return new array_iterator<T>();
+	//   builtin.array_add(type: T, array: table);
 	// }
 	// 
 	// func get_size() -> u64
 	// {
-	//   return builtin.array_size(T, table);
+	//   return builtin.array_size(type: T, array: table);
 	// }
 	// 
 	// func get(at: u64) -> T 
 	// {
-	//   return builtin.array_get(T, table, at);
+	//   return builtin.array_get(type: T, array: table, index: at);
 	// }
 	// 
 	// func set(at: u64, element: T)
 	// {
-	//   builtin.array_set(T, table, at, element);
+	//   builtin.array_set(type: T, array: table, index: at, element: element);
 	// }
 	// 
 	// func insert(at: u64, element: T) 
 	// {
-	//   builtin.array_insert(T, table, at, element);
+	//   builtin.array_insert(type: T, array: table, index: at, element: element);
 	// }
 	
 }

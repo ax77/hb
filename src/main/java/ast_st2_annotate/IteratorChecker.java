@@ -61,7 +61,7 @@ public class IteratorChecker {
     // check that we have a method which will return the iterator
     //
     final ClassDeclaration clazz = type.getClassTypeFromRef();
-    final ClassMethodDeclaration mGetIterator = clazz.getMethod(BuiltinNames.GET_ITERATOR_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mGetIterator = clazz.getMethod(BuiltinNames.get_iterator_ident, emptyArgs);
     if (mGetIterator == null) {
       return false;
     }
@@ -77,8 +77,8 @@ public class IteratorChecker {
     }
 
     final ClassDeclaration iteratorClazz = returnTypeOfGetIteratorMethod.getClassTypeFromRef();
-    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(BuiltinNames.ITERATOR_HAS_NEXT_METHOD_NAME, emptyArgs);
-    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(BuiltinNames.ITERATOR_GET_NEXT_METHOD_NAME, emptyArgs);
+    final ClassMethodDeclaration mHasNext = iteratorClazz.getMethod(BuiltinNames.has_next_ident, emptyArgs);
+    final ClassMethodDeclaration mGetNext = iteratorClazz.getMethod(BuiltinNames.get_next_ident, emptyArgs);
     if (mHasNext == null || mGetNext == null) {
       return false;
     }

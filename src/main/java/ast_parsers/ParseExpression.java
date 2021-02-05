@@ -475,7 +475,7 @@ public class ParseExpression {
 
   private ExprExpression e_prim() {
 
-    if (parser.is(BuiltinNames.BUILTIN_IDENT)) {
+    if (parser.is(BuiltinNames.builtin_ident)) {
       return readBuiltinFn();
     }
 
@@ -544,26 +544,34 @@ public class ParseExpression {
   private ExprExpression readBuiltinFn() {
 
     // builtin .
-    final Token beginPos = parser.checkedMove(BuiltinNames.BUILTIN_IDENT);
+    final Token beginPos = parser.checkedMove(BuiltinNames.builtin_ident);
     parser.checkedMove(T.T_DOT);
 
     final Ident funcname = parser.getIdent();
+    checkIsCorrectBuiltinIdent(funcname);
+
     final List<FuncArg> arguments = parseArglist();
 
-    if (funcname.equals(BuiltinNames.BUILTIN_READ_FILE)) {
+    if (funcname.equals(BuiltinNames.read_file_ident)) {
       return new ExprExpression(BuiltinFunctionsCreator.read_file_fn(beginPos, arguments), beginPos);
     }
 
-    if (funcname.equals(BuiltinNames.BUILTIN_WRITE_FILE)) {
+    if (funcname.equals(BuiltinNames.write_file_ident)) {
       return new ExprExpression(BuiltinFunctionsCreator.write_file_fn(beginPos, arguments), beginPos);
     }
 
-    if (funcname.equals(BuiltinNames.BUILTIN_PANIC)) {
+    if (funcname.equals(BuiltinNames.panic_ident)) {
       return new ExprExpression(BuiltinFunctionsCreator.panic_fn(beginPos, arguments), beginPos);
     }
 
     parser.perror("unimplemented builtin function: " + funcname.toString());
     return null;
+  }
+
+  private void checkIsCorrectBuiltinIdent(Ident funcname) {
+    if (!BuiltinNames.isCorrectBuiltinIdent(funcname)) {
+      parser.perror("unimplemented builtin function: " + funcname.toString());
+    }
   }
 
   private ExprExpression parseStringLiteral() {
@@ -572,8 +580,7 @@ public class ParseExpression {
 
     // TODO:__string__
 
-    final ClassDeclaration stringClass = new ClassDeclaration(BuiltinNames.STRING_CLASS_IDENT, new ArrayList<>(),
-        saved);
+    final ClassDeclaration stringClass = new ClassDeclaration(BuiltinNames.string_ident, new ArrayList<>(), saved);
 
     final List<FuncArg> argums = new ArrayList<>();
     argums
