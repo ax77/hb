@@ -27,7 +27,7 @@ public class TestTokenizer {
     assertEquals(2 + 1, new Stream(".", "......").getTokenlist().size());
     assertEquals(3 + 1, new Stream(".", ". . .").getTokenlist().size());
     assertEquals(8 + 1, new Stream(".", ":;!#%^&*").getTokenlist().size());
-    assertEquals(4 + 1, new Stream(".", "@`$\\").getTokenlist().size());
+    assertEquals(3 + 1, new Stream(".", "@`$\\\n").getTokenlist().size());
     assertEquals(0 + 1, new Stream(".", "   \n\r\n\r\r\r\n\n\r\r\t\t  ").getTokenlist().size());
     assertEquals(5 + 1, new Stream(".", "int main return 0 ;").getTokenlist().size());
     assertEquals(5 + 1, new Stream(".", ",./?-").getTokenlist().size());

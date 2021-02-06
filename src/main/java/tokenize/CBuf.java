@@ -2,10 +2,12 @@ package tokenize;
 
 import static tokenize.Env.HC_FEOF;
 
+import errors.AstParseException;
+
 public class CBuf {
   private static final int EOFS_PADDING_BUFLEN = 8;
 
-  private final char buffer[];
+  private final String buffer;
   private final int size;
   private int offset;
   private int line;
@@ -15,14 +17,18 @@ public class CBuf {
 
   public CBuf(final String input) {
 
+    /// we can append some paddings '\0'
+    /// and after that we easily can lookup the chars
+    /// at offset+1, offset+2, etc.
+    ///
     final StringBuilder sb = new StringBuilder();
     sb.append(input);
     for (int i = 0; i < EOFS_PADDING_BUFLEN; i += 1) {
       sb.append(HC_FEOF);
     }
 
-    this.buffer = sb.toString().toCharArray();
-    this.size = buffer.length;
+    this.buffer = sb.toString();
+    this.size = buffer.length();
     this.line = 1;
     this.column = 0;
     this.prevc = '\0';
@@ -77,14 +83,15 @@ public class CBuf {
     return res;
   }
 
-  public char nextc() {
+  private char get(int at) {
+    return buffer.charAt(at);
+  }
 
-    // when you build buffer, allocate more space to avoid IOOB check
-    // for example: source = { '1', '2', '3', '\0' }, buffer = { '1', '2', '3', '\0', '\0', '\0', '\0', '\0' }
+  public char nextc() {
 
     while (!isEof()) {
 
-      if (eofs > EOFS_PADDING_BUFLEN) {
+      if (eofs >= EOFS_PADDING_BUFLEN) {
         throw new RuntimeException("Infinite loop handling...");
       }
 
@@ -93,30 +100,33 @@ public class CBuf {
         column = 0;
       }
 
-      if (buffer[offset] == '\\') {
-        if (buffer[offset + 1] == '\r') {
-          if (buffer[offset + 2] == '\n') {
+      if (get(offset) == '\\') {
+
+        if (get(offset + 1) == '\r') {
+          if (get(offset + 2) == '\n') {
             // DOS: [\][\r][\n]
             offset += 3;
           } else {
             // OSX: [\][\r]
             offset += 2;
           }
-
-          prevc = '\n';
-          continue;
         }
 
         // UNX: [\][\n]
-        if (buffer[offset + 1] == '\n') {
+        else if (get(offset + 1) == '\n') {
           offset += 2;
-          prevc = '\n';
-          continue;
         }
+
+        else {
+          throw new AstParseException("raw [\\] char at: " + String.format("%d", line));
+        }
+
+        prevc = '\n';
+        continue;
       }
 
-      if (buffer[offset] == '\r') {
-        if (buffer[offset + 1] == '\n') {
+      if (get(offset) == '\r') {
+        if (get(offset + 1) == '\n') {
           // DOS: [\r][\n]
           offset += 2;
         } else {
@@ -129,17 +139,17 @@ public class CBuf {
 
       if (offset == size) {
         eofs += 1;
-        return HC_FEOF; // '\0';
+        return HC_FEOF;
       }
 
-      char next = buffer[offset];
+      final char next = get(offset);
       offset += 1;
       column += 1;
       prevc = next;
 
       if (next == '\0') {
         eofs += 1;
-        return HC_FEOF; // '\0';
+        return HC_FEOF;
       }
 
       return next;
