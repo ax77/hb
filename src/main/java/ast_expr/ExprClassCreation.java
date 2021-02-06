@@ -14,19 +14,19 @@ public class ExprClassCreation implements Serializable, TypeSetter {
   // <class instance creation expression> ::= new <class type> < type-arguments > ( <argument list>? )
 
   private Type classtype;
-  private final List<FuncArg> arguments;
+  private final List<ExprExpression> arguments;
 
   //MIR:TREE
   private VarDeclarator var;
 
-  public ExprClassCreation(Type classtype, List<FuncArg> arguments) {
+  public ExprClassCreation(Type classtype, List<ExprExpression> arguments) {
     NullChecker.check(classtype, arguments);
 
     this.classtype = classtype;
     this.arguments = arguments;
   }
 
-  public List<FuncArg> getArguments() {
+  public List<ExprExpression> getArguments() {
     return arguments;
   }
 

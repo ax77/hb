@@ -8,10 +8,10 @@ import utils_oth.NullChecker;
 
 public class ExprBuiltinFn {
   private final Ident function;
-  private final List<FuncArg> arguments;
+  private final List<ExprExpression> arguments;
   private final Type returnType;
 
-  public ExprBuiltinFn(Ident function, List<FuncArg> arguments, Type returnType) {
+  public ExprBuiltinFn(Ident function, List<ExprExpression> arguments, Type returnType) {
     NullChecker.check(function, arguments, returnType);
 
     this.function = function;
@@ -23,7 +23,7 @@ public class ExprBuiltinFn {
     return function;
   }
 
-  public List<FuncArg> getArguments() {
+  public List<ExprExpression> getArguments() {
     return arguments;
   }
 

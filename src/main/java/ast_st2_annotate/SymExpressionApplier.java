@@ -15,10 +15,9 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprSelf;
+import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
-import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -85,7 +84,7 @@ public class SymExpressionApplier {
       applyFieldAccess(object, e);
     }
 
-    else if (e.is(ExpressionBase.ESELF)) {
+    else if (e.is(ExpressionBase.ETHIS)) {
       applySelfLiteral(e);
     }
 
@@ -162,8 +161,8 @@ public class SymExpressionApplier {
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {
     ExprClassCreation classInstanceCreation = e.getClassCreation();
 
-    for (FuncArg arg : classInstanceCreation.getArguments()) {
-      applyExpression(object, arg.getExpression());
+    for (ExprExpression arg : classInstanceCreation.getArguments()) {
+      applyExpression(object, arg);
     }
 
     e.setResultType(classInstanceCreation.getType());
@@ -241,7 +240,7 @@ public class SymExpressionApplier {
       final ExprExpression e) {
     if (variable.getBase() == VarBase.CLASS_FIELD) {
       final Ident fieldName = variable.getIdentifier();
-      final ExprExpression selfExpression = new ExprExpression(new ExprSelf(object), variable.getBeginPos());
+      final ExprExpression selfExpression = new ExprExpression(new ExprThis(object), variable.getBeginPos());
       final ExprFieldAccess fieldAccess = new ExprFieldAccess(selfExpression, fieldName);
       fieldAccess.setField(variable);
       e.replaceIdentWithFieldAccess(fieldAccess);
@@ -314,9 +313,9 @@ public class SymExpressionApplier {
   }
 
   private void applyMethodCallArgs(final ClassDeclaration object, final ExprMethodInvocation methodInvocation) {
-    final List<FuncArg> arguments = methodInvocation.getArguments();
-    for (FuncArg arg : arguments) {
-      applyExpression(object, arg.getExpression());
+    final List<ExprExpression> arguments = methodInvocation.getArguments();
+    for (ExprExpression arg : arguments) {
+      applyExpression(object, arg);
     }
   }
 

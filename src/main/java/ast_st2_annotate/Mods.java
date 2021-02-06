@@ -9,25 +9,22 @@ import tokenize.Token;
 public abstract class Mods {
 
   public static Modifiers varMods() {
-    Ident[] mods = { Keywords.var_ident };
-    return new Modifiers(mods);
+    return new Modifiers();
   }
 
   public static Modifiers letMods() {
-    Ident[] mods = { Keywords.let_ident };
+    Ident[] mods = { Keywords.final_ident };
     return new Modifiers(mods);
   }
 
   //@formatter:off
   
   public static final Ident ALL_MODS[] = { 
-      Keywords.weak_ident,  
-      Keywords.var_ident,   
-      Keywords.let_ident,    
       Keywords.private_ident,
       Keywords.public_ident, 
       Keywords.native_ident, 
       Keywords.static_ident, 
+      Keywords.final_ident,
   };
   
   public static final Ident METHOD_MODS[] = {
@@ -38,12 +35,10 @@ public abstract class Mods {
   };
   
   public static final Ident FIELD_MODS[] = { 
-      Keywords.weak_ident,  
-      Keywords.var_ident,   
-      Keywords.let_ident,    
       Keywords.private_ident,
       Keywords.public_ident, 
       Keywords.static_ident, 
+      Keywords.final_ident,
   };
   
   private static boolean in(Ident what, Ident[] where) {
@@ -71,7 +66,7 @@ public abstract class Mods {
 
   // TODO:
   private static boolean isMethodParameterModifierId(Ident what) {
-    return what.equals(Keywords.let_ident);
+    return what.equals(Keywords.final_ident);
   }
 
   private static boolean isClassFieldModifierId(Ident what) {

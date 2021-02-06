@@ -36,15 +36,13 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprSelf;
+import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
-import ast_expr.FuncArg;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
-import hashed.Hash_ident;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -432,23 +430,23 @@ public class ParseExpression {
     // instead of just 'method_name()'
     Token tok = parser.tok();
 
-    ExprExpression selfExpression = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), tok);
-    List<FuncArg> arglist = parseArglist();
+    ExprExpression selfExpression = new ExprExpression(new ExprThis(parser.getCurrentClass(true)), tok);
+    List<ExprExpression> arglist = parseArglist();
 
     tok = parser.tok();
     return new ExprExpression(new ExprMethodInvocation(selfExpression, funcname, arglist), tok);
   }
 
   private ExprExpression methodInvocation(final ExprExpression obj, final Ident funcname) {
-    List<FuncArg> arglist = parseArglist();
+    List<ExprExpression> arglist = parseArglist();
     Token tok = parser.tok();
     return new ExprExpression(new ExprMethodInvocation(obj, funcname, arglist), tok);
   }
 
-  private List<FuncArg> parseArglist() {
+  private List<ExprExpression> parseArglist() {
 
     parser.lparen();
-    final List<FuncArg> arglist = new ArrayList<>();
+    final List<ExprExpression> arglist = new ArrayList<>();
 
     if (parser.is(T.T_RIGHT_PAREN)) {
       parser.rparen();
@@ -465,12 +463,8 @@ public class ParseExpression {
     return arglist;
   }
 
-  private FuncArg getOneArg() {
-    Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    parser.colon();
-
-    ExprExpression onearg = e_assign();
-    return new FuncArg(tok.getIdent(), onearg);
+  private ExprExpression getOneArg() {
+    return e_assign();
   }
 
   private ExprExpression e_prim() {
@@ -500,9 +494,9 @@ public class ParseExpression {
       return parseNewExpression();
     }
 
-    if (parser.is(Keywords.self_ident)) {
+    if (parser.is(Keywords.this_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(new ExprSelf(parser.getCurrentClass(true)), saved);
+      ExprExpression thisexpr = new ExprExpression(new ExprThis(parser.getCurrentClass(true)), saved);
       return thisexpr;
     }
 
@@ -550,7 +544,7 @@ public class ParseExpression {
     final Ident funcname = parser.getIdent();
     checkIsCorrectBuiltinIdent(funcname);
 
-    final List<FuncArg> arguments = parseArglist();
+    final List<ExprExpression> arguments = parseArglist();
 
     if (funcname.equals(BuiltinNames.read_file_ident)) {
       return new ExprExpression(BuiltinFunctionsCreator.read_file_fn(beginPos, arguments), beginPos);
@@ -583,9 +577,8 @@ public class ParseExpression {
       // parser.perror("string-class is incomplete");
     }
 
-    final List<FuncArg> argums = new ArrayList<>();
-    argums
-        .add(new FuncArg(Hash_ident.getHashedIdent("buffer"), new ExprExpression(ExpressionBase.ESTRING_CONST, saved)));
+    final List<ExprExpression> argums = new ArrayList<>();
+    argums.add(new ExprExpression(ExpressionBase.ESTRING_CONST, saved));
 
     final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
@@ -612,7 +605,7 @@ public class ParseExpression {
       parser.perror("expect class for 'new', but was: " + classtype.toString());
     }
 
-    final List<FuncArg> arguments = parseArglist();
+    final List<ExprExpression> arguments = parseArglist();
     final ExprClassCreation classInstanceCreation = new ExprClassCreation(classtype, arguments);
 
     // it is important to register type-setter for `current` class

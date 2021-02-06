@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ast_expr.FuncArg;
+import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
@@ -248,14 +248,14 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   // TODO:
-  private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<FuncArg> arguments) {
+  private boolean isCompatibleByArguments(ClassMethodDeclaration method, List<ExprExpression> arguments) {
     List<VarDeclarator> formalParameters = method.getParameters();
     if (formalParameters.size() != arguments.size()) {
       return false;
     }
     for (int i = 0; i < formalParameters.size(); i++) {
       Type tp1 = formalParameters.get(i).getType();
-      Type tp2 = arguments.get(i).getExpression().getResultType();
+      Type tp2 = arguments.get(i).getResultType();
       if (!tp1.is_equal_to(tp2)) {
         return false;
       }
@@ -263,7 +263,7 @@ public class ClassDeclaration implements Serializable, Location {
     return true;
   }
 
-  public ClassMethodDeclaration getMethod(Ident name, List<FuncArg> arguments) {
+  public ClassMethodDeclaration getMethod(Ident name, List<ExprExpression> arguments) {
     for (ClassMethodDeclaration method : methods) {
       if (method.getIdentifier().equals(name)) {
         if (isCompatibleByArguments(method, arguments)) {

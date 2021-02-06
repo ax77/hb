@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import ast_class.ClassDeclaration;
 
-public class ExprSelf implements Serializable {
+public class ExprThis implements Serializable {
   private static final long serialVersionUID = -3502102052762561251L;
   private final ClassDeclaration clazz;
 
-  public ExprSelf(ClassDeclaration clazz) {
+  public ExprThis(ClassDeclaration clazz) {
     this.clazz = clazz;
   }
 
@@ -18,7 +18,7 @@ public class ExprSelf implements Serializable {
 
   @Override
   public String toString() {
-    return "self";
+    return "this";
   }
 
 }

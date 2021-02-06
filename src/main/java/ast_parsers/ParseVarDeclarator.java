@@ -17,20 +17,8 @@ public class ParseVarDeclarator {
     this.parser = parser;
   }
 
-  public VarDeclarator parse(VarBase base, Modifiers modifiers) {
+  public VarDeclarator parse(VarBase base, Modifiers modifiers, Type type, Ident id, Token beginPos) {
 
-    // we don't support comma-initialization like: int a=1, b=a, c=32;
-    // it is easy to make a mess in your code with this.
-
-    // var counter: int = 0;
-    // let counter: int = 0;
-
-    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
-    final Ident id = beginPos.getIdent();
-
-    parser.colon();
-
-    final Type type = new ParseType(parser).getType();
     final VarDeclarator var = new VarDeclarator(base, modifiers, type, id, beginPos);
 
     if (parser.is(T.T_ASSIGN)) {

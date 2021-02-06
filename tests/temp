@@ -1,18 +1,18 @@
-//import std.array;
+import std.array;
 //import std.list;
-//import std.string;
-//import std.string_builder;
+import std.string;
+import std.string_builder;
 import std.map;
 
 class test
 {
-  func test() 
+  void test() 
   {
     // let list: list<i32> = new list<i32>();
     // for item in list {}
-    // let array: array<u8> = new array<u8>();
+    array<u8> array = new array<u8>();
     
-    // let fixed_str: string = "0.";
+    string s = "0.";
     // let dyn_str: string_builder = new string_builder(with: "a b c d e");
     // 
     // dyn_str.append(c: '_');
@@ -21,7 +21,7 @@ class test
     // let ch1: u8 = fixed_str.get(at: cast(1: u64));
     // let ch2: u8 = dyn_str.get(at: 1_u64);
     
-    let argsm: map<u8, u64>;
+    map<u8, u64> m;
   }
 }
 

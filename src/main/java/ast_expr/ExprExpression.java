@@ -26,7 +26,7 @@ public class ExprExpression implements Serializable, Location {
   private ExprFieldAccess fieldAccess;
   private ExprClassCreation classCreation;
   private ExprAssign assign;
-  private ExprSelf selfExpression;
+  private ExprThis selfExpression;
   private boolean booleanLiteral;
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
@@ -56,8 +56,8 @@ public class ExprExpression implements Serializable, Location {
     this.booleanLiteral = value;
   }
 
-  public ExprExpression(ExprSelf selfExpression, Token beginPos) {
-    this.base = ExpressionBase.ESELF;
+  public ExprExpression(ExprThis selfExpression, Token beginPos) {
+    this.base = ExpressionBase.ETHIS;
 
     this.beginPos = beginPos;
     this.selfExpression = selfExpression;
@@ -139,7 +139,7 @@ public class ExprExpression implements Serializable, Location {
     return resultType;
   }
 
-  public ExprSelf getSelfExpression() {
+  public ExprThis getSelfExpression() {
     return selfExpression;
   }
 
@@ -205,7 +205,7 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.EPRIMARY_IDENT) {
       return ident.toString();
     }
-    if (base == ExpressionBase.ESELF) {
+    if (base == ExpressionBase.ETHIS) {
       return selfExpression.toString();
     }
     if (base == ExpressionBase.EMETHOD_INVOCATION) {

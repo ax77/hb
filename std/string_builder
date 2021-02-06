@@ -2,29 +2,34 @@ import std.string;
 
 class string_builder {
 
-	let buffer: string;
+	private final string buffer;
 	
-	init() {
+	init() 
+	{
 	  buffer = new string();
 	}
 
-	init(buffer: string) {
-		self.buffer = buffer;
+	init(string buffer) 
+	{
+		this.buffer = buffer;
 	}
 	
-	func append(c: u8) {
-	  // builtin.array_add(type: u8, array: buffer);
+	void append(u8 c) 
+	{
+	  // builtin.array_add(u8, buffer);
 	}
 	
-	func append(s: string) {
+	void append(string s) 
+	{
 	
 	}
 	
-	func get(at: u64) -> u8 {
-	  return buffer.get(at: at);
+	u8 get(u64 at) 
+	{
+	  return buffer.get(at);
 	}
 	
-	func set(at: u64, what: u8) {
+	void set(u64 at, u8 what) {
 	  // TODO:
 	}
 }

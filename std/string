@@ -1,16 +1,16 @@
 class string {
 
-  let buffer: builtin.array_declare<u8>;
+  private final builtin.array_declare<u8> buffer;
 
   init() {
     // self.buffer = builtin.array_allocate(size: 1);
   }
 
-  init(buffer: builtin.array_declare<u8>) {
-    self.buffer = buffer;
+  init(builtin.array_declare<u8> buffer) {
+    this.buffer = buffer;
   }
   
-  func get(at: u64) -> u8 {
+  u8 get(u64 at) {
     // return builtin.array_get(type: u8, array: buffer, index: at);
   }
 }

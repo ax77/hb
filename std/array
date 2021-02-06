@@ -1,7 +1,7 @@
 
 class array<T> 
 {
-	let table: builtin.array_declare<T>;
+	private final builtin.array_declare<T> table;
 	
   // func get_iterator() -> array_iterator<T>
   // {

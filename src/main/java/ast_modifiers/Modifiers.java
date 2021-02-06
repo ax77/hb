@@ -70,15 +70,11 @@ public class Modifiers implements Serializable {
   }
 
   //@formatter:off
-  
-  public boolean isWeak()    { return modifiers.contains(Keywords.weak_ident); }
-  public boolean isVar()     { return modifiers.contains(Keywords.var_ident); }
-  public boolean isLet()     { return modifiers.contains(Keywords.let_ident); }
   public boolean isPrivate() { return modifiers.contains(Keywords.private_ident); }
   public boolean isPublic()  { return modifiers.contains(Keywords.public_ident); }
   public boolean isNative()  { return modifiers.contains(Keywords.native_ident); }
   public boolean isStatic()  { return modifiers.contains(Keywords.static_ident); }
-  
+  public boolean isFinal()   { return modifiers.contains(Keywords.final_ident); }
   //@formatter:on
 
 }

@@ -1,11 +1,10 @@
 package ast_st2_annotate;
 
-
 import java.util.ArrayList;
 
 import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
-import ast_expr.FuncArg;
+import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_types.Type;
 import ast_types.TypeBase;
@@ -53,7 +52,7 @@ public class IteratorChecker {
     ///    func get_next() -> (return the type of element in colection)
     /// 5) these methods shouldn't have parameters
 
-    final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
+    final ArrayList<ExprExpression> emptyArgs = new ArrayList<>();
     if (!type.is_class()) {
       return false; // TODO: arrays
     }

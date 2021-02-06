@@ -7,7 +7,6 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.FuncArg;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtForeach;
@@ -126,7 +125,7 @@ public class ForeachToWhileRewriter {
   }
 
   private ExprExpression call(final Ident funcname, final Ident objectName, Token beginPos) {
-    final ArrayList<FuncArg> emptyArgs = new ArrayList<>();
+    final ArrayList<ExprExpression> emptyArgs = new ArrayList<>();
     return new ExprExpression(new ExprMethodInvocation(id(objectName, beginPos), funcname, emptyArgs), beginPos);
   }
 

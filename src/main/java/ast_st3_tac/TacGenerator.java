@@ -10,7 +10,7 @@ import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
 import static ast_expr.ExpressionBase.EPRIMARY_NULL_LITERAL;
 import static ast_expr.ExpressionBase.EPRIMARY_NUMBER;
 import static ast_expr.ExpressionBase.EPRIMARY_STRING;
-import static ast_expr.ExpressionBase.ESELF;
+import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
 import java.util.ArrayList;
@@ -24,10 +24,9 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprSelf;
+import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
-import ast_expr.FuncArg;
 import ast_st2_annotate.Lvalue;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -93,8 +92,8 @@ public class TacGenerator {
 
   private List<ResultName> genArgs(final ExprMethodInvocation fcall) {
 
-    for (FuncArg arg : fcall.getArguments()) {
-      gen(arg.getExpression());
+    for (ExprExpression arg : fcall.getArguments()) {
+      gen(arg);
     }
 
     List<ResultName> args = new ArrayList<>();
@@ -257,8 +256,8 @@ public class TacGenerator {
 
     }
 
-    else if (base == ESELF) {
-      final ExprSelf exprSelf = e.getSelfExpression();
+    else if (base == ETHIS) {
+      final ExprThis exprSelf = e.getSelfExpression();
       final ClassDeclaration clazz = exprSelf.getClazz();
       final Type classType = new Type(new ClassTypeRef(clazz, new ArrayList<>()), e.getBeginPos());
       quads(new Quad(QuadOpc.SELF_DECL, ht(), classType, h("self")));

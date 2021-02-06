@@ -42,13 +42,13 @@ public final class Keywords {
   public static final Ident null_ident           = g("null");
   public static final Ident true_ident           = g("true");
   public static final Ident false_ident          = g("false");
+  public static final Ident this_ident           = g("this");
   // new syntax:
-  public static final Ident var_ident            = g("var");
-  public static final Ident let_ident            = g("let");
-  public static final Ident weak_ident           = g("weak");
+  // public static final Ident var_ident            = g("var");
+  // public static final Ident let_ident            = g("let");
+  // public static final Ident weak_ident           = g("weak");
   public static final Ident init_ident           = g("init");
   public static final Ident deinit_ident         = g("deinit");
-  public static final Ident self_ident           = g("self");
   public static final Ident in_ident             = g("in");
   public static final Ident cast_ident           = g("cast");
   public static final Ident forward_ident        = g("forward");

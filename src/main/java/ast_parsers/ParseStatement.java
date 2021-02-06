@@ -23,6 +23,7 @@ import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
 import ast_symtab.Keywords;
+import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import parse.Parse;
@@ -58,9 +59,12 @@ public class ParseStatement {
 
   private StmtBlockItem parseOneBlock(VarBase varBase) {
 
-    if (Mods.isAnyModifier(parser.tok())) {
+    if (parser.isTypeWithOptModifiersBegin()) {
       final Modifiers mods = new ParseModifiers(parser).parse();
-      final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods);
+      final Type type = new ParseType(parser).getType();
+      final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+      final Ident name = beginPos.getIdent();
+      final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods, type, name, beginPos);
 
       final ClassDeclaration currentClass = parser.getCurrentClass(true);
       currentClass.registerTypeSetter(localVar);

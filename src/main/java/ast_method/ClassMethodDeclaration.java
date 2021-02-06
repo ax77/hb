@@ -115,7 +115,9 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
     if (isFunction()) {
       sb.append(mod.toString());
-      sb.append(" func ");
+      sb.append(" ");
+      sb.append(returnType.toString());
+      sb.append(" ");
       sb.append(identifier);
       sb.append(parametersToString());
     }
@@ -129,11 +131,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
     if (isDestructor()) {
       sb.append("deinit");
-    }
-
-    if (isFunction() && !isVoid()) {
-      sb.append(" -> ");
-      sb.append(returnType.toString());
     }
 
     sb.append(block.toString());

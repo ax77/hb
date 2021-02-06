@@ -137,26 +137,56 @@ public class ParseTypeDeclarations {
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
-    final Modifiers modifiers = new ParseModifiers(parser).parse();
+    final Modifiers mods = new ParseModifiers(parser).parse();
 
     if (parser.is(Keywords.init_ident)) {
-      putConstructor(clazz, modifiers);
-    } else if (parser.is(Keywords.deinit_ident)) {
-      putDestructor(clazz, modifiers);
-    } else if (parser.is(Keywords.func_ident)) {
-      putMethod(clazz, modifiers);
-    } else {
-      putField(clazz, modifiers);
+      putConstructor(clazz, mods);
+      return;
     }
+
+    if (parser.is(Keywords.deinit_ident)) {
+      putDestructor(clazz, mods);
+      return;
+    }
+
+    if (parser.is(Keywords.void_ident)) {
+      parser.move();
+      Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+      Ident name = beginPos.getIdent();
+      putMethod(clazz, mods, new Type(beginPos), name, beginPos);
+      return;
+    }
+
+    final Type type = new ParseType(parser).getType();
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident name = beginPos.getIdent();
+
+    // private int a = 0;
+    // private int a ;
+    // private int a() {}
+
+    if (parser.is(T.T_ASSIGN) || parser.is(T.T_SEMI_COLON)) {
+      putField(clazz, mods, type, name, beginPos);
+      return;
+    }
+
+    if (parser.is(T.T_LEFT_PAREN)) {
+      putMethod(clazz, mods, type, name, beginPos);
+      return;
+    }
+
+    parser.perror("class-member is not recognized");
+
   }
 
-  private void putField(ClassDeclaration clazz, Modifiers modifiers) {
+  private void putField(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident name, Token beginPos) {
 
     if (!Mods.isCorrectFieldMods(modifiers)) {
       parser.perror("field modifiers are incorrect: " + modifiers.toString());
     }
 
-    final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD, modifiers);
+    final VarDeclarator field = new ParseVarDeclarator(parser).parse(VarBase.CLASS_FIELD, modifiers, type, name,
+        beginPos);
     field.setClazz(clazz);
 
     checkFieldRedefinition(clazz, field);
@@ -164,30 +194,17 @@ public class ParseTypeDeclarations {
 
   }
 
-  private void putMethod(ClassDeclaration clazz, Modifiers modifiers) {
+  private void putMethod(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident ident, Token beginPos) {
 
     if (!Mods.isCorrectMethodMods(modifiers)) {
       parser.perror("method modifiers are incorrect: " + modifiers.toString());
     }
 
-    final Token beginPos = parser.checkedMove(Keywords.func_ident);
-    final Ident ident = parser.getIdent();
     final List<VarDeclarator> parameters = parseMethodParameters();
-
-    //4)
-    Type returnType = new Type(parser.tok()); // void stub
-    if (parser.is(T.T_ARROW)) {
-      parser.checkedMove(T.T_ARROW);
-      if (parser.is(Keywords.void_ident)) {
-        parser.move(); // void stub
-      } else {
-        returnType = new ParseType(parser).getType();
-      }
-    }
 
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, modifiers, clazz, ident,
-        parameters, returnType, block, beginPos);
+        parameters, type, block, beginPos);
 
     checkMethodRedefinition(clazz, method);
     clazz.addMethod(method);
@@ -327,11 +344,10 @@ public class ParseTypeDeclarations {
 
   private VarDeclarator parseOneParam() {
     final Modifiers mods = Mods.letMods();
-    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    final Ident id = tok.getIdent();
-    parser.colon();
     final Type type = new ParseType(parser).getType();
-    return new VarDeclarator(VarBase.METHOD_PARAMETER, mods, type, id, tok);
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident name = beginPos.getIdent();
+    return new VarDeclarator(VarBase.METHOD_PARAMETER, mods, type, name, beginPos);
   }
 
 }

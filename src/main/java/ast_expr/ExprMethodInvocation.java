@@ -13,14 +13,14 @@ public class ExprMethodInvocation implements Serializable {
   // object.funcname(arguments)
   private /*final*/ ExprExpression object;
   private final Ident funcname;
-  private final List<FuncArg> arguments;
+  private final List<ExprExpression> arguments;
 
   //MIR:TREE
   private ClassMethodDeclaration method;
 
   // a.b()
   // self.b()
-  public ExprMethodInvocation(ExprExpression object, Ident funcname, List<FuncArg> arguments) {
+  public ExprMethodInvocation(ExprExpression object, Ident funcname, List<ExprExpression> arguments) {
     NullChecker.check(funcname, object, arguments);
 
     this.funcname = funcname;
@@ -32,7 +32,7 @@ public class ExprMethodInvocation implements Serializable {
     return object;
   }
 
-  public List<FuncArg> getArguments() {
+  public List<ExprExpression> getArguments() {
     return arguments;
   }
 

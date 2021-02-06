@@ -42,12 +42,12 @@ public abstract class ExprUtil {
     return copyTokenAddNewType(from, T.T_ASSIGN, "=");
   }
 
-  public static String funcArgsToString(List<FuncArg> list) {
+  public static String funcArgsToString(List<ExprExpression> list) {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
 
     for (int i = 0; i < list.size(); i++) {
-      FuncArg param = list.get(i);
+      ExprExpression param = list.get(i);
       sb.append(param.toString());
       if (i + 1 < list.size()) {
         sb.append(", ");
