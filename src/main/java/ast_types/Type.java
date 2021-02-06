@@ -49,7 +49,7 @@ public class Type implements Serializable, TypeApi, Location {
   ///
   private Ident typenameId;
 
-  /// only for array<T>
+  /// only for 'array<T>' and 'string' classes from 'std-package'
   /// it is more clean by design to bootstrap the array only in this
   /// class, with template type-parameters, and
   /// in the future we can easily replace each declaration like 
