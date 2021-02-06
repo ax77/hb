@@ -1,5 +1,9 @@
 package ast_types;
 
+import java.io.Serializable;
+
+import ast_st1_templates.TypeSetter;
+
 /// why do we need this special type?
 /// why not an array itelf like: [u8]?
 /// because of the incapsulation
@@ -23,20 +27,28 @@ package ast_types;
 /// is obvious.
 ///
 
-public class TypeBuiltinArray {
-  private final Type elementType;
+public class TypeBuiltinArray implements Serializable, TypeSetter {
+  private static final long serialVersionUID = 2597681550464877019L;
+
+  private /*final*/ Type elementType;
 
   public TypeBuiltinArray(Type elementType) {
     this.elementType = elementType;
   }
 
-  public Type getElementType() {
-    return elementType;
-  }
-
   @Override
   public String toString() {
     return "builtin.array_declare(" + elementType.toString() + ")";
+  }
+
+  @Override
+  public void setType(Type typeToSet) {
+    this.elementType = typeToSet;
+  }
+
+  @Override
+  public Type getType() {
+    return elementType;
   }
 
 }

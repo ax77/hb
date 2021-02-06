@@ -243,7 +243,7 @@ public class Type implements Serializable, TypeApi, Location {
         return false;
       }
       final TypeBuiltinArray anotherArr = another.getBuiltinArrayType();
-      if (!builtinArrayType.getElementType().is_equal_to(anotherArr.getElementType())) {
+      if (!builtinArrayType.getType().is_equal_to(anotherArr.getType())) {
         return false;
       }
     } else {

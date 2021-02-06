@@ -1,0 +1,17 @@
+import std.array;
+
+class entry<K, V>
+{
+  let key: K;
+  var value: V;
+  var next: entry<K, V>;
+}
+
+
+class map<K, V>
+{
+  let table: array<entry<K, V>>;
+  let count: u64;
+  let threshold: u64;
+  let load_factor: f32;
+}

@@ -121,8 +121,10 @@ public class ParseType {
       parser.perror("expect type argument for array.");
     }
 
-    // TODO: how about type-setters?
-    return new Type(new TypeBuiltinArray(arguments.get(0)), beginPos);
+    final TypeBuiltinArray builtinArrayType = new TypeBuiltinArray(arguments.get(0));
+    parser.getCurrentClass(true).registerTypeSetter(builtinArrayType);
+
+    return new Type(builtinArrayType, beginPos);
   }
 
   private boolean isRefTypenameT(Ident typeName) {
