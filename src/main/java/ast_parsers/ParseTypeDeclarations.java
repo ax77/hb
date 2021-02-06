@@ -343,7 +343,7 @@ public class ParseTypeDeclarations {
   }
 
   private VarDeclarator parseOneParam() {
-    final Modifiers mods = Mods.letMods();
+    final Modifiers mods = new ParseModifiers(parser).parse();
     final Type type = new ParseType(parser).getType();
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident name = beginPos.getIdent();

@@ -1,28 +1,119 @@
-import std.array;
-//import std.list;
 import std.string;
 import std.string_builder;
-import std.map;
 
-class test
-{
-  void test() 
-  {
-    // let list: list<i32> = new list<i32>();
-    // for item in list {}
-    array<u8> array = new array<u8>();
-    
-    string s = "0.";
-    // let dyn_str: string_builder = new string_builder(with: "a b c d e");
-    // 
-    // dyn_str.append(c: '_');
-    // dyn_str.append(s: "f g");
-    // 
-    // let ch1: u8 = fixed_str.get(at: cast(1: u64));
-    // let ch2: u8 = dyn_str.get(at: 1_u64);
-    
-    map<u8, u64> m;
+public class CBuf {
+  private static final i32 EOFS_PADDING_BUFLEN = 8;
+  private static final u8 HC_FEOF;
+
+  private final string buffer;
+  private final u64 size;
+  private u64 offset;
+  private i32 line;
+  private i32 column;
+  private u8 prevc;
+  private i32 eofs;
+
+  init(final string input) {
+
+    /// we can append some paddings '\0'
+    /// and after that we easily can lookup the chars
+    /// at offset+1, offset+2, etc.
+    ///
+    final string_builder sb = new string_builder();
+    sb.append(input);
+    // for (i32 i = 0; i < EOFS_PADDING_BUFLEN; i += 1) {
+    //   sb.append(HC_FEOF);
+    // }
+
+    this.buffer; // = sb.toString();
+    this.size; // = buffer.length();
+    this.line = 1;
+    this.column = 0;
+    this.prevc = HC_FEOF;
+    this.eofs = -1;
   }
+
+  public boolean isEof() {
+    return eofs >= EOFS_PADDING_BUFLEN;
+  }
+
+  private u8 get(u64 at) {
+    return buffer.get(at);
+  }
+
+  public u8 nextc() {
+
+    while (!isEof()) {
+
+      if (eofs >= EOFS_PADDING_BUFLEN) {
+        //throw new RuntimeException("Infinite loop handling...");
+      }
+
+      if (prevc == '\n') {
+        line += 1;
+        column = 0;
+      }
+
+      if (get(offset) == '\\') {
+
+        if (get(offset + 1_u64) == '\r') {
+          if (get(offset + 2_u64) == '\n') {
+            // DOS: [\][\r][\n]
+            offset += 3_u64;
+          } else {
+            // OSX: [\][\r]
+            offset += 2_u64;
+          }
+        }
+
+        // UNX: [\][\n]
+        else if (get(offset + 1_u64) == '\n') {
+          offset += 2_u64;
+        }
+
+        else {
+          //throw new AstParseException("raw [\\] u8 at: " + string.format("%d", line));
+        }
+
+        prevc = '\n';
+        //continue;
+      }
+
+      if (get(offset) == '\r') {
+        if (get(offset + 1_u64) == '\n') {
+          // DOS: [\r][\n]
+          offset += 2_u64;
+        } else {
+          // OSX: [\r]
+          offset += 1_u64;
+        }
+        prevc = '\n';
+        return '\n';
+      }
+
+      if (offset == size) {
+        eofs += 1;
+        return HC_FEOF;
+      }
+
+      final u8 next = get(offset);
+      offset += 1_u64;
+      column += 1;
+      prevc = next;
+
+      if (next == HC_FEOF) {
+        eofs += 1;
+        return HC_FEOF;
+      }
+
+      return next;
+    }
+
+    return HC_FEOF;
+  }
+
+
+
 }
 
 
