@@ -139,7 +139,8 @@ public class ParseTypeDeclarations {
 
     final Modifiers mods = new ParseModifiers(parser).parse();
 
-    if (parser.is(Keywords.init_ident)) {
+    if (parser.isUserDefinedIdentNoKeyword(parser.tok()) && parser.tok().getIdent().equals(clazz.getIdentifier())
+        && parser.peek().ofType(T.T_LEFT_PAREN)) {
       putConstructor(clazz, mods);
       return;
     }
@@ -229,12 +230,12 @@ public class ParseTypeDeclarations {
       parser.perror("constructor modifiers are incorrect: " + modifiers.toString());
     }
 
-    final Token beginPos = parser.checkedMove(Keywords.init_ident);
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final List<VarDeclarator> parameters = parseMethodParameters();
     final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     final Type returnType = new Type(beginPos); // the return type of constructor is 'void'
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, modifiers,
-        clazz, Keywords.init_ident, parameters, returnType, block, beginPos);
+        clazz, clazz.getIdentifier(), parameters, returnType, block, beginPos);
 
     checkConstructorRedefinition(clazz, constructor);
     clazz.addConstructor(constructor);

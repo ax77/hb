@@ -210,16 +210,12 @@ public class ParseType {
 
   //@formatter:off
   private boolean isBasicTypeIdent(Token what) {
-    return what.isIdent(Keywords.i8_ident )
-        || what.isIdent(Keywords.u8_ident )
-        || what.isIdent(Keywords.i16_ident)
-        || what.isIdent(Keywords.u16_ident)
-        || what.isIdent(Keywords.i32_ident)
-        || what.isIdent(Keywords.u32_ident)
-        || what.isIdent(Keywords.i64_ident)
-        || what.isIdent(Keywords.u64_ident)
-        || what.isIdent(Keywords.f32_ident)
-        || what.isIdent(Keywords.f64_ident)
+    return what.isIdent(Keywords.char_ident )
+        || what.isIdent(Keywords.short_ident)
+        || what.isIdent(Keywords.int_ident)
+        || what.isIdent(Keywords.long_ident)
+        || what.isIdent(Keywords.float_ident)
+        || what.isIdent(Keywords.double_ident)
         || what.isIdent(Keywords.boolean_ident);
   }
   //@formatter:on

@@ -85,7 +85,7 @@ public class IteratorChecker {
       return false;
     }
 
-    if (mHasNext.getType().getBase() != TypeBase.TP_BOOLEAN) {
+    if (mHasNext.getType().getBase() != TypeBase.TP_boolean) {
       return false;
     }
 

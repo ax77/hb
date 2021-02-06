@@ -26,7 +26,7 @@ public abstract class BuiltinNames {
   public static final Ident has_next_ident       = g("has_next");
   public static final Ident get_next_ident       = g("get_next");
   // strings
-  public static final Ident string_ident         = g("string");
+  public static final Ident string_ident         = g("String");
 
   // these names are not keywords.
   private static Ident g(String name) {

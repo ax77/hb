@@ -2,30 +2,23 @@ package ast_types;
 
 public interface TypeApi {
   //@formatter:off
-  public boolean is_i8();
-  public boolean is_u8();
-  public boolean is_i16();
-  public boolean is_u16();
-  public boolean is_i32();
-  public boolean is_u32();
-  public boolean is_i64();
-  public boolean is_u64();
-  public boolean is_f32();
-  public boolean is_f64();
+  public boolean is_char();
+  public boolean is_short();
+  public boolean is_int();
+  public boolean is_long();
+  public boolean is_float();
+  public boolean is_double();
   public boolean is_boolean();
   public boolean is_void_stub();
   public boolean is_typename_id();
   public boolean is_class();
-  public int get_size();
-  public int get_align();
+  public int     get_size();
+  public int     get_align();
   public boolean is_equal_to(Type another);
   public boolean is_class_template();
   public boolean is_iterated();
   public boolean is_reference();
   public boolean is_primitive();
-  public boolean is_has_signedness();
-  public boolean is_signed();
-  public boolean is_unsigned();
   public boolean is_numeric();
   public boolean is_integer();
   public boolean is_floating();

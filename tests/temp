@@ -1,27 +1,27 @@
-import std.string;
-import std.string_builder;
+import std.String;
+import std.StringBuilder;
 
 public class CBuf {
-  private static final i32 EOFS_PADDING_BUFLEN = 8;
-  private static final u8 HC_FEOF;
+  private static final int EOFS_PADDING_BUFLEN = 8;
+  private static final char HC_FEOF;
 
-  private final string buffer;
-  private final u64 size;
-  private u64 offset;
-  private i32 line;
-  private i32 column;
-  private u8 prevc;
-  private i32 eofs;
+  private final String buffer;
+  private final int size;
+  private int offset;
+  private int line;
+  private int column;
+  private char prevc;
+  private int eofs;
 
-  init(final string input) {
+  public CBuf(final String input) {
 
     /// we can append some paddings '\0'
     /// and after that we easily can lookup the chars
     /// at offset+1, offset+2, etc.
     ///
-    final string_builder sb = new string_builder();
+    final StringBuilder sb = new StringBuilder();
     sb.append(input);
-    // for (i32 i = 0; i < EOFS_PADDING_BUFLEN; i += 1) {
+    // for (int i = 0; i < EOFS_PADDING_BUFLEN; i += 1) {
     //   sb.append(HC_FEOF);
     // }
 
@@ -37,11 +37,11 @@ public class CBuf {
     return eofs >= EOFS_PADDING_BUFLEN;
   }
 
-  private u8 get(u64 at) {
+  private char get(int at) {
     return buffer.get(at);
   }
 
-  public u8 nextc() {
+  public char nextc() {
 
     while (!isEof()) {
 
@@ -56,23 +56,23 @@ public class CBuf {
 
       if (get(offset) == '\\') {
 
-        if (get(offset + 1_u64) == '\r') {
-          if (get(offset + 2_u64) == '\n') {
+        if (get(offset + 1) == '\r') {
+          if (get(offset + 2) == '\n') {
             // DOS: [\][\r][\n]
-            offset += 3_u64;
+            offset += 3;
           } else {
             // OSX: [\][\r]
-            offset += 2_u64;
+            offset += 2;
           }
         }
 
         // UNX: [\][\n]
-        else if (get(offset + 1_u64) == '\n') {
-          offset += 2_u64;
+        else if (get(offset + 1) == '\n') {
+          offset += 2;
         }
 
         else {
-          //throw new AstParseException("raw [\\] u8 at: " + string.format("%d", line));
+          //throw new AstParseException("raw [\\] char at: " + String.format("%d", line));
         }
 
         prevc = '\n';
@@ -80,12 +80,12 @@ public class CBuf {
       }
 
       if (get(offset) == '\r') {
-        if (get(offset + 1_u64) == '\n') {
+        if (get(offset + 1) == '\n') {
           // DOS: [\r][\n]
-          offset += 2_u64;
+          offset += 2;
         } else {
           // OSX: [\r]
-          offset += 1_u64;
+          offset += 1;
         }
         prevc = '\n';
         return '\n';
@@ -96,8 +96,8 @@ public class CBuf {
         return HC_FEOF;
       }
 
-      final u8 next = get(offset);
-      offset += 1_u64;
+      final char next = get(offset);
+      offset += 1;
       column += 1;
       prevc = next;
 

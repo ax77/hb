@@ -1,19 +1,15 @@
 package ast_types;
 
-import static ast_types.TypeBase.TP_BOOLEAN;
 import static ast_types.TypeBase.TP_CLASS;
-import static ast_types.TypeBase.TP_F32;
-import static ast_types.TypeBase.TP_F64;
-import static ast_types.TypeBase.TP_I16;
-import static ast_types.TypeBase.TP_I32;
-import static ast_types.TypeBase.TP_I64;
-import static ast_types.TypeBase.TP_I8;
 import static ast_types.TypeBase.TP_TYPENAME_ID;
-import static ast_types.TypeBase.TP_U16;
-import static ast_types.TypeBase.TP_U32;
-import static ast_types.TypeBase.TP_U64;
-import static ast_types.TypeBase.TP_U8;
 import static ast_types.TypeBase.TP_VOID_STUB;
+import static ast_types.TypeBase.TP_boolean;
+import static ast_types.TypeBase.TP_char;
+import static ast_types.TypeBase.TP_double;
+import static ast_types.TypeBase.TP_float;
+import static ast_types.TypeBase.TP_int;
+import static ast_types.TypeBase.TP_long;
+import static ast_types.TypeBase.TP_short;
 
 import java.io.Serializable;
 import java.util.List;
@@ -150,17 +146,13 @@ public class Type implements Serializable, TypeApi, Location {
 
   public boolean is_primitive(TypeBase withBase) {
     //@formatter:off
-    return withBase == TP_I8
-        || withBase == TP_U8
-        || withBase == TP_I16
-        || withBase == TP_U16
-        || withBase == TP_I32
-        || withBase == TP_U32
-        || withBase == TP_I64
-        || withBase == TP_U64
-        || withBase == TP_F32
-        || withBase == TP_F64
-        || withBase == TP_BOOLEAN;
+    return withBase == TP_char
+        || withBase == TP_short
+        || withBase == TP_int
+        || withBase == TP_long
+        || withBase == TP_float
+        || withBase == TP_double
+        || withBase == TP_boolean;
     //@formatter:on
   }
 
@@ -173,48 +165,38 @@ public class Type implements Serializable, TypeApi, Location {
       return true;
     }
 
-    if (is(TypeBase.TP_I8)) {
-      if (!another.is(TypeBase.TP_I8)) {
+    if (is(TypeBase.TP_char)) {
+      if (!another.is(TypeBase.TP_char)) {
         return false;
       }
-    } else if (is(TypeBase.TP_U8)) {
-      if (!another.is(TypeBase.TP_U8)) {
+    }
+
+    else if (is(TypeBase.TP_short)) {
+      if (!another.is(TypeBase.TP_short)) {
         return false;
       }
-    } else if (is(TypeBase.TP_I16)) {
-      if (!another.is(TypeBase.TP_I16)) {
+    }
+
+    else if (is(TypeBase.TP_int)) {
+      if (!another.is(TypeBase.TP_int)) {
         return false;
       }
-    } else if (is(TypeBase.TP_U16)) {
-      if (!another.is(TypeBase.TP_U16)) {
+    }
+
+    else if (is(TypeBase.TP_long)) {
+      if (!another.is(TypeBase.TP_long)) {
         return false;
       }
-    } else if (is(TypeBase.TP_I32)) {
-      if (!another.is(TypeBase.TP_I32)) {
+    } else if (is(TypeBase.TP_float)) {
+      if (!another.is(TypeBase.TP_float)) {
         return false;
       }
-    } else if (is(TypeBase.TP_U32)) {
-      if (!another.is(TypeBase.TP_U32)) {
+    } else if (is(TypeBase.TP_double)) {
+      if (!another.is(TypeBase.TP_double)) {
         return false;
       }
-    } else if (is(TypeBase.TP_I64)) {
-      if (!another.is(TypeBase.TP_I64)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_U64)) {
-      if (!another.is(TypeBase.TP_U64)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_F32)) {
-      if (!another.is(TypeBase.TP_F32)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_F64)) {
-      if (!another.is(TypeBase.TP_F64)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_BOOLEAN)) {
-      if (!another.is(TypeBase.TP_BOOLEAN)) {
+    } else if (is(TypeBase.TP_boolean)) {
+      if (!another.is(TypeBase.TP_boolean)) {
         return false;
       }
     } else if (is(TypeBase.TP_VOID_STUB)) {
@@ -287,20 +269,45 @@ public class Type implements Serializable, TypeApi, Location {
     return false;
   }
 
-  //@formatter:off
-  @Override public boolean is_i8()        { return is(TP_I8); }
-  @Override public boolean is_u8()        { return is(TP_U8); }
-  @Override public boolean is_i16()       { return is(TP_I16); }
-  @Override public boolean is_u16()       { return is(TP_U16); }
-  @Override public boolean is_i32()       { return is(TP_I32); }
-  @Override public boolean is_u32()       { return is(TP_U32); }
-  @Override public boolean is_i64()       { return is(TP_I64); }
-  @Override public boolean is_u64()       { return is(TP_U64); }
-  @Override public boolean is_f32()       { return is(TP_F32); }
-  @Override public boolean is_f64()       { return is(TP_F64); }
-  @Override public boolean is_boolean()   { return is(TP_BOOLEAN); }
-  @Override public boolean is_void_stub() { return is(TP_VOID_STUB); }
-  //@formatter:on
+  @Override
+  public boolean is_char() {
+    return is(TP_char);
+  }
+
+  @Override
+  public boolean is_short() {
+    return is(TP_short);
+  }
+
+  @Override
+  public boolean is_int() {
+    return is(TP_int);
+  }
+
+  @Override
+  public boolean is_long() {
+    return is(TP_long);
+  }
+
+  @Override
+  public boolean is_float() {
+    return is(TP_float);
+  }
+
+  @Override
+  public boolean is_double() {
+    return is(TP_double);
+  }
+
+  @Override
+  public boolean is_boolean() {
+    return is(TP_boolean);
+  }
+
+  @Override
+  public boolean is_void_stub() {
+    return is(TP_VOID_STUB);
+  }
 
   @Override
   public boolean is_primitive() {
@@ -349,34 +356,19 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   @Override
-  public boolean is_has_signedness() {
-    return false;
-  }
-
-  @Override
-  public boolean is_signed() {
-    return false;
-  }
-
-  @Override
-  public boolean is_unsigned() {
-    return false;
-  }
-
-  @Override
   public boolean is_numeric() {
     return is_integer() || is_floating();
   }
 
   @Override
   public boolean is_integer() {
-    TypeBase bases[] = { TP_I8, TP_U8, TP_I16, TP_U16, TP_I32, TP_U32, TP_I64, TP_U64 };
+    TypeBase bases[] = { TP_char, TP_short, TP_int, TP_long };
     return isOneOf(bases);
   }
 
   @Override
   public boolean is_floating() {
-    return is(TP_F32) || is(TypeBase.TP_F64);
+    return is(TP_float) || is(TypeBase.TP_double);
   }
 
   public void set_size(int i) {

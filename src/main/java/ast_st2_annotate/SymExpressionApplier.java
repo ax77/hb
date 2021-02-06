@@ -105,7 +105,7 @@ public class SymExpressionApplier {
     }
 
     else if (e.is(ExpressionBase.ECHAR_CONST)) {
-      e.setResultType(TypeBindings.make_u8(e.getBeginPos()));
+      e.setResultType(TypeBindings.make_char(e.getBeginPos()));
     }
 
     else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
@@ -154,7 +154,7 @@ public class SymExpressionApplier {
   }
 
   private void applyStringLiteral(final ExprExpression e) {
-    final Type tp = new Type(new TypeBuiltinArray(new Type(TypeBase.TP_U8, e.getBeginPos())), e.getBeginPos());
+    final Type tp = new Type(new TypeBuiltinArray(new Type(TypeBase.TP_char, e.getBeginPos())), e.getBeginPos());
     e.setResultType(tp);
   }
 

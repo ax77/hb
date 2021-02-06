@@ -1,16 +1,16 @@
-class string {
+class String {
 
-  private final builtin.array_declare<u8> buffer;
+  private final builtin.array_declare<char> buffer;
 
-  init() {
+  String() {
     // self.buffer = builtin.array_allocate(size: 1);
   }
 
-  init(builtin.array_declare<u8> buffer) {
+  String(builtin.array_declare<char> buffer) {
     this.buffer = buffer;
   }
   
-  u8 get(u64 at) {
+  char get(int at) {
     // return builtin.array_get(type: u8, array: buffer, index: at);
   }
 }

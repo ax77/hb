@@ -44,29 +44,20 @@ public final class Keywords {
   public static final Ident false_ident          = g("false");
   public static final Ident this_ident           = g("this");
   // new syntax:
-  // public static final Ident var_ident            = g("var");
-  // public static final Ident let_ident            = g("let");
-  // public static final Ident weak_ident           = g("weak");
-  public static final Ident init_ident           = g("init");
   public static final Ident deinit_ident         = g("deinit");
   public static final Ident in_ident             = g("in");
   public static final Ident cast_ident           = g("cast");
   public static final Ident forward_ident        = g("forward");
   // types:
-  public static final Ident i8_ident             = g("i8");
-  public static final Ident u8_ident             = g("u8");
-  public static final Ident i16_ident            = g("i16");
-  public static final Ident u16_ident            = g("u16");
-  public static final Ident i32_ident            = g("i32");
-  public static final Ident u32_ident            = g("u32");
-  public static final Ident i64_ident            = g("i64");
-  public static final Ident u64_ident            = g("u64");
-  public static final Ident f32_ident            = g("f32");
-  public static final Ident f64_ident            = g("f64");
+  public static final Ident char_ident           = g("char");
+  public static final Ident short_ident          = g("short");
+  public static final Ident int_ident            = g("int");
+  public static final Ident long_ident           = g("long");
+  public static final Ident float_ident          = g("float");
+  public static final Ident double_ident         = g("double");
   public static final Ident boolean_ident        = g("boolean");
   public static final Ident void_ident           = g("void");
   public static final Ident class_ident          = g("class");
-  public static final Ident func_ident           = g("func");
   
   //@formatter:on
 
