@@ -2,7 +2,7 @@ package ast_types;
 
 import static ast_types.TypeBase.TP_CLASS;
 import static ast_types.TypeBase.TP_TYPENAME_ID;
-import static ast_types.TypeBase.TP_VOID_STUB;
+import static ast_types.TypeBase.TP_void;
 import static ast_types.TypeBase.TP_boolean;
 import static ast_types.TypeBase.TP_char;
 import static ast_types.TypeBase.TP_double;
@@ -74,7 +74,7 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   public Type(Token beginPos) {
-    this.base = TypeBase.TP_VOID_STUB;
+    this.base = TypeBase.TP_void;
     this.beginPos = beginPos;
 
     this.size = 1;
@@ -199,8 +199,8 @@ public class Type implements Serializable, TypeApi, Location {
       if (!another.is(TypeBase.TP_boolean)) {
         return false;
       }
-    } else if (is(TypeBase.TP_VOID_STUB)) {
-      if (!another.is(TypeBase.TP_VOID_STUB)) {
+    } else if (is(TypeBase.TP_void)) {
+      if (!another.is(TypeBase.TP_void)) {
         return false;
       }
     } else if (is(TypeBase.TP_TYPENAME_ID)) {
@@ -244,7 +244,7 @@ public class Type implements Serializable, TypeApi, Location {
     if (is_typename_id()) {
       return typenameId.getName();
     }
-    if (is_void_stub()) {
+    if (is_void()) {
       return "void";
     }
     if (is_class()) {
@@ -305,8 +305,8 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   @Override
-  public boolean is_void_stub() {
-    return is(TP_VOID_STUB);
+  public boolean is_void() {
+    return is(TP_void);
   }
 
   @Override

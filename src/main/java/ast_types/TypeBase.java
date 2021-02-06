@@ -9,7 +9,7 @@ public enum TypeBase {
   , TP_float
   , TP_double
   , TP_boolean
-  , TP_VOID_STUB
+  , TP_void
   , TP_TYPENAME_ID
   , TP_CLASS
   , TP_BUILTIN_ARRAY

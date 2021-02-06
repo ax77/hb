@@ -10,14 +10,9 @@ import utils.UtilSrcToStringLevel;
 public class PrepareSourceForReview {
 
   @Test
-  public void testTestTemplatesRshiftHandling() throws Exception {
+  public void testPrepareSourceForTemplatesTesting() throws Exception {
 
-    // CompilationUnit unit = new ParserMain("tests/test_class_resolver").parseCompilationUnit();
-    // for (ClassDeclaration c : unit.getClasses()) {
-    //   System.out.println(UtilSrcToStringLevel.tos(c.toString()));
-    // }
-
-    InstantiationUnit unit = new ParserMain("tests/temp").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain("tests/templates/test_templates_1").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

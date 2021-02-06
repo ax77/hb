@@ -21,7 +21,8 @@ public class TestTemplates {
     // test_templates_1
     // test_templates_1_exp
 
-    List<FileWrapper> files = new FileWrapper(dir + "/tests/").allFilesInThisDirectory(FileSearchKind.FILES_ONLY);
+    List<FileWrapper> files = new FileWrapper(dir + "/tests/templates/")
+        .allFilesInThisDirectory(FileSearchKind.FILES_ONLY);
     for (FileWrapper fw : files) {
       final String basename = fw.getBasename();
 

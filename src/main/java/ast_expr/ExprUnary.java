@@ -1,8 +1,11 @@
 package ast_expr;
 
+import java.io.Serializable;
+
 import tokenize.Token;
 
-public class ExprUnary {
+public class ExprUnary implements Serializable {
+  private static final long serialVersionUID = -3984272729301362548L;
 
   private final Token operator;
   private final ExprExpression operand;

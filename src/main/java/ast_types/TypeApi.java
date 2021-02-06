@@ -9,7 +9,7 @@ public interface TypeApi {
   public boolean is_float();
   public boolean is_double();
   public boolean is_boolean();
-  public boolean is_void_stub();
+  public boolean is_void();
   public boolean is_typename_id();
   public boolean is_class();
   public int     get_size();

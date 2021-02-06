@@ -1,5 +1,5 @@
 
-class array<T> 
+class ArrayList<T> 
 {
 	private final builtin.array_declare<T> table;
 	
