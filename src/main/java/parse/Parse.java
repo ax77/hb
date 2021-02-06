@@ -73,6 +73,9 @@ public class Parse {
 
   public void move() {
     tok = tokenlist.next();
+    while (tok.ofType(T.TOKEN_COMMENT)) {
+      tok = tokenlist.next();
+    }
     addLoc();
   }
 

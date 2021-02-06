@@ -12,6 +12,7 @@ public enum T {
   TOKEN_NUMBER,
   TOKEN_CHAR,
   TOKEN_STRING,
+  TOKEN_COMMENT,
 
   // combinations
   /* "->" */T_ARROW,

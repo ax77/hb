@@ -22,7 +22,7 @@ public class UtilSrcToStringGenerator {
   }
 
   private String lineno(int n) {
-    return " /*" + String.format("%03d", n) + "*/  ";
+    return "//" + String.format("%03d ", n);
   }
 
   private String esc(String what) {
@@ -89,7 +89,7 @@ public class UtilSrcToStringGenerator {
       if (tmp.isEmpty()) {
         continue;
       }
-      fw.write("    sb.append(" + q + lineno(cnt++) + line + pad(line, mlen + 3) + n + q + ");\n");
+      fw.write("    sb.append(" + q + line + pad(line, mlen + 3) + lineno(cnt++) + n + q + ");\n");
     }
     fw.write("    //@formatter:on\n");
     fw.close();

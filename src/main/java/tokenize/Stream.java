@@ -172,34 +172,44 @@ public class Stream {
     if (c1 == '/') { /* [//], [/*], [/=], [/] */
 
       if (c2 == '/') {
+        final StringBuilder comments = new StringBuilder();
+        comments.append("//");
+
         move();
         move();
         while (!buffer.isEof()) {
-          int tmpch = buffer.nextc();
+
+          final char tmpch = buffer.nextc();
           if (tmpch == '\n') {
-            return EOL_TOKEN;
+            final String value = comments.toString().trim();
+            return new Token(value, T.TOKEN_COMMENT, curLoc());
           }
+
           if (tmpch == HC_FEOF) {
-            return EOF_TOKEN_ENTRY;
+            // return EOF_TOKEN_ENTRY;
+            throw new AstParseException("no new-line at end of file...");
           }
+
+          comments.append(tmpch);
+
         }
       }
 
       else if (c2 == '*') {
-        // throw new AstParseException("/* c-style comments */ are not supported.");
-        move();
-        move();
-        int prevc = '\0';
-        while (!buffer.isEof()) {
-          int tmpch = buffer.nextc();
-          if (tmpch == HC_FEOF) {
-            throw new ScanExc(Integer.toString(buffer.getLine()));
-          }
-          if (tmpch == '/' && prevc == '*') {
-            return WSP_TOKEN;
-          }
-          prevc = tmpch;
-        }
+        throw new AstParseException("/* c-style comments */ are not supported.");
+        // move();
+        // move();
+        // char prevc = '\0';
+        // while (!buffer.isEof()) {
+        //   char tmpch = buffer.nextc();
+        //   if (tmpch == HC_FEOF) {
+        //     throw new ScanExc(Integer.toString(buffer.getLine()));
+        //   }
+        //   if (tmpch == '/' && prevc == '*') {
+        //     return WSP_TOKEN;
+        //   }
+        //   prevc = tmpch;
+        // }
       }
 
     }
@@ -452,7 +462,10 @@ public class Stream {
         nextws = false;
       }
 
-      if (t == EOL_TOKEN) {
+      if (t == EOL_TOKEN || t.ofType(T.TOKEN_COMMENT)) {
+        if (t.ofType(T.TOKEN_COMMENT)) {
+          line.add(t);
+        }
         if (line.isEmpty()) {
           continue;
         }
