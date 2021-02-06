@@ -54,7 +54,8 @@ public class ParserMain implements ParserMainApi {
       // i.e. : in normal declaration like 'class name<T> { ... }'
       final Ident typename = Hash_ident.getHashedIdent(ent.getKey());
       final ArrayList<Type> emptyTypeParams = new ArrayList<>();
-      final ClassDeclaration forward = new ClassDeclaration(typename, emptyTypeParams, Env.EOF_TOKEN_ENTRY);
+      final ClassDeclaration forward = new ClassDeclaration(Keywords.class_ident, typename, emptyTypeParams,
+          Env.EOF_TOKEN_ENTRY);
       parser.defineClassName(forward);
     }
 

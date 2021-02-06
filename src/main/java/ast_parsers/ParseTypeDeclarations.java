@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_class.InterfaceItem;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
@@ -33,8 +34,8 @@ public class ParseTypeDeclarations {
     // opt
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
-    if (parser.is(Keywords.class_ident)) {
-      final ClassDeclaration clazz = parseClassDeclaration();
+    if (parser.is(Keywords.class_ident) || parser.is(Keywords.interface_ident)) {
+      final ClassDeclaration clazz = parseClassDeclaration(parser.tok().getIdent());
       if (clazz.isTemplate()) {
         unit.putTemplate(clazz);
       } else {
@@ -75,23 +76,22 @@ public class ParseTypeDeclarations {
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
     final Ident ident = tok.getIdent();
 
-    final ClassDeclaration clazz = new ClassDeclaration(ident, new ArrayList<>(), tok);
+    final ClassDeclaration clazz = new ClassDeclaration(Keywords.class_ident, ident, new ArrayList<>(), tok);
     parser.defineClassName(clazz);
 
     parser.semicolon();
     return clazz;
   }
 
-  private ClassDeclaration parseClassDeclaration() {
+  private ClassDeclaration parseClassDeclaration(Ident keyword) {
 
-    parser.checkedMove(Keywords.class_ident);
+    parser.checkedMove(keyword);
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident ident = beginPos.getIdent();
 
     // class Thing<T> {
     // ......^....^
     final List<Type> typeParameters = parseTypeParametersT();
-    parser.lbrace();
 
     // it may be a previously fully-parsed class, or a new one.
     ClassDeclaration clazz = null;
@@ -104,12 +104,28 @@ public class ParseTypeDeclarations {
     } else {
       // define a newly-founded class
       // with or without type-parameters, and WITH class body { ... }
-      clazz = new ClassDeclaration(ident, typeParameters, beginPos);
+      clazz = new ClassDeclaration(keyword, ident, typeParameters, beginPos);
       parser.defineClassName(clazz);
     }
 
+    // set the current class immediately after we
+    // found it
     NullChecker.check(clazz);
     parser.setCurrentClass(clazz);
+
+    // implements list for a class
+    if (keyword.equals(Keywords.class_ident)) {
+      if (parser.is(Keywords.implements_ident)) {
+        parser.move();
+        putOneInterface(clazz);
+        while (parser.is(T.T_COMMA)) {
+          parser.move();
+          putOneInterface(clazz);
+        }
+      }
+    }
+
+    parser.lbrace();
 
     // class C { }
     // ..........^
@@ -121,11 +137,26 @@ public class ParseTypeDeclarations {
       return clazz;
     }
 
-    while (!parser.isEof()) {
-      putConstructorOrFieldOrMethodIntoClass(clazz);
-      if (parser.is(T.T_RIGHT_BRACE)) {
-        break;
+    if (keyword.equals(Keywords.class_ident)) {
+      while (!parser.isEof()) {
+        putConstructorOrFieldOrMethodIntoClass(clazz);
+        if (parser.is(T.T_RIGHT_BRACE)) {
+          break;
+        }
       }
+    }
+
+    else if (keyword.equals(Keywords.interface_ident)) {
+      while (!parser.isEof()) {
+        parseInterfaceMethods(clazz);
+        if (parser.is(T.T_RIGHT_BRACE)) {
+          break;
+        }
+      }
+    }
+
+    else {
+      parser.perror("type-name is not recognized");
     }
 
     parser.rbrace();
@@ -133,6 +164,35 @@ public class ParseTypeDeclarations {
 
     clazz.setComplete(true);
     return clazz;
+  }
+
+  private void putOneInterface(ClassDeclaration clazz) {
+    final Type tp = new ParseType(parser).getType();
+    final InterfaceItem item = new InterfaceItem(tp);
+    clazz.addInterfaceToImplements(item);
+  }
+
+  private void parseInterfaceMethods(ClassDeclaration clazz) {
+
+    // TODO: clean this
+
+    final Modifiers mods = new ParseModifiers(parser).parse();
+
+    if (parser.is(Keywords.void_ident)) {
+      parser.move();
+      Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+      Ident name = beginPos.getIdent();
+      putMethod(clazz, mods, new Type(beginPos), name, beginPos, true);
+      parser.semicolon();
+      return;
+    }
+
+    final Type type = new ParseType(parser).getType();
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident name = beginPos.getIdent();
+    putMethod(clazz, mods, type, name, beginPos, true);
+    parser.semicolon();
+
   }
 
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
@@ -154,7 +214,7 @@ public class ParseTypeDeclarations {
       parser.move();
       Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
       Ident name = beginPos.getIdent();
-      putMethod(clazz, mods, new Type(beginPos), name, beginPos);
+      putMethod(clazz, mods, new Type(beginPos), name, beginPos, false);
       return;
     }
 
@@ -172,7 +232,7 @@ public class ParseTypeDeclarations {
     }
 
     if (parser.is(T.T_LEFT_PAREN)) {
-      putMethod(clazz, mods, type, name, beginPos);
+      putMethod(clazz, mods, type, name, beginPos, false);
       return;
     }
 
@@ -195,7 +255,8 @@ public class ParseTypeDeclarations {
 
   }
 
-  private void putMethod(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident ident, Token beginPos) {
+  private void putMethod(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident ident, Token beginPos,
+      boolean isInterfaceMethod) {
 
     if (!Mods.isCorrectMethodMods(modifiers)) {
       parser.perror("method modifiers are incorrect: " + modifiers.toString());
@@ -203,7 +264,11 @@ public class ParseTypeDeclarations {
 
     final List<VarDeclarator> parameters = parseMethodParameters();
 
-    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    StmtBlock block = new StmtBlock();
+    if (!isInterfaceMethod) {
+      block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    }
+
     final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, modifiers, clazz, ident,
         parameters, type, block, beginPos);
 

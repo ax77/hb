@@ -10,6 +10,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
+import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_types.TypePrinters;
@@ -23,12 +24,19 @@ public class ClassDeclaration implements Serializable, Location {
 
   private static final long serialVersionUID = 6225743252762855961L;
 
+  /// class, interface, enum
+  private final Ident keyword;
+
   private /*final*/ Token beginPos;
   private final Ident identifier;
   private final List<ClassMethodDeclaration> constructors;
   private final List<VarDeclarator> fields;
   private final List<ClassMethodDeclaration> methods;
   private ClassMethodDeclaration destructor;
+
+  /// if it is a class it may implements some interfaces
+  ///
+  private final List<InterfaceItem> interfaces;
 
   /// the class is incomplete before '}'
   /// we will use this flag to be sure that
@@ -67,10 +75,11 @@ public class ClassDeclaration implements Serializable, Location {
   ///
   private final List<TypeSetter> typeSetters;
 
-  public ClassDeclaration(Ident identifier, List<Type> typeParametersT, Token beginPos) {
-    NullChecker.check(identifier, typeParametersT, beginPos);
+  public ClassDeclaration(Ident keyword, Ident identifier, List<Type> typeParametersT, Token beginPos) {
+    NullChecker.check(keyword, identifier, typeParametersT, beginPos);
     checkTypeParameters(typeParametersT);
 
+    this.keyword = keyword;
     this.identifier = identifier;
     this.typeParametersT = Collections.unmodifiableList(typeParametersT);
     this.beginPos = beginPos;
@@ -80,6 +89,7 @@ public class ClassDeclaration implements Serializable, Location {
     this.fields = new ArrayList<>();
     this.methods = new ArrayList<>();
     this.typeSetters = new ArrayList<>();
+    this.interfaces = new ArrayList<>();
   }
 
   private void checkTypeParameters(List<Type> typeParametersT) {
@@ -165,6 +175,14 @@ public class ClassDeclaration implements Serializable, Location {
     return true;
   }
 
+  public boolean isClass() {
+    return keyword.equals(Keywords.class_ident);
+  }
+
+  public boolean isInterface() {
+    return keyword.equals(Keywords.interface_ident);
+  }
+
   public void registerTypeSetter(TypeSetter ts) {
     NullChecker.check(ts);
     this.typeSetters.add(ts);
@@ -176,6 +194,13 @@ public class ClassDeclaration implements Serializable, Location {
 
   public Ident getIdentifier() {
     return identifier;
+  }
+
+  public void addInterfaceToImplements(InterfaceItem interfaceItem) {
+    NullChecker.check(interfaceItem);
+
+    registerTypeSetter(interfaceItem);
+    this.interfaces.add(interfaceItem);
   }
 
   public void addConstructor(ClassMethodDeclaration e) {
@@ -274,14 +299,31 @@ public class ClassDeclaration implements Serializable, Location {
     return null;
   }
 
+  private String interfacesToString() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < interfaces.size(); i++) {
+      InterfaceItem item = interfaces.get(i);
+      sb.append(item.toString());
+      if (i + 1 < interfaces.size()) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ");
+    sb.append(keyword.toString() + " ");
     sb.append(identifier.getName());
 
     if (!typeParametersT.isEmpty()) {
       sb.append(TypePrinters.typeArgumentsToString(typeParametersT));
+    }
+
+    if (!interfaces.isEmpty()) {
+      sb.append(" implements ");
+      sb.append(interfacesToString());
     }
 
     sb.append("\n{\n");

@@ -1,12 +1,16 @@
-import std.LinkedList;
 
-class test
+interface Equal<T>
 {
-  void f() {
-    LinkedList<int> args = new LinkedList<int>();
-    for(int i=0; i<8; i+=1) {
-      for(int j=0; j<8; j+=1) {
-      }
-    }
-  }
+  void isEqualTo(T another);
+}
+
+class Tree<T> implements Equal<Tree<T>>
+{
+  Tree<T> lhs;
+  Tree<T> rhs;
+}
+
+class t 
+{
+  Tree<int> x = new Tree<int>();
 }
