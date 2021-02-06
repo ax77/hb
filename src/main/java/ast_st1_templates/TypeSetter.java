@@ -14,6 +14,11 @@ import ast_types.Type;
 /// set the new type we want, neither than iterate over the whole
 /// syntax tree which includes expressions, statements, etc...
 ///
+/// it is easy to imagine that type-setters as the macro-replacement list
+/// and type-parameters of the templated class as macro-parameters.
+/// it looks like macros, but its not, because we work here with
+/// the AST instead of the raw lexems.
+///
 public interface TypeSetter {
   void setType(Type typeToSet);
 

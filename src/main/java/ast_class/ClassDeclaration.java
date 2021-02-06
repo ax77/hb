@@ -48,6 +48,7 @@ public class ClassDeclaration implements Serializable, Location {
   /// it is important to not screw this reference up before
   ///
   private /*final*/ List<Type> typeParametersT;
+  private boolean typeParametersWasSet = false;
 
   /// we'll collect all type-setters here
   /// type-setter is an variable, new-expression, method-parameter, etc...
@@ -91,12 +92,24 @@ public class ClassDeclaration implements Serializable, Location {
 
   public void setTypeParametersT(List<Type> typeParametersT) {
     NullChecker.check(typeParametersT);
+
     for (Type tp : typeParametersT) {
       if (!tp.is_typename_id()) {
         throw new AstParseException("is not a type-parameter: " + tp.toString());
       }
     }
+
+    // we may 'set' type-parameters if, and only if
+    // this class was 'forward' defined, and when we begin
+    // to parse the real class-declaration, and we found
+    // the previously defined class, and set these type-parameters
+    // to it.
+    if (typeParametersWasSet) {
+      throw new AstParseException("you cannot set type-parameters more than once.");
+    }
+
     this.typeParametersT = typeParametersT;
+    this.typeParametersWasSet = true;
   }
 
   public void setBeginPos(Token beginPos) {

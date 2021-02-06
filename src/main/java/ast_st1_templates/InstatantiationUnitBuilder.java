@@ -40,7 +40,8 @@ public class InstatantiationUnitBuilder {
   }
 
   private void addGeneratedClasses() {
-    for (ClassDeclaration c : templateCodegen.getGeneratedClasses()) {
+    for (Type tp : templateCodegen.getGeneratedClasses()) {
+      final ClassDeclaration c = tp.getClassTypeFromRef();
       instantiationUnit.put(c);
     }
   }
