@@ -1,14 +1,17 @@
-import std.array;
 
 class string {
 
-	var buffer: array<u8>;
+	let buffer: builtin.array_declare<u8>;
 
-	init(buffer: array<u8>) {
+	init(buffer: builtin.array_declare<u8>) {
 		self.buffer = buffer;
 	}
 	
-	func append(c: u8) {}
+	func append(c: u8) {
+	  // builtin.array_add(type: u8, array: buffer);
+	}
 	
-	func append(s: string) {}
+	func append(s: string) {
+	
+	}
 }

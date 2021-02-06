@@ -56,7 +56,7 @@ public class Type implements Serializable, TypeApi, Location {
   /// let arr: [i32] to 'let arr: array<T>'
   /// but this is later: it is syntax sugar only, and means nothing.
   ///
-  private Type builtinArrayType;
+  private TypeBuiltinArray builtinArrayType;
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
@@ -70,7 +70,7 @@ public class Type implements Serializable, TypeApi, Location {
     this.builtinArrayType = another.builtinArrayType;
   }
 
-  public Type(Type builtinArrayType, Token beginPos) {
+  public Type(TypeBuiltinArray builtinArrayType, Token beginPos) {
     this.base = TypeBase.TP_BUILTIN_ARRAY;
     this.beginPos = beginPos;
 
@@ -115,7 +115,7 @@ public class Type implements Serializable, TypeApi, Location {
     this.typenameId = typenameId;
   }
 
-  public Type getBuiltinArrayType() {
+  public TypeBuiltinArray getBuiltinArrayType() {
     return builtinArrayType;
   }
 
@@ -238,6 +238,14 @@ public class Type implements Serializable, TypeApi, Location {
       if (!classTypeRef.is_equal_to(another.getClassTypeRef())) {
         return false;
       }
+    } else if (is(TypeBase.TP_BUILTIN_ARRAY)) {
+      if (!another.is(TypeBase.TP_BUILTIN_ARRAY)) {
+        return false;
+      }
+      final TypeBuiltinArray anotherArr = another.getBuiltinArrayType();
+      if (!builtinArrayType.getElementType().is_equal_to(anotherArr.getElementType())) {
+        return false;
+      }
     } else {
       ErrorLocation.errorType("unimplemented comparison for base: " + base.toString(), this);
     }
@@ -260,8 +268,8 @@ public class Type implements Serializable, TypeApi, Location {
     if (is_class()) {
       return classTypeRef.toString();
     }
-    if (base == TypeBase.TP_BUILTIN_ARRAY) {
-      return "builtin.array_declare(" + builtinArrayType.toString() + ")";
+    if (is_builtin_array()) {
+      return builtinArrayType.toString();
     }
     return base.toString();
   }
@@ -307,6 +315,11 @@ public class Type implements Serializable, TypeApi, Location {
   @Override
   public boolean is_class() {
     return is(TP_CLASS);
+  }
+
+  @Override
+  public boolean is_builtin_array() {
+    return is(TypeBase.TP_BUILTIN_ARRAY);
   }
 
   @Override

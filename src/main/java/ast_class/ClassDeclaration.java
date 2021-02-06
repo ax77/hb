@@ -150,12 +150,15 @@ public class ClassDeclaration implements Serializable, Location {
 
     // paranoia?
     if (fields.size() != another.getFields().size()) {
+      System.out.println("not equal: fields");
       return false;
     }
     if (constructors.size() != another.getConstructors().size()) {
+      System.out.println("not equal: constructors");
       return false;
     }
     if (methods.size() != another.getMethods().size()) {
+      System.out.println("not equal: methods");
       return false;
     }
 

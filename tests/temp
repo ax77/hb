@@ -1,14 +1,18 @@
-import std.array;
-import std.list;
+//import std.array;
+//import std.list;
+import std.string;
 
 class test
 {
   func test() 
   {
-    let list: list<i32> = new list<i32>();
-    for item in list {}
+    // let list: list<i32> = new list<i32>();
+    // for item in list {}
+    // let array: array<u8> = new array<u8>();
     
-    let array: array<u8> = new array<u8>();
+    let s: string = "a b c d e";
+    s.append(c: '_');
+    s.append(s: "f g");
   }
 }
 

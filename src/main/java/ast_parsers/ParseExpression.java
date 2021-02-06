@@ -578,9 +578,10 @@ public class ParseExpression {
 
     Token saved = parser.moveget();
 
-    // TODO:__string__
-
-    final ClassDeclaration stringClass = new ClassDeclaration(BuiltinNames.string_ident, new ArrayList<>(), saved);
+    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.string_ident);
+    if (!stringClass.isComplete()) {
+      // parser.perror("string-class is incomplete");
+    }
 
     final List<FuncArg> argums = new ArrayList<>();
     argums

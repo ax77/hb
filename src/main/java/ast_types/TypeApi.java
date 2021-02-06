@@ -29,4 +29,5 @@ public interface TypeApi {
   public boolean is_numeric();
   public boolean is_integer();
   public boolean is_floating();
+  public boolean is_builtin_array();
 }

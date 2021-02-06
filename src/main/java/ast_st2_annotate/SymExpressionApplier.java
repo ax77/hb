@@ -22,7 +22,9 @@ import ast_expr.FuncArg;
 import ast_method.ClassMethodDeclaration;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import ast_types.TypeBase;
 import ast_types.TypeBindings;
+import ast_types.TypeBuiltinArray;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -153,7 +155,8 @@ public class SymExpressionApplier {
   }
 
   private void applyStringLiteral(final ExprExpression e) {
-    // TODO:
+    final Type tp = new Type(new TypeBuiltinArray(new Type(TypeBase.TP_U8, e.getBeginPos())), e.getBeginPos());
+    e.setResultType(tp);
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {

@@ -9,6 +9,7 @@ import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
+import ast_types.TypeBuiltinArray;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -103,8 +104,11 @@ public class ParseType {
 
     // array<T> class
     final ClassDeclaration currentc = parser.getCurrentClass(true);
-    if (!currentc.getIdentifier().equals(BuiltinNames.array_ident)) {
-      parser.perror("you cannot use builtin.array, this type is predefined only for array<T> class");
+    final boolean isOk = currentc.getIdentifier().equals(BuiltinNames.array_ident)
+        || currentc.getIdentifier().equals(BuiltinNames.string_ident);
+    if (!isOk) {
+      parser.perror(
+          "you cannot use builtin.array, this type is predefined only for array<T> class, and string-bootstrap class");
     }
 
     final Token beginPos = parser.checkedMove(BuiltinNames.builtin_ident);
@@ -118,7 +122,7 @@ public class ParseType {
     }
 
     // TODO: how about type-setters?
-    return new Type(arguments.get(0), beginPos);
+    return new Type(new TypeBuiltinArray(arguments.get(0)), beginPos);
   }
 
   private boolean isRefTypenameT(Ident typeName) {
