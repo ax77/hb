@@ -6,6 +6,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtFor;
 import ast_stmt.StmtForeach;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
@@ -41,10 +42,25 @@ public class SymStatementApplier {
       applyExpression(object, statement.getExprStmt());
     } else if (base == StatementBase.SWHILE) {
       visitWhile(object, method, statement);
+    } else if (base == StatementBase.SFOR) {
+      applyFor(object, method, statement.getForStmt());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
+  }
+
+  private void applyFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
+
+    symtabApplier.openBlockScope("block");
+    visitLocalVar(object, stmtFor.getDecl());
+
+    applyExpression(object, stmtFor.getInit());
+    applyExpression(object, stmtFor.getTest());
+    applyExpression(object, stmtFor.getStep());
+    applyStatement(object, method, stmtFor.getLoop());
+
+    symtabApplier.closeBlockScope();
   }
 
   private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method,
@@ -68,7 +84,7 @@ public class SymStatementApplier {
 
   private void visitForLoop(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtStatement statement) {
-    final StmtForeach forloop = statement.getForStmt();
+    final StmtForeach forloop = statement.getForeachStmt();
 
     final ForeachToWhileRewriter rewriter = new ForeachToWhileRewriter(symtabApplier, object, forloop);
     final StmtBlock resultBlock = rewriter.genBlock();

@@ -14,10 +14,10 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_st2_annotate.Mods;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtFor;
 import ast_stmt.StmtForeach;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
@@ -115,7 +115,8 @@ public class ParseStatement {
     // for item in collection {  }
 
     if (parser.is(for_ident)) {
-      return parseForeach();
+      return parseForLoop();
+      //return parseForeach();
     }
 
     // if 
@@ -169,6 +170,64 @@ public class ParseStatement {
 
     final StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
     return new StmtStatement(new StmtForeach(iter, collection, loop, beginPos), beginPos);
+  }
+
+  private StmtStatement parseForLoop() {
+
+    VarDeclarator decl = null;
+    ExprExpression init = null;
+    ExprExpression test = null;
+    ExprExpression step = null;
+    StmtStatement loop = null;
+
+    Token from = parser.checkedMove(for_ident);
+    parser.lparen();
+
+    if (parser.tp() != T_SEMI_COLON) {
+
+      if (parser.isTypeWithOptModifiersBegin()) {
+        final Modifiers mods = new ParseModifiers(parser).parse();
+        final Type type = new ParseType(parser).getType();
+        final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+        final Ident name = beginPos.getIdent();
+        decl = new ParseVarDeclarator(parser).parse(VarBase.LOCAL_VAR, mods, type, name, beginPos);
+      }
+
+      else {
+        init = parseForLoopExpressions();
+        parser.semicolon();
+      }
+    }
+
+    else {
+      parser.semicolon();
+    }
+
+    if (parser.tp() != T_SEMI_COLON) {
+      test = parseForLoopExpressions();
+    }
+    parser.semicolon();
+
+    if (parser.tp() != T.T_RIGHT_PAREN) {
+      step = parseForLoopExpressions();
+    }
+    parser.rparen();
+
+    checkSemicolonAndLbrace();
+    loop = parseStatement();
+
+    return new StmtStatement(new StmtFor(decl, init, test, step, loop), from);
+  }
+
+  private ExprExpression parseForLoopExpressions() {
+    return new ParseExpression(parser).e_expression();
+  }
+
+  private void checkSemicolonAndLbrace() {
+    parser.errorStraySemicolon();
+    if (!parser.is(T.T_LEFT_BRACE)) {
+      parser.perror("unbraced statements are deprecated by design.");
+    }
   }
 
   private void shouldBeIfOrLeftBrace() {

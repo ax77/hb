@@ -77,8 +77,10 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(mod.toString());
-    sb.append(" ");
+    if (!mod.isEmpty()) {
+      sb.append(mod.toString());
+      sb.append(" ");
+    }
     sb.append(type.toString());
     sb.append(" ");
     sb.append(identifier.getName());

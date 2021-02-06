@@ -11,6 +11,7 @@ public enum StatementBase {
   , SCONTINUE
   , SFOREACH_TMP
   , SRETURN
+  , SFOR
 //  , SGOTO
 //  , SLABEL
 }

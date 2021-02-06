@@ -12,6 +12,7 @@ import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
+import ast_types.TypePrinters;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
 import tokenize.Token;
@@ -123,9 +124,12 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     }
 
     if (isConstructor()) {
-      sb.append(mod.toString());
-      sb.append(" ");
+      if (!mod.isEmpty()) {
+        sb.append(mod.toString());
+        sb.append(" ");
+      }
       sb.append(identifier);
+      sb.append(TypePrinters.typeArgumentsToString(clazz.getTypeParametersT()));
       sb.append(parametersToString());
     }
 

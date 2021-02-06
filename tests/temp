@@ -3,7 +3,10 @@ import std.LinkedList;
 class test
 {
   void f() {
-    LinkedList<int> args;
-    for item in args {}
+    LinkedList<int> args = new LinkedList<int>();
+    for(int i=0; i<8; i+=1) {
+      for(int j=0; j<8; j+=1) {
+      }
+    }
   }
 }

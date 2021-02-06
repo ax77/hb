@@ -17,12 +17,19 @@ public class StmtStatement implements Serializable, Location {
   private StmtForeach forEachStmt;
   private StmtSelect ifStmt;
   private StmtWhile whileStmt;
+  private StmtFor forStmt;
 
   //MIR:TREE:rewriter
   public void replaceForLoopWithBlock(StmtBlock block) {
     this.base = StatementBase.SBLOCK;
     this.bloskStmt = block;
     this.forEachStmt = null;
+  }
+
+  public StmtStatement(StmtFor forStmt, Token beginPos) {
+    this.base = StatementBase.SFOR;
+    this.beginPos = beginPos;
+    this.forStmt = forStmt;
   }
 
   public StmtStatement(StmtWhile whileStmt, Token beginPos) {
@@ -71,8 +78,12 @@ public class StmtStatement implements Serializable, Location {
     return exprStmt;
   }
 
-  public StmtForeach getForStmt() {
+  public StmtForeach getForeachStmt() {
     return forEachStmt;
+  }
+
+  public StmtFor getForStmt() {
+    return forStmt;
   }
 
   public StmtSelect getIfStmt() {
@@ -106,6 +117,9 @@ public class StmtStatement implements Serializable, Location {
     }
     if (base == StatementBase.SWHILE) {
       return whileStmt.toString();
+    }
+    if (base == StatementBase.SFOR) {
+      return forStmt.toString();
     }
     return base.toString();
   }
