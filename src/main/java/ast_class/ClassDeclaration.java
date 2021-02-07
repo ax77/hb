@@ -7,6 +7,7 @@ import java.util.List;
 
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
@@ -27,6 +28,7 @@ public class ClassDeclaration implements Serializable, Location {
 
   /// class, interface, enum
   private final Ident keyword;
+  private Modifiers modifiers;
 
   private /*final*/ Token beginPos;
   private final Ident identifier;
@@ -82,6 +84,7 @@ public class ClassDeclaration implements Serializable, Location {
     checkTypeParameters(typeParametersT);
 
     this.keyword = keyword;
+    this.modifiers = new Modifiers();
     this.identifier = identifier;
     this.typeParametersT = Collections.unmodifiableList(typeParametersT);
     this.beginPos = beginPos;
@@ -253,6 +256,14 @@ public class ClassDeclaration implements Serializable, Location {
     for (VarDeclarator param : e.getParameters()) {
       registerTypeSetter(param);
     }
+  }
+
+  public Modifiers getModifiers() {
+    return modifiers;
+  }
+
+  public void setModifiers(Modifiers modifiers) {
+    this.modifiers = modifiers;
   }
 
   public List<ClassMethodDeclaration> getConstructors() {

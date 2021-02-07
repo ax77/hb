@@ -36,6 +36,8 @@ public class ParseTypeDeclarations {
 
     if (parser.is(Keywords.class_ident) || parser.is(Keywords.interface_ident)) {
       final ClassDeclaration clazz = parseClassDeclaration(parser.tok().getIdent());
+      clazz.setModifiers(modifiers);
+
       if (clazz.isTemplate()) {
         unit.putTemplate(clazz);
       } else {
@@ -175,14 +177,7 @@ public class ParseTypeDeclarations {
   private void parseInterfaceMethods(ClassDeclaration clazz) {
 
     final Modifiers mods = new ParseModifiers(parser).parse();
-
-    Type type = new Type(parser.tok());
-    if (parser.is(Keywords.void_ident)) {
-      parser.move();
-    } else {
-      type = new ParseType(parser).getType();
-    }
-
+    final Type type = getTypeOrVoidStub();
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident name = beginPos.getIdent();
 
@@ -191,12 +186,29 @@ public class ParseTypeDeclarations {
 
   }
 
+  private Type getTypeOrVoidStub() {
+    Type type = new Type(parser.tok());
+    if (parser.is(Keywords.void_ident)) {
+      parser.move();
+    } else {
+      type = new ParseType(parser).getType();
+    }
+    return type;
+  }
+
+  private boolean isConstructor(ClassDeclaration clazz) {
+    if (!parser.isUserDefinedIdentNoKeyword(parser.tok())) {
+      return false;
+    }
+    final boolean idTheSame = parser.tok().getIdent().equals(clazz.getIdentifier());
+    return idTheSame && parser.peek().ofType(T.T_LEFT_PAREN);
+  }
+
   private void putConstructorOrFieldOrMethodIntoClass(ClassDeclaration clazz) {
 
     final Modifiers mods = new ParseModifiers(parser).parse();
 
-    if (parser.isUserDefinedIdentNoKeyword(parser.tok()) && parser.tok().getIdent().equals(clazz.getIdentifier())
-        && parser.peek().ofType(T.T_LEFT_PAREN)) {
+    if (isConstructor(clazz)) {
       putConstructor(clazz, mods);
       return;
     }
@@ -217,13 +229,7 @@ public class ParseTypeDeclarations {
     // private int a ;
     // private int a() {}
 
-    Type type = new Type(parser.tok());
-    if (parser.is(Keywords.void_ident)) {
-      parser.move();
-    } else {
-      type = new ParseType(parser).getType();
-    }
-
+    final Type type = getTypeOrVoidStub();
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident name = beginPos.getIdent();
 
