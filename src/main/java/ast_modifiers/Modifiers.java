@@ -69,12 +69,28 @@ public class Modifiers implements Serializable {
     return sb.toString().trim();
   }
 
-  //@formatter:off
-  public boolean isPrivate() { return modifiers.contains(Keywords.private_ident); }
-  public boolean isPublic()  { return modifiers.contains(Keywords.public_ident); }
-  public boolean isNative()  { return modifiers.contains(Keywords.native_ident); }
-  public boolean isStatic()  { return modifiers.contains(Keywords.static_ident); }
-  public boolean isFinal()   { return modifiers.contains(Keywords.final_ident); }
-  //@formatter:on
+  public boolean isPrivate() {
+    return modifiers.contains(Keywords.private_ident);
+  }
+
+  public boolean isPublic() {
+    return modifiers.contains(Keywords.public_ident);
+  }
+
+  public boolean isNative() {
+    return modifiers.contains(Keywords.native_ident);
+  }
+
+  public boolean isStatic() {
+    return modifiers.contains(Keywords.static_ident);
+  }
+
+  public boolean isStaticOnly() {
+    return modifiers.size() == 1 && modifiers.contains(Keywords.static_ident);
+  }
+
+  public boolean isFinal() {
+    return modifiers.contains(Keywords.final_ident);
+  }
 
 }

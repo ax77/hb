@@ -1,13 +1,25 @@
 
 interface Equal<T>
 {
-  void isEqualTo(T another);
+  boolean equal(T another);
+  int hash();
+  int cmp(T another);
 }
 
-class Tree<T> implements Equal<Tree<T>>
+interface Some
+{
+  boolean has();
+}
+
+class Tree<T> implements Equal<Tree<T>>, Some
 {
   Tree<T> lhs;
   Tree<T> rhs;
+  
+  static int c;
+  static {
+    c = -1;
+  }
 }
 
 class t 

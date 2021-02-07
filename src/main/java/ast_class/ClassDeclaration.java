@@ -10,6 +10,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
+import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
@@ -32,6 +33,7 @@ public class ClassDeclaration implements Serializable, Location {
   private final List<ClassMethodDeclaration> constructors;
   private final List<VarDeclarator> fields;
   private final List<ClassMethodDeclaration> methods;
+  private final List<StmtBlock> staticBlocks;
   private ClassMethodDeclaration destructor;
 
   /// if it is a class it may implements some interfaces
@@ -88,6 +90,7 @@ public class ClassDeclaration implements Serializable, Location {
     this.constructors = new ArrayList<>();
     this.fields = new ArrayList<>();
     this.methods = new ArrayList<>();
+    this.staticBlocks = new ArrayList<>();
     this.typeSetters = new ArrayList<>();
     this.interfaces = new ArrayList<>();
   }
@@ -149,8 +152,13 @@ public class ClassDeclaration implements Serializable, Location {
       return true;
     }
 
-    final Ident anotherId = another.getIdentifier();
-    if (!identifier.equals(anotherId)) {
+    // class/interface/enum
+    if (!keyword.equals(another.getKeyword())) {
+      return false;
+    }
+
+    // type-name
+    if (!identifier.equals(another.getIdentifier())) {
       return false;
     }
 
@@ -169,6 +177,14 @@ public class ClassDeclaration implements Serializable, Location {
     }
     if (methods.size() != another.getMethods().size()) {
       System.out.println("not equal: methods");
+      return false;
+    }
+    if (staticBlocks.size() != another.getStaticBlocks().size()) {
+      System.out.println("not equal: static {}");
+      return false;
+    }
+    if (interfaces.size() != another.getInterfaces().size()) {
+      System.out.println("not equal: interfaces");
       return false;
     }
 
@@ -194,6 +210,11 @@ public class ClassDeclaration implements Serializable, Location {
 
   public Ident getIdentifier() {
     return identifier;
+  }
+
+  public void addStaticBlock(StmtBlock block) {
+    NullChecker.check(block);
+    this.staticBlocks.add(block);
   }
 
   public void addInterfaceToImplements(InterfaceItem interfaceItem) {
@@ -240,6 +261,18 @@ public class ClassDeclaration implements Serializable, Location {
 
   public List<VarDeclarator> getFields() {
     return fields;
+  }
+
+  public Ident getKeyword() {
+    return keyword;
+  }
+
+  public List<StmtBlock> getStaticBlocks() {
+    return staticBlocks;
+  }
+
+  public List<InterfaceItem> getInterfaces() {
+    return interfaces;
   }
 
   public List<ClassMethodDeclaration> getMethods() {
@@ -330,6 +363,11 @@ public class ClassDeclaration implements Serializable, Location {
 
     for (VarDeclarator var : fields) {
       sb.append(var.toString() + "\n");
+    }
+
+    for (StmtBlock block : staticBlocks) {
+      sb.append("static ");
+      sb.append(block.toString());
     }
 
     for (ClassMethodDeclaration constructor : constructors) {
