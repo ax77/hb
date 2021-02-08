@@ -1,28 +1,41 @@
+import std.LinkedList;
+import std.StringBuilder;
 
-interface Equal<T>
+class test
 {
-  boolean equal(T another);
-  int hash();
-  int cmp(T another);
-}
-
-interface Some
-{
-  boolean has();
-}
-
-class Tree<T> implements Equal<Tree<T>>, Some
-{
-  Tree<T> lhs;
-  Tree<T> rhs;
+  opt<int> opts1;
+  opt<opt<int>> opts2;
+  opt<opt<opt<int>>> opts3;
   
-  static int c;
-  static {
-    c = -1;
-  }
+  LinkedList<int> list1;
+  LinkedList<LinkedList<int>> list2;
+  
+  StringBuilder sb = new StringBuilder();
 }
 
-class t 
+class opt<T>
 {
-  Tree<int> x = new Tree<int>();
+  T element;
 }
+
+// public class LinkedList<E> {
+//     int size;
+//     Node<E> first;
+//     Node<E> last;
+// }
+// 
+// class Node<E> {
+//   E item;
+//   Node<E> next;
+//   Node<E> prev;
+// }
+// 
+// class ListIterator<E> {
+//   
+//   private LinkedList<E> collection;
+//   private Node<E> lastReturned;
+//   private Node<E> next;
+//   private int nextIndex;
+//   private int size;
+// }
+

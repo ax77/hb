@@ -2,10 +2,7 @@ package ast_main;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import tokenize.Env;
 import tokenize.Stream;
@@ -15,20 +12,20 @@ import utils_fio.FileWrapper;
 
 public class UnitInfo {
 
-  private final Map<String, String> classLocations;
+  private final List<String> classLocations;
   private final List<Token> tokenlist;
 
   public UnitInfo(String unitName) throws IOException {
-    this.classLocations = new HashMap<>();
+    this.classLocations = new ArrayList<>();
     this.tokenlist = new ArrayList<>();
     buildLocations(unitName);
     buildTokenlist();
   }
 
   private void buildTokenlist() throws IOException {
-    for (Entry<String, String> e : classLocations.entrySet()) {
-      FileWrapper fw = new FileWrapper(e.getValue());
-      Stream stream = new Stream(e.getValue(), fw.readToString(FileReadKind.AS_IS));
+    for (String absolutePath : classLocations) {
+      FileWrapper fw = new FileWrapper(absolutePath);
+      Stream stream = new Stream(absolutePath, fw.readToString(FileReadKind.AS_IS));
       final List<Token> tokens = stream.getTokenlist();
       for (Token tok : tokens) {
         // ignoring EOF, and stream-markers
@@ -51,12 +48,8 @@ public class UnitInfo {
       FileWrapper fw = new FileWrapper(s);
       fw.assertIsExists();
       fw.assertIsFile();
-      classLocations.put(fw.getBasename(), fw.getFullname());
+      classLocations.add(fw.getFullname());
     }
-  }
-
-  public Map<String, String> getClassLocations() {
-    return classLocations;
   }
 
   public List<Token> getTokenlist() {

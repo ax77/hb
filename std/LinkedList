@@ -1,6 +1,4 @@
 
-forward class Node;
-forward class ListIterator;
 
 public class LinkedList<E> {
     int size;

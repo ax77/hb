@@ -4,21 +4,18 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_st0_resolve.CUnitCompleteChecker;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
-import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
-import tokenize.Env;
-import tokenize.Ident;
+import tokenize.T;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -46,17 +43,35 @@ public class ParserMain implements ParserMainApi {
     final List<Token> tokens = info.getTokenlist();
     final Parse parser = new Parse(new Tokenlist(tokens));
 
-    for (Entry<String, String> ent : info.getClassLocations().entrySet()) {
-      // EOF_TOKEN_ENTRY - it means nothing here, just a stub,
-      // because it will be rewritten when the 'real' class 
-      // at real position of the source
-      // when it will be founded and fully parsed.
-      // i.e. : in normal declaration like 'class name<T> { ... }'
-      final Ident typename = Hash_ident.getHashedIdent(ent.getKey());
-      final ArrayList<Type> emptyTypeParams = new ArrayList<>();
-      final ClassDeclaration forward = new ClassDeclaration(Keywords.class_ident, typename, emptyTypeParams,
-          Env.EOF_TOKEN_ENTRY);
-      parser.defineClassName(forward);
+    // silly type-names resolver :)
+    final Tokenlist toResolve = new Tokenlist(tokens);
+    while (toResolve.hasNext()) {
+      final Token tok = toResolve.next();
+      if (tok.ofType(T.TOKEN_EOF)) {
+        break;
+      }
+
+      // class Tree<T> {
+      // ^.....^...^
+      // 
+      // class Tree {
+      // ^.....^....^
+      final boolean isKeyword = tok.isIdent(Keywords.class_ident) || tok.isIdent(Keywords.interface_ident);
+      if (isKeyword) {
+        final Token className = toResolve.next();
+        if (!className.ofType(T.TOKEN_IDENT)) {
+          throw new AstParseException("expect class-name, but was: " + className.getValue());
+        }
+        final ClassDeclaration clazz = new ClassDeclaration(tok.getIdent(), className.getIdent(), new ArrayList<>(),
+            className);
+        parser.defineClassName(clazz);
+
+        final Token peek = toResolve.peek();
+        final boolean isOk = peek.ofType(T.T_LEFT_BRACE) || peek.ofType(T.T_LT);
+        if (!isOk) {
+          throw new AstParseException("expect class-name, but was: " + peek.getValue());
+        }
+      }
     }
 
     return parser;
