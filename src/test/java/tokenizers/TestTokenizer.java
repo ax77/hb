@@ -32,7 +32,7 @@ public class TestTokenizer {
     assertEquals(5 + 1, new Stream(".", "int main return 0 ;").getTokenlist().size());
     assertEquals(5 + 1, new Stream(".", ",./?-").getTokenlist().size());
     assertEquals(2 + 1, new Stream(".", "_111 _000").getTokenlist().size());
-    assertEquals(2 + 1, new Stream(".", "1u8 2u8").getTokenlist().size());
+    assertEquals(2 + 1, new Stream(".", "1 2").getTokenlist().size());
 
   }
 

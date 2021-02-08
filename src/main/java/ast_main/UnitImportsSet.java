@@ -15,7 +15,7 @@ import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
 import utils_oth.Normalizer;
 
-public class ImportsResolver {
+public class UnitImportsSet {
 
   private final String dir;
   private final Set<String> fullyRead;
@@ -24,7 +24,7 @@ public class ImportsResolver {
     return fullyRead;
   }
 
-  public ImportsResolver(final String thisFname) throws IOException {
+  public UnitImportsSet(final String thisFname) throws IOException {
     this.dir = System.getProperty("user.dir");
     this.fullyRead = new HashSet<>();
 

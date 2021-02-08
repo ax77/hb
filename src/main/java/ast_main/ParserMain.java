@@ -2,7 +2,6 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -15,7 +14,6 @@ import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
-import tokenize.T;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -43,35 +41,8 @@ public class ParserMain implements ParserMainApi {
     final List<Token> tokens = info.getTokenlist();
     final Parse parser = new Parse(new Tokenlist(tokens));
 
-    // silly type-names resolver :)
-    final Tokenlist toResolve = new Tokenlist(tokens);
-    while (toResolve.hasNext()) {
-      final Token tok = toResolve.next();
-      if (tok.ofType(T.TOKEN_EOF)) {
-        break;
-      }
-
-      // class Tree<T> {
-      // ^.....^...^
-      // 
-      // class Tree {
-      // ^.....^....^
-      final boolean isKeyword = tok.isIdent(Keywords.class_ident) || tok.isIdent(Keywords.interface_ident);
-      if (isKeyword) {
-        final Token className = toResolve.next();
-        if (!className.ofType(T.TOKEN_IDENT)) {
-          throw new AstParseException("expect class-name, but was: " + className.getValue());
-        }
-        final ClassDeclaration clazz = new ClassDeclaration(tok.getIdent(), className.getIdent(), new ArrayList<>(),
-            className);
-        parser.defineClassName(clazz);
-
-        final Token peek = toResolve.peek();
-        final boolean isOk = peek.ofType(T.T_LEFT_BRACE) || peek.ofType(T.T_LT);
-        if (!isOk) {
-          throw new AstParseException("expect class-name, but was: " + peek.getValue());
-        }
-      }
+    for (ClassDeclaration c : info.getTypenames()) {
+      parser.defineClassName(c);
     }
 
     return parser;

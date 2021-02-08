@@ -10,7 +10,7 @@ public abstract class BuiltinNames {
   // builtin.something
   public static final Ident builtin_ident        = g("builtin");
   // arrays
-  public static final Ident array_ident          = g("array");
+  public static final Ident array_ident          = g("ArrayList");
   public static final Ident array_declare_ident  = g("array_declare");
   public static final Ident array_add_ident      = g("array_add");
   public static final Ident array_size_ident     = g("array_size");

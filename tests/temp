@@ -1,7 +1,9 @@
 import std.LinkedList;
 import std.StringBuilder;
+import std.String;
+import std.ArrayList;
 
-class test
+class test implements Equal
 {
   opt<int> opts1;
   opt<opt<int>> opts2;
@@ -11,6 +13,8 @@ class test
   LinkedList<LinkedList<int>> list2;
   
   StringBuilder sb = new StringBuilder();
+  ArrayList<String> temps1 = new ArrayList<String>();
+  ArrayList<opt<int>> temps2 = new ArrayList<opt<int>>();
 }
 
 class opt<T>
@@ -18,24 +22,7 @@ class opt<T>
   T element;
 }
 
-// public class LinkedList<E> {
-//     int size;
-//     Node<E> first;
-//     Node<E> last;
-// }
-// 
-// class Node<E> {
-//   E item;
-//   Node<E> next;
-//   Node<E> prev;
-// }
-// 
-// class ListIterator<E> {
-//   
-//   private LinkedList<E> collection;
-//   private Node<E> lastReturned;
-//   private Node<E> next;
-//   private int nextIndex;
-//   private int size;
-// }
+interface Equal {
+  void f();
+}
 
