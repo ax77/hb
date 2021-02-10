@@ -7,6 +7,14 @@ class ArrayList<T>
 	  builtin.array_add<T>(table, element);
 	}
 	
+	int size() {
+	  return builtin.array_size<T>(table);
+	}
+	
+	T get(int index) {
+	  return builtin.array_get<T>(table, index);
+	}
+	
   // func get_iterator() -> array_iterator<T>
   // {
   //   return new array_iterator<T>();

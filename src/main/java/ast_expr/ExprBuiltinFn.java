@@ -3,13 +3,12 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
-import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import ast_types.TypePrinters;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ExprBuiltinFn implements Serializable, TypeSetter {
+public class ExprBuiltinFn implements Serializable {
   private static final long serialVersionUID = 166218239967767110L;
 
   private final Ident function;
@@ -46,16 +45,6 @@ public class ExprBuiltinFn implements Serializable, TypeSetter {
   public String toString() {
     return "builtin." + function.getName() + "_" + TypePrinters.typeArgumentsToString(typeArguments)
         + ExprUtil.funcArgsToString(arguments);
-  }
-
-  @Override
-  public void setType(Type typeToSet) {
-    this.returnType = typeToSet;
-  }
-
-  @Override
-  public Type getType() {
-    return returnType;
   }
 
 }

@@ -44,6 +44,7 @@ import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import ast_types.TypeBase;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -557,13 +558,26 @@ public class ParseExpression {
     //   return new ExprExpression(BuiltinFunctionsCreator.panic_fn(beginPos, arguments), beginPos);
     // }
 
+    // TODO:clean
     if (funcname.equals(BuiltinNames.array_add_ident)) {
       final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
       final List<ExprExpression> arguments = parseArglist();
-
       final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments, new Type(beginPos));
+      return new ExprExpression(builtinFn, beginPos);
+    }
 
-      parser.getCurrentClass(true).registerTypeSetter(builtinFn);
+    if (funcname.equals(BuiltinNames.array_size_ident)) {
+      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
+      final List<ExprExpression> arguments = parseArglist();
+      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments,
+          new Type(TypeBase.TP_int, beginPos));
+      return new ExprExpression(builtinFn, beginPos);
+    }
+
+    if (funcname.equals(BuiltinNames.array_get_ident)) {
+      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
+      final List<ExprExpression> arguments = parseArglist();
+      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments, typeArguments.get(0));
       return new ExprExpression(builtinFn, beginPos);
     }
 
