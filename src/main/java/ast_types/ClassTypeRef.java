@@ -52,6 +52,7 @@ public class ClassTypeRef implements Serializable {
     StringBuilder sb = new StringBuilder();
     sb.append(clazz.getIdentifier().getName());
     if (!typeArguments.isEmpty()) {
+      sb.append("_");
       sb.append(TypePrinters.typeArgumentsToString(typeArguments));
     }
     return sb.toString();

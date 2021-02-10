@@ -38,7 +38,7 @@ public abstract class BuiltinNames {
        id.equals(BuiltinNames.builtin_ident       )
     || id.equals(BuiltinNames.array_ident         )
     || id.equals(BuiltinNames.array_declare_ident )
-//    || id.equals(BuiltinNames.array_add_ident     )
+    || id.equals(BuiltinNames.array_add_ident     )
 //    || id.equals(BuiltinNames.array_size_ident    )
 //    || id.equals(BuiltinNames.array_get_ident     )
 //    || id.equals(BuiltinNames.array_set_ident     )

@@ -1,28 +1,11 @@
-import std.LinkedList;
-import std.StringBuilder;
-import std.String;
+
 import std.ArrayList;
 
-class test implements Equal
+class test
 {
-  opt<int> opts1;
-  opt<opt<int>> opts2;
-  opt<opt<opt<int>>> opts3;
-  
-  LinkedList<int> list1;
-  LinkedList<LinkedList<int>> list2;
-  
-  StringBuilder sb = new StringBuilder();
-  ArrayList<String> temps1 = new ArrayList<String>();
-  ArrayList<opt<int>> temps2 = new ArrayList<opt<int>>();
-}
-
-class opt<T>
-{
-  T element;
-}
-
-interface Equal {
-  void f();
+  void fn() {
+    ArrayList<ArrayList<int>> opts = new ArrayList<ArrayList<int>>();
+    opts.add(new ArrayList<int>());
+  }
 }
 

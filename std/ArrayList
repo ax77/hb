@@ -3,6 +3,10 @@ class ArrayList<T>
 {
 	private final builtin.array_declare<T> table;
 	
+	void add(T element) {
+	  builtin.array_add<T>(table, element);
+	}
+	
   // func get_iterator() -> array_iterator<T>
   // {
   //   return new array_iterator<T>();

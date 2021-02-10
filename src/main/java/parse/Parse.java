@@ -286,6 +286,10 @@ public class Parse {
     return tokenlist.peek();
   }
 
+  public ArrayList<Token> peekCnt(int howMuch) {
+    return tokenlist.peekCnt(howMuch);
+  }
+
   public Token lparen() {
     return checkedMove(T.T_LEFT_PAREN);
   }

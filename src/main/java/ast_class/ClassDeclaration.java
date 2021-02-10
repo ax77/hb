@@ -362,6 +362,7 @@ public class ClassDeclaration implements Serializable, Location {
     sb.append(identifier.getName());
 
     if (!typeParametersT.isEmpty()) {
+      sb.append("_");
       sb.append(TypePrinters.typeArgumentsToString(typeParametersT));
     }
 

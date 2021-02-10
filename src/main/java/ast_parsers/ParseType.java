@@ -62,7 +62,15 @@ public class ParseType {
     }
 
     if (!typeWasFound) {
-      typeWasFound = parser.is(BuiltinNames.builtin_ident);
+      final ArrayList<Token> peek3 = parser.peekCnt(2);
+      final Token tok1 = peek3.get(0);
+      final Token tok2 = peek3.get(1);
+
+      // builtin . array_declare
+
+      typeWasFound = parser.is(BuiltinNames.builtin_ident) && tok1.ofType(T.T_DOT)
+          && tok2.isIdent(BuiltinNames.array_declare_ident);
+
       if (typeWasFound) {
         this.isBuiltinArray = true;
       }

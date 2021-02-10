@@ -1,7 +1,9 @@
 package parse;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import errors.AstParseException;
 import errors.ScanExc;
 import tokenize.Env;
 import tokenize.Token;
@@ -31,6 +33,19 @@ public class Tokenlist {
     Token t = next();
     offset = s;
     return t;
+  }
+
+  public ArrayList<Token> peekCnt(int howMuch) {
+    if (howMuch < 0 || howMuch >= 8) {
+      throw new AstParseException("you want to look-ahead too much tokens :)");
+    }
+    final ArrayList<Token> rv = new ArrayList<>();
+    final int s = offset;
+    for (int i = 0; i < howMuch; i++) {
+      rv.add(next());
+    }
+    offset = s;
+    return rv;
   }
 
   public List<Token> getList() {
