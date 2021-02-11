@@ -25,12 +25,10 @@ import static tokenize.T.T_XOR;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_builtins.BuiltinFunctionsCreator;
 import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
-import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
@@ -44,7 +42,6 @@ import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
-import ast_types.TypeBase;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -446,33 +443,13 @@ public class ParseExpression {
   }
 
   private List<ExprExpression> parseArglist() {
-
-    parser.lparen();
-    final List<ExprExpression> arglist = new ArrayList<>();
-
-    if (parser.is(T.T_RIGHT_PAREN)) {
-      parser.rparen();
-      return arglist;
-    }
-
-    arglist.add(getOneArg());
-    while (parser.is(T.T_COMMA)) {
-      parser.move();
-      arglist.add(getOneArg());
-    }
-
-    parser.rparen();
-    return arglist;
-  }
-
-  private ExprExpression getOneArg() {
-    return e_assign();
+    return new ParseFcallArgs(parser).parse();
   }
 
   private ExprExpression e_prim() {
 
     if (parser.is(BuiltinNames.builtin_ident)) {
-      return readBuiltinFn();
+      return new ParseBuiltinsFn(parser).parse();
     }
 
     if (parser.is(T.TOKEN_STRING)) {
@@ -535,60 +512,6 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
-  }
-
-  private ExprExpression readBuiltinFn() {
-
-    // builtin .
-    final Token beginPos = parser.checkedMove(BuiltinNames.builtin_ident);
-    parser.checkedMove(T.T_DOT);
-
-    final Ident funcname = parser.getIdent();
-    checkIsCorrectBuiltinIdent(funcname);
-
-    // if (funcname.equals(BuiltinNames.read_file_ident)) {
-    //   return new ExprExpression(BuiltinFunctionsCreator.read_file_fn(beginPos, arguments), beginPos);
-    // }
-    // 
-    // if (funcname.equals(BuiltinNames.write_file_ident)) {
-    //   return new ExprExpression(BuiltinFunctionsCreator.write_file_fn(beginPos, arguments), beginPos);
-    // }
-    // 
-    // if (funcname.equals(BuiltinNames.panic_ident)) {
-    //   return new ExprExpression(BuiltinFunctionsCreator.panic_fn(beginPos, arguments), beginPos);
-    // }
-
-    // TODO:clean
-    if (funcname.equals(BuiltinNames.array_add_ident)) {
-      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-      final List<ExprExpression> arguments = parseArglist();
-      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments, new Type(beginPos));
-      return new ExprExpression(builtinFn, beginPos);
-    }
-
-    if (funcname.equals(BuiltinNames.array_size_ident)) {
-      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-      final List<ExprExpression> arguments = parseArglist();
-      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments,
-          new Type(TypeBase.TP_int, beginPos));
-      return new ExprExpression(builtinFn, beginPos);
-    }
-
-    if (funcname.equals(BuiltinNames.array_get_ident)) {
-      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
-      final List<ExprExpression> arguments = parseArglist();
-      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, arguments, typeArguments.get(0));
-      return new ExprExpression(builtinFn, beginPos);
-    }
-
-    parser.perror("unimplemented builtin function: " + funcname.toString());
-    return null;
-  }
-
-  private void checkIsCorrectBuiltinIdent(Ident funcname) {
-    if (!BuiltinNames.isCorrectBuiltinIdent(funcname)) {
-      parser.perror("unimplemented builtin function: " + funcname.toString());
-    }
   }
 
   private ExprExpression parseStringLiteral() {
