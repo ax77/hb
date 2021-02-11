@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import utils_fio.FileSearchKind;
@@ -12,6 +13,7 @@ import utils_fio.FileWrapper;
 
 public class TestTemplates {
 
+  @Ignore
   @Test
   public void test() throws IOException {
 
@@ -26,13 +28,13 @@ public class TestTemplates {
     for (FileWrapper fw : files) {
       final String basename = fw.getBasename();
 
-      final boolean isOk = basename.startsWith("test_templates_") && !basename.endsWith("_exp");
+      final boolean isOk = basename.startsWith("test_templates_") && !basename.endsWith("_exp.hb");
       if (!isOk) {
         continue;
       }
 
       final String fullname = fw.getFullname();
-      paths.put(fullname, fullname + "_exp");
+      paths.put(fullname, fullname + "_exp.hb");
     }
 
     for (Entry<String, String> ent : paths.entrySet()) {

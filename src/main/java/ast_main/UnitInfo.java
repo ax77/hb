@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import ast_class.ClassDeclaration;
 import ast_symtab.Keywords;
@@ -33,6 +34,7 @@ public class UnitInfo {
     buildTypenames();
   }
 
+
   private void buildTokenlist() throws IOException {
     for (String absolutePath : classLocations) {
       final FileWrapper fw = new FileWrapper(absolutePath);
@@ -55,7 +57,8 @@ public class UnitInfo {
   //
   private void buildLocations(final String unitName) throws IOException {
     final UnitImportsSet importsResolver = new UnitImportsSet(unitName);
-    for (String s : importsResolver.getFullyRead()) {
+    final Set<String> fullyRead = importsResolver.getFullyRead();
+    for (String s : fullyRead) {
       FileWrapper fw = new FileWrapper(s);
       fw.assertIsExists();
       fw.assertIsFile();

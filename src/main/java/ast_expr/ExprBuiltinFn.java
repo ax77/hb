@@ -43,8 +43,15 @@ public class ExprBuiltinFn implements Serializable {
 
   @Override
   public String toString() {
-    return "builtin." + function.getName() + "_" + TypePrinters.typeArgumentsToString(typeArguments)
-        + ExprUtil.funcArgsToString(arguments);
+    StringBuilder sb = new StringBuilder();
+    sb.append("builtin.");
+    sb.append(function.getName());
+    if (!typeArguments.isEmpty()) {
+      sb.append("_");
+      sb.append(TypePrinters.typeArgumentsToString(typeArguments));
+    }
+    sb.append(ExprUtil.funcArgsToString(arguments));
+    return sb.toString();
   }
 
 }

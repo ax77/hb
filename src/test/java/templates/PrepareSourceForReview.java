@@ -1,5 +1,6 @@
 package templates;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ast_class.ClassDeclaration;
@@ -9,6 +10,7 @@ import utils.UtilSrcToStringLevel;
 
 public class PrepareSourceForReview {
 
+  @Ignore
   @Test
   public void testPrepareSourceForTemplatesTesting() throws Exception {
 

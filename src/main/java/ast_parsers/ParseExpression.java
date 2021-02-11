@@ -518,7 +518,7 @@ public class ParseExpression {
 
     Token saved = parser.moveget();
 
-    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.string_ident);
+    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.String_ident);
     if (!stringClass.isComplete()) {
       // parser.perror("string-class is incomplete");
     }

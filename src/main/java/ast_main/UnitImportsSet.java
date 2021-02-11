@@ -34,6 +34,9 @@ public class UnitImportsSet {
     }
 
     getImports(givenName);
+    fullyRead.add(dir + "/std/ArrayList.hb");
+    fullyRead.add(dir + "/std/String.hb");
+    fullyRead.add(dir + "/std/StringBuilder.hb");
   }
 
   private void getImports(String filename) throws IOException {

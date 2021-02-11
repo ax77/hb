@@ -62,9 +62,9 @@ public class ParseType {
     }
 
     if (!typeWasFound) {
-      final ArrayList<Token> peek3 = parser.peekCnt(2);
-      final Token tok1 = peek3.get(0);
-      final Token tok2 = peek3.get(1);
+      final ArrayList<Token> peekToks = parser.peekCnt(2);
+      final Token tok1 = peekToks.get(0);
+      final Token tok2 = peekToks.get(1);
 
       // builtin . array_declare
 
@@ -112,8 +112,8 @@ public class ParseType {
 
     // array<T> class
     final ClassDeclaration currentc = parser.getCurrentClass(true);
-    final boolean isOk = currentc.getIdentifier().equals(BuiltinNames.array_ident)
-        || currentc.getIdentifier().equals(BuiltinNames.string_ident);
+    final boolean isOk = currentc.getIdentifier().equals(BuiltinNames.ArrayList_ident)
+        || currentc.getIdentifier().equals(BuiltinNames.String_ident);
     if (!isOk) {
       parser.perror(
           "you cannot use builtin.array, this type is predefined only for array<T> class, and string-bootstrap class");

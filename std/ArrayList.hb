@@ -11,7 +11,7 @@ class ArrayList<T> {
   }
 
   T get(int index) {
-	  return builtin.array_get<T>(table, index);
+	  return builtin.array_get < T > (table, index);
 	}
 
   T set(int index, T element) {

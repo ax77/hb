@@ -158,6 +158,7 @@ public class ParseStatement {
     return new StmtStatement(new StmtSelect(condition, trueStatement, optionalElseStatement), ifKeyword);
   }
 
+  @SuppressWarnings("unused")
   private StmtStatement parseForeach() {
 
     // for item in list {}
