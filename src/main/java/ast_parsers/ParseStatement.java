@@ -14,6 +14,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
+import ast_st2_annotate.Mods;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -27,6 +28,7 @@ import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import parse.Parse;
+import parse.ParseState;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
@@ -59,7 +61,7 @@ public class ParseStatement {
 
   private StmtBlockItem parseOneBlock(VarBase varBase) {
 
-    if (parser.isTypeWithOptModifiersBegin()) {
+    if (isLocalVarBegin()) {
       final Modifiers mods = new ParseModifiers(parser).parse();
       final Type type = new ParseType(parser).getType();
       final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
@@ -77,6 +79,56 @@ public class ParseStatement {
       parser.perror("something wrong in a statement");
     }
     return new StmtBlockItem(stmt);
+  }
+
+  /// this is SOOO ambiguous:
+  /// between expression-statement and variable-declaration
+  /// the clean syntax is: [let varname: int;]
+  /// and we 100% sure if we see the 'let' or 'var' keyword - that
+  /// we should parse declaration instead of expression
+  /// here we need to lookahead, and make the decision:
+  /// is this a expression-statement, or it is a declaration.
+  /// yach...
+  ///
+  /// 1) final int x = 1;
+  /// 2) int x = 1;
+  /// 3) x = 1;
+  ///
+  private boolean isLocalVarBegin() {
+
+    // we should save the state before any modification
+    final ParseState state = new ParseState(parser);
+
+    /// 100% short-circuit
+    /// `final` int a; -> this is a declaration, not an expression
+    if (Mods.isAnyModifier(parser.tok())) {
+      parser.restoreState(state);
+      return true;
+    }
+
+    @SuppressWarnings("unused")
+    final Modifiers mods = new ParseModifiers(parser).parse();
+    final ParseType typeRecognizer = new ParseType(parser);
+
+    if (!typeRecognizer.isType()) {
+      parser.restoreState(state);
+      return false;
+    }
+
+    final Type type = new ParseType(parser).getType();
+    if (type.is_class()) {
+      final ClassDeclaration clazz = type.getClassTypeFromRef();
+      if (clazz.getModifiers().isAbstractOnly()) {
+        // util.read()
+        // unit.write()
+        // etc...
+        parser.restoreState(state);
+        return false;
+      }
+    }
+
+    parser.restoreState(state);
+    return true;
   }
 
   private StmtStatement parseStatement() {
@@ -186,7 +238,7 @@ public class ParseStatement {
 
     if (parser.tp() != T_SEMI_COLON) {
 
-      if (parser.isTypeWithOptModifiersBegin()) {
+      if (isLocalVarBegin()) {
         final Modifiers mods = new ParseModifiers(parser).parse();
         final Type type = new ParseType(parser).getType();
         final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);

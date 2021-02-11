@@ -1,22 +1,22 @@
 
 class ArrayList<T> {
-  private final builtin.array_declare<T> table;
+  private final std.array_declare<T> table;
 
   void add(T element) {
-	  builtin.array_add<T>(table, element);
+	  std.array_add<T>(table, element);
 	}
 
   int size() {
-    return builtin.array_size < T > (table);
+    return std.array_size < T > (table);
   }
 
   T get(int index) {
-	  return builtin.array_get < T > (table, index);
+	  return std.array_get < T > (table, index);
 	}
 
   T set(int index, T element) {
-	  T old = get(index);
-	  builtin.array_set<T>(table, index, element);
+    final T old = get(index);
+	  std.array_set<T>(table, index, element);
 	  return old;
 	}
 
@@ -28,7 +28,7 @@ class ArrayList<T> {
 
 public class ArrayListIterator<E> {
   final ArrayList<E> collection;
-  int offset;
+  final int offset;
 
   ArrayListIterator(final ArrayList<E> collection) {
     this.collection = collection;
@@ -40,7 +40,7 @@ public class ArrayListIterator<E> {
   }
 
   public E get_next() {
-    E elem = collection.get(offset);
+    final E elem = collection.get(offset);
     offset += 1;
     return elem;
   }

@@ -8,7 +8,7 @@ public abstract class BuiltinNames {
   //@formatter:off
 
   // builtin.something
-  public static final Ident builtin_ident        = g("builtin");
+  public static final Ident std_ident            = g("std");
   // arrays
   public static final Ident ArrayList_ident      = g("ArrayList");
   public static final Ident array_declare_ident  = g("array_declare");
@@ -17,10 +17,6 @@ public abstract class BuiltinNames {
   public static final Ident array_get_ident      = g("array_get");
   public static final Ident array_set_ident      = g("array_set");
   public static final Ident array_allocate_ident = g("array_allocate");
-  // functions
-  public static final Ident read_file_ident      = g("read_file");
-  public static final Ident write_file_ident     = g("write_file");
-  public static final Ident panic_ident          = g("panic");
   // iterators
   public static final Ident get_iterator_ident   = g("get_iterator");
   public static final Ident has_next_ident       = g("has_next");
@@ -42,10 +38,6 @@ public abstract class BuiltinNames {
     || id.equals(BuiltinNames.array_get_ident       )
     || id.equals(BuiltinNames.array_set_ident       )
     || id.equals(BuiltinNames.array_allocate_ident  )
-    //
-    || id.equals(BuiltinNames.read_file_ident       )
-    || id.equals(BuiltinNames.write_file_ident      )
-    || id.equals(BuiltinNames.panic_ident           )
     //
     || id.equals(BuiltinNames.get_iterator_ident    )
     || id.equals(BuiltinNames.has_next_ident        )

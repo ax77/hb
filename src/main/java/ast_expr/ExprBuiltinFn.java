@@ -44,7 +44,7 @@ public class ExprBuiltinFn implements Serializable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("builtin.");
+    sb.append("std.");
     sb.append(function.getName());
     if (!typeArguments.isEmpty()) {
       sb.append("_");

@@ -448,7 +448,7 @@ public class ParseExpression {
 
   private ExprExpression e_prim() {
 
-    if (parser.is(BuiltinNames.builtin_ident)) {
+    if (parser.is(BuiltinNames.std_ident)) {
       return new ParseBuiltinsFn(parser).parse();
     }
 

@@ -25,6 +25,8 @@ public abstract class Mods {
       Keywords.native_ident, 
       Keywords.static_ident, 
       Keywords.final_ident,
+      Keywords.abstract_ident,
+      Keywords.mut_ident,
   };
   
   public static final Ident METHOD_MODS[] = {

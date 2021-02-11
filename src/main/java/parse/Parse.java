@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
-import ast_parsers.ParseType;
 import ast_parsers.ParseTypeDeclarations;
-import ast_st2_annotate.Mods;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -144,15 +142,6 @@ public class Parse {
       return isClassName(tok.getIdent());
     }
     return false;
-  }
-
-  private boolean isPrimitiveOrReferenceTypeBegin() {
-    ParseType typeRecognizer = new ParseType(this);
-    return typeRecognizer.isType();
-  }
-
-  public boolean isTypeWithOptModifiersBegin() {
-    return isPrimitiveOrReferenceTypeBegin() || Mods.isAnyModifier(tok());
   }
 
   //////////////////////////////////////////////////////////////////////

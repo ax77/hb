@@ -8,6 +8,7 @@ import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import errors.ErrorLocation;
 import tokenize.Token;
 
 public class SymInitializerApplier {
@@ -23,7 +24,8 @@ public class SymInitializerApplier {
       throw new AstParseException("unimpl. array-inits.");
     }
 
-    maybeInitVariableByDefault(var);
+    // TODO:
+    // maybeInitVariableByDefault(var);
 
     final ExprExpression init = var.getSimpleInitializer();
 
@@ -38,6 +40,10 @@ public class SymInitializerApplier {
 
     SymExpressionApplier applier = new SymExpressionApplier(symtabApplier);
     applier.applyExpression(object, init);
+
+    if (!var.getType().is_equal_to(init.getResultType())) {
+      ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
+    }
   }
 
   private void maybeInitVariableByDefault(final VarDeclarator var) {

@@ -63,16 +63,17 @@ public class SymExpressionApplier {
     else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
       applyIdentifier(object, e);
 
-      // if it is possible to replace each 'id' with 'self.id'
-      // if 'id' is a class-field
-      // if 'id' a local variable - we'll just find the symbol, and bind it
-      final VarDeclarator variable = e.getIdent().getVariable();
-      if (variable == null) {
-        ErrorLocation.errorExpression("symbol not found", e);
-      }
-      if (maybeReplaceIdentWithFieldAccess(variable, object, e)) {
-        applyExpression(object, e);
-      }
+      // TODO::
+      // // if it is possible to replace each 'id' with 'self.id'
+      // // if 'id' is a class-field
+      // // if 'id' a local variable - we'll just find the symbol, and bind it
+      // final VarDeclarator variable = e.getIdent().getVariable();
+      // if (variable == null) {
+      //   ErrorLocation.errorExpression("symbol not found", e);
+      // }
+      // if (maybeReplaceIdentWithFieldAccess(variable, object, e)) {
+      //   applyExpression(object, e);
+      // }
 
     }
 
@@ -129,7 +130,12 @@ public class SymExpressionApplier {
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
     // TODO:
     ExprBuiltinFn builtinFn = e.getBuiltinFn();
+    for (ExprExpression arg : builtinFn.getArguments()) {
+      applyExpression(object, arg);
+    }
     e.setResultType(builtinFn.getReturnType());
+
+    // TODO: check arguments
   }
 
   private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
@@ -225,7 +231,9 @@ public class SymExpressionApplier {
     }
 
     if (sym.isClassType()) {
-      throw new AstParseException("unimpl.");
+      final ClassDeclaration classType = sym.getClassType();
+      e.setResultType(new Type(new ClassTypeRef(classType, classType.getTypeParametersT()), classType.getBeginPos()));
+      return;
     }
 
     // set type to expression

@@ -68,7 +68,7 @@ public class ParseType {
 
       // builtin . array_declare
 
-      typeWasFound = parser.is(BuiltinNames.builtin_ident) && tok1.ofType(T.T_DOT)
+      typeWasFound = parser.is(BuiltinNames.std_ident) && tok1.ofType(T.T_DOT)
           && tok2.isIdent(BuiltinNames.array_declare_ident);
 
       if (typeWasFound) {
@@ -119,7 +119,7 @@ public class ParseType {
           "you cannot use builtin.array, this type is predefined only for array<T> class, and string-bootstrap class");
     }
 
-    final Token beginPos = parser.checkedMove(BuiltinNames.builtin_ident);
+    final Token beginPos = parser.checkedMove(BuiltinNames.std_ident);
 
     parser.checkedMove(T.T_DOT);
     parser.checkedMove(BuiltinNames.array_declare_ident);

@@ -19,6 +19,9 @@ public class SymInstantiationUnitApplier {
   public void visit(InstantiationUnit o) {
     symtabApplier.openFileScope();
     for (ClassDeclaration td : o.getClasses()) {
+      symtabApplier.defineClazz(td);
+    }
+    for (ClassDeclaration td : o.getClasses()) {
       applyClazz(td);
     }
     symtabApplier.closeFileScope();

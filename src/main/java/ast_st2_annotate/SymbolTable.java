@@ -158,4 +158,8 @@ public class SymbolTable {
     }
   }
 
+  public void defineClazz(ClassDeclaration td) {
+    typeNames.addsym(td.getIdentifier(), new Symbol(td));
+  }
+
 }

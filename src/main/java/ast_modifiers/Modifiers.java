@@ -93,4 +93,8 @@ public class Modifiers implements Serializable {
     return modifiers.contains(Keywords.final_ident);
   }
 
+  public boolean isAbstractOnly() {
+    return modifiers.size() == 1 && modifiers.contains(Keywords.abstract_ident);
+  }
+
 }
