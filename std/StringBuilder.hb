@@ -13,11 +13,9 @@ class StringBuilder {
   }
 
   void append(char c) {
-    // builtin.array_add(char, buffer);
   }
 
   void append(String s) {
-
   }
 
   char get(int at) {
@@ -25,6 +23,5 @@ class StringBuilder {
   }
 
   void set(int at, char what) {
-    // TODO:
   }
 }

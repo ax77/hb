@@ -28,7 +28,7 @@ class ArrayList<T> {
 
 public class ArrayListIterator<E> {
   final ArrayList<E> collection;
-  final int offset;
+  int offset;
 
   ArrayListIterator(final ArrayList<E> collection) {
     this.collection = collection;

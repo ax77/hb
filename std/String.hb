@@ -11,9 +11,6 @@ class String {
   }
 
   char get(int index) {
-    if(index < 0 || index > std.array_size<char>(buffer)) {
-      aux.panic("index is out of bounds");
-    }
     return std.array_get<char>(buffer, index);
   }
 }

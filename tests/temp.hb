@@ -19,20 +19,22 @@ class test {
     //      String s = argv.get(i);
     //      char c = s.get(0);
     //    }
-    
+
     // final String content = std.read_file("main.c");
     // final boolean res = std.write_file("out.txt", content);
     // if(!res) {
     //   std.panic("error with file-writing");
     // }
-    
-    aux.print("1", 32);
-    aux.panic("something...");
-    
-    String s = aux.read_file("main.c");
-    boolean res = aux.write_file("out.txt", s);
-    
+
+    stdio.panic("something...");
+
+    String s = stdio.read_file("main.c");
+    boolean res = stdio.write_file("out.txt", s);
+
     int a = 0;
     ArrayList<String> argv = new ArrayList<String>();
+
+    stdio.printf("%s", argv.get(0));
+    stdio.printf("%s", argv.get(0), argv.get(0));
   }
 }

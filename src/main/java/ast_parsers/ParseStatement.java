@@ -62,12 +62,7 @@ public class ParseStatement {
   private StmtBlockItem parseOneBlock(VarBase varBase) {
 
     if (isLocalVarBegin()) {
-      final Modifiers mods = new ParseModifiers(parser).parse();
-      final Type type = new ParseType(parser).getType();
-      final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
-      final Ident name = beginPos.getIdent();
-      final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods, type, name, beginPos);
-
+      final VarDeclarator localVar = getLocalVar(varBase);
       final ClassDeclaration currentClass = parser.getCurrentClass(true);
       currentClass.registerTypeSetter(localVar);
 
@@ -79,6 +74,15 @@ public class ParseStatement {
       parser.perror("something wrong in a statement");
     }
     return new StmtBlockItem(stmt);
+  }
+
+  private VarDeclarator getLocalVar(VarBase varBase) {
+    final Modifiers mods = new ParseModifiers(parser).parse();
+    final Type type = new ParseType(parser).getType();
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident name = beginPos.getIdent();
+    final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods, type, name, beginPos);
+    return localVar;
   }
 
   /// this is SOOO ambiguous:
@@ -118,7 +122,9 @@ public class ParseStatement {
     final Type type = new ParseType(parser).getType();
     if (type.is_class()) {
       final ClassDeclaration clazz = type.getClassTypeFromRef();
-      if (clazz.getModifiers().isAbstractOnly()) {
+      final boolean isAbstractMethodFcall = clazz.getModifiers().isAbstractOnly() && parser.is(T.T_DOT)
+          && parser.peek().ofType(T.TOKEN_IDENT);
+      if (isAbstractMethodFcall) {
         // util.read()
         // unit.write()
         // etc...
@@ -127,6 +133,9 @@ public class ParseStatement {
       }
     }
 
+    /// it means that it is not a variable-declaration
+    /// it is an expression-statement
+    ///
     parser.restoreState(state);
     return true;
   }
@@ -236,23 +245,16 @@ public class ParseStatement {
     Token from = parser.checkedMove(for_ident);
     parser.lparen();
 
+    // 1) for (int i = 0; ;)
+    // 2) for (i = 0; ;)
     if (parser.tp() != T_SEMI_COLON) {
-
       if (isLocalVarBegin()) {
-        final Modifiers mods = new ParseModifiers(parser).parse();
-        final Type type = new ParseType(parser).getType();
-        final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
-        final Ident name = beginPos.getIdent();
-        decl = new ParseVarDeclarator(parser).parse(VarBase.LOCAL_VAR, mods, type, name, beginPos);
-      }
-
-      else {
+        decl = getLocalVar(VarBase.LOCAL_VAR);
+      } else {
         init = parseForLoopExpressions();
         parser.semicolon();
       }
-    }
-
-    else {
+    } else {
       parser.semicolon();
     }
 
