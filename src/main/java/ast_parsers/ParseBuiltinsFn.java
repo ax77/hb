@@ -51,7 +51,7 @@ public class ParseBuiltinsFn {
     /// array
 
     if (funcname.equals(BuiltinNames.array_add_ident) || funcname.equals(BuiltinNames.array_size_ident)
-        || funcname.equals(BuiltinNames.array_get_ident)) {
+        || funcname.equals(BuiltinNames.array_get_ident) || funcname.equals(BuiltinNames.array_set_ident)) {
 
       /// builtin.array_get<T>(table, index);
       /// ..................^..^......^
@@ -70,7 +70,7 @@ public class ParseBuiltinsFn {
         restype = new Type(beginPos);
       } else if (funcname.equals(BuiltinNames.array_size_ident)) {
         restype = new Type(TypeBase.TP_int, beginPos);
-      } else if (funcname.equals(BuiltinNames.array_get_ident)) {
+      } else if (funcname.equals(BuiltinNames.array_get_ident) || funcname.equals(BuiltinNames.array_set_ident)) {
         restype = typeArguments.get(0);
       } else {
         parser.unreachable("expect type for builtin fn");

@@ -9,7 +9,7 @@ class String {
   String(builtin.array_declare<char> buffer) {
     this.buffer = buffer;
   }
-  
+
   char get(int at) {
     // return builtin.array_get(type: u8, array: buffer, index: at);
   }

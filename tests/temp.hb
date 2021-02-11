@@ -2,8 +2,7 @@
 import std.ArrayList;
 import std.String;
 
-class test
-{
+class test {
   void fn() {
     ArrayList<ArrayList<int>> opts = new ArrayList<ArrayList<int>>();
     opts.add(new ArrayList<int>());
@@ -17,4 +16,3 @@ class test
     }
   }
 }
-

@@ -41,7 +41,7 @@ public abstract class BuiltinNames {
     || id.equals(BuiltinNames.array_add_ident     )
     || id.equals(BuiltinNames.array_size_ident    )
     || id.equals(BuiltinNames.array_get_ident     )
-//    || id.equals(BuiltinNames.array_set_ident     )
+    || id.equals(BuiltinNames.array_set_ident     )
 //    || id.equals(BuiltinNames.array_insert_ident  )
     || id.equals(BuiltinNames.read_file_ident     )
     || id.equals(BuiltinNames.write_file_ident    )

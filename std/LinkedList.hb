@@ -1,16 +1,15 @@
 
-
 public class LinkedList<E> {
-    int size;
-    Node<E> first;
-    Node<E> last;
-    
-    public LinkedList() {
-    }
-    
-    public ListIterator<E> get_iterator() {
-      return new ListIterator<E>(this);
-    }
+  int size;
+  Node<E> first;
+  Node<E> last;
+
+  public LinkedList() {
+  }
+
+  public ListIterator<E> get_iterator() {
+    return new ListIterator<E>(this);
+  }
 }
 
 class Node<E> {
@@ -26,7 +25,7 @@ class Node<E> {
 }
 
 class ListIterator<E> {
-  
+
   private LinkedList<E> collection;
   private Node<E> lastReturned;
   private Node<E> next;

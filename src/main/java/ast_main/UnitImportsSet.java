@@ -68,7 +68,7 @@ public class UnitImportsSet {
   }
 
   private String parseImport(Parse parser) throws IOException {
-    return dir + "/" + ParsePackageName.parse(parser, Keywords.import_ident);
+    return dir + "/" + ParsePackageName.parse(parser, Keywords.import_ident) + ".hb";
   }
 
 }
