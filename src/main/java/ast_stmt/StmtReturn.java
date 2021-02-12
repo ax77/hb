@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_expr.ExprExpression;
-import ast_expr.ExprUtil;
+import ast_printers.ExprPrinters;
 import ast_vars.VarDeclarator;
 
 public class StmtReturn implements Serializable {
@@ -51,7 +51,7 @@ public class StmtReturn implements Serializable {
     sb.append(";");
     if (!variables.isEmpty()) {
       sb.append(" // ");
-      sb.append(ExprUtil.varsTos(variables));
+      sb.append(ExprPrinters.varsTos(variables));
     }
     return sb.toString();
   }

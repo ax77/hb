@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_expr.ExprUtil;
+import ast_printers.ExprPrinters;
 import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
@@ -66,7 +66,7 @@ public class StmtBlock implements Serializable {
 
     if (!variables.isEmpty()) {
       sb.append(" // ");
-      sb.append(ExprUtil.varsTos(variables));
+      sb.append(ExprPrinters.varsTos(variables));
     }
 
     sb.append("\n");

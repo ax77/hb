@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_printers.TypePrinters;
 import utils_oth.NullChecker;
 
 public class ClassTypeRef implements Serializable {

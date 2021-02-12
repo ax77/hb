@@ -6,13 +6,13 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_modifiers.Modifiers;
+import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
-import ast_types.TypePrinters;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
 import tokenize.Token;

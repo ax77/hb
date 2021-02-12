@@ -3,8 +3,9 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import ast_printers.ExprPrinters;
+import ast_printers.TypePrinters;
 import ast_types.Type;
-import ast_types.TypePrinters;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
@@ -50,7 +51,7 @@ public class ExprBuiltinFn implements Serializable {
       sb.append("_");
       sb.append(TypePrinters.typeArgumentsToString(typeArguments));
     }
-    sb.append(ExprUtil.funcArgsToString(callArguments));
+    sb.append(ExprPrinters.funcArgsToString(callArguments));
     return sb.toString();
   }
 

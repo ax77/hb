@@ -3,6 +3,7 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import ast_printers.ExprPrinters;
 import ast_st2_annotate.Symbol;
 import tokenize.Ident;
 import utils_oth.NullChecker;
@@ -58,7 +59,7 @@ public class ExprMethodInvocation implements Serializable, MirSymbol {
     sb.append(".");
 
     sb.append(funcname.getName());
-    sb.append(ExprUtil.funcArgsToString(arguments));
+    sb.append(ExprPrinters.funcArgsToString(arguments));
 
     return sb.toString();
   }

@@ -2,7 +2,9 @@ package ast_parsers;
 
 import static tokenize.T.T_AND;
 import static tokenize.T.T_AND_AND;
+import static tokenize.T.T_AND_EQUAL;
 import static tokenize.T.T_DIVIDE;
+import static tokenize.T.T_DIVIDE_EQUAL;
 import static tokenize.T.T_EQ;
 import static tokenize.T.T_EXCLAMATION;
 import static tokenize.T.T_GE;
@@ -10,20 +12,31 @@ import static tokenize.T.T_GT;
 import static tokenize.T.T_LE;
 import static tokenize.T.T_LEFT_PAREN;
 import static tokenize.T.T_LSHIFT;
+import static tokenize.T.T_LSHIFT_EQUAL;
 import static tokenize.T.T_LT;
 import static tokenize.T.T_MINUS;
+import static tokenize.T.T_MINUS_EQUAL;
 import static tokenize.T.T_NE;
 import static tokenize.T.T_OR;
+import static tokenize.T.T_OR_EQUAL;
 import static tokenize.T.T_OR_OR;
 import static tokenize.T.T_PERCENT;
+import static tokenize.T.T_PERCENT_EQUAL;
 import static tokenize.T.T_PLUS;
+import static tokenize.T.T_PLUS_EQUAL;
 import static tokenize.T.T_QUESTION;
+import static tokenize.T.T_RSHIFT;
+import static tokenize.T.T_RSHIFT_EQUAL;
 import static tokenize.T.T_TILDE;
 import static tokenize.T.T_TIMES;
+import static tokenize.T.T_TIMES_EQUAL;
 import static tokenize.T.T_XOR;
+import static tokenize.T.T_XOR_EQUAL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
@@ -37,11 +50,11 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
-import ast_expr.ExprUtil;
 import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import errors.AstParseException;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -68,6 +81,49 @@ public class ParseExpression {
   }
 
   //@formatter:off
+  
+  public static Token assignOperator(Token from) {
+    return new Token(from, "=", T.T_ASSIGN);
+  }
+  
+  private static Map<T, T> asopmap = new HashMap<>();
+  static {
+    asopmap.put(T_TIMES_EQUAL    , T_TIMES);
+    asopmap.put(T_PERCENT_EQUAL  , T_PERCENT);
+    asopmap.put(T_DIVIDE_EQUAL   , T_DIVIDE);
+    asopmap.put(T_PLUS_EQUAL     , T_PLUS);
+    asopmap.put(T_MINUS_EQUAL    , T_MINUS);
+    asopmap.put(T_LSHIFT_EQUAL   , T_LSHIFT);
+    asopmap.put(T_RSHIFT_EQUAL   , T_RSHIFT);
+    asopmap.put(T_AND_EQUAL      , T_AND);
+    asopmap.put(T_XOR_EQUAL      , T_XOR);
+    asopmap.put(T_OR_EQUAL       , T_OR);
+  }
+  private static Map<T, String> ops = new HashMap<>();
+  static {
+    ops.put(T_TIMES_EQUAL   , "*");
+    ops.put(T_PERCENT_EQUAL , "%");
+    ops.put(T_DIVIDE_EQUAL  , "/");
+    ops.put(T_PLUS_EQUAL    , "+");
+    ops.put(T_MINUS_EQUAL   , "-");
+    ops.put(T_LSHIFT_EQUAL  , "<<");
+    ops.put(T_RSHIFT_EQUAL  , ">>");
+    ops.put(T_AND_EQUAL     , "&");
+    ops.put(T_XOR_EQUAL     , "^");
+    ops.put(T_OR_EQUAL      , "|");
+  }
+
+  // from '+=' we should build a '+' operator
+  //
+  public static Token getOperatorFromCompAssign(Token from) {
+    final String value = ops.get(from.getType());
+    final T type = asopmap.get(from.getType());
+    if (value == null || type == null) {
+      throw new AstParseException("error assign operator: " + from.getLocationToString());
+    }
+    return new Token(from, value, type);
+  }
+
   private boolean isAssignOperator(Token what) {
     return what.ofType(T.T_ASSIGN)
         || what.ofType(T.T_TIMES_EQUAL)
@@ -144,8 +200,8 @@ public class ParseExpression {
         // += lhs(a) rhs(b)
         // = lhs(a) rhs( + lhs(a) rhs(b) )
 
-        Token assignOperator = ExprUtil.assignOperator(saved);
-        Token binaryOperator = ExprUtil.getOperatorFromCompAssign(saved);
+        Token assignOperator = assignOperator(saved);
+        Token binaryOperator = getOperatorFromCompAssign(saved);
 
         ExprExpression rhs = build_binary(binaryOperator, lhs, e_assign());
         lhs = build_assign(assignOperator, lhs, rhs);
@@ -276,7 +332,7 @@ public class ParseExpression {
     Token tok = parser.tok();
     parser.move(); // >
     parser.move(); // >
-    return ExprUtil.copyTokenAddNewType(tok, T.T_RSHIFT, ">>");
+    return new Token(tok, ">>", T.T_RSHIFT);
   }
 
   private ExprExpression e_shift() {
