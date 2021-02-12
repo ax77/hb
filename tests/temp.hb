@@ -1,9 +1,14 @@
 
+class type {
+}
+
 class test {
+  type tp;
   int f = 32;
   int f2 = 53;
 
   void fn0() {
+    tp = new type();
     int empty = 0;
     return;
   }
@@ -16,17 +21,26 @@ class test {
     return a + b + c + f;
   }
 
-  int fn3() {
+  type gt() {
+    type ntype = new type();
+    return ntype;
+  }
 
+  int fn3(int p1, int p2) {
     int a = 0;
     int b = 1;
 
     if (f == 32) {
       int inif = 128;
-      return a-1;
+      return a - 1 - p2;
+    }
+    {
+      a = 1;
+      b = 2;
+      int c = 3;
     }
 
-    return b+2-a-f2;
+    return b + 2 - a - f2 + p1;
 
   }
 }

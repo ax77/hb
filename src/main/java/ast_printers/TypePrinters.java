@@ -5,6 +5,7 @@ import java.util.List;
 import ast_types.Type;
 
 public abstract class TypePrinters {
+
   public static String typeArgumentsToString(List<Type> typeArguments) {
     final StringBuilder sb = new StringBuilder();
     //sb.append("<");
@@ -18,4 +19,5 @@ public abstract class TypePrinters {
     //sb.append(">");
     return sb.toString();
   }
+
 }

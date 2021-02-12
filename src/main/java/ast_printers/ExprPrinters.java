@@ -3,7 +3,6 @@ package ast_printers;
 import java.util.List;
 
 import ast_expr.ExprExpression;
-import ast_vars.VarDeclarator;
 
 public abstract class ExprPrinters {
 
@@ -20,18 +19,6 @@ public abstract class ExprPrinters {
     }
 
     sb.append(")");
-    return sb.toString();
-  }
-
-  public static String varsTos(List<VarDeclarator> variables) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < variables.size(); i++) {
-      VarDeclarator var = variables.get(i);
-      sb.append(var.getIdentifier().getName());
-      if (i + 1 < variables.size()) {
-        sb.append(", ");
-      }
-    }
     return sb.toString();
   }
 

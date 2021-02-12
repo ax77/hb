@@ -184,9 +184,10 @@ public class ParseTypeDeclarations {
     }
 
     if (mods.isStaticOnly() && parser.is(T.T_LEFT_BRACE)) {
-      final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.STATIC_VAR);
-      clazz.addStaticBlock(block);
-      return;
+      parser.unimplemented("static {  }");
+      // final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.STATIC_VAR);
+      // clazz.addStaticBlock(block);
+      // return;
     }
 
     if (parser.is(Keywords.deinit_ident)) {
