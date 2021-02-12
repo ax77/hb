@@ -2,7 +2,6 @@ package ast_types;
 
 import static ast_types.TypeBase.TP_CLASS;
 import static ast_types.TypeBase.TP_TYPENAME_ID;
-import static ast_types.TypeBase.TP_void;
 import static ast_types.TypeBase.TP_boolean;
 import static ast_types.TypeBase.TP_char;
 import static ast_types.TypeBase.TP_double;
@@ -10,6 +9,7 @@ import static ast_types.TypeBase.TP_float;
 import static ast_types.TypeBase.TP_int;
 import static ast_types.TypeBase.TP_long;
 import static ast_types.TypeBase.TP_short;
+import static ast_types.TypeBase.TP_void;
 
 import java.io.Serializable;
 import java.util.List;

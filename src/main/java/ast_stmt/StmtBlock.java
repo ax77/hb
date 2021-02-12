@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
 public class StmtBlock implements Serializable {
@@ -11,14 +12,19 @@ public class StmtBlock implements Serializable {
 
   private final List<StmtBlockItem> blockStatements;
 
+  //@REFCOUNT
+  private final List<VarDeclarator> variables;
+
   // empty: { }
   public StmtBlock() {
-    this.blockStatements = new ArrayList<StmtBlockItem>(0);
+    this.blockStatements = new ArrayList<>();
+    this.variables = new ArrayList<>();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
     this.blockStatements = blockStatements;
+    this.variables = new ArrayList<>();
   }
 
   public List<StmtBlockItem> getBlockStatements() {
@@ -27,6 +33,10 @@ public class StmtBlock implements Serializable {
 
   public void put(StmtBlockItem item) {
     this.blockStatements.add(item);
+  }
+
+  public List<VarDeclarator> getVariables() {
+    return variables;
   }
 
   @Override

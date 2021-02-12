@@ -10,26 +10,33 @@ import tokenize.Token;
 public class StmtStatement implements Serializable, Location {
   private static final long serialVersionUID = 2946438995245230886L;
 
-  private /*final*/ StatementBase base;
+  private final StatementBase base;
   private final Token beginPos;
   private StmtBlock bloskStmt;
-  private ExprExpression exprStmt; // return expr or expr-stmt
-  private StmtForeach forEachStmt;
+  private ExprExpression exprStmt;
+  private StmtForeach foreachStmt;
   private StmtSelect ifStmt;
   private StmtWhile whileStmt;
   private StmtFor forStmt;
+  private StmtReturn returnStmt;
 
-  //MIR:TREE:rewriter
-  public void replaceForLoopWithBlock(StmtBlock block) {
-    this.base = StatementBase.SBLOCK;
-    this.bloskStmt = block;
-    this.forEachStmt = null;
-  }
+  // //MIR:TREE:rewriter
+  // public void replaceForLoopWithBlock(StmtBlock block) {
+  //   this.base = StatementBase.SBLOCK;
+  //   this.bloskStmt = block;
+  //   this.forEachStmt = null;
+  // }
 
   public StmtStatement(StmtFor forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
     this.beginPos = beginPos;
     this.forStmt = forStmt;
+  }
+
+  public StmtStatement(StmtReturn returnStmt, Token beginPos) {
+    this.base = StatementBase.SRETURN;
+    this.beginPos = beginPos;
+    this.returnStmt = returnStmt;
   }
 
   public StmtStatement(StmtWhile whileStmt, Token beginPos) {
@@ -39,10 +46,10 @@ public class StmtStatement implements Serializable, Location {
   }
 
   // it will be rewritten to while() at the stage-2
-  public StmtStatement(StmtForeach forEachStmt, Token beginPos) {
+  public StmtStatement(StmtForeach foreachStmt, Token beginPos) {
     this.base = StatementBase.SFOREACH_TMP;
     this.beginPos = beginPos;
-    this.forEachStmt = forEachStmt;
+    this.foreachStmt = foreachStmt;
   }
 
   public StmtStatement(StmtSelect ifStmt, Token beginPos) {
@@ -51,10 +58,9 @@ public class StmtStatement implements Serializable, Location {
     this.ifStmt = ifStmt;
   }
 
-  // return <expr> ;
   // <expr> 
-  public StmtStatement(StatementBase base, ExprExpression exprStmt, Token beginPos) {
-    this.base = base;
+  public StmtStatement(ExprExpression exprStmt, Token beginPos) {
+    this.base = StatementBase.SEXPR;
     this.beginPos = beginPos;
     this.exprStmt = exprStmt;
   }
@@ -64,6 +70,10 @@ public class StmtStatement implements Serializable, Location {
     this.base = StatementBase.SBLOCK;
     this.beginPos = beginPos;
     this.bloskStmt = bloskStmt;
+  }
+
+  public StmtReturn getReturnStmt() {
+    return returnStmt;
   }
 
   public StmtBlock getBlockStmt() {
@@ -79,7 +89,7 @@ public class StmtStatement implements Serializable, Location {
   }
 
   public StmtForeach getForeachStmt() {
-    return forEachStmt;
+    return foreachStmt;
   }
 
   public StmtFor getForStmt() {
@@ -106,14 +116,10 @@ public class StmtStatement implements Serializable, Location {
       return bloskStmt.toString();
     }
     if (base == StatementBase.SRETURN) {
-      if (exprStmt != null) {
-        return "return " + exprStmt.toString() + ";\n";
-      } else {
-        return "return;\n";
-      }
+      return returnStmt.toString();
     }
     if (base == StatementBase.SFOREACH_TMP) {
-      return forEachStmt.toString();
+      return foreachStmt.toString();
     }
     if (base == StatementBase.SWHILE) {
       return whileStmt.toString();

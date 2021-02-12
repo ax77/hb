@@ -15,11 +15,11 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.Mods;
-import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
 import ast_stmt.StmtForeach;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
@@ -148,20 +148,23 @@ public class ParseStatement {
       parser.perror("do loops unimpl.");
     }
 
-    // return ... ;
+    // return <expression> ;
     // return ;
 
     if (parser.is(return_ident)) {
-      Token beginPos = parser.checkedMove(return_ident);
+      final Token beginPos = parser.checkedMove(return_ident);
+      final StmtReturn ret = new StmtReturn();
 
       if (parser.tp() == T_SEMI_COLON) {
         parser.move();
-        return new StmtStatement(StatementBase.SRETURN, null, beginPos);
+        return new StmtStatement(ret, beginPos);
       }
 
       final ExprExpression expr = new ParseExpression(parser).e_expression();
+      ret.setExpression(expr);
+
       parser.semicolon();
-      return new StmtStatement(StatementBase.SRETURN, expr, beginPos);
+      return new StmtStatement(ret, beginPos);
     }
 
     // while condition {  }
@@ -198,7 +201,8 @@ public class ParseStatement {
     final Token beginPos = parser.tok();
     final ExprExpression expression = new ParseExpression(parser).e_expression();
     parser.semicolon();
-    return new StmtStatement(StatementBase.SEXPR, expression, beginPos);
+
+    return new StmtStatement(expression, beginPos);
   }
 
   private StmtStatement parseSelection() {

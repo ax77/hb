@@ -34,7 +34,6 @@ public class UnitInfo {
     buildTypenames();
   }
 
-
   private void buildTokenlist() throws IOException {
     for (String absolutePath : classLocations) {
       final FileWrapper fw = new FileWrapper(absolutePath);

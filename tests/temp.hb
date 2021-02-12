@@ -36,5 +36,7 @@ class test {
 
     stdio.printf("%s", argv.get(0));
     stdio.printf("%s", argv.get(0), argv.get(0));
+    
+    return 1;
   }
 }

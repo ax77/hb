@@ -7,7 +7,7 @@ import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
-import ast_stmt.StmtForeach;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
@@ -31,7 +31,7 @@ public class SymStatementApplier {
 
     StatementBase base = statement.getBase();
     if (base == StatementBase.SFOREACH_TMP) {
-      visitForLoop(object, method, statement);
+      visitForeach(object, method, statement);
     } else if (base == StatementBase.SIF) {
       visitSelectionStmt(object, method, statement);
     } else if (base == StatementBase.SEXPR) {
@@ -39,7 +39,7 @@ public class SymStatementApplier {
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, statement.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      applyExpression(object, statement.getExprStmt());
+      applyReturn(object, statement.getReturnStmt());
     } else if (base == StatementBase.SWHILE) {
       visitWhile(object, method, statement);
     } else if (base == StatementBase.SFOR) {
@@ -48,6 +48,10 @@ public class SymStatementApplier {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
+  }
+
+  private void applyReturn(ClassDeclaration object, StmtReturn returnStmt) {
+    applyExpression(object, returnStmt.getExpression());
   }
 
   private void applyFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
@@ -82,15 +86,18 @@ public class SymStatementApplier {
     }
   }
 
-  private void visitForLoop(final ClassDeclaration object, final ClassMethodDeclaration method,
+  private void visitForeach(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtStatement statement) {
-    final StmtForeach forloop = statement.getForeachStmt();
 
-    final ForeachToWhileRewriter rewriter = new ForeachToWhileRewriter(symtabApplier, object, forloop);
-    final StmtBlock resultBlock = rewriter.genBlock();
+    throw new AstParseException("unimpl. foreach loop");
 
-    statement.replaceForLoopWithBlock(resultBlock);
-    applyStatement(object, method, statement);
+    // final StmtForeach forloop = statement.getForeachStmt();
+    // 
+    // final ForeachToWhileRewriter rewriter = new ForeachToWhileRewriter(symtabApplier, object, forloop);
+    // final StmtBlock resultBlock = rewriter.genBlock();
+    // 
+    // statement.replaceForLoopWithBlock(resultBlock);
+    // applyStatement(object, method, statement);
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock body) {

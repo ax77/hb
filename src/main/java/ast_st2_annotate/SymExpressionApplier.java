@@ -26,7 +26,6 @@ import ast_types.TypeBindings;
 import ast_types.TypeBuiltinArray;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
-import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
