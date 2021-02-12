@@ -1,23 +1,17 @@
 package ast_st2_annotate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
-import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
-import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
-import errors.ErrorLocation;
 
 public class ApplyStatement {
 
@@ -44,73 +38,14 @@ public class ApplyStatement {
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, statement.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      applyReturn(object, statement.getReturnStmt());
+      final ApplyReturn applier = new ApplyReturn(symtabApplier);
+      applier.applyReturn(object, statement.getReturnStmt());
     } else if (base == StatementBase.SWHILE) {
       visitWhile(object, method, statement);
     } else if (base == StatementBase.SFOR) {
       applyFor(object, method, statement.getForStmt());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
-    }
-
-  }
-
-  private void applyReturn(ClassDeclaration object, StmtReturn returnStmt) {
-    applyExpression(object, returnStmt.getExpression());
-
-    // bind variables
-    if (returnStmt.hasExpression()) {
-      List<Symbol> vars = new ArrayList<>();
-      applyExpressionSimple(returnStmt.getExpression(), vars);
-      for (Symbol sym : vars) {
-        if (sym.isVariable()) {
-          /// if it is not a var - it may be a static var from abstract class
-          /// and it is not interesting, we do not process static vars
-          /// nevertheless
-          returnStmt.registerVariable(sym.getVariable());
-        }
-      }
-    }
-
-    symtabApplier.getCurrentBlock().registerReturn(returnStmt);
-  }
-
-  public void applyExpressionSimple(ExprExpression e, List<Symbol> vars) {
-
-    if (e == null) {
-      return;
-    }
-    if (e.is(ExpressionBase.EUNARY)) {
-      applyExpressionSimple(e.getUnary().getOperand(), vars);
-    } else if (e.is(ExpressionBase.EBINARY)) {
-      applyExpressionSimple(e.getBinary().getLhs(), vars);
-      applyExpressionSimple(e.getBinary().getRhs(), vars);
-    } else if (e.is(ExpressionBase.EASSIGN)) {
-      applyExpressionSimple(e.getAssign().getLvalue(), vars);
-      applyExpressionSimple(e.getAssign().getRvalue(), vars);
-    } else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
-      vars.add(e.getIdent().getSym());
-    } else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
-      applyExpressionSimple(e.getMethodInvocation().getObject(), vars);
-      for (ExprExpression arg : e.getMethodInvocation().getArguments()) {
-        applyExpressionSimple(arg, vars);
-      }
-    } else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
-      applyExpressionSimple(e.getFieldAccess().getObject(), vars);
-    } else if (e.is(ExpressionBase.ETHIS)) {
-    } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
-    } else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
-    } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-      for (ExprExpression arg : e.getClassCreation().getArguments()) {
-        applyExpressionSimple(arg, vars);
-      }
-    } else if (e.is(ExpressionBase.ESTRING_CONST)) {
-    } else if (e.is(ExpressionBase.ECHAR_CONST)) {
-    } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
-    } else if (e.is(ExpressionBase.ECAST)) {
-    } else if (e.is(ExpressionBase.EBUILTIN_FN)) {
-    } else {
-      ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
   }

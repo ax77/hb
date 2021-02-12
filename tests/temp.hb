@@ -23,7 +23,7 @@ class test {
 
   type gt() {
     type ntype = new type();
-    return ntype;
+    return new type();
   }
 
   int fn3(int p1, int p2) {

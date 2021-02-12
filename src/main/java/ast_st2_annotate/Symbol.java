@@ -9,17 +9,17 @@ import errors.AstParseException;
 
 public class Symbol {
   private final SymbolBase base;
-  private ClassDeclaration classType;
+  private ClassDeclaration clazz;
   private VarDeclarator variable;
   private ClassMethodDeclaration method;
 
-  public Symbol(ClassDeclaration classType) {
-    this.base = SymbolBase.ABSTRACT_CLASS;
-    this.classType = classType;
+  public Symbol(ClassDeclaration clazz) {
+    this.base = SymbolBase.CLASS_SYM;
+    this.clazz = clazz;
   }
 
   public Symbol(VarDeclarator variable) {
-    this.base = SymbolBase.VARIABLE;
+    this.base = SymbolBase.VARIABLE_SYM;
     this.variable = variable;
   }
 
@@ -28,11 +28,11 @@ public class Symbol {
     this.method = method;
   }
 
-  public ClassDeclaration getClassType() {
-    if (!isAbstractClass()) {
+  public ClassDeclaration getClazz() {
+    if (!isClazz()) {
       throw new AstParseException("it is not a class");
     }
-    return classType;
+    return clazz;
   }
 
   public VarDeclarator getVariable() {
@@ -49,12 +49,12 @@ public class Symbol {
     return method;
   }
 
-  public boolean isAbstractClass() {
-    return base == SymbolBase.ABSTRACT_CLASS;
+  public boolean isClazz() {
+    return base == SymbolBase.CLASS_SYM;
   }
 
   public boolean isVariable() {
-    return base == SymbolBase.VARIABLE;
+    return base == SymbolBase.VARIABLE_SYM;
   }
 
   public boolean isMethod() {
@@ -62,8 +62,8 @@ public class Symbol {
   }
 
   public Type getType() {
-    if (isAbstractClass()) {
-      return new Type(new ClassTypeRef(classType, classType.getTypeParametersT()), classType.getBeginPos());
+    if (isClazz()) {
+      return new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
     }
     if (isMethod()) {
       return method.getType();
@@ -76,8 +76,8 @@ public class Symbol {
 
   @Override
   public String toString() {
-    if (isAbstractClass()) {
-      return "c:" + classType.getIdentifier().getName();
+    if (isClazz()) {
+      return "c:" + clazz.getIdentifier().getName();
     }
     if (isVariable()) {
       return "v:" + variable.getIdentifier().getName();

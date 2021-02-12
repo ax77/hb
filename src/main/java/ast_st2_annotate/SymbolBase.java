@@ -1,5 +1,5 @@
 package ast_st2_annotate;
 
 public enum SymbolBase {
-    ABSTRACT_CLASS, VARIABLE, METHOD_SYM,
+    CLASS_SYM, VARIABLE_SYM, METHOD_SYM,
 }
