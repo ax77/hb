@@ -59,19 +59,6 @@ public class ApplyExpression {
 
     else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
       applyIdentifier(object, e);
-
-      // TODO::
-      // // if it is possible to replace each 'id' with 'self.id'
-      // // if 'id' is a class-field
-      // // if 'id' a local variable - we'll just find the symbol, and bind it
-      // final VarDeclarator variable = e.getIdent().getVariable();
-      // if (variable == null) {
-      //   ErrorLocation.errorExpression("symbol not found", e);
-      // }
-      // if (maybeReplaceIdentWithFieldAccess(variable, object, e)) {
-      //   applyExpression(object, e);
-      // }
-
     }
 
     else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
@@ -127,7 +114,7 @@ public class ApplyExpression {
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
     // TODO:
     ExprBuiltinFn builtinFn = e.getBuiltinFn();
-    for (ExprExpression arg : builtinFn.getArguments()) {
+    for (ExprExpression arg : builtinFn.getCallArguments()) {
       applyExpression(object, arg);
     }
     e.setResultType(builtinFn.getReturnType());

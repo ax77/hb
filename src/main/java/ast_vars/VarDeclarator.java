@@ -40,6 +40,47 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
     this.beginPos = beginPos;
   }
 
+  public boolean is_equal_to(final VarDeclarator another) {
+    if (this == another) {
+      return true;
+    }
+
+    if (!base.equals(another.getBase())) {
+      return false;
+    }
+    if (!type.is_equal_to(another.getType())) {
+      return false;
+    }
+    if (!identifier.equals(another.getIdentifier())) {
+      return false;
+    }
+
+    /// location must be the same
+    /// we must be sure 100%
+    /// or we must not? :)
+    final int line = beginPos.getLine();
+    final String file = beginPos.getFilename();
+    if (line != another.getBeginPos().getLine()) {
+      return false;
+    }
+    if (!file.equals(another.getBeginPos().getFilename())) {
+      return false;
+    }
+
+    /// within the same class
+    ///
+    if (base == VarBase.CLASS_FIELD) {
+      if (another.getBase() != VarBase.CLASS_FIELD) {
+        return false;
+      }
+      if (!clazz.is_equal_to(another.getClazz())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   @Override
   public Type getType() {
     return type;

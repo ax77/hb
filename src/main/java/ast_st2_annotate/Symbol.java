@@ -5,6 +5,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
+import errors.AstParseException;
 
 public class Symbol {
   private final SymbolBase base;
@@ -28,11 +29,24 @@ public class Symbol {
   }
 
   public ClassDeclaration getClassType() {
+    if (!isAbstractClass()) {
+      throw new AstParseException("it is not a class");
+    }
     return classType;
   }
 
   public VarDeclarator getVariable() {
+    if (!isVariable()) {
+      throw new AstParseException("it is not a variable");
+    }
     return variable;
+  }
+
+  public ClassMethodDeclaration getMethod() {
+    if (!isMethod()) {
+      throw new AstParseException("it is not a method");
+    }
+    return method;
   }
 
   public boolean isAbstractClass() {
@@ -54,12 +68,24 @@ public class Symbol {
     if (isMethod()) {
       return method.getType();
     }
-    return variable.getType();
+    if (isVariable()) {
+      return variable.getType();
+    }
+    throw new AstParseException("unreachable.");
   }
 
   @Override
   public String toString() {
-    return "";
+    if (isAbstractClass()) {
+      return "c:" + classType.getIdentifier().getName();
+    }
+    if (isVariable()) {
+      return "v:" + variable.getIdentifier().getName();
+    }
+    if (isMethod()) {
+      return "m:" + method.getIdentifier().getName();
+    }
+    return base.toString();
   }
 
 }

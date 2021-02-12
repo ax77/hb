@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_expr.ExprExpression;
-import ast_vars.VarDeclarator;
+import ast_st2_annotate.Symbol;
 
 public class StmtReturn implements Serializable {
   private static final long serialVersionUID = -3087335776553034864L;
@@ -13,7 +13,7 @@ public class StmtReturn implements Serializable {
   private ExprExpression expression;
 
   ///@REFCOUNT
-  private final List<VarDeclarator> variables;
+  private final List<Symbol> variables;
 
   public StmtReturn() {
     this.variables = new ArrayList<>();
@@ -27,8 +27,12 @@ public class StmtReturn implements Serializable {
     this.expression = expression;
   }
 
-  public List<VarDeclarator> getVariables() {
+  public List<Symbol> getVariables() {
     return variables;
+  }
+
+  public void registerVariable(Symbol sym) {
+    variables.add(sym);
   }
 
   public boolean hasExpression() {

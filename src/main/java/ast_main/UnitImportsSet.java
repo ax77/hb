@@ -34,10 +34,13 @@ public class UnitImportsSet {
     }
 
     getImports(givenName);
-    fullyRead.add(dir + "/std/ArrayList.hb");
-    fullyRead.add(dir + "/std/String.hb");
-    fullyRead.add(dir + "/std/StringBuilder.hb");
-    fullyRead.add(dir + "/std/stdio.hb");
+
+    if (Settings.IMPORT_STD_BY_DEFAULT) {
+      fullyRead.add(dir + "/std/ArrayList.hb");
+      fullyRead.add(dir + "/std/String.hb");
+      fullyRead.add(dir + "/std/StringBuilder.hb");
+      fullyRead.add(dir + "/std/stdio.hb");
+    }
   }
 
   private void getImports(String filename) throws IOException {
