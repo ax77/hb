@@ -73,7 +73,7 @@ public class ApplyUnit {
 
     //body
     final StmtBlock body = method.getBlock();
-    for (StmtBlockItem block : body.getBlockStatements()) {
+    for (StmtBlockItem block : body.getBlockItems()) {
 
       // method variables
       final VarDeclarator var = block.getLocalVariable();

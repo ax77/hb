@@ -11,7 +11,7 @@ import utils_oth.NullChecker;
 public class StmtBlock implements Serializable, VarRegistrator {
   private static final long serialVersionUID = -3746821242002590684L;
 
-  private final List<StmtBlockItem> blockStatements;
+  private final List<StmtBlockItem> blockItems;
 
   //@REFCOUNT
   private final List<VarDeclarator> variables;
@@ -19,24 +19,24 @@ public class StmtBlock implements Serializable, VarRegistrator {
 
   // empty: { }
   public StmtBlock() {
-    this.blockStatements = new ArrayList<>();
+    this.blockItems = new ArrayList<>();
     this.variables = new ArrayList<>();
     this.returns = new ArrayList<>();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
-    this.blockStatements = blockStatements;
+    this.blockItems = blockStatements;
     this.variables = new ArrayList<>();
     this.returns = new ArrayList<>();
   }
 
-  public List<StmtBlockItem> getBlockStatements() {
-    return blockStatements;
+  public List<StmtBlockItem> getBlockItems() {
+    return blockItems;
   }
 
   public void put(StmtBlockItem item) {
-    this.blockStatements.add(item);
+    this.blockItems.add(item);
   }
 
   public List<StmtReturn> getReturns() {
@@ -61,7 +61,7 @@ public class StmtBlock implements Serializable, VarRegistrator {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("\n{\n");
-    for (StmtBlockItem blockItem : blockStatements) {
+    for (StmtBlockItem blockItem : blockItems) {
       sb.append(blockItem.toString());
     }
     sb.append("\n}");

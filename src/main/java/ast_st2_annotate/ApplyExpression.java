@@ -155,6 +155,11 @@ public class ApplyExpression {
       }
     }
 
+    // TODO: isn't it fragile?
+    if (rvalue.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+      rvalue.getClassCreation().setSym(lvalue.getIdent().getSym());
+    }
+
     e.setResultType(lhsType);
   }
 

@@ -191,7 +191,7 @@ public class Quad {
     final String resultToStr = String.format("%s", result.getResult());
 
     // declarations|constants
-    if (base.equals(QuadOpc.ID_DECL) || base.equals(QuadOpc.SELF_DECL) || base.equals(QuadOpc.NUM_DECL)) {
+    if (base.equals(QuadOpc.ID_DECL) || base.equals(QuadOpc.THIS_DECL) || base.equals(QuadOpc.NUM_DECL)) {
       return typeToStr + resultToStr + " = " + lhs.toString();
     }
 

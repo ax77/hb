@@ -14,22 +14,38 @@ import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
+import tokenize.Stream;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
 public class ParserMain implements ParserMainApi {
 
   private final String filename;
+  private final StringBuilder sb;
+  private final boolean isFromFile;
 
   public ParserMain(String filename) {
     NullChecker.check(filename);
+
     this.filename = filename;
+    this.sb = null;
+    this.isFromFile = true;
+  }
+
+  public ParserMain(StringBuilder sb) {
+    NullChecker.check(sb);
+
+    this.filename = null;
+    this.sb = sb;
+    this.isFromFile = false;
   }
 
   @Override
   public Parse initiateParse() throws IOException {
     initIdents();
 
+    //// without any imports it is looks like this:
+    ////
     // final FileWrapper fw = new FileWrapper(filename);
     // fw.assertIsExists();
     // fw.assertIsFile();
@@ -37,15 +53,24 @@ public class ParserMain implements ParserMainApi {
     // final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
     // return new Parse(new Tokenlist(s.getTokenlist()));
 
-    final UnitInfo info = new UnitInfo(filename);
-    final List<Token> tokens = info.getTokenlist();
-    final Parse parser = new Parse(new Tokenlist(tokens));
+    if (isFromFile) {
+      final UnitInfo info = new UnitInfo(filename);
+      final List<Token> tokens = info.getTokenlist();
+      final Parse parser = new Parse(new Tokenlist(tokens));
 
-    for (ClassDeclaration c : info.getTypenames()) {
-      parser.defineClassName(c);
+      for (ClassDeclaration c : info.getTypenames()) {
+        parser.defineClassName(c);
+      }
+
+      return parser;
     }
 
-    return parser;
+    /// this is only for unit-testing, because sometimes
+    /// it is much easy to test the source from string
+    /// instead of the file
+    final Stream s = new Stream("<string-source>", sb.toString());
+    return new Parse(new Tokenlist(s.getTokenlist()));
+
   }
 
   @Override

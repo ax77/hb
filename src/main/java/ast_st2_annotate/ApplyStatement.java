@@ -104,7 +104,7 @@ public class ApplyStatement {
 
     symtabApplier.openBlockScope("block", body);
 
-    for (StmtBlockItem block : body.getBlockStatements()) {
+    for (StmtBlockItem block : body.getBlockItems()) {
       visitLocalVar(object, block.getLocalVariable());
       applyStatement(object, method, block.getStatement());
     }

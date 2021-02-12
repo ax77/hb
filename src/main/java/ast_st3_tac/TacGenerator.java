@@ -20,6 +20,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
@@ -28,9 +29,12 @@ import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_st2_annotate.Lvalue;
+import ast_st2_annotate.Symbol;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBase;
+import ast_vars.VarBase;
+import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -89,14 +93,14 @@ public class TacGenerator {
     return h(t());
   }
 
-  private List<ResultName> genArgs(final ExprMethodInvocation fcall) {
+  private List<ResultName> genArgs(final List<ExprExpression> arguments) {
 
-    for (ExprExpression arg : fcall.getArguments()) {
+    for (ExprExpression arg : arguments) {
       gen(arg);
     }
 
     List<ResultName> args = new ArrayList<>();
-    for (int i = 0; i < fcall.getArguments().size(); i++) {
+    for (int i = 0; i < arguments.size(); i++) {
       args.add(0, popResultName());
     }
 
@@ -183,13 +187,27 @@ public class TacGenerator {
     else if (base == EPRIMARY_IDENT) {
       final ExprIdent exprId = e.getIdent();
 
-      //TODO:SYMBOL
-      //      final String identStrName = exprId.getIdentifier().getName();
-      //      final VarDeclarator var = exprId.getVariable();
-      //
-      //      final Quad quad = new Quad(QuadOpc.ID_DECL, ht(), var.getType(), h(identStrName));
-      //      quad.setVarSym(var);
-      //      quads(quad);
+      final String identStrName = exprId.getIdentifier().getName();
+      final VarDeclarator var = exprId.getSym().getVariable();
+
+      /// rewrite an identifier to [this.field] form
+      /// if it is possible
+      if (var.is(VarBase.CLASS_FIELD)) {
+
+        final ClassDeclaration clazz = var.getClazz();
+        final ExprExpression ethis = new ExprExpression(new ExprThis(clazz), clazz.getBeginPos());
+        final ExprFieldAccess eFaccess = new ExprFieldAccess(ethis, var.getIdentifier());
+        eFaccess.setSym(new Symbol(var));
+
+        final ExprExpression generated = new ExprExpression(eFaccess, clazz.getBeginPos());
+        gen(generated);
+
+        return;
+      }
+
+      final Quad quad = new Quad(QuadOpc.ID_DECL, ht(), var.getType(), h(identStrName));
+      quad.setVarSym(var);
+      quads(quad);
 
       //load(e.getResultType());
     }
@@ -219,14 +237,13 @@ public class TacGenerator {
       final ExprMethodInvocation fcall = e.getMethodInvocation();
       gen(fcall.getObject());
 
-      final List<ResultName> args = genArgs(fcall);
+      final List<ResultName> args = genArgs(fcall.getArguments());
       final ResultName obj = popResultName();
       final ResultName fun = h(fcall.getFuncname().getName());
 
-      //TODO:SYMBOL
-      //      final Quad quad = new Quad(ht(), fcall.getMethod().getType(), obj, fun, args);
-      //      quad.setMethodSym(fcall.getMethod());
-      //      quads(quad);
+      final Quad quad = new Quad(ht(), fcall.getSym().getMethod().getType(), obj, fun, args);
+      quad.setMethodSym(fcall.getSym().getMethod());
+      quads(quad);
 
       //load(e.getResultType());
     }
@@ -235,13 +252,12 @@ public class TacGenerator {
       final ExprFieldAccess fieldAccess = e.getFieldAccess();
       gen(fieldAccess.getObject());
 
-      //TODO:SYMBOL
-      //      final String fName = fieldAccess.getFieldName().getName();
-      //      final Type fType = fieldAccess.getField().getType();
-      //
-      //      final Quad quad = new Quad(QuadOpc.FIELD_ACCESS, ht(), fType, popResultName(), h(fName));
-      //      quad.setVarSym(fieldAccess.getField());
-      //      quads(quad);
+      final String fName = fieldAccess.getFieldName().getName();
+      final Type fType = fieldAccess.getSym().getVariable().getType();
+
+      final Quad quad = new Quad(QuadOpc.FIELD_ACCESS, ht(), fType, popResultName(), h(fName));
+      quad.setVarSym(fieldAccess.getSym().getVariable());
+      quads(quad);
 
       //load(e.getResultType());
     }
@@ -254,6 +270,20 @@ public class TacGenerator {
       //   _tmp0_ = token_type_new (128);
       //   tp = _tmp0_;
 
+      ExprClassCreation classCreation = e.getClassCreation();
+
+      final Symbol sym = classCreation.getSym();
+      if (sym != null) {
+        VarDeclarator var = sym.getVariable();
+      } else {
+        // in place class-creation, without any variable:
+        // new classname().value
+        // fn(new classname().value)
+        throw new RuntimeException(base.toString() + " unimpl. in-place class-creation");
+      }
+
+      final List<ResultName> args = genArgs(classCreation.getArguments());
+
       throw new RuntimeException(base.toString() + " ???");
 
     }
@@ -261,8 +291,8 @@ public class TacGenerator {
     else if (base == ETHIS) {
       final ExprThis exprSelf = e.getSelfExpression();
       final ClassDeclaration clazz = exprSelf.getClazz();
-      final Type classType = new Type(new ClassTypeRef(clazz, new ArrayList<>()), e.getBeginPos());
-      quads(new Quad(QuadOpc.SELF_DECL, ht(), classType, h("self")));
+      final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
+      quads(new Quad(QuadOpc.THIS_DECL, ht(), classType, h("this")));
     }
 
     else {

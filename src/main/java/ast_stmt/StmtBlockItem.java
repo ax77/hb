@@ -10,15 +10,18 @@ public class StmtBlockItem implements Serializable {
 
   private VarDeclarator localVariable;
   private StmtStatement statement;
+  private final boolean isVarDeclaration;
 
   public StmtBlockItem(VarDeclarator localVariable) {
     NullChecker.check(localVariable);
     this.localVariable = localVariable;
+    this.isVarDeclaration = true;
   }
 
   public StmtBlockItem(StmtStatement statement) {
     NullChecker.check(statement);
     this.statement = statement;
+    this.isVarDeclaration = false;
   }
 
   public VarDeclarator getLocalVariable() {
@@ -31,6 +34,14 @@ public class StmtBlockItem implements Serializable {
 
   public void setStatement(StmtStatement statement) {
     this.statement = statement;
+  }
+
+  public boolean isVarDeclarationItem() {
+    return isVarDeclaration;
+  }
+
+  public boolean isStatementItem() {
+    return !isVarDeclaration;
   }
 
   @Override
