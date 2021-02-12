@@ -53,6 +53,19 @@ public class TacGenerator {
     this.hashResultName = new HashMap<>();
   }
 
+  public List<Quad> getQuads() {
+    return quads;
+  }
+
+  /// if (result_name)
+  /// return (result_name)
+  public String getLastResultNameToString() {
+    if (quads.isEmpty()) {
+      throw new AstParseException("tac is empty");
+    }
+    return quads.get(quads.size() - 1).getResult().toString();
+  }
+
   private ResultName h(String result) {
     if (hashResultName.containsKey(result)) {
       return hashResultName.get(result);

@@ -32,6 +32,14 @@ public class StmtSelect implements Serializable {
     return optionalElseStatement;
   }
 
+  public boolean hasElse() {
+    return optionalElseStatement != null;
+  }
+
+  public boolean isElseIf() {
+    return hasElse() && optionalElseStatement.getBase() == StatementBase.SIF;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

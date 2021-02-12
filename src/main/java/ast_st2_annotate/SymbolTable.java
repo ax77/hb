@@ -126,7 +126,7 @@ public class SymbolTable {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD); // | F_CLASS ???
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
-    
+
     getCurrentBlock().registerVariable(var);
   }
 
@@ -134,7 +134,7 @@ public class SymbolTable {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_BLOCK | F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
     variablesBlock.addsym(var.getIdentifier(), varsym(var));
-    
+
     getCurrentBlock().registerVariable(var);
   }
 

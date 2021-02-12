@@ -3,9 +3,12 @@ package ast_st3_tac;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
+import ast_printers.VarPrinters;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtReturn;
+import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
@@ -70,45 +73,77 @@ public class UnitToText {
       for (VarDeclarator fp : method.getParameters()) {
       }
     }
-    
-    genBlock(method.getBlock());
 
-    // //body
-    // final StmtBlock body = method.getBlock();
-    // for (StmtBlockItem block : body.getBlockItems()) {
-    // 
-    //   // method variables
-    //   final VarDeclarator var = block.getLocalVariable();
-    //   if (var != null) {
-    //     genVar(var);
-    //     genInitializer(var);
-    //   }
-    // 
-    //   genStatement(block.getStatement());
-    // }
-    // 
-    // g("\n}");
+    genBlock(method.getBlock());
 
   }
 
-  private void genStatement(StmtStatement statement) {
-    if (statement == null) {
+  private void genStatement(StmtStatement s) {
+    if (s == null) {
       return;
     }
-
-    StatementBase base = statement.getBase();
-    if (base == StatementBase.SFOREACH_TMP) {
-    } else if (base == StatementBase.SIF) {
+    StatementBase base = s.getBase();
+    if (base == StatementBase.SIF) {
+      genSelection(s.getIfStmt());
     } else if (base == StatementBase.SEXPR) {
-      genExprStmt(statement);
+      genExprStmt(s);
     } else if (base == StatementBase.SBLOCK) {
-      genBlock(statement.getBlockStmt());
+      genBlock(s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
+      genReturn(s.getReturnStmt());
     } else if (base == StatementBase.SWHILE) {
     } else if (base == StatementBase.SFOR) {
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
+  }
+
+  private void genSelection(StmtSelect ifStmt) {
+
+    ExprExpression expr = ifStmt.getCondition();
+    TacGenerator tcg = new TacGenerator();
+    tcg.gen(expr);
+    String res = tcg.txt1(";\n");
+    g("// " + expr.toString());
+    g(res);
+    String last = tcg.getLastResultNameToString();
+
+    g("if(" + last + ")");
+    genStatement(ifStmt.getTrueStatement());
+
+    if (ifStmt.hasElse()) {
+      boolean isElseIf = ifStmt.isElseIf();
+
+      String header = "else";
+      if (isElseIf) {
+        header = "else {\n";
+      }
+      g(header);
+
+      genStatement(ifStmt.getOptionalElseStatement());
+
+      String footer = "";
+      if (isElseIf) {
+        footer = "\n}\n";
+      }
+      g(footer);
+    }
+  }
+
+  private void genReturn(StmtReturn returnStmt) {
+
+    String last = "";
+    if (returnStmt.hasExpression()) {
+      ExprExpression expr = returnStmt.getExpression();
+      TacGenerator tcg = new TacGenerator();
+      tcg.gen(expr);
+      String res = tcg.txt1(";\n");
+      g("// " + expr.toString());
+      g(res);
+      last = tcg.getLastResultNameToString();
+    }
+
+    g("return " + last + ";");
   }
 
   private void genExprStmt(StmtStatement statement) {
@@ -129,7 +164,7 @@ public class UnitToText {
         genStatement(item.getStatement());
       }
     }
-    g("\n}\n");
+    g("\n}" + VarPrinters.bindedVarsComment(blockStmt.getRelatedVariables()));
   }
 
   private void genVar(VarDeclarator localVariable) {

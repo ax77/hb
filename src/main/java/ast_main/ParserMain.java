@@ -69,7 +69,14 @@ public class ParserMain implements ParserMainApi {
     /// it is much easy to test the source from string
     /// instead of the file
     final Stream s = new Stream("<string-source>", sb.toString());
-    return new Parse(new Tokenlist(s.getTokenlist()));
+    final List<Token> tokenlist = s.getTokenlist();
+    final Parse parser = new Parse(new Tokenlist(tokenlist));
+
+    for (ClassDeclaration c : new TypenamesFinder(tokenlist).getTypenames()) {
+      parser.defineClassName(c);
+    }
+
+    return parser;
 
   }
 
