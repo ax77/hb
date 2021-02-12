@@ -191,10 +191,6 @@ public class ApplyExpression {
     e.setResultType(sym.getType());
     primaryIdent.setSym(sym);
 
-    /// we do not carry about static-semantic so far.
-    if (sym.isVariable()) {
-      symtabApplier.getCurrentBlock().registerVariable(sym.getVariable());
-    }
   }
 
   private void applyFieldAccess(final ClassDeclaration object, final ExprExpression e) {

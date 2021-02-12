@@ -126,12 +126,16 @@ public class SymbolTable {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD); // | F_CLASS ???
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
+    
+    getCurrentBlock().registerVariable(var);
   }
 
   public void defineBlockVar(VarDeclarator var) {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_BLOCK | F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
     variablesBlock.addsym(var.getIdentifier(), varsym(var));
+    
+    getCurrentBlock().registerVariable(var);
   }
 
   private boolean hasBit(int option, int mask) {
@@ -191,10 +195,6 @@ public class SymbolTable {
 
   public void popBlock() {
     currentBlocksStack.remove(0);
-  }
-
-  public List<StmtBlock> getCurrentBlocksStack() {
-    return currentBlocksStack;
   }
 
 }

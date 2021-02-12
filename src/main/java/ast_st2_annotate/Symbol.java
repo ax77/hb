@@ -8,6 +8,12 @@ import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
 public class Symbol {
+
+  /// TODO:
+  /// for each abstract class there is one variable
+  /// `global` variable for the whole unit
+  /// and remove this clazz from here.
+
   private final SymbolBase base;
   private ClassDeclaration clazz;
   private VarDeclarator variable;
