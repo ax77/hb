@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_parsers.ParseTypeDeclarations;
-import ast_stmt.StmtBlock;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -37,9 +36,6 @@ public class Parse {
   private ClassDeclaration currentClass;
 
   private int flags = 0;
-
-  ///@REFCOUNT
-  private List<StmtBlock> currentBlocksStack;
 
   public Parse(Tokenlist tokenlist) {
     this.tokenlist = tokenlist;
@@ -67,7 +63,6 @@ public class Parse {
   private void initDefaults() {
     this.ringBuffer = new ArrayList<>();
     this.lastloc = "";
-    this.currentBlocksStack = new ArrayList<>();
   }
 
   private void initScopes() {
@@ -100,28 +95,6 @@ public class Parse {
 
   public int getFlags() {
     return flags;
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  // BLOCK
-
-  public StmtBlock getCurrentBlock() {
-    if (currentBlocksStack.isEmpty()) {
-      perror("the current block was not set before.");
-    }
-    return currentBlocksStack.get(0);
-  }
-
-  public void pushBlock(StmtBlock block) {
-    currentBlocksStack.add(0, block);
-  }
-
-  public void popBlock() {
-    currentBlocksStack.remove(0);
-  }
-
-  public List<StmtBlock> getCurrentBlocksStack() {
-    return currentBlocksStack;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -360,7 +333,6 @@ public class Parse {
     this.prevtok = state.getPrevtok();
     this.currentClass = state.getCurrentClass();
     this.flags = state.getFlags();
-    this.currentBlocksStack = state.getCurrentBlocksStack();
   }
 
   //////////////////////////////////////////////////////////////////////

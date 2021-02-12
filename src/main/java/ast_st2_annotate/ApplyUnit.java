@@ -63,7 +63,7 @@ public class ApplyUnit {
     //sb.append("_");
     //sb.append(method.getUniqueIdToString());
 
-    symtabApplier.openMethodScope(sb.toString());
+    symtabApplier.openMethodScope(sb.toString(), method);
 
     if (!method.isDestructor()) {
       for (VarDeclarator fp : method.getParameters()) {

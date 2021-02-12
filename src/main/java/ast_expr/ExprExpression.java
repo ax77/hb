@@ -31,13 +31,6 @@ public class ExprExpression implements Serializable, Location {
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
 
-  // //MIR:TREE:rewriter
-  // public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
-  //   this.base = ExpressionBase.EFIELD_ACCESS;
-  //   this.fieldAccess = fieldAccess;
-  //   this.ident = null;
-  // }
-
   public ExprExpression(ExprBuiltinFn builtinFn, Token beginPos) {
     this.base = ExpressionBase.EBUILTIN_FN;
     this.beginPos = beginPos;

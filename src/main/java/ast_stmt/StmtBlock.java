@@ -8,7 +8,7 @@ import ast_printers.VarPrinters;
 import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
-public class StmtBlock implements Serializable {
+public class StmtBlock implements Serializable, VarRegistrator {
   private static final long serialVersionUID = -3746821242002590684L;
 
   private final List<StmtBlockItem> blockStatements;
@@ -39,20 +39,22 @@ public class StmtBlock implements Serializable {
     this.blockStatements.add(item);
   }
 
-  public List<VarDeclarator> getVariables() {
-    return variables;
-  }
-
   public List<StmtReturn> getReturns() {
     return returns;
   }
 
-  public void registerVariable(VarDeclarator var) {
-    this.variables.add(var);
-  }
-
   public void registerReturn(StmtReturn ret) {
     this.returns.add(ret);
+  }
+
+  @Override
+  public List<VarDeclarator> getRelatedVariables() {
+    return variables;
+  }
+
+  @Override
+  public void registerVariable(VarDeclarator sym) {
+    variables.add(sym);
   }
 
   @Override

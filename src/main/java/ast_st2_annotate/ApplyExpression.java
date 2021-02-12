@@ -42,73 +42,47 @@ public class ApplyExpression {
     }
     if (e.getResultType() != null) {
       // we may rewrite some expressions, so: TODO:
-      // return;
+      return;
     }
 
     if (e.is(ExpressionBase.EUNARY)) {
       applyUnary(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EBINARY)) {
+    } else if (e.is(ExpressionBase.EBINARY)) {
       applyBinary(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EASSIGN)) {
+    } else if (e.is(ExpressionBase.EASSIGN)) {
       applyAssign(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
+    } else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
       applyIdentifier(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
+    } else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
       applyMethodInvocation(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
+    } else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
       applyFieldAccess(object, e);
-    }
-
-    else if (e.is(ExpressionBase.ETHIS)) {
+    } else if (e.is(ExpressionBase.ETHIS)) {
       applySelfLiteral(e);
-    }
-
-    else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
+    } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
       applyNumericLiteral(e);
-    }
-
-    else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
-      // TODO:
-    }
-
-    else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+    } else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
+      applyNullLiteral(object, e);
+    } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
       applyClassInstanceCreation(object, e);
-    }
-
-    else if (e.is(ExpressionBase.ESTRING_CONST)) {
+    } else if (e.is(ExpressionBase.ESTRING_CONST)) {
       applyStringLiteral(e);
-    }
-
-    else if (e.is(ExpressionBase.ECHAR_CONST)) {
+    } else if (e.is(ExpressionBase.ECHAR_CONST)) {
       e.setResultType(TypeBindings.make_char(e.getBeginPos()));
-    }
-
-    else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
-      e.setResultType(TypeBindings.make_boolean(e.getBeginPos())); // TODO: ?
-    }
-
-    else if (e.is(ExpressionBase.ECAST)) {
+    } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
+      e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));
+    } else if (e.is(ExpressionBase.ECAST)) {
       asslyCast(object, e);
-    }
-
-    else if (e.is(ExpressionBase.EBUILTIN_FN)) {
+    } else if (e.is(ExpressionBase.EBUILTIN_FN)) {
       applyBuiltinFn(object, e);
-    }
-
-    else {
+    } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {
+    // TODO Auto-generated method stub
   }
 
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
@@ -199,13 +173,13 @@ public class ApplyExpression {
 
   private void applyIdentifier(final ClassDeclaration object, final ExprExpression e) {
 
-    // the only one thing that we should to do here:
-    // to find what the 'id' is, and bind the
-    // found symbol to the ExprIdent, and set the result
-    // for this expression as a type of this symbol
-    // we had found.
-    // do not apply any initializers, etc, with this variable here,
-    // because it is not a goal...
+    /// the only one thing that we should to do here:
+    /// to find what the 'id' is, and bind the
+    /// found symbol to the ExprIdent, and set the result
+    /// for this expression as a type of this symbol
+    /// we had found.
+    /// do not apply any initializers, etc, with this variable here,
+    /// because it is not a goal...
 
     final ExprIdent primaryIdent = e.getIdent();
 
@@ -216,6 +190,11 @@ public class ApplyExpression {
 
     e.setResultType(sym.getType());
     primaryIdent.setSym(sym);
+
+    /// we do not carry about static-semantic so far.
+    if (sym.isVariable()) {
+      symtabApplier.getCurrentBlock().registerVariable(sym.getVariable());
+    }
   }
 
   private void applyFieldAccess(final ClassDeclaration object, final ExprExpression e) {

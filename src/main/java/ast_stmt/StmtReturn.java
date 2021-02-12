@@ -8,7 +8,7 @@ import ast_expr.ExprExpression;
 import ast_printers.VarPrinters;
 import ast_vars.VarDeclarator;
 
-public class StmtReturn implements Serializable {
+public class StmtReturn implements Serializable, VarRegistrator {
   private static final long serialVersionUID = -3087335776553034864L;
 
   private ExprExpression expression;
@@ -28,10 +28,12 @@ public class StmtReturn implements Serializable {
     this.expression = expression;
   }
 
-  public List<VarDeclarator> getVariables() {
+  @Override
+  public List<VarDeclarator> getRelatedVariables() {
     return variables;
   }
 
+  @Override
   public void registerVariable(VarDeclarator sym) {
     variables.add(sym);
   }

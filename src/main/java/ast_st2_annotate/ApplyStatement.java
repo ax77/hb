@@ -71,6 +71,8 @@ public class ApplyStatement {
         }
       }
     }
+
+    symtabApplier.getCurrentBlock().registerReturn(returnStmt);
   }
 
   public void applyExpressionSimple(ExprExpression e, List<Symbol> vars) {
@@ -115,7 +117,11 @@ public class ApplyStatement {
 
   private void applyFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
 
-    symtabApplier.openBlockScope("block");
+    if (stmtFor.getLoop() == null || stmtFor.getLoop().getBase() != StatementBase.SBLOCK) {
+      throw new AstParseException("for-loop without the block");
+    }
+
+    symtabApplier.openBlockScope("block", stmtFor.getLoop().getBlockStmt());
     visitLocalVar(object, stmtFor.getDecl());
 
     applyExpression(object, stmtFor.getInit());
@@ -161,7 +167,7 @@ public class ApplyStatement {
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock body) {
 
-    symtabApplier.openBlockScope("block");
+    symtabApplier.openBlockScope("block", body);
 
     for (StmtBlockItem block : body.getBlockStatements()) {
       visitLocalVar(object, block.getLocalVariable());

@@ -20,13 +20,6 @@ public class StmtStatement implements Serializable, Location {
   private StmtFor forStmt;
   private StmtReturn returnStmt;
 
-  // //MIR:TREE:rewriter
-  // public void replaceForLoopWithBlock(StmtBlock block) {
-  //   this.base = StatementBase.SBLOCK;
-  //   this.bloskStmt = block;
-  //   this.forEachStmt = null;
-  // }
-
   public StmtStatement(StmtFor forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
     this.beginPos = beginPos;

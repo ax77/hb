@@ -40,13 +40,10 @@ public class ParseStatement {
   public StmtBlock parseBlock(VarBase varBase) {
 
     final StmtBlock block = new StmtBlock();
-    parser.pushBlock(block);
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       parser.rbrace();
-
-      parser.popBlock();
       return block;
     }
 
@@ -56,8 +53,6 @@ public class ParseStatement {
     }
 
     parser.rbrace();
-
-    parser.popBlock();
     return block;
   }
 
@@ -83,9 +78,6 @@ public class ParseStatement {
 
     final ClassDeclaration currentClass = parser.getCurrentClass(true);
     currentClass.registerTypeSetter(localVar);
-
-    ///@REFCOUNT
-    parser.getCurrentBlock().registerVariable(localVar);
 
     return localVar;
   }
@@ -192,7 +184,6 @@ public class ParseStatement {
   private StmtStatement parseReturn() {
     final Token beginPos = parser.checkedMove(return_ident);
     final StmtReturn ret = new StmtReturn();
-    parser.getCurrentBlock().registerReturn(ret);
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();

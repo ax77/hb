@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_stmt.StmtBlock;
 import tokenize.Token;
 
 public class ParseState {
@@ -15,7 +14,6 @@ public class ParseState {
   private final Token prevtok;
   private final ClassDeclaration currentClass;
   private final int flags;
-  private List<StmtBlock> currentBlocksStack;
 
   public ParseState(Parse parser) {
     this.tokenlistOffset = parser.getTokenlist().getOffset();
@@ -25,15 +23,6 @@ public class ParseState {
     this.prevtok = parser.getPrevtok();
     this.currentClass = parser.getCurrentClass(false);
     this.flags = parser.getFlags();
-    this.currentBlocksStack = parser.getCurrentBlocksStack();
-  }
-
-  public List<StmtBlock> getCurrentBlocksStack() {
-    return currentBlocksStack;
-  }
-
-  public void setCurrentBlocksStack(List<StmtBlock> currentBlocksStack) {
-    this.currentBlocksStack = currentBlocksStack;
   }
 
   public ClassDeclaration getCurrentClass() {
