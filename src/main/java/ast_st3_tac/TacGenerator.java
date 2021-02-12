@@ -31,7 +31,6 @@ import ast_st2_annotate.Lvalue;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBase;
-import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -184,12 +183,13 @@ public class TacGenerator {
     else if (base == EPRIMARY_IDENT) {
       final ExprIdent exprId = e.getIdent();
 
-      final String identStrName = exprId.getIdentifier().getName();
-      final VarDeclarator var = exprId.getVariable();
-
-      final Quad quad = new Quad(QuadOpc.ID_DECL, ht(), var.getType(), h(identStrName));
-      quad.setVarSym(var);
-      quads(quad);
+      //TODO:SYMBOL
+      //      final String identStrName = exprId.getIdentifier().getName();
+      //      final VarDeclarator var = exprId.getVariable();
+      //
+      //      final Quad quad = new Quad(QuadOpc.ID_DECL, ht(), var.getType(), h(identStrName));
+      //      quad.setVarSym(var);
+      //      quads(quad);
 
       //load(e.getResultType());
     }
@@ -223,9 +223,10 @@ public class TacGenerator {
       final ResultName obj = popResultName();
       final ResultName fun = h(fcall.getFuncname().getName());
 
-      final Quad quad = new Quad(ht(), fcall.getMethod().getType(), obj, fun, args);
-      quad.setMethodSym(fcall.getMethod());
-      quads(quad);
+      //TODO:SYMBOL
+      //      final Quad quad = new Quad(ht(), fcall.getMethod().getType(), obj, fun, args);
+      //      quad.setMethodSym(fcall.getMethod());
+      //      quads(quad);
 
       //load(e.getResultType());
     }
@@ -234,12 +235,13 @@ public class TacGenerator {
       final ExprFieldAccess fieldAccess = e.getFieldAccess();
       gen(fieldAccess.getObject());
 
-      final String fName = fieldAccess.getFieldName().getName();
-      final Type fType = fieldAccess.getField().getType();
-
-      final Quad quad = new Quad(QuadOpc.FIELD_ACCESS, ht(), fType, popResultName(), h(fName));
-      quad.setVarSym(fieldAccess.getField());
-      quads(quad);
+      //TODO:SYMBOL
+      //      final String fName = fieldAccess.getFieldName().getName();
+      //      final Type fType = fieldAccess.getField().getType();
+      //
+      //      final Quad quad = new Quad(QuadOpc.FIELD_ACCESS, ht(), fType, popResultName(), h(fName));
+      //      quad.setVarSym(fieldAccess.getField());
+      //      quads(quad);
 
       //load(e.getResultType());
     }

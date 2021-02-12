@@ -8,11 +8,11 @@ import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 
-public class SymInstantiationUnitApplier {
+public class ApplyUnit {
 
   private final SymbolTable symtabApplier;
 
-  public SymInstantiationUnitApplier() {
+  public ApplyUnit() {
     this.symtabApplier = new SymbolTable();
   }
 
@@ -89,12 +89,12 @@ public class SymInstantiationUnitApplier {
   }
 
   private void applyStatement(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement statement) {
-    SymStatementApplier applier = new SymStatementApplier(symtabApplier);
+    ApplyStatement applier = new ApplyStatement(symtabApplier);
     applier.applyStatement(object, method, statement);
   }
 
   private void applyInitializer(ClassDeclaration object, VarDeclarator var) {
-    SymInitializerApplier applier = new SymInitializerApplier(symtabApplier);
+    ApplyInitializer applier = new ApplyInitializer(symtabApplier);
     applier.applyInitializer(object, var);
 
   }

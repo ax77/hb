@@ -14,11 +14,11 @@ import ast_stmt.StmtWhile;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
-public class SymStatementApplier {
+public class ApplyStatement {
 
   private final SymbolTable symtabApplier;
 
-  public SymStatementApplier(SymbolTable symtabApplier) {
+  public ApplyStatement(SymbolTable symtabApplier) {
     this.symtabApplier = symtabApplier;
   }
 
@@ -122,12 +122,12 @@ public class SymStatementApplier {
   }
 
   private void applyExpression(ClassDeclaration object, ExprExpression e) {
-    SymExpressionApplier applier = new SymExpressionApplier(symtabApplier);
+    ApplyExpression applier = new ApplyExpression(symtabApplier);
     applier.applyExpression(object, e);
   }
 
   private void applyInitializer(ClassDeclaration object, VarDeclarator var) {
-    SymInitializerApplier applier = new SymInitializerApplier(symtabApplier);
+    ApplyInitializer applier = new ApplyInitializer(symtabApplier);
     applier.applyInitializer(object, var);
 
   }

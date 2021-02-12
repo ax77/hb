@@ -39,6 +39,10 @@ public class StmtBlock implements Serializable {
     return variables;
   }
 
+  public void registerVariable(VarDeclarator var) {
+    this.variables.add(var);
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

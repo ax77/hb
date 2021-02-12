@@ -2,10 +2,10 @@ package ast_expr;
 
 import java.io.Serializable;
 
-import ast_vars.VarDeclarator;
+import ast_st2_annotate.Symbol;
 import tokenize.Ident;
 
-public class ExprFieldAccess implements Serializable {
+public class ExprFieldAccess implements Serializable, MirSymbol {
 
   private static final long serialVersionUID = -6528124385251141959L;
 
@@ -15,7 +15,7 @@ public class ExprFieldAccess implements Serializable {
   private final Ident fieldName;
 
   //MIR:TREE
-  private VarDeclarator field;
+  private Symbol sym;
 
   public ExprFieldAccess(ExprExpression object, Ident fieldName) {
     this.object = object;
@@ -30,12 +30,14 @@ public class ExprFieldAccess implements Serializable {
     return object;
   }
 
-  public VarDeclarator getField() {
-    return field;
+  @Override
+  public Symbol getSym() {
+    return sym;
   }
 
-  public void setField(VarDeclarator field) {
-    this.field = field;
+  @Override
+  public void setSym(Symbol sym) {
+    this.sym = sym;
   }
 
   @Override

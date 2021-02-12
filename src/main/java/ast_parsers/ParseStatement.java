@@ -8,9 +8,6 @@ import static ast_symtab.Keywords.return_ident;
 import static ast_symtab.Keywords.while_ident;
 import static tokenize.T.T_SEMI_COLON;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
@@ -42,36 +39,37 @@ public class ParseStatement {
 
   public StmtBlock parseBlock(VarBase varBase) {
 
+    final StmtBlock block = new StmtBlock();
+    parser.setCurrentBlock(block);
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       parser.rbrace();
-      return new StmtBlock();
+
+      parser.setCurrentBlock(null);
+      return block;
     }
 
-    final List<StmtBlockItem> items = new ArrayList<StmtBlockItem>();
     while (!parser.is(T.T_RIGHT_BRACE)) {
-      final StmtBlockItem oneBlock = parseOneBlock(varBase);
-      items.add(oneBlock);
+      final StmtBlockItem item = parseOneBlockItem(varBase);
+      block.put(item);
     }
+
     parser.rbrace();
 
-    return new StmtBlock(items);
+    parser.setCurrentBlock(null);
+    return block;
   }
 
-  private StmtBlockItem parseOneBlock(VarBase varBase) {
+  private StmtBlockItem parseOneBlockItem(VarBase varBase) {
 
     if (isLocalVarBegin()) {
-      final VarDeclarator localVar = getLocalVar(varBase);
-      final ClassDeclaration currentClass = parser.getCurrentClass(true);
-      currentClass.registerTypeSetter(localVar);
-
-      return new StmtBlockItem(localVar);
+      return new StmtBlockItem(getLocalVar(varBase));
     }
 
-    StmtStatement stmt = parseStatement();
+    final StmtStatement stmt = parseStatement();
     if (stmt == null) {
-      parser.perror("something wrong in a statement");
+      parser.perror("something wrong with a statement");
     }
     return new StmtBlockItem(stmt);
   }
@@ -82,6 +80,13 @@ public class ParseStatement {
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident name = beginPos.getIdent();
     final VarDeclarator localVar = new ParseVarDeclarator(parser).parse(varBase, mods, type, name, beginPos);
+
+    final ClassDeclaration currentClass = parser.getCurrentClass(true);
+    currentClass.registerTypeSetter(localVar);
+
+    ///@REFCOUNT
+    parser.getCurrentBlock().registerVariable(localVar);
+
     return localVar;
   }
 
@@ -148,61 +153,56 @@ public class ParseStatement {
       parser.perror("do loops unimpl.");
     }
 
-    // return <expression> ;
-    // return ;
-
     if (parser.is(return_ident)) {
-      final Token beginPos = parser.checkedMove(return_ident);
-      final StmtReturn ret = new StmtReturn();
-
-      if (parser.tp() == T_SEMI_COLON) {
-        parser.move();
-        return new StmtStatement(ret, beginPos);
-      }
-
-      final ExprExpression expr = new ParseExpression(parser).e_expression();
-      ret.setExpression(expr);
-
-      parser.semicolon();
-      return new StmtStatement(ret, beginPos);
+      return parseReturn();
     }
-
-    // while condition {  }
 
     if (parser.is(while_ident)) {
-      final Token beginPos = parser.checkedMove(while_ident);
-      final ExprExpression condition = new ParseExpression(parser).e_expression();
-      final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
-      return new StmtStatement(new StmtWhile(condition, block), beginPos);
+      return parseWhile();
     }
-
-    // for item in collection {  }
 
     if (parser.is(for_ident)) {
       return parseForLoop();
-      //return parseForeach();
     }
-
-    // if 
 
     if (parser.is(if_ident)) {
       return parseSelection();
     }
 
-    // {  }
-
     if (parser.is(T.T_LEFT_BRACE)) {
-      final Token beginPos = parser.tok();
-      return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), beginPos);
+      return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), parser.tok());
     }
 
     // expression-statement by default
     //
     final Token beginPos = parser.tok();
     final ExprExpression expression = new ParseExpression(parser).e_expression();
-    parser.semicolon();
 
+    parser.semicolon();
     return new StmtStatement(expression, beginPos);
+  }
+
+  private StmtStatement parseWhile() {
+    final Token beginPos = parser.checkedMove(while_ident);
+    final ExprExpression condition = new ParseExpression(parser).e_expression();
+    final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
+    return new StmtStatement(new StmtWhile(condition, block), beginPos);
+  }
+
+  private StmtStatement parseReturn() {
+    final Token beginPos = parser.checkedMove(return_ident);
+    final StmtReturn ret = new StmtReturn();
+
+    if (parser.tp() == T_SEMI_COLON) {
+      parser.move();
+      return new StmtStatement(ret, beginPos);
+    }
+
+    final ExprExpression expr = new ParseExpression(parser).e_expression();
+    ret.setExpression(expr);
+
+    parser.semicolon();
+    return new StmtStatement(ret, beginPos);
   }
 
   private StmtStatement parseSelection() {

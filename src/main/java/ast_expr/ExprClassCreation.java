@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 import ast_st1_templates.TypeSetter;
+import ast_st2_annotate.Symbol;
 import ast_types.Type;
-import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
-public class ExprClassCreation implements Serializable, TypeSetter {
+public class ExprClassCreation implements Serializable, TypeSetter, MirSymbol {
   private static final long serialVersionUID = -8666532744723689317L;
 
   // <class instance creation expression> ::= new <class type> < type-arguments > ( <argument list>? )
@@ -17,7 +17,7 @@ public class ExprClassCreation implements Serializable, TypeSetter {
   private final List<ExprExpression> arguments;
 
   //MIR:TREE
-  private VarDeclarator var;
+  private Symbol sym;
 
   public ExprClassCreation(Type classtype, List<ExprExpression> arguments) {
     NullChecker.check(classtype, arguments);
@@ -36,16 +36,18 @@ public class ExprClassCreation implements Serializable, TypeSetter {
   }
 
   @Override
+  public Symbol getSym() {
+    return sym;
+  }
+
+  @Override
+  public void setSym(Symbol sym) {
+    this.sym = sym;
+  }
+
+  @Override
   public void setType(Type typeToSet) {
     this.classtype = typeToSet;
-  }
-
-  public VarDeclarator getVar() {
-    return var;
-  }
-
-  public void setVar(VarDeclarator var) {
-    this.var = var;
   }
 
   @Override

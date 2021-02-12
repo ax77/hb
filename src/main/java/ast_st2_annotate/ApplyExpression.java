@@ -15,7 +15,6 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
@@ -24,16 +23,15 @@ import ast_types.Type;
 import ast_types.TypeBase;
 import ast_types.TypeBindings;
 import ast_types.TypeBuiltinArray;
-import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
-public class SymExpressionApplier {
+public class ApplyExpression {
 
   private final SymbolTable symtabApplier;
 
-  public SymExpressionApplier(SymbolTable symtabApplier) {
+  public ApplyExpression(SymbolTable symtabApplier) {
     this.symtabApplier = symtabApplier;
   }
 
@@ -202,14 +200,14 @@ public class SymExpressionApplier {
   private void applyUnary(final ClassDeclaration object, final ExprExpression e) {
     final ExprUnary node = e.getUnary();
     applyExpression(object, node.getOperand());
-    SymExpressionTypeResolver.setUnaryType(e);
+    ApplyExpressionType.setUnaryType(e);
   }
 
   private void applyBinary(final ClassDeclaration object, final ExprExpression e) {
     final ExprBinary node = e.getBinary();
     applyExpression(object, node.getLhs());
     applyExpression(object, node.getRhs());
-    SymExpressionTypeResolver.setBinaryType(e);
+    ApplyExpressionType.setBinaryType(e);
   }
 
   private void applyIdentifier(final ClassDeclaration object, final ExprExpression e) {
@@ -229,31 +227,8 @@ public class SymExpressionApplier {
       ErrorLocation.errorExpression("symbol was not declared in this scope", e);
     }
 
-    if (sym.isClassType()) {
-      final ClassDeclaration classType = sym.getClassType();
-      e.setResultType(new Type(new ClassTypeRef(classType, classType.getTypeParametersT()), classType.getBeginPos()));
-      return;
-    }
-
-    // set type to expression
-    final VarDeclarator variable = sym.getVariable();
-    e.setResultType(variable.getType());
-
-    //MIR:TREE
-    primaryIdent.setVariable(variable);
-  }
-
-  private boolean maybeReplaceIdentWithFieldAccess(final VarDeclarator variable, final ClassDeclaration object,
-      final ExprExpression e) {
-    if (variable.getBase() == VarBase.CLASS_FIELD) {
-      final Ident fieldName = variable.getIdentifier();
-      final ExprExpression selfExpression = new ExprExpression(new ExprThis(object), variable.getBeginPos());
-      final ExprFieldAccess fieldAccess = new ExprFieldAccess(selfExpression, fieldName);
-      fieldAccess.setField(variable);
-      e.replaceIdentWithFieldAccess(fieldAccess);
-      return true;
-    }
-    return false;
+    e.setResultType(sym.getType());
+    primaryIdent.setSym(sym);
   }
 
   private void applyFieldAccess(final ClassDeclaration object, final ExprExpression e) {
@@ -284,9 +259,7 @@ public class SymExpressionApplier {
     }
 
     e.setResultType(field.getType());
-
-    //MIR:TREE
-    fieldAccess.setField(field);
+    fieldAccess.setSym(new Symbol(field));
 
   }
 
@@ -313,9 +286,7 @@ public class SymExpressionApplier {
     }
 
     e.setResultType(method.getType());
-
-    //MIR:TREE
-    methodInvocation.setMethod(method);
+    methodInvocation.setSym(new Symbol(method));
 
   }
 

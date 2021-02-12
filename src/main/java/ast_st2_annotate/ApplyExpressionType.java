@@ -33,7 +33,7 @@ import tokenize.T;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
-public class SymExpressionTypeResolver {
+public class ApplyExpressionType {
 
   private static final String RESULT_TYPE_NOT_RESOLVED = "result type not resolved";
 

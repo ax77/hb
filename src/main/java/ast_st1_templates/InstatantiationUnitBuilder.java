@@ -3,7 +3,7 @@ package ast_st1_templates;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_st2_annotate.SymInstantiationUnitApplier;
+import ast_st2_annotate.ApplyUnit;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
@@ -50,7 +50,7 @@ public class InstatantiationUnitBuilder {
 
     // resolve all symbols, identifiers, with scope rules,
     // and add result-type to each expression.
-    final SymInstantiationUnitApplier applier = new SymInstantiationUnitApplier();
+    final ApplyUnit applier = new ApplyUnit();
     applier.visit(instantiationUnit);
 
   }

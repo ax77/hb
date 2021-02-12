@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import ast_class.ClassDeclaration;
 import ast_parsers.ParseTypeDeclarations;
+import ast_stmt.StmtBlock;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -36,6 +37,9 @@ public class Parse {
   private ClassDeclaration currentClass;
 
   private int flags = 0;
+
+  ///@REFCOUNT
+  private StmtBlock currentBlock;
 
   public Parse(Tokenlist tokenlist) {
     this.tokenlist = tokenlist;
@@ -95,6 +99,20 @@ public class Parse {
 
   public int getFlags() {
     return flags;
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // BLOCK
+
+  public StmtBlock getCurrentBlock() {
+    if (currentBlock == null) {
+      perror("the current block was not set before.");
+    }
+    return currentBlock;
+  }
+
+  public void setCurrentBlock(StmtBlock block) {
+    this.currentBlock = block;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -333,6 +351,7 @@ public class Parse {
     this.prevtok = state.getPrevtok();
     this.currentClass = state.getCurrentClass();
     this.flags = state.getFlags();
+    this.currentBlock = state.getCurrentBlock();
   }
 
   //////////////////////////////////////////////////////////////////////

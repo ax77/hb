@@ -13,7 +13,7 @@ public class ExprExpression implements Serializable, Location {
   private static final long serialVersionUID = -2905880039842730533L;
 
   // main
-  private /*final*/ ExpressionBase base; // what union contains
+  private final ExpressionBase base; // what union contains
   private final Token beginPos;
   private Type resultType;
 
@@ -31,12 +31,12 @@ public class ExprExpression implements Serializable, Location {
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
 
-  //MIR:TREE:rewriter
-  public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
-    this.base = ExpressionBase.EFIELD_ACCESS;
-    this.fieldAccess = fieldAccess;
-    this.ident = null;
-  }
+  // //MIR:TREE:rewriter
+  // public void replaceIdentWithFieldAccess(ExprFieldAccess fieldAccess) {
+  //   this.base = ExpressionBase.EFIELD_ACCESS;
+  //   this.fieldAccess = fieldAccess;
+  //   this.ident = null;
+  // }
 
   public ExprExpression(ExprBuiltinFn builtinFn, Token beginPos) {
     this.base = ExpressionBase.EBUILTIN_FN;

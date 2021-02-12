@@ -3,20 +3,20 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
-import ast_method.ClassMethodDeclaration;
+import ast_st2_annotate.Symbol;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ExprMethodInvocation implements Serializable {
+public class ExprMethodInvocation implements Serializable, MirSymbol {
   private static final long serialVersionUID = -6288485017757935715L;
 
   // object.funcname(arguments)
-  private /*final*/ ExprExpression object;
+  private final ExprExpression object;
   private final Ident funcname;
   private final List<ExprExpression> arguments;
 
   //MIR:TREE
-  private ClassMethodDeclaration method;
+  private Symbol sym;
 
   // a.b()
   // self.b()
@@ -40,12 +40,14 @@ public class ExprMethodInvocation implements Serializable {
     return funcname;
   }
 
-  public ClassMethodDeclaration getMethod() {
-    return method;
+  @Override
+  public Symbol getSym() {
+    return sym;
   }
 
-  public void setMethod(ClassMethodDeclaration method) {
-    this.method = method;
+  @Override
+  public void setSym(Symbol sym) {
+    this.sym = sym;
   }
 
   @Override
@@ -59,10 +61,6 @@ public class ExprMethodInvocation implements Serializable {
     sb.append(ExprUtil.funcArgsToString(arguments));
 
     return sb.toString();
-  }
-
-  public void setObject(ExprExpression exprExpression) {
-    this.object = exprExpression;
   }
 
 }
