@@ -15,7 +15,7 @@ public class ParseState {
   private final Token prevtok;
   private final ClassDeclaration currentClass;
   private final int flags;
-  private final StmtBlock currentBlock;
+  private List<StmtBlock> currentBlocksStack;
 
   public ParseState(Parse parser) {
     this.tokenlistOffset = parser.getTokenlist().getOffset();
@@ -25,11 +25,15 @@ public class ParseState {
     this.prevtok = parser.getPrevtok();
     this.currentClass = parser.getCurrentClass(false);
     this.flags = parser.getFlags();
-    this.currentBlock = parser.getCurrentBlock();
+    this.currentBlocksStack = parser.getCurrentBlocksStack();
   }
 
-  public StmtBlock getCurrentBlock() {
-    return currentBlock;
+  public List<StmtBlock> getCurrentBlocksStack() {
+    return currentBlocksStack;
+  }
+
+  public void setCurrentBlocksStack(List<StmtBlock> currentBlocksStack) {
+    this.currentBlocksStack = currentBlocksStack;
   }
 
   public ClassDeclaration getCurrentClass() {

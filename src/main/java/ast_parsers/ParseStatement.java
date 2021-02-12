@@ -40,13 +40,13 @@ public class ParseStatement {
   public StmtBlock parseBlock(VarBase varBase) {
 
     final StmtBlock block = new StmtBlock();
-    parser.setCurrentBlock(block);
+    parser.pushBlock(block);
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       parser.rbrace();
 
-      parser.setCurrentBlock(null);
+      parser.popBlock();
       return block;
     }
 
@@ -57,7 +57,7 @@ public class ParseStatement {
 
     parser.rbrace();
 
-    parser.setCurrentBlock(null);
+    parser.popBlock();
     return block;
   }
 
@@ -192,6 +192,7 @@ public class ParseStatement {
   private StmtStatement parseReturn() {
     final Token beginPos = parser.checkedMove(return_ident);
     final StmtReturn ret = new StmtReturn();
+    parser.getCurrentBlock().registerReturn(ret);
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();

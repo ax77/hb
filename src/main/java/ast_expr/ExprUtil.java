@@ -27,6 +27,7 @@ import java.util.Map;
 
 import ast_types.Type;
 import ast_types.TypeBindings;
+import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import literals.IntLiteral;
 import tokenize.T;
@@ -55,6 +56,18 @@ public abstract class ExprUtil {
     }
 
     sb.append(")");
+    return sb.toString();
+  }
+
+  public static String varsTos(List<VarDeclarator> variables) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < variables.size(); i++) {
+      VarDeclarator var = variables.get(i);
+      sb.append(var.getIdentifier().getName());
+      if (i + 1 < variables.size()) {
+        sb.append(", ");
+      }
+    }
     return sb.toString();
   }
 

@@ -63,8 +63,13 @@ public class ApplyStatement {
     if (returnStmt.hasExpression()) {
       List<Symbol> vars = new ArrayList<>();
       applyExpressionSimple(returnStmt.getExpression(), vars);
-      for(Symbol sym : vars) {
-        returnStmt.registerVariable(sym);
+      for (Symbol sym : vars) {
+        if (sym.isVariable()) {
+          /// if it is not a var - it may be a static var from abstract class
+          /// and it is not interesting, we do not process static vars
+          /// nevertheless
+          returnStmt.registerVariable(sym.getVariable());
+        }
       }
     }
   }

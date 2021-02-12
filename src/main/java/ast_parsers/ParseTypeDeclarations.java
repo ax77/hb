@@ -245,6 +245,7 @@ public class ParseTypeDeclarations {
     if (!isInterfaceMethod) {
       block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     }
+    parser.pushBlock(block);
 
     final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, mod, clazz, name,
         parameters, type, block, beginPos);

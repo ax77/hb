@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_expr.ExprUtil;
 import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
@@ -14,17 +15,20 @@ public class StmtBlock implements Serializable {
 
   //@REFCOUNT
   private final List<VarDeclarator> variables;
+  private final List<StmtReturn> returns;
 
   // empty: { }
   public StmtBlock() {
     this.blockStatements = new ArrayList<>();
     this.variables = new ArrayList<>();
+    this.returns = new ArrayList<>();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
     this.blockStatements = blockStatements;
     this.variables = new ArrayList<>();
+    this.returns = new ArrayList<>();
   }
 
   public List<StmtBlockItem> getBlockStatements() {
@@ -39,8 +43,16 @@ public class StmtBlock implements Serializable {
     return variables;
   }
 
+  public List<StmtReturn> getReturns() {
+    return returns;
+  }
+
   public void registerVariable(VarDeclarator var) {
     this.variables.add(var);
+  }
+
+  public void registerReturn(StmtReturn ret) {
+    this.returns.add(ret);
   }
 
   @Override
@@ -50,7 +62,14 @@ public class StmtBlock implements Serializable {
     for (StmtBlockItem blockItem : blockStatements) {
       sb.append(blockItem.toString());
     }
-    sb.append("\n}\n");
+    sb.append("\n}");
+
+    if (!variables.isEmpty()) {
+      sb.append(" // ");
+      sb.append(ExprUtil.varsTos(variables));
+    }
+
+    sb.append("\n");
     return sb.toString();
   }
 

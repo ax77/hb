@@ -39,7 +39,7 @@ public class Parse {
   private int flags = 0;
 
   ///@REFCOUNT
-  private StmtBlock currentBlock;
+  private List<StmtBlock> currentBlocksStack;
 
   public Parse(Tokenlist tokenlist) {
     this.tokenlist = tokenlist;
@@ -65,8 +65,9 @@ public class Parse {
   }
 
   private void initDefaults() {
-    this.ringBuffer = new ArrayList<Token>(0);
+    this.ringBuffer = new ArrayList<>();
     this.lastloc = "";
+    this.currentBlocksStack = new ArrayList<>();
   }
 
   private void initScopes() {
@@ -105,14 +106,22 @@ public class Parse {
   // BLOCK
 
   public StmtBlock getCurrentBlock() {
-    if (currentBlock == null) {
+    if (currentBlocksStack.isEmpty()) {
       perror("the current block was not set before.");
     }
-    return currentBlock;
+    return currentBlocksStack.get(0);
   }
 
-  public void setCurrentBlock(StmtBlock block) {
-    this.currentBlock = block;
+  public void pushBlock(StmtBlock block) {
+    currentBlocksStack.add(0, block);
+  }
+
+  public void popBlock() {
+    currentBlocksStack.remove(0);
+  }
+
+  public List<StmtBlock> getCurrentBlocksStack() {
+    return currentBlocksStack;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -351,7 +360,7 @@ public class Parse {
     this.prevtok = state.getPrevtok();
     this.currentClass = state.getCurrentClass();
     this.flags = state.getFlags();
-    this.currentBlock = state.getCurrentBlock();
+    this.currentBlocksStack = state.getCurrentBlocksStack();
   }
 
   //////////////////////////////////////////////////////////////////////
