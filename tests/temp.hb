@@ -3,7 +3,7 @@ class tok {
 }
 
 class type {
-  tok token;
+  tok tok;
   void fn() {
     int a = 0;
     int b = 1;

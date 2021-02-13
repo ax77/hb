@@ -1,0 +1,17 @@
+class tok {
+  int value;
+}
+
+abstract class stdio {
+  native void panic();
+}
+
+class type {
+  tok tok;
+  void fn() {
+    int a = 0;
+    int b = 1;
+    tok.value = a + b;
+    stdio.panic();
+  }
+}

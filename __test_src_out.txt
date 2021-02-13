@@ -1,0 +1,18 @@
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("class tok {              //001 \n");
+    sb.append("  int value;             //002 \n");
+    sb.append("}                        //003 \n");
+    sb.append("abstract class stdio {   //004 \n");
+    sb.append("  native void panic();   //005 \n");
+    sb.append("}                        //006 \n");
+    sb.append("class type {             //007 \n");
+    sb.append("  tok tok;               //008 \n");
+    sb.append("  void fn() {            //009 \n");
+    sb.append("    int a = 0;           //010 \n");
+    sb.append("    int b = 1;           //011 \n");
+    sb.append("    tok.value = a + b;   //012 \n");
+    sb.append("    stdio.panic();       //013 \n");
+    sb.append("  }                      //014 \n");
+    sb.append("}                        //015 \n");
+    //@formatter:on

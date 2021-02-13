@@ -201,7 +201,11 @@ public class TacGenerator {
       final ExprIdent exprId = e.getIdent();
 
       final String identStrName = exprId.getIdentifier().getName();
-      final VarDeclarator var = exprId.getSym().getVariable();
+      final Symbol sym = exprId.getSym();
+      if (sym.isClazz()) {
+        throw new AstParseException("unimpl. abstract class method/field access.");
+      }
+      final VarDeclarator var = sym.getVariable();
 
       /// rewrite an identifier to [this.field] form
       /// if it is possible

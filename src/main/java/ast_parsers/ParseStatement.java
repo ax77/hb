@@ -116,18 +116,15 @@ public class ParseStatement {
       return false;
     }
 
+    // class tok { int value; }
+    // class test { void fn() { tok tok; tok.value = 1; } }
+
+    @SuppressWarnings("unused")
     final Type type = new ParseType(parser).getType();
-    if (type.is_class()) {
-      final ClassDeclaration clazz = type.getClassTypeFromRef();
-      final boolean isAbstractMethodFcall = clazz.getModifiers().isAbstractOnly() && parser.is(T.T_DOT)
-          && parser.peek().ofType(T.TOKEN_IDENT);
-      if (isAbstractMethodFcall) {
-        // util.read()
-        // unit.write()
-        // etc...
-        parser.restoreState(state);
-        return false;
-      }
+
+    if (!parser.is(T.TOKEN_IDENT)) {
+      parser.restoreState(state);
+      return false;
     }
 
     /// it means that it is not a variable-declaration
