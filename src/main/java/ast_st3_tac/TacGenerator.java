@@ -101,7 +101,7 @@ public class TacGenerator {
   }
 
   private String t() {
-    return String.format("t%d", Counter.next());
+    return String.format("_t_%d", Counter.next());
   }
 
   private ResultName ht() {
@@ -348,7 +348,7 @@ public class TacGenerator {
 
     final ResultName fun = h(NamesGen.getMethodName(constructor));
 
-    final Quad quad = new Quad(obj, constructor.getType(), obj, fun, args);
+    final Quad quad = new Quad(popResultName(), constructor.getType(), obj, fun, args);
     quad.setMethodSym(constructor);
     quads(quad);
 

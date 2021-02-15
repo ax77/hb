@@ -45,9 +45,9 @@ public class UnitToText {
 
     genStructs(o);
 
-    for (ClassDeclaration td : o.getClasses()) {
-      g("/// METHODS: " + td.getIdentifier().getName());
-      genClazzMethods(td);
+    for (ClassDeclaration c : o.getClasses()) {
+      g("/// METHODS: " + c.getIdentifier().getName());
+      genClazzMethods(c);
     }
 
   }
@@ -93,11 +93,6 @@ public class UnitToText {
         Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
 
     g(method.getType().toString() + " " + NamesGen.getMethodName(method) + "(" + VarPrinters.varsTosCode(params) + ")");
-
-    if (!method.isDestructor()) {
-      for (VarDeclarator fp : method.getParameters()) {
-      }
-    }
 
     genBlock(method.getBlock());
 
@@ -199,11 +194,8 @@ public class UnitToText {
     TacGenerator tcg = new TacGenerator();
     tcg.gen(expr);
     String res = tcg.txt1(";\n");
-    g("// " + expr.toString());
+    g("// " + localVariable.toString());
     g(res);
   }
 
-  private void genInitializer(VarDeclarator var) {
-    System.out.println();
-  }
 }
