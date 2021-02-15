@@ -1,6 +1,13 @@
+class strtemp {
+  int x;
+  strtemp(int x) {
+    this.x = x;
+  }
+}
+
 class type {
-  int value;
-  type(int value) {
+  strtemp value;
+  type(strtemp value) {
     this.value = value;
   }
 }
@@ -14,6 +21,6 @@ class token {
 
 class test {
   void fn() {
-    token tok1 = new token(new type(1));
+    token tok1 = new token(new type(new strtemp(1)));
   }
 }

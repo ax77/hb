@@ -13,7 +13,6 @@ import static ast_expr.ExpressionBase.EPRIMARY_STRING;
 import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
-import java.beans.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +105,8 @@ public class TacGenerator {
   }
 
   private ResultName ht() {
-    return h(t());
+    final String res = t();
+    return h(res);
   }
 
   private List<ResultName> genArgs(final List<ExprExpression> arguments) {
@@ -283,62 +283,7 @@ public class TacGenerator {
     }
 
     else if (base == ECLASS_INSTANCE_CREATION) {
-      // @1
-      // token_type tp = new token_type(128);
-      //   token_type* tp = NULL;
-      //   token_type* _tmp0_;
-      //   _tmp0_ = token_type_new (128);
-      //   tp = _tmp0_;
-
-      ExprClassCreation classCreation = e.getClassCreation();
-      ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
-
-      List<ExprExpression> arguments = classCreation.getArguments();
-      ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
-
-      if (constructor == null) {
-        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
-      }
-
-      final Symbol sym = classCreation.getSym();
-
-      ResultName obj = null;
-
-      if (sym == null) {
-        /// new token(new type(1));
-        /// ..........^
-        /// the class-creation without variable
-        /// we have to generate the temporary name
-
-        obj = ht();
-
-      } else {
-
-        /// token tok = new token();
-        /// ......^
-        /// there we have a name
-
-        VarDeclarator var = sym.getVariable();
-
-        obj = h(var.getIdentifier().getName());
-      }
-
-      final Quad quad3 = new Quad(QuadOpc.ID_DECL, obj, classCreation.getType(), h(/*obj.getResult()*/ "NULL"));
-      quads(quad3);
-
-      final Quad quad1 = new Quad(QuadOpc.ID_DECL, ht(), classCreation.getType(), h(/*obj.getResult()*/ "NULL"));
-      quads(quad1);
-
-      final List<ResultName> args = genArgs(arguments);
-      final ResultName fun = h(clazz.getIdentifier().getName() + "_init");
-
-      final Quad quad = new Quad(ht(), constructor.getType(), popResultName(), fun, args);
-      quad.setMethodSym(constructor);
-      quads(quad);
-
-      StoreDst storeDst = new StoreDst(obj);
-      quads(new Quad(ht(), classCreation.getType(), storeDst, quad.getLhs()));
-
+      genClassCreation(e);
     }
 
     else if (base == ETHIS) {
@@ -352,6 +297,57 @@ public class TacGenerator {
       throw new RuntimeException(base.toString() + ": unimplemented");
     }
 
+  }
+
+  private void genClassCreation(ExprExpression e) {
+    // @1
+    // token_type tp = new token_type(128);
+    //   token_type* tp = NULL;
+    //   token_type* _tmp0_;
+    //   _tmp0_ = token_type_new (128);
+    //   tp = _tmp0_;
+
+    ExprClassCreation classCreation = e.getClassCreation();
+    ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
+
+    List<ExprExpression> arguments = classCreation.getArguments();
+    ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+
+    if (constructor == null) {
+      throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+    }
+
+    final Symbol sym = classCreation.getSym();
+
+    ResultName obj = null;
+
+    if (sym == null) {
+      /// new token(new type(1));
+      /// ..........^
+      /// the class-creation without variable
+      /// we have to generate the temporary name
+
+      obj = ht();
+
+    } else {
+
+      /// token tok = new token();
+      /// ......^
+      /// there we have a name
+
+      VarDeclarator var = sym.getVariable();
+      obj = h(var.getIdentifier().getName());
+    }
+
+    final Quad quad3 = new Quad(QuadOpc.ID_DECL, obj, classCreation.getType(), h(/*obj.getResult()*/ "alloc()"));
+    quads(quad3);
+
+    List<ResultName> args = genArgs(arguments);
+    final ResultName fun = h(clazz.getIdentifier().getName() + "_init");
+
+    final Quad quad = new Quad(obj, constructor.getType(), obj, fun, args);
+    quad.setMethodSym(constructor);
+    quads(quad);
   }
 
 }

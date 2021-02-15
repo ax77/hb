@@ -21,28 +21,35 @@ public class TestTac {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class type {                               //001 \n");
-    sb.append("  int value;                               //002 \n");
-    sb.append("  type(int value) {                        //003 \n");
-    sb.append("    this.value = value;                    //004 \n");
-    sb.append("  }                                        //005 \n");
-    sb.append("}                                          //006 \n");
-    sb.append("class token {                              //007 \n");
-    sb.append("  type tp;                               //008 \n");
-    sb.append("  token(type tp) {                       //009 \n");
-    sb.append("    this.tp = tp;                      //010 \n");
-    sb.append("  }                                        //011 \n");
-    sb.append("}                                          //012 \n");
-    sb.append("class test {                               //013 \n");
-    sb.append("  void fn() { type tp = new type(1);                              //014 \n");
-    sb.append("    token tok1 = new token(tp);   //015 \n");
-    sb.append("  }                                        //016 \n");
-    sb.append("}                                          //017 \n");
+    sb.append("class strtemp {                                         //001 \n");
+    sb.append("  int x;                                                //002 \n");
+    sb.append("  strtemp(int x) {                                      //003 \n");
+    sb.append("    this.x = x;                                         //004 \n");
+    sb.append("  }                                                     //005 \n");
+    sb.append("}                                                       //006 \n");
+    sb.append("class type {                                            //007 \n");
+    sb.append("  strtemp value;                                        //008 \n");
+    sb.append("  type(strtemp value) {                                 //009 \n");
+    sb.append("    this.value = value;                                 //010 \n");
+    sb.append("  }                                                     //011 \n");
+    sb.append("}                                                       //012 \n");
+    sb.append("class token {                                           //013 \n");
+    sb.append("  type type;                                            //014 \n");
+    sb.append("  token(type type) {                                    //015 \n");
+    sb.append("    this.type = type;                                   //016 \n");
+    sb.append("  }                                                     //017 \n");
+    sb.append("}                                                       //018 \n");
+    sb.append("class test {                                            //019 \n");
+    sb.append("  void fn() {                                           //020 \n");
+    sb.append("    token tok1 = new token(new type(new strtemp(1)));   //021 \n");
+    sb.append("  }                                                     //022 \n");
+    sb.append("}                                                       //023 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     ClassDeclaration c = unit.getClassByName("test");
-    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(0).getLocalVariable().getSimpleInitializer();
+    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(0).getLocalVariable()
+        .getSimpleInitializer();
     TacGenerator tcg = new TacGenerator();
     tcg.gen(expr);
     System.out.println(tcg.txt1(";\n"));
