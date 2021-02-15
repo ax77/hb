@@ -290,26 +290,13 @@ public class TacGenerator {
       final ExprThis exprSelf = e.getSelfExpression();
       final ClassDeclaration clazz = exprSelf.getClazz();
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
-      quads(new Quad(QuadOpc.THIS_DECL, ht(), classType, h("this")));
+      quads(new Quad(QuadOpc.THIS_DECL, ht(), classType, h("_this_")));
     }
 
     else {
       throw new RuntimeException(base.toString() + ": unimplemented");
     }
 
-  }
-
-  private String getMethodName(ClassMethodDeclaration m) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(m.getClazz().getIdentifier().getName());
-    sb.append("_");
-    sb.append(m.getIdentifier().getName());
-    sb.append("_");
-    if (m.isConstructor()) {
-      sb.append("init_");
-    }
-    sb.append(m.getUniqueIdToString());
-    return sb.toString();
   }
 
   private void genClassCreation(ExprExpression e) {
@@ -359,7 +346,7 @@ public class TacGenerator {
     List<ResultName> args = genArgs(arguments);
     args.add(0, obj);
 
-    final ResultName fun = h(getMethodName(constructor));
+    final ResultName fun = h(NamesGen.getMethodName(constructor));
 
     final Quad quad = new Quad(obj, constructor.getType(), obj, fun, args);
     quad.setMethodSym(constructor);

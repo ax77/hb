@@ -33,6 +33,9 @@ public class UtilSrcToStringLevel {
       if (tok.isNewLine()) {
         sb.append("\n");
       }
+      if (tok.ofType(T.T_RIGHT_BRACE) || tok.ofType(T.TOKEN_COMMENT)) {
+        sb.append("\n");
+      }
       if (tok.ofType(T.T_LEFT_BRACE)) {
         level++;
       }

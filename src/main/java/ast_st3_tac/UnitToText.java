@@ -1,8 +1,11 @@
 package ast_st3_tac;
 
+import java.util.List;
+
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_printers.ExprPrinters;
 import ast_printers.VarPrinters;
 import ast_stmt.StatementBase;
@@ -11,9 +14,13 @@ import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
+import ast_types.ClassTypeRef;
+import ast_types.Type;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import hashed.Hash_ident;
 
 public class UnitToText {
 
@@ -35,24 +42,31 @@ public class UnitToText {
   }
 
   private void visit(InstantiationUnit o) {
+
+    genStructs(o);
+
     for (ClassDeclaration td : o.getClasses()) {
-      g("class " + td.getIdentifier().getName() + "\n{");
-      genClazz(td);
-      g("\n}");
+      g("/// METHODS: " + td.getIdentifier().getName());
+      genClazzMethods(td);
     }
+
   }
 
-  private void genClazz(final ClassDeclaration object) {
+  private void genStructs(InstantiationUnit o) {
 
-    //fields
-    for (VarDeclarator field : object.getFields()) {
-      g(field.toString());
+    for (ClassDeclaration c : o.getClasses()) {
+      g("class " + c.getIdentifier().getName() + "\n{");
+
+      for (VarDeclarator field : c.getFields()) {
+        g(field.toString());
+      }
+
+      g("\n}");
     }
 
-    //methods
-    for (ClassMethodDeclaration method : object.getMethods()) {
-      genMethod(object, method);
-    }
+  }
+
+  private void genClazzMethods(final ClassDeclaration object) {
 
     //constructors 
     for (ClassMethodDeclaration constructor : object.getConstructors()) {
@@ -61,15 +75,24 @@ public class UnitToText {
 
     //destructor
     if (object.getDestructor() != null) {
-      //genMethod(object, object.getDestructor());
+      genMethod(object, object.getDestructor());
+    }
+
+    //methods
+    for (ClassMethodDeclaration method : object.getMethods()) {
+      genMethod(object, method);
     }
 
   }
 
   private void genMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {
 
-    g(method.getType().toString() + " " + method.getIdentifier() + "(" + VarPrinters.varsTosCode(method.getParameters())
-        + ")");
+    Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
+    List<VarDeclarator> params = method.getParameters();
+    params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
+        Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
+
+    g(method.getType().toString() + " " + NamesGen.getMethodName(method) + "(" + VarPrinters.varsTosCode(params) + ")");
 
     if (!method.isDestructor()) {
       for (VarDeclarator fp : method.getParameters()) {

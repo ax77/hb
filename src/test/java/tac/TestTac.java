@@ -53,7 +53,7 @@ public class TestTac {
     sb.append("  int x;                                                //002 \n");
     sb.append("  strtemp(int x) {                                      //003 \n");
     sb.append("    this.x = x;                                         //004 \n");
-    sb.append("  }                                                     //005 \n");
+    sb.append("  }   deinit {}                                                  //005 \n");
     sb.append("}                                                       //006 \n");
     sb.append("class type {                                            //007 \n");
     sb.append("  strtemp value;                                        //008 \n");
@@ -65,12 +65,12 @@ public class TestTac {
     sb.append("  type type;                                            //014 \n");
     sb.append("  token(type type) {                                    //015 \n");
     sb.append("    this.type = type;                                   //016 \n");
-    sb.append("  }                                                     //017 \n");
+    sb.append("  }   deinit {}                                                  //017 \n");
     sb.append("}                                                       //018 \n");
     sb.append("class test {                                            //019 \n");
     sb.append("  void fn() {                                           //020 \n");
     sb.append("    token tok1 = new token(new type(new strtemp(1)));   //021 \n");
-    sb.append("  }                                                     //022 \n");
+    sb.append("  }      deinit {}                                               //022 \n");
     sb.append("}                                                       //023 \n");
     //@formatter:on
 

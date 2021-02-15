@@ -1,109 +1,64 @@
 package _temp;
 
+import org.junit.Test;
+
 public class TestAux {
+
+  class test {
+  }
+
+  class token {
+    type type;
+  }
+
   class type {
-    tok token;
-
-    void fn() {
-      int a = 0;
-      int b = 1;
-      // token.value = a + b
-      type t0 = this;
-      tok t1 = t0.token;
-      int t2 = t1.value;
-      int t3 = a;
-      int t4 = b;
-      int t5 = t3 + t4;
-      t1.value = t5;
-      // a = token.value
-      int t7 = a;
-      type t8 = this;
-      tok t9 = t8.token;
-      int t10 = t9.value;
-      a = t10;
-      // b = a + a
-      int t12 = b;
-      int t13 = a;
-      int t14 = a;
-      int t15 = t13 + t14;
-      b = t15;
-      {
-        // a == 0
-        int t17 = a;
-        int t18 = 0;
-        boolean t19 = t17 == t18;
-        if (t19) {
-          // b = b + 1
-          int t20 = b;
-          int t21 = b;
-          int t22 = 1;
-          int t23 = t21 + t22;
-          b = t23;
-        } else {
-          // a == 1
-          int t25 = a;
-          int t26 = 1;
-          boolean t27 = t25 == t26;
-          if (t27) {
-            // b = b - 1
-            int t28 = b;
-            int t29 = b;
-            int t30 = 1;
-            int t31 = t29 - t30;
-            b = t31;
-          } else {
-            // b - 1 == 0
-            int t33 = b;
-            int t34 = 1;
-            int t35 = t33 - t34;
-            int t36 = 0;
-            boolean t37 = t35 == t36;
-            if (t37) {
-              // a = a - 1 + 2 - 3
-              int t38 = a;
-              int t39 = a;
-              int t40 = 1;
-              int t41 = 2;
-              int t42 = t40 + t41;
-              int t43 = 3;
-              int t44 = t42 - t43;
-              int t45 = t39 - t44;
-              a = t45;
-            } else {
-              // a = a - 2
-              int t47 = a;
-              int t48 = a;
-              int t49 = 2;
-              int t50 = t48 - t49;
-              a = t50;
-            }
-          }
-        }
-        // a = a + token.fn()
-        int t52 = a;
-        int t53 = a;
-        type t54 = this;
-        tok t55 = t54.token;
-        int t56 = t55.fn();
-        int t57 = t53 + t56;
-        a = t57;
-        // b = 1
-        int t59 = b;
-        int t60 = 1;
-        b = t60;
-      }
-    }
+    strtemp value;
   }
 
-  class tok {
-    int value;
-
-    int fn() {
-      // value
-      tok t62 = this;
-      int t63 = t62.value;
-      return t63;
-    }
+  class strtemp {
+    int x;
   }
+
+  void token_init_2(token _this_, type type) {
+    // this.type = type
+
+    token t3 = _this_;
+    type t4 = t3.type;
+    type t5 = type;
+    t3.type = t5;
+  }
+
+  void type_init_1(type _this_, strtemp value) {
+    // this.value = value
+
+    type t7 = _this_;
+    strtemp t8 = t7.value;
+    strtemp t9 = value;
+    t7.value = t9;
+  }
+
+  void strtemp_init_0(strtemp _this_, int x) {
+    // this.x = x
+
+    strtemp t11 = _this_;
+    int t12 = t11.x;
+    int t13 = x;
+    t11.x = t13;
+  }
+
+  @Test
+  public void test_fn_3() {
+    // new token(new type(new strtemp(1)))
+
+    token tok1 = new token();
+    type t0 = new type();
+    strtemp t1 = new strtemp();
+    int t2 = 1;
+    strtemp_init_0(t1, t2);
+    type_init_1(t0, t1);
+    token_init_2(tok1, t0);
+
+  }
+  // vars: [M:tok1]
 
 }
