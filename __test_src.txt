@@ -1,54 +1,53 @@
-class tree {
-  tree lhs;
-  tree rhs;
-  int value;
-  
-  tree(int value) {
-    this.value = value;
+class tree {                                             
+  tree lhs;                                              
+  tree rhs;                                              
+  int value;                                             
+  tree(int value) {                                      
+    this.value = value;                                  
+  }                                                      
+  tree(tree lhs, tree rhs) {                             
+    this.lhs = lhs;                                      
+    this.rhs = rhs;                                      
+  }                                                      
+}                                                        
+class strtemp {                                          
+  int x;                                                 
+  strtemp(int x) {                                       
+    this.x = x;                                          
   }
-  
-  tree(tree lhs, tree rhs) {
-    this.lhs = lhs;
-    this.rhs = rhs;
+  int getX() {
+    return x;
+  }                                                      
+}                                                        
+class type {                                             
+  strtemp value;                                         
+  type(strtemp value) {                                  
+    this.value = value;                                  
   }
-}
-
-class strtemp {
-  int x;
-  strtemp(int x) {
-    this.x = x;
-  }
-}
-
-class type {
-  strtemp value;
-  type(strtemp value) {
-    this.value = value;
-  }
-}
-
-class token {
-  type type;
-  token(type type) {
-    this.type = type;
-  }
-}
-
-class test {
-  void fn() {
-    tree tree = new tree(new tree(1), new tree(2));
-  
-    strtemp x1 = new strtemp(1);
-    type x2 = new type(x1);
-    token x3 = new token(x2);
-    token tok1 = new token(new type(new strtemp(1)));
-    
-    int res = tok1.type.value.x;
-    tok1.type.value.x = 1024;
-    
-    int a = 0;
-    int b = 1;
-    int c = 2;
-    int e = a + b + c;
-  }
-}
+  strtemp getValue() {
+    return value;
+  }                                                      
+}                                                        
+class token {                                            
+  type type;                                             
+  token(type type) {                                     
+    this.type = type;                                    
+  }                                                      
+}                                                        
+class main_class {                                       
+  void main() {                                          
+    tree tree = new tree(new tree(1), new tree(2));      
+    strtemp x1 = new strtemp(1);                         
+    type x2 = new type(x1);                              
+    token x3 = new token(x2);                            
+    token tok1 = new token(new type(new strtemp(1)));    
+    int res = tok1.type.value.x;                         
+    tok1.type.value.x = 1024;                            
+    int a = 0;                                           
+    int b = 1;                                           
+    int c = 2;                                           
+    int e = a + b + c;  
+    int f = x1.getX();
+    int g = x2.getValue().getX();
+  }                                                      
+}  

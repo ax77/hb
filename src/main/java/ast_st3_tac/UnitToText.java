@@ -1,6 +1,7 @@
 package ast_st3_tac;
 
 import java.util.List;
+import java.util.UUID;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
@@ -42,21 +43,34 @@ public class UnitToText {
     textout.append("\n");
   }
 
+  private String uid() {
+    String ret = UUID.randomUUID().toString();
+    ret = ret.replace('-', '_');
+    return "_" + ret;
+  }
+
   private void visit(InstantiationUnit o) {
 
     genStructs(o);
 
+    g("class main_class" + "\n{");
     for (ClassDeclaration c : o.getClasses()) {
       g("/// METHODS: " + c.getIdentifier().getName());
       genClazzMethods(c);
     }
+    g("\n}");
 
   }
 
   private void genStructs(InstantiationUnit o) {
 
     for (ClassDeclaration c : o.getClasses()) {
-      g("class " + c.getIdentifier().getName() + "\n{");
+      final String name = c.getIdentifier().getName();
+      if (name.equals("main_class")) {
+        continue;
+      }
+
+      g("class " + name + "\n{");
 
       for (VarDeclarator field : c.getFields()) {
         g(field.toString());
@@ -93,7 +107,11 @@ public class UnitToText {
     params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
         Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
 
-    g(method.getType().toString() + " " + NamesGen.getMethodName(method) + "(" + VarPrinters.varsTosCode(params) + ")");
+    if(method.getIdentifier().getName().equals("main")) {
+      g("void main()");
+    } else {
+      g(method.getType().toString() + " " + NamesGen.getMethodName(method) + "(" + VarPrinters.varsTosCode(params) + ")");
+    }
 
     genBlock(method.getBlock());
 

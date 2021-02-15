@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodDeclaration;
 import ast_st0_resolve.CUnitCompleteChecker;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;
@@ -94,7 +95,24 @@ public class ParserMain implements ParserMainApi {
   public InstantiationUnit parseInstantiationUnit() throws IOException {
     final CompilationUnit unit = parseCompilationUnit();
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
-    return unitBuilder.getInstantiationUnit();
+    final InstantiationUnit result = unitBuilder.getInstantiationUnit();
+
+    ClassDeclaration mainClass = result.getClassByName("main_class");
+    if (mainClass == null) {
+      throw new AstParseException("main class not found");
+    }
+    if (mainClass.getMethods().size() != 1) {
+      throw new AstParseException("main class should contain main-method");
+    }
+    ClassMethodDeclaration mainMethod = mainClass.getMethods().get(0);
+    if (!mainMethod.getIdentifier().getName().equals("main")) {
+      throw new AstParseException("main method not found");
+    }
+    if (!mainMethod.getType().is_void()) {
+      throw new AstParseException("main method should return the void");
+    }
+
+    return result;
   }
 
   // we have to initialize it here because of the static-laziness

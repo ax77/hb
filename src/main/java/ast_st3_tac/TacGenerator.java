@@ -259,7 +259,9 @@ public class TacGenerator {
 
       final List<ResultName> args = genArgs(fcall.getArguments());
       final ResultName obj = popResultName();
-      final ResultName fun = h(fcall.getFuncname().getName());
+      args.add(0, obj);
+      
+      final ResultName fun = h(NamesGen.getMethodName(fcall.getSym().getMethod()));
 
       final Quad quad = new Quad(ht(), fcall.getSym().getMethod().getType(), obj, fun, args);
       quad.setMethodSym(fcall.getSym().getMethod());
