@@ -16,6 +16,34 @@ import utils.UtilSrcToStringLevel;
 
 public class TestTac {
 
+  class some {
+    int value;
+    int another;
+  }
+
+  void some_init_0(some _this_, int value) {
+    _this_.value = value;
+  }
+
+  void some_init_1(some _this_, int value, int another) {
+    _this_.value = value;
+    _this_.another = another;
+  }
+
+  int some_get_value_0(some _this_) {
+    return _this_.value;
+  }
+
+  int another_0(some _this_) {
+    return _this_.another;
+  }
+
+  @Test
+  public void testSome() {
+    some s = new some();
+    some_init_1(s, 32, 64);
+  }
+
   @Test
   public void testTac() throws IOException {
 
@@ -48,14 +76,14 @@ public class TestTac {
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     ClassDeclaration c = unit.getClassByName("test");
-    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(0).getLocalVariable()
-        .getSimpleInitializer();
-    TacGenerator tcg = new TacGenerator();
-    tcg.gen(expr);
-    System.out.println(tcg.txt1(";\n"));
+//    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(0).getLocalVariable()
+//        .getSimpleInitializer();
+//    TacGenerator tcg = new TacGenerator();
+//    tcg.gen(expr);
+//    System.out.println(tcg.txt1(";\n"));
 
-    //    UnitToText text = new UnitToText(unit);
-    //    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
+        UnitToText text = new UnitToText(unit);
+        System.out.println(UtilSrcToStringLevel.tos(text.toString()));
 
     //    // and try reparse it again
     //    InstantiationUnit cleanUnit = new ParserMain(new StringBuilder(text.toString())).parseInstantiationUnit();

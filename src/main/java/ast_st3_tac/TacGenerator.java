@@ -299,6 +299,19 @@ public class TacGenerator {
 
   }
 
+  private String getMethodName(ClassMethodDeclaration m) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(m.getClazz().getIdentifier().getName());
+    sb.append("_");
+    sb.append(m.getIdentifier().getName());
+    sb.append("_");
+    if (m.isConstructor()) {
+      sb.append("init_");
+    }
+    sb.append(m.getUniqueIdToString());
+    return sb.toString();
+  }
+
   private void genClassCreation(ExprExpression e) {
     // @1
     // token_type tp = new token_type(128);
@@ -339,15 +352,31 @@ public class TacGenerator {
       obj = h(var.getIdentifier().getName());
     }
 
-    final Quad quad3 = new Quad(QuadOpc.ID_DECL, obj, classCreation.getType(), h(/*obj.getResult()*/ "alloc()"));
+    final Quad quad3 = new Quad(QuadOpc.ID_DECL, obj, classCreation.getType(),
+        h("new " + clazz.getIdentifier() + "()"));
     quads(quad3);
 
     List<ResultName> args = genArgs(arguments);
-    final ResultName fun = h(clazz.getIdentifier().getName() + "_init");
+    args.add(0, obj);
+
+    final ResultName fun = h(getMethodName(constructor));
 
     final Quad quad = new Quad(obj, constructor.getType(), obj, fun, args);
     quad.setMethodSym(constructor);
     quads(quad);
+
+    /// struct token_pos *pos1 = NULL;
+    /// struct token_pos *pos1_tmp = NULL;
+    /// pos1_tmp = token_pos_alloc0();
+    /// 
+    /// token_pos_constructor_0(pos1_tmp, 1, 23);
+    /// token_pos_unref(pos1_tmp);
+    /// 
+    /// pos1 = pos1_tmp;
+    /// pos1_tmp = NULL;
+    /// 
+    /// pos1 = token_pos_out_of_scope(pos1);
+
   }
 
 }

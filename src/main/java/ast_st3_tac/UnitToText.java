@@ -68,7 +68,8 @@ public class UnitToText {
 
   private void genMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {
 
-    g(method.getType().toString() + " " + method.getIdentifier() + "("+VarPrinters.varsTosCode(method.getParameters())+")" );
+    g(method.getType().toString() + " " + method.getIdentifier() + "(" + VarPrinters.varsTosCode(method.getParameters())
+        + ")");
 
     if (!method.isDestructor()) {
       for (VarDeclarator fp : method.getParameters()) {
@@ -169,7 +170,14 @@ public class UnitToText {
   }
 
   private void genVar(VarDeclarator localVariable) {
-    g(localVariable.toString());
+
+    final ExprExpression expr = localVariable.getSimpleInitializer();
+
+    TacGenerator tcg = new TacGenerator();
+    tcg.gen(expr);
+    String res = tcg.txt1(";\n");
+    g("// " + expr.toString());
+    g(res);
   }
 
   private void genInitializer(VarDeclarator var) {

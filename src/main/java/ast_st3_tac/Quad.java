@@ -172,7 +172,7 @@ public class Quad {
     for (int i = 0; i < args.size(); i++) {
       sb.append(args.get(i).toString());
       if (i + 1 < args.size()) {
-        sb.append(",");
+        sb.append(", ");
       }
     }
     sb.append(")");
@@ -200,9 +200,9 @@ public class Quad {
     if (base.equals(QuadOpc.FCALL)) {
       if (type.is_void()) {
         // "/* tp=void, id=" + resultToStr + " */ " + 
-        return lhs + "." + rhs + argsToString();
+        return /*lhs + "." +*/ rhs + argsToString();
       }
-      return typeToStr + resultToStr + " = " + lhs + "." + rhs + argsToString();
+      return typeToStr + resultToStr + " = " /*+ lhs + "."*/ + rhs + argsToString();
     }
 
     if (base == QuadOpc.ARRAY_ACCESS) {

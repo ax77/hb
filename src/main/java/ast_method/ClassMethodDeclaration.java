@@ -31,6 +31,13 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private /*final*/ Type returnType;
   private final StmtBlock block;
 
+  /// for code-generation only,
+  /// because we may have many overload methods
+  /// and constructors, and it is much easy to 
+  /// create an unique number neither than generate
+  /// this number dynamically
+  private final int uniqueId;
+
   // function/init
   public ClassMethodDeclaration(ClassMethodBase base, Modifiers mod, ClassDeclaration clazz, Ident identifier,
       List<VarDeclarator> parameters, Type returnType, StmtBlock block, Token beginPos) {
@@ -45,6 +52,8 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.returnType = returnType;
     this.block = block;
     this.beginPos = beginPos;
+
+    this.uniqueId = MethodIdCounter.next();
 
   }
 
@@ -61,6 +70,8 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.returnType = new Type(beginPos);
     this.block = block;
     this.beginPos = beginPos;
+
+    this.uniqueId = MethodIdCounter.next();
   }
 
   @Override
@@ -71,6 +82,14 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   @Override
   public void setType(Type typeToSet) {
     this.returnType = typeToSet;
+  }
+
+  public int getUniqueId() {
+    return uniqueId;
+  }
+
+  public String getUniqueIdToString() {
+    return String.format("%d", uniqueId);
   }
 
   public ClassMethodBase getBase() {
