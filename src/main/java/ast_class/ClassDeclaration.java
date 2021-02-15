@@ -344,6 +344,15 @@ public class ClassDeclaration implements Serializable, Location {
     return null;
   }
 
+  public ClassMethodDeclaration getConstructor(List<ExprExpression> arguments) {
+    for (ClassMethodDeclaration method : constructors) {
+      if (isCompatibleByArguments(method, arguments)) {
+        return method;
+      }
+    }
+    return null;
+  }
+
   private String interfacesToString() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < interfaces.size(); i++) {

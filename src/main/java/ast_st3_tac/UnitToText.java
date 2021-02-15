@@ -3,6 +3,7 @@ package ast_st3_tac;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
+import ast_printers.ExprPrinters;
 import ast_printers.VarPrinters;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
@@ -67,7 +68,7 @@ public class UnitToText {
 
   private void genMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {
 
-    g(method.getType().toString() + " " + method.getIdentifier() + "()");
+    g(method.getType().toString() + " " + method.getIdentifier() + "("+VarPrinters.varsTosCode(method.getParameters())+")" );
 
     if (!method.isDestructor()) {
       for (VarDeclarator fp : method.getParameters()) {
@@ -172,6 +173,6 @@ public class UnitToText {
   }
 
   private void genInitializer(VarDeclarator var) {
-
+    System.out.println();
   }
 }

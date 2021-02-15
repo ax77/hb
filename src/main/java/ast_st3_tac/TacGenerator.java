@@ -13,6 +13,7 @@ import static ast_expr.ExpressionBase.EPRIMARY_STRING;
 import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
+import java.beans.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,8 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
+import ast_method.ClassMethodDeclaration;
+import ast_printers.ExprPrinters;
 import ast_st2_annotate.Lvalue;
 import ast_st2_annotate.Symbol;
 import ast_types.ClassTypeRef;
@@ -288,20 +291,53 @@ public class TacGenerator {
       //   tp = _tmp0_;
 
       ExprClassCreation classCreation = e.getClassCreation();
+      ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
 
-      final Symbol sym = classCreation.getSym();
-      if (sym != null) {
-        VarDeclarator var = sym.getVariable();
-      } else {
-        // in place class-creation, without any variable:
-        // new classname().value
-        // fn(new classname().value)
-        throw new RuntimeException(base.toString() + " unimpl. in-place class-creation");
+      List<ExprExpression> arguments = classCreation.getArguments();
+      ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+
+      if (constructor == null) {
+        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
       }
 
-      final List<ResultName> args = genArgs(classCreation.getArguments());
+      final Symbol sym = classCreation.getSym();
 
-      throw new RuntimeException(base.toString() + " ???");
+      ResultName obj = null;
+
+      if (sym == null) {
+        /// new token(new type(1));
+        /// ..........^
+        /// the class-creation without variable
+        /// we have to generate the temporary name
+
+        obj = ht();
+
+      } else {
+
+        /// token tok = new token();
+        /// ......^
+        /// there we have a name
+
+        VarDeclarator var = sym.getVariable();
+
+        obj = h(var.getIdentifier().getName());
+      }
+
+      final Quad quad3 = new Quad(QuadOpc.ID_DECL, obj, classCreation.getType(), h(/*obj.getResult()*/ "NULL"));
+      quads(quad3);
+
+      final Quad quad1 = new Quad(QuadOpc.ID_DECL, ht(), classCreation.getType(), h(/*obj.getResult()*/ "NULL"));
+      quads(quad1);
+
+      final List<ResultName> args = genArgs(arguments);
+      final ResultName fun = h(clazz.getIdentifier().getName() + "_init");
+
+      final Quad quad = new Quad(ht(), constructor.getType(), popResultName(), fun, args);
+      quad.setMethodSym(constructor);
+      quads(quad);
+
+      StoreDst storeDst = new StoreDst(obj);
+      quads(new Quad(ht(), classCreation.getType(), storeDst, quad.getLhs()));
 
     }
 

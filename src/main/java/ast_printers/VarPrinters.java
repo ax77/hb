@@ -20,6 +20,20 @@ public abstract class VarPrinters {
     return sb.toString();
   }
 
+  public static String varsTosCode(List<VarDeclarator> variables) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < variables.size(); i++) {
+      VarDeclarator var = variables.get(i);
+      sb.append(var.getType().toString());
+      sb.append(" ");
+      sb.append(var.getIdentifier().getName());
+      if (i + 1 < variables.size()) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
   public static String bindedVarsComment(List<VarDeclarator> variables) {
     StringBuilder sb = new StringBuilder();
 

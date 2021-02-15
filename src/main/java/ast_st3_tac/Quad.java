@@ -199,7 +199,8 @@ public class Quad {
     // TODO: distinct functions with or without return
     if (base.equals(QuadOpc.FCALL)) {
       if (type.is_void()) {
-        return "/* tp=void, id=" + resultToStr + " */ " + lhs + "." + rhs + argsToString();
+        // "/* tp=void, id=" + resultToStr + " */ " + 
+        return lhs + "." + rhs + argsToString();
       }
       return typeToStr + resultToStr + " = " + lhs + "." + rhs + argsToString();
     }

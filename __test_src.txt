@@ -1,17 +1,19 @@
-class tok {
-  int value;
-}
-
-abstract class stdio {
-  native void panic();
-}
-
 class type {
-  tok tok;
+  int value;
+  type(int value) {
+    this.value = value;
+  }
+}
+
+class token {
+  type type;
+  token(type type) {
+    this.tp = type;
+  }
+}
+
+class test {
   void fn() {
-    int a = 0;
-    int b = 1;
-    tok.value = a + b;
-    stdio.panic();
+    token tok1 = new token(new type(1));
   }
 }
