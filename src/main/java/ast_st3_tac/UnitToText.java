@@ -4,6 +4,7 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
+import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_printers.ExprPrinters;
@@ -158,7 +159,7 @@ public class UnitToText {
       TacGenerator tcg = new TacGenerator();
       tcg.gen(expr);
       String res = tcg.txt1(";\n");
-      g("// " + expr.toString());
+      g("// return " + expr.toString());
       g(res);
       last = tcg.getLastResultNameToString();
     }
@@ -191,11 +192,25 @@ public class UnitToText {
 
     final ExprExpression expr = localVariable.getSimpleInitializer();
 
-    TacGenerator tcg = new TacGenerator();
-    tcg.gen(expr);
-    String res = tcg.txt1(";\n");
-    g("// " + localVariable.toString());
-    g(res);
+    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+      TacGenerator tcg = new TacGenerator();
+      tcg.gen(expr);
+      String res = tcg.txt1(";\n");
+      g("// " + localVariable.toString());
+      g(res);
+    }
+
+    else {
+
+      TacGenerator tcg = new TacGenerator();
+      tcg.gen(expr);
+      String res = tcg.txt1(";\n");
+      g("// " + localVariable.toString());
+      g(res);
+      String last = tcg.getLastResultNameToString();
+      g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
+
+    }
   }
 
 }

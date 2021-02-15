@@ -1,8 +1,11 @@
 class tree {
   tree lhs;
   tree rhs;
+  int value;
   
-  tree() {}
+  tree(int value) {
+    this.value = value;
+  }
   
   tree(tree lhs, tree rhs) {
     this.lhs = lhs;
@@ -33,11 +36,19 @@ class token {
 
 class test {
   void fn() {
-    tree tree = new tree(new tree(), new tree());
+    tree tree = new tree(new tree(1), new tree(2));
   
     strtemp x1 = new strtemp(1);
     type x2 = new type(x1);
     token x3 = new token(x2);
     token tok1 = new token(new type(new strtemp(1)));
+    
+    int res = tok1.type.value.x;
+    tok1.type.value.x = 1024;
+    
+    int a = 0;
+    int b = 1;
+    int c = 2;
+    int e = a + b + c;
   }
 }
