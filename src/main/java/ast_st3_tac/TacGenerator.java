@@ -29,7 +29,6 @@ import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_method.MethodIdCounter;
 import ast_modifiers.Modifiers;
 import ast_printers.ExprPrinters;
 import ast_st2_annotate.Lvalue;
@@ -37,6 +36,7 @@ import ast_st2_annotate.Mods;
 import ast_st2_annotate.Symbol;
 import ast_st3_tac.vars.Code;
 import ast_st3_tac.vars.CodeItem;
+import ast_st3_tac.vars.CopierNamer;
 import ast_st3_tac.vars.StoreLeaf;
 import ast_st3_tac.vars.TempVarAssign;
 import ast_st3_tac.vars.arith.Binop;
@@ -50,8 +50,6 @@ import ast_types.TypeBase;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
-import hashed.Hash_ident;
-import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -101,10 +99,6 @@ public class TacGenerator {
 
   private CodeItem popCode() {
     return codeTmp.popItem();
-  }
-
-  private Ident tmpIdent() {
-    return Hash_ident.getHashedIdent(String.format("__t%d", MethodIdCounter.next()));
   }
 
   private void quads(Quad quad) {
@@ -158,6 +152,42 @@ public class TacGenerator {
   }
 
   private void store(Type resultType) {
+
+    //E
+    final CodeItem srcItem = popCode();
+    final CodeItem dstItem = popCode();
+
+    if (dstItem.isVarAssign() && srcItem.isVarAssign()) {
+
+      final TempVarAssign dstVarAssign = dstItem.getVarAssign();
+      final TempVarAssign srcVarAssign = srcItem.getVarAssign();
+
+      if (dstVarAssign.getRvalue().isVar()) {
+
+        final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getVar());
+        final ERvalue rvalueE = new ERvalue(srcVarAssign.getVar());
+
+        final StoreLeaf storeOp = new StoreLeaf(lvalueE, rvalueE);
+        outCode(new CodeItem(storeOp));
+      }
+
+      else if (dstVarAssign.getRvalue().isFieldAccess()) {
+        final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getFieldAccess());
+        final ERvalue rvalueE = new ERvalue(srcVarAssign.getVar());
+
+        final StoreLeaf storeOp = new StoreLeaf(lvalueE, rvalueE);
+        outCode(new CodeItem(storeOp));
+      }
+
+      else {
+        throw new AstParseException("unimpl...");
+      }
+
+    } else {
+      throw new AstParseException("unimpl...");
+    }
+    //
+
     final Quad svSrc = pop();
     final Quad svDst = pop();
 
@@ -168,31 +198,8 @@ public class TacGenerator {
     if (svDst.getBase() == QuadOpc.ID_DECL) {
       // id
       StoreDst storeDst = new StoreDst(svDst.getLhs());
-      quads(new Quad(ht(), resultType, storeDst, rvalue));
-
-      //E
-      final CodeItem srcItem = popCode();
-      final CodeItem dstItem = popCode();
-
-      if (dstItem.isVarAssign() && srcItem.isVarAssign()) {
-
-        final TempVarAssign dstVarAssign = dstItem.getVarAssign();
-        final TempVarAssign srcVarAssign = srcItem.getVarAssign();
-
-        if (!dstVarAssign.getRvalue().isVar()) {
-          throw new AstParseException("unimpl...");
-        }
-
-        final ERvalue rvalueE = new ERvalue(srcVarAssign.getVar());
-        final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getVar());
-
-        final StoreLeaf storeOp = new StoreLeaf(lvalueE, rvalueE);
-        outCode(new CodeItem(storeOp));
-
-      } else {
-        throw new AstParseException("unimpl...");
-      }
-      //
+      final Quad storeResult = new Quad(ht(), resultType, storeDst, rvalue);
+      quads(storeResult);
     }
 
     else if (svDst.getBase() == QuadOpc.FIELD_ACCESS) {
@@ -216,22 +223,6 @@ public class TacGenerator {
   @SuppressWarnings("unused")
   private void load(Type resultType) {
     // quads(new Quad(ht(), resultType, "LD", popResultName()));
-  }
-
-  private Var copyVarAddNewName(Var src) {
-    return new Var(src.getBase(), src.getMods(), src.getType(), tmpIdent());
-  }
-
-  private Var copyVarDecl(VarDeclarator src) {
-    return new Var(src.getBase(), src.getMods(), src.getType(), src.getIdentifier());
-  }
-
-  private Var copyVarDeclAddNewName(VarDeclarator var) {
-    return new Var(var.getBase(), var.getMods(), var.getType(), tmpIdent());
-  }
-
-  private Ident _this_() {
-    return Hash_ident.getHashedIdent("_this_");
   }
 
   public void gen(ExprExpression e) {
@@ -275,7 +266,8 @@ public class TacGenerator {
         final Var rvarRes = rvar.getVar();
 
         final Binop binop = new Binop(new ERvalue(lvarRes), op.getValue(), new ERvalue(rvarRes));
-        final TempVarAssign tempVarAssign = new TempVarAssign(copyVarAddNewName(lvarRes), new ERvalue(binop));
+        final TempVarAssign tempVarAssign = new TempVarAssign(CopierNamer.copyVarAddNewName(lvarRes),
+            new ERvalue(binop));
 
         outCode(new CodeItem(tempVarAssign));
 
@@ -324,8 +316,8 @@ public class TacGenerator {
       quads(quad);
 
       //E
-      final Var lvalueTmp = copyVarDeclAddNewName(var);
-      final ERvalue rvalueTmp = new ERvalue(copyVarDecl(var));
+      final Var lvalueTmp = CopierNamer.copyVarDeclAddNewName(var);
+      final ERvalue rvalueTmp = new ERvalue(CopierNamer.copyVarDecl(var));
       final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
       outCode(new CodeItem(tempVarAssign));
       //
@@ -387,8 +379,8 @@ public class TacGenerator {
       CodeItem thisItem = popCode();
       if (thisItem.isVarAssign()) {
 
-        final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), copyVarDecl(variable));
-        final Var lhsvar = copyVarDeclAddNewName(variable);
+        final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), CopierNamer.copyVarDecl(variable));
+        final Var lhsvar = CopierNamer.copyVarDeclAddNewName(variable);
         final CodeItem item = new CodeItem(new TempVarAssign(lhsvar, new ERvalue(access)));
         outCode(item);
 
@@ -412,8 +404,8 @@ public class TacGenerator {
 
       //E
       // main_class __t2 = _this_
-      final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), classType, tmpIdent());
-      final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, _this_());
+      final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), classType, CopierNamer.tmpIdent());
+      final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, CopierNamer._this_());
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, new ERvalue(rhsVar)));
       outCode(item);
       //

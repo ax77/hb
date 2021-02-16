@@ -7,17 +7,16 @@ import utils_oth.NullChecker;
 
 public class ERvalue {
 
-  /// L | R
-  /// ..|..
-  /// e = f
-  /// e = 1
-  /// e = "1"
-  /// e = f(h)
-  /// e = f[h]
-  /// e = f.h
-  /// e = f + h
-  /// e = -f
-  /// e = new classname(!NO:ARGS!)
+  ///     L | R
+  /// 1 ) e = f
+  /// 2 ) e = 1
+  /// 3 ) e = "1"
+  /// 4 ) e = f(h)
+  /// 5 ) e = f[h]
+  /// 6 ) e = f.h
+  /// 7 ) e = f + h
+  /// 8 ) e = -f
+  /// 9 ) e = new classname(!NO:ARGS!)
   ///
   /// 3 lhs * 9 rhs = 27 combination of assign
 

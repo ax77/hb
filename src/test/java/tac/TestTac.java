@@ -85,7 +85,7 @@ public class TestTac {
 //    sb.append("    this.type = type;                                       //034 \n");
 //    sb.append("  }                                                         //035 \n");
 //    sb.append("}                                                           //036 \n");
-    sb.append("class main_class {   int fff;                                        //037 \n");
+    sb.append("class main_class {   int fff; int ggg; int hhh;                                        //037 \n");
     sb.append("  void main() {                                            //038 \n");
 //    sb.append("    tree tree = new tree(new tree(1), new tree(2));         //039 \n");
 //    sb.append("    strtemp x1 = new strtemp(1);                            //040 \n");
@@ -97,7 +97,7 @@ public class TestTac {
     sb.append("    int a = 0;                                              //046 \n");
     sb.append("    int b = 1;                                              //047 \n");
     sb.append("    int c = 2;                                              //048 \n");
-    sb.append("    int e = -1; e = fff+ a + b + c;                                      //049 \n");
+    sb.append("    int e = -1; fff = c;                                      //049 \n");
 //    sb.append("    int f = x1.getX();                                      //050 \n");
 //    sb.append("    int g = x2.getValue().getX();                           //051 \n");
     sb.append("  }                                                         //052 \n");
