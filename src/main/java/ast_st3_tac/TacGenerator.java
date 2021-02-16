@@ -40,12 +40,10 @@ import ast_st3_tac.vars.StoreLeaf;
 import ast_st3_tac.vars.TempVarAssign;
 import ast_st3_tac.vars.arith.Binop;
 import ast_st3_tac.vars.arith.Unop;
-import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.ELvalue;
 import ast_st3_tac.vars.store.ERvalue;
 import ast_st3_tac.vars.store.FieldAccess;
-import ast_st3_tac.vars.store.Literal;
 import ast_st3_tac.vars.store.Var;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -54,6 +52,7 @@ import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import hashed.Hash_ident;
 import literals.IntLiteral;
+import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -70,7 +69,9 @@ public class TacGenerator {
   /// if (result_name)
   /// return (result_name)
   public String getLastResultNameToString() {
-    return "";
+    final CodeItem last = codeOut.getItems().get(codeOut.getItems().size() - 1);
+    final Var var = last.getVarAssign().getVar();
+    return var.getName().toString();
   }
 
   private void outCode(CodeItem item) {
@@ -111,7 +112,6 @@ public class TacGenerator {
 
   private void store(Type resultType) {
 
-    //E
     final CodeItem srcItem = popCode();
     final CodeItem dstItem = popCode();
 
@@ -145,11 +145,6 @@ public class TacGenerator {
 
   }
 
-  @SuppressWarnings("unused")
-  private void load(Type resultType) {
-    // quads(new Quad(ht(), resultType, "LD", popResultName()));
-  }
-
   public void gen(ExprExpression e) {
     NullChecker.check(e);
     ExpressionBase base = e.getBase();
@@ -165,9 +160,7 @@ public class TacGenerator {
       final ExprExpression rvalue = assign.getRvalue();
       gen(rvalue);
 
-      if (!rvalue.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-        store(e.getResultType());
-      }
+      store(e.getResultType());
 
     }
 
@@ -179,9 +172,8 @@ public class TacGenerator {
       gen(binary.getLhs());
       gen(binary.getRhs());
 
-      //E
-      CodeItem Ritem = popCode();
-      CodeItem Litem = popCode();
+      final CodeItem Ritem = popCode();
+      final CodeItem Litem = popCode();
 
       if (Ritem.isVarAssign() && Litem.isVarAssign()) {
         final TempVarAssign lvar = Litem.getVarAssign();
@@ -207,8 +199,7 @@ public class TacGenerator {
       final Token op = unary.getOperator();
       gen(unary.getOperand());
 
-      //E
-      CodeItem Litem = popCode();
+      final CodeItem Litem = popCode();
 
       if (Litem.isVarAssign()) {
         final TempVarAssign lvar = Litem.getVarAssign();
@@ -250,14 +241,11 @@ public class TacGenerator {
         return;
       }
 
-      //E
       final Var lvalueTmp = CopierNamer.copyVarDeclAddNewName(var);
       final ERvalue rvalueTmp = new ERvalue(CopierNamer.copyVarDecl(var));
       final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
       outCode(new CodeItem(tempVarAssign));
-      //
 
-      //load(e.getResultType());
     }
 
     else if (base == EPRIMARY_STRING) {
@@ -266,13 +254,10 @@ public class TacGenerator {
 
     else if (base == EPRIMARY_NUMBER) {
       final IntLiteral number = e.getNumber();
-
-      //E
-      final Var lhsVar = new Var(VarBase.LOCAL_VAR, Mods.letMods(), number.getType(), CopierNamer.tmpIdent());
+      final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), number.getType(), CopierNamer.tmpIdent());
       final ERvalue rhsValue = new ERvalue(number);
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, rhsValue));
       outCode(item);
-      //
     }
 
     else if (base == EPRIMARY_NULL_LITERAL) {
@@ -288,13 +273,11 @@ public class TacGenerator {
       gen(fcall.getObject());
 
       final ClassMethodDeclaration method = fcall.getSym().getMethod();
+      final List<Var> args = genArgsVars(fcall.getArguments());
+      final CodeItem obj = popCode();
+      args.add(0, obj.getVarAssign().getVar());
 
-      //E
-      final List<Var> argsX = genArgsVars(fcall.getArguments());
-      final CodeItem objX = popCode();
-      argsX.add(0, objX.getVarAssign().getVar());
-
-      final Call call = new Call(method.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(method)), argsX);
+      final Call call = new Call(method.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(method)), args);
       if (method.isVoid()) {
         CodeItem item = new CodeItem(call);
         outCode(item);
@@ -303,9 +286,7 @@ public class TacGenerator {
             new Var(VarBase.LOCAL_VAR, new Modifiers(), method.getType(), CopierNamer.tmpIdent()), new ERvalue(call)));
         outCode(item);
       }
-      //
 
-      //load(e.getResultType());
     }
 
     else if (base == EFIELD_ACCESS) {
@@ -314,8 +295,7 @@ public class TacGenerator {
 
       final VarDeclarator variable = fieldAccess.getSym().getVariable();
 
-      //E
-      CodeItem thisItem = popCode();
+      final CodeItem thisItem = popCode();
       if (thisItem.isVarAssign()) {
 
         final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), CopierNamer.copyVarDecl(variable));
@@ -326,13 +306,30 @@ public class TacGenerator {
       } else {
         throw new AstParseException("unimpl...");
       }
-      //
 
-      //load(e.getResultType());
     }
 
     else if (base == ECLASS_INSTANCE_CREATION) {
-      genClassCreation(e);
+
+      final ExprClassCreation fcall = e.getClassCreation();
+      final ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
+      final Type typename = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
+
+      final List<ExprExpression> arguments = fcall.getArguments();
+      final ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+      if (constructor == null) {
+        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+      }
+
+      final List<Var> args = genArgsVars(arguments);
+      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
+      final Call call = new Call(typename, fn, args);
+      final Var lvalue = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
+      final ERvalue rvalue = new ERvalue(call);
+      final TempVarAssign varAssign = new TempVarAssign(lvalue, rvalue);
+      final CodeItem item = new CodeItem(varAssign);
+      outCode(item);
+
     }
 
     else if (base == ETHIS) {
@@ -341,127 +338,16 @@ public class TacGenerator {
       final ClassDeclaration clazz = exprSelf.getClazz();
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
 
-      //E
       // main_class __t2 = _this_
       final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), classType, CopierNamer.tmpIdent());
       final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, CopierNamer._this_());
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, new ERvalue(rhsVar)));
       outCode(item);
-      //
-
     }
 
     else {
       throw new RuntimeException(base.toString() + ": unimplemented");
     }
-
-  }
-
-  // TODO:
-  private void genClassCreation(ExprExpression e) {
-
-    /// type tp = new type(1); 
-    /// ::
-    /// 0) int _tmp_0 = 1;
-    /// 1) type tp = null;
-    /// 2) type _tmp = null;
-    /// 3) _tmp = new type();
-    /// 4) type_init(_tmp, _tmp_0);
-    /// 5) tp = _tmp;
-
-    if (codeTmp.getItems().isEmpty()) {
-      /// in-place-constructor with no-name:
-      /// new type(new value(32))
-      /// .........^
-
-      ExprClassCreation classCreation = e.getClassCreation();
-      ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
-      Type typename = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
-
-      List<ExprExpression> arguments = classCreation.getArguments();
-      ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
-      if (constructor == null) {
-        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
-      }
-
-      List<Var> args = genArgsVars(arguments);
-
-      Var tempVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
-      CodeItem item1 = new CodeItem(new TempVarAssign(tempVar, new ERvalue(new Literal("null"))));
-
-      //3
-      AllocObject allocObject = new AllocObject(
-          new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
-      StoreLeaf leaf = new StoreLeaf(new ELvalue(tempVar), new ERvalue(allocObject));
-      CodeItem item3 = new CodeItem(leaf);
-
-      //4)
-      args.add(0, tempVar);
-      Call voidCall = new Call(constructor.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor)),
-          args);
-      CodeItem item4 = new CodeItem(voidCall);
-
-      /// append the result as is, without the stack logic
-      ///
-      codeOut.appendItemLast(item1);
-      codeOut.appendItemLast(item3);
-      codeOut.appendItemLast(item4);
-
-      /// last-result!
-      codeTmp.pushItem(item1);
-
-      return;
-    }
-
-    // strtemp __t0 = x1
-    CodeItem objVar = popCode();
-    codeOut.popItem(); // remove it from result
-
-    ExprClassCreation classCreation = e.getClassCreation();
-    ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
-
-    List<ExprExpression> arguments = classCreation.getArguments();
-    ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
-    if (constructor == null) {
-      throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
-    }
-
-    List<Var> args = genArgsVars(arguments);
-
-    //1)
-    CodeItem item1 = new CodeItem(
-        new TempVarAssign(objVar.getVarAssign().getRvalue().getVar(), new ERvalue(new Literal("null"))));
-
-    //2
-    CodeItem item2 = new CodeItem(new TempVarAssign(objVar.getVarAssign().getVar(), new ERvalue(new Literal("null"))));
-
-    //3
-    AllocObject allocObject = new AllocObject(
-        new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
-    StoreLeaf leaf = new StoreLeaf(new ELvalue(objVar.getVarAssign().getVar()), new ERvalue(allocObject));
-    CodeItem item3 = new CodeItem(leaf);
-
-    //4)
-    args.add(0, objVar.getVarAssign().getVar());
-    Call voidCall = new Call(constructor.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor)),
-        args);
-    CodeItem item4 = new CodeItem(voidCall);
-
-    //5)
-    StoreLeaf leaf5 = new StoreLeaf(new ELvalue(objVar.getVarAssign().getRvalue().getVar()),
-        new ERvalue(objVar.getVarAssign().getVar()));
-    CodeItem item5 = new CodeItem(leaf5);
-
-    /// append the result as is, without the stack logic
-    ///
-    codeOut.appendItemLast(item1);
-    codeOut.appendItemLast(item2);
-    codeOut.appendItemLast(item3);
-    codeOut.appendItemLast(item4);
-    codeOut.appendItemLast(item5);
-
-    /// last-result!
-    codeTmp.pushItem(item5);
 
   }
 

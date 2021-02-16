@@ -211,15 +211,15 @@ public class UnitToText {
 
     final ExprExpression expr = localVariable.getSimpleInitializer();
 
-    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-      TacGenerator tcg = new TacGenerator();
-      tcg.gen(expr);
-      String res = tcg.txt1(";\n");
-      g("// " + localVariable.toString());
-      g(res);
-    }
-
-    else {
+//    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+//      TacGenerator tcg = new TacGenerator();
+//      tcg.gen(expr);
+//      String res = tcg.txt1(";\n");
+//      g("// " + localVariable.toString());
+//      g(res);
+//    }
+//
+//    else {
 
       TacGenerator tcg = new TacGenerator();
       tcg.gen(expr);
@@ -229,7 +229,7 @@ public class UnitToText {
       String last = tcg.getLastResultNameToString();
       g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
 
-    }
+//    }
   }
 
 }
