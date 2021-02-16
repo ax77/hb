@@ -158,19 +158,14 @@ public class TacGenerator {
 
       final ExprAssign assign = e.getAssign();
 
-      if (assign.getRvalue().is(ECLASS_INSTANCE_CREATION)) {
-        genClassCreation(e, true);
-      }
+      final ExprExpression lvalue = assign.getLvalue();
+      gen(lvalue);
+      Lvalue.checkHard(lvalue);
 
-      else {
+      final ExprExpression rvalue = assign.getRvalue();
+      gen(rvalue);
 
-        final ExprExpression lvalue = assign.getLvalue();
-        gen(lvalue);
-        Lvalue.checkHard(lvalue);
-
-        final ExprExpression rvalue = assign.getRvalue();
-        gen(rvalue);
-
+      if (!rvalue.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
         store(e.getResultType());
       }
 
@@ -337,7 +332,7 @@ public class TacGenerator {
     }
 
     else if (base == ECLASS_INSTANCE_CREATION) {
-      genClassCreation(e, false);
+      genClassCreation(e);
     }
 
     else if (base == ETHIS) {
@@ -363,7 +358,7 @@ public class TacGenerator {
   }
 
   // TODO:
-  private void genClassCreation(ExprExpression e, boolean fromAssign) {
+  private void genClassCreation(ExprExpression e) {
 
     /// type tp = new type(1); 
     /// ::
@@ -374,19 +369,14 @@ public class TacGenerator {
     /// 4) type_init(_tmp, _tmp_0);
     /// 5) tp = _tmp;
 
-    if (fromAssign) {
-      ExprAssign assign = e.getAssign();
-      gen(assign.getLvalue());
+    if (codeTmp.getItems().isEmpty()) {
+      /// in-place-constructor with no-name:
+      /// new type(new value(32))
+      /// .........^
 
-      final ExprExpression rvalue = assign.getRvalue();
-      gen(rvalue);
-
-      // strtemp __t0 = x1
-      CodeItem objVar = popCode();
-      codeOut.popItem(); // remove it from result
-
-      ExprClassCreation classCreation = rvalue.getClassCreation();
+      ExprClassCreation classCreation = e.getClassCreation();
       ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
+      Type typename = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
 
       List<ExprExpression> arguments = classCreation.getArguments();
       ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
@@ -396,49 +386,82 @@ public class TacGenerator {
 
       List<Var> args = genArgsVars(arguments);
 
-      //1)
-      CodeItem item1 = new CodeItem(
-          new TempVarAssign(objVar.getVarAssign().getRvalue().getVar(), new ERvalue(new Literal("null"))));
-
-      //2
-      CodeItem item2 = new CodeItem(
-          new TempVarAssign(objVar.getVarAssign().getVar(), new ERvalue(new Literal("null"))));
+      Var tempVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
+      CodeItem item1 = new CodeItem(new TempVarAssign(tempVar, new ERvalue(new Literal("null"))));
 
       //3
       AllocObject allocObject = new AllocObject(
           new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
-      StoreLeaf leaf = new StoreLeaf(new ELvalue(objVar.getVarAssign().getVar()), new ERvalue(allocObject));
+      StoreLeaf leaf = new StoreLeaf(new ELvalue(tempVar), new ERvalue(allocObject));
       CodeItem item3 = new CodeItem(leaf);
 
       //4)
-      args.add(0, objVar.getVarAssign().getVar());
+      args.add(0, tempVar);
       Call voidCall = new Call(constructor.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor)),
           args);
       CodeItem item4 = new CodeItem(voidCall);
 
-      //5)
-      StoreLeaf leaf5 = new StoreLeaf(new ELvalue(objVar.getVarAssign().getRvalue().getVar()),
-          new ERvalue(objVar.getVarAssign().getVar()));
-      CodeItem item5 = new CodeItem(leaf5);
-
       /// append the result as is, without the stack logic
       ///
       codeOut.appendItemLast(item1);
-      codeOut.appendItemLast(item2);
       codeOut.appendItemLast(item3);
       codeOut.appendItemLast(item4);
-      codeOut.appendItemLast(item5);
 
-      // TODO: the last result.
-      // outCode(item5);
+      /// last-result!
+      codeTmp.pushItem(item1);
 
-    }
-
-    else {
-      // TODO: ???
       return;
-      // throw new AstParseException("unimpl. -> in-place constructor.");
     }
+
+    // strtemp __t0 = x1
+    CodeItem objVar = popCode();
+    codeOut.popItem(); // remove it from result
+
+    ExprClassCreation classCreation = e.getClassCreation();
+    ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
+
+    List<ExprExpression> arguments = classCreation.getArguments();
+    ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+    if (constructor == null) {
+      throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+    }
+
+    List<Var> args = genArgsVars(arguments);
+
+    //1)
+    CodeItem item1 = new CodeItem(
+        new TempVarAssign(objVar.getVarAssign().getRvalue().getVar(), new ERvalue(new Literal("null"))));
+
+    //2
+    CodeItem item2 = new CodeItem(new TempVarAssign(objVar.getVarAssign().getVar(), new ERvalue(new Literal("null"))));
+
+    //3
+    AllocObject allocObject = new AllocObject(
+        new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
+    StoreLeaf leaf = new StoreLeaf(new ELvalue(objVar.getVarAssign().getVar()), new ERvalue(allocObject));
+    CodeItem item3 = new CodeItem(leaf);
+
+    //4)
+    args.add(0, objVar.getVarAssign().getVar());
+    Call voidCall = new Call(constructor.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor)),
+        args);
+    CodeItem item4 = new CodeItem(voidCall);
+
+    //5)
+    StoreLeaf leaf5 = new StoreLeaf(new ELvalue(objVar.getVarAssign().getRvalue().getVar()),
+        new ERvalue(objVar.getVarAssign().getVar()));
+    CodeItem item5 = new CodeItem(leaf5);
+
+    /// append the result as is, without the stack logic
+    ///
+    codeOut.appendItemLast(item1);
+    codeOut.appendItemLast(item2);
+    codeOut.appendItemLast(item3);
+    codeOut.appendItemLast(item4);
+    codeOut.appendItemLast(item5);
+
+    /// last-result!
+    codeTmp.pushItem(item5);
 
   }
 
