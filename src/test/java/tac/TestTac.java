@@ -61,15 +61,12 @@ public class TestTac {
 //    sb.append("    this.rhs = rhs;                                         //010 \n");
 //    sb.append("  }                                                         //011 \n");
 //    sb.append("}                                                           //012 \n");
-//    sb.append("class strtemp {                                             //013 \n");
-//    sb.append("  int x;                                                    //014 \n");
-//    sb.append("  strtemp(int x) {                                          //015 \n");
-//    sb.append("    this.x = x;                                             //016 \n");
-//    sb.append("  }                                                         //017 \n");
-//    sb.append("  int getX() {                                              //018 \n");
-//    sb.append("    return x;                                               //019 \n");
-//    sb.append("  }                                                         //020 \n");
-//    sb.append("}                                                           //021 \n");
+    sb.append("class strtemp {                                             //013 \n");
+    sb.append("  int x;                                                    //014 \n");
+    sb.append("  strtemp() {                                          //015 \n");
+    sb.append("    this.x = 0;                                             //016 \n");
+    sb.append("  }                                                         //017 \n");
+    sb.append("}                                                           //021 \n");
 //    sb.append("class type {                                                //022 \n");
 //    sb.append("  strtemp value;                                            //023 \n");
 //    sb.append("  type(strtemp value) {                                     //024 \n");
@@ -85,10 +82,10 @@ public class TestTac {
 //    sb.append("    this.type = type;                                       //034 \n");
 //    sb.append("  }                                                         //035 \n");
 //    sb.append("}                                                           //036 \n");
-    sb.append("class main_class {   int fff; int ggg; int hhh;                                        //037 \n");
+    sb.append("class main_class {   int fff; int ggg; int hhh;                                         //037 \n");
     sb.append("  void main() {                                            //038 \n");
 //    sb.append("    tree tree = new tree(new tree(1), new tree(2));         //039 \n");
-//    sb.append("    strtemp x1 = new strtemp(1);                            //040 \n");
+    sb.append("    strtemp x1 = new strtemp(1);                            //040 \n");
 //    sb.append("    type x2 = new type(x1);                                 //041 \n");
 //    sb.append("    token x3 = new token(x2);                               //042 \n");
 //    sb.append("    token tok1 = new token(new type(new strtemp(1)));       //043 \n");
@@ -97,16 +94,16 @@ public class TestTac {
     sb.append("    int a = 0;                                              //046 \n");
     sb.append("    int b = 1;                                              //047 \n");
     sb.append("    int c = 2;                                              //048 \n");
-    sb.append("    int e = -1; fff = c;                                      //049 \n");
+    sb.append("    int e = -1; e=-1+2;                                     //049 \n");
 //    sb.append("    int f = x1.getX();                                      //050 \n");
 //    sb.append("    int g = x2.getValue().getX();                           //051 \n");
-    sb.append("  }                                                         //052 \n");
+    sb.append("  }    int fun(int a,int b){}                                                     //052 \n");
     sb.append("}                                                           //053 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     ClassDeclaration c = unit.getClassByName("main_class");
-    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(4).getStatement().getExprStmt();
+    ExprExpression expr = c.getMethods().get(0).getBlock().getBlockItems().get(5).getStatement().getExprStmt();
     TacGenerator tcg = new TacGenerator();
     tcg.gen(expr);
     System.out.println(tcg.txt1(";\n"));

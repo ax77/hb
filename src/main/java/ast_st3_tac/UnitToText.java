@@ -8,8 +8,8 @@ import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_printers.ExprPrinters;
 import ast_printers.VarPrinters;
+import ast_st3_tac.vars.CopierNamer;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -107,10 +107,11 @@ public class UnitToText {
     params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
         Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
 
-    if(method.getIdentifier().getName().equals("main")) {
+    if (method.getIdentifier().getName().equals("main")) {
       g("void main()");
     } else {
-      g(method.getType().toString() + " " + NamesGen.getMethodName(method) + "(" + VarPrinters.varsTosCode(params) + ")");
+      g(method.getType().toString() + " " + CopierNamer.getMethodName(method) + "(" + VarPrinters.varsTosCode(params)
+          + ")");
     }
 
     genBlock(method.getBlock());

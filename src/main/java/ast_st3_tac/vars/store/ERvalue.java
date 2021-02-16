@@ -17,8 +17,11 @@ public class ERvalue {
   /// 7 ) e = f + h
   /// 8 ) e = -f
   /// 9 ) e = new classname(!NO:ARGS!)
+  /// 10) e = null
+  /// 11) e = true
+  /// 12) e = false
   ///
-  /// 3 lhs * 9 rhs = 27 combination of assign
+  /// 3 lhs * 12 rhs = 36 combination of assign
 
   private Var var;
   private IntLiteral num;
@@ -29,6 +32,7 @@ public class ERvalue {
   private Binop binop;
   private Unop unop;
   private AllocObject allocObject;
+  private Literal literal;
 
   //@formatter:off
   public ERvalue(Var e) { NullChecker.check(e); this.var = e; }
@@ -40,6 +44,7 @@ public class ERvalue {
   public ERvalue(Binop e) { NullChecker.check(e); this.binop = e; }
   public ERvalue(Unop e) { NullChecker.check(e); this.unop = e; }
   public ERvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
+  public ERvalue(Literal e) { NullChecker.check(e); this.literal = e; }
   
   public boolean isVar() { return var != null; }
   public boolean isNum() { return num != null; }
@@ -50,6 +55,7 @@ public class ERvalue {
   public boolean isBinop() { return binop != null; }
   public boolean isUnop() { return unop != null; }
   public boolean isAllocObject() { return allocObject != null; }
+  public boolean isLiteral() { return literal != null; }
   
   @Override
   public String toString() {
@@ -63,6 +69,7 @@ public class ERvalue {
     if (isBinop()) { return binop.toString(); }
     if (isUnop()) { return unop.toString(); }
     if (isAllocObject()) { return allocObject.toString(); }
+    if(isLiteral()) { return literal.toString(); }
     
     return "???Rvalue";
   }
@@ -103,6 +110,10 @@ public class ERvalue {
 
   public AllocObject getAllocObject() {
     return allocObject;
+  }
+
+  public Literal getLiteral() {
+    return literal;
   }
 
 }

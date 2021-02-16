@@ -101,16 +101,18 @@ public class ParserMain implements ParserMainApi {
     if (mainClass == null) {
       throw new AstParseException("main class not found");
     }
-    if (mainClass.getMethods().size() != 1) {
-      throw new AstParseException("main class should contain main-method");
-    }
-    ClassMethodDeclaration mainMethod = mainClass.getMethods().get(0);
-    if (!mainMethod.getIdentifier().getName().equals("main")) {
-      throw new AstParseException("main method not found");
-    }
-    if (!mainMethod.getType().is_void()) {
-      throw new AstParseException("main method should return the void");
-    }
+    
+    // TODO:
+    // if (mainClass.getMethods().size() != 1) {
+    //   throw new AstParseException("main class should contain main-method");
+    // }
+    // ClassMethodDeclaration mainMethod = mainClass.getMethods().get(0);
+    // if (!mainMethod.getIdentifier().getName().equals("main")) {
+    //   throw new AstParseException("main method not found");
+    // }
+    // if (!mainMethod.getType().is_void()) {
+    //   throw new AstParseException("main method should return the void");
+    // }
 
     return result;
   }

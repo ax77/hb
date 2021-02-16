@@ -1,19 +1,19 @@
 package ast_st3_tac.vars.arith;
 
-import ast_st3_tac.vars.store.ERvalue;
+import ast_st3_tac.vars.store.Var;
 
 public class Binop {
-  private final ERvalue lhs;
+  private final Var lhs;
   private final String op;
-  private final ERvalue rhs;
+  private final Var rhs;
 
-  public Binop(ERvalue lhs, String op, ERvalue rhs) {
+  public Binop(Var lhs, String op, Var rhs) {
     this.lhs = lhs;
     this.op = op;
     this.rhs = rhs;
   }
 
-  public ERvalue getLhs() {
+  public Var getLhs() {
     return lhs;
   }
 
@@ -21,7 +21,7 @@ public class Binop {
     return op;
   }
 
-  public ERvalue getRhs() {
+  public Var getRhs() {
     return rhs;
   }
 
