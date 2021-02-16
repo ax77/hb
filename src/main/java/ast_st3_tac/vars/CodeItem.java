@@ -38,12 +38,16 @@ public class CodeItem {
     return varAssign != null;
   }
 
-  public StoreLeaf getAssign() {
+  public StoreLeaf getStore() {
     return store;
   }
 
   public Call getVoidCall() {
     return voidCall;
+  }
+
+  public TempVarAssign getVarAssign() {
+    return varAssign;
   }
 
   @Override

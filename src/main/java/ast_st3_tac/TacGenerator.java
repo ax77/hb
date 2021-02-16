@@ -29,15 +29,27 @@ import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_method.MethodIdCounter;
 import ast_printers.ExprPrinters;
 import ast_st2_annotate.Lvalue;
 import ast_st2_annotate.Symbol;
+import ast_st3_tac.vars.Code;
+import ast_st3_tac.vars.CodeItem;
+import ast_st3_tac.vars.StoreLeaf;
+import ast_st3_tac.vars.TempVarAssign;
+import ast_st3_tac.vars.arith.Binop;
+import ast_st3_tac.vars.store.ELvalue;
+import ast_st3_tac.vars.store.ERvalue;
+import ast_st3_tac.vars.store.FieldAccess;
+import ast_st3_tac.vars.store.Var;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBase;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import hashed.Hash_ident;
+import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -47,6 +59,9 @@ public class TacGenerator {
   private HashMap<ResultName, Quad> allops = new HashMap<>();
   private List<Quad> quads = new ArrayList<>();
   private HashMap<String, ResultName> hashResultName = new HashMap<>();
+
+  private Code codeTmp = new Code();
+  private Code codeOut = new Code();
 
   public TacGenerator() {
     this.quadsTmp = new ArrayList<>();
@@ -77,6 +92,19 @@ public class TacGenerator {
     return newEntry;
   }
 
+  private void outCode(CodeItem item) {
+    codeTmp.pushItem(item);
+    codeOut.appendItemLast(item);
+  }
+
+  private CodeItem popCode() {
+    return codeTmp.popItem();
+  }
+
+  private Ident tmpIdent() {
+    return Hash_ident.getHashedIdent(String.format("__t%d", MethodIdCounter.next()));
+  }
+
   private void quads(Quad quad) {
     quadsTmp.add(0, quad);
     quads.add(quad);
@@ -96,6 +124,10 @@ public class TacGenerator {
     StringBuilder sb = new StringBuilder();
     for (Quad s : quads) {
       sb.append(s.toString().trim() + end);
+    }
+    sb.append("\n");
+    for (CodeItem item : codeOut.getItems()) {
+      sb.append(item.toString().trim() + end);
     }
     return sb.toString().trim();
   }
@@ -135,6 +167,30 @@ public class TacGenerator {
       // id
       StoreDst storeDst = new StoreDst(svDst.getLhs());
       quads(new Quad(ht(), resultType, storeDst, rvalue));
+
+      //E
+      final CodeItem srcItem = popCode();
+      final CodeItem dstItem = popCode();
+
+      if (dstItem.isVarAssign() && srcItem.isVarAssign()) {
+
+        final TempVarAssign dstVarAssign = dstItem.getVarAssign();
+        final TempVarAssign srcVarAssign = srcItem.getVarAssign();
+
+        if (!dstVarAssign.getRvalue().isVar()) {
+          throw new AstParseException("unimpl...");
+        }
+
+        final ERvalue rvalueE = new ERvalue(srcVarAssign.getVar());
+        final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getVar());
+
+        final StoreLeaf storeOp = new StoreLeaf(lvalueE, rvalueE);
+        outCode(new CodeItem(storeOp));
+
+      } else {
+        throw new AstParseException("unimpl...");
+      }
+      //
     }
 
     else if (svDst.getBase() == QuadOpc.FIELD_ACCESS) {
@@ -158,6 +214,18 @@ public class TacGenerator {
   @SuppressWarnings("unused")
   private void load(Type resultType) {
     // quads(new Quad(ht(), resultType, "LD", popResultName()));
+  }
+
+  private Var copyVarAddNewName(Var src) {
+    return new Var(src.getBase(), src.getMods(), src.getType(), tmpIdent());
+  }
+
+  private Var copyVarDecl(VarDeclarator src) {
+    return new Var(src.getBase(), src.getMods(), src.getType(), src.getIdentifier());
+  }
+
+  private Var copyVarDeclAddNewName(VarDeclarator var) {
+    return new Var(var.getBase(), var.getMods(), var.getType(), tmpIdent());
   }
 
   public void gen(ExprExpression e) {
@@ -188,6 +256,26 @@ public class TacGenerator {
       final Quad svR = pop();
       final Quad svL = pop();
       quads(new Quad(QuadOpc.BINOP, ht(), e.getResultType(), op.getValue(), svL.getResult(), svR.getResult()));
+
+      //E
+      CodeItem Ritem = popCode();
+      CodeItem Litem = popCode();
+
+      if (Ritem.isVarAssign() && Litem.isVarAssign()) {
+        final TempVarAssign lvar = Litem.getVarAssign();
+        final TempVarAssign rvar = Ritem.getVarAssign();
+
+        final Var lvarRes = lvar.getVar();
+        final Var rvarRes = rvar.getVar();
+
+        final Binop binop = new Binop(new ERvalue(lvarRes), op.getValue(), new ERvalue(rvarRes));
+        final TempVarAssign tempVarAssign = new TempVarAssign(copyVarAddNewName(lvarRes), new ERvalue(binop));
+
+        outCode(new CodeItem(tempVarAssign));
+
+      } else {
+        throw new AstParseException("unimpl...");
+      }
 
     }
 
@@ -229,6 +317,13 @@ public class TacGenerator {
       quad.setVarSym(var);
       quads(quad);
 
+      //E
+      final Var lvalueTmp = copyVarDeclAddNewName(var);
+      final ERvalue rvalueTmp = new ERvalue(copyVarDecl(var));
+      final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
+      outCode(new CodeItem(tempVarAssign));
+      //
+
       //load(e.getResultType());
     }
 
@@ -260,7 +355,7 @@ public class TacGenerator {
       final List<ResultName> args = genArgs(fcall.getArguments());
       final ResultName obj = popResultName();
       args.add(0, obj);
-      
+
       final ResultName fun = h(NamesGen.getMethodName(fcall.getSym().getMethod()));
 
       final Quad quad = new Quad(ht(), fcall.getSym().getMethod().getType(), obj, fun, args);
@@ -281,6 +376,12 @@ public class TacGenerator {
       quad.setVarSym(fieldAccess.getSym().getVariable());
       quads(quad);
 
+      //TODO:THERE:1
+
+      //E
+      //FieldAccess access = new FieldAccess(copyVarDecl(fieldAccess.getSym().getVariable()), new Var(VarBase.CLASS_FIELD, mods, type, name));
+      //
+
       //load(e.getResultType());
     }
 
@@ -293,6 +394,8 @@ public class TacGenerator {
       final ClassDeclaration clazz = exprSelf.getClazz();
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
       quads(new Quad(QuadOpc.THIS_DECL, ht(), classType, h("_this_")));
+
+      //TODO:THERE:2
     }
 
     else {

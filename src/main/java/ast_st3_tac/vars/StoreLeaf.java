@@ -1,22 +1,22 @@
 package ast_st3_tac.vars;
 
-import ast_st3_tac.vars.store.Lvalue;
-import ast_st3_tac.vars.store.Rvalue;
+import ast_st3_tac.vars.store.ELvalue;
+import ast_st3_tac.vars.store.ERvalue;
 
 public class StoreLeaf {
-  private final Lvalue lvalue;
-  private final Rvalue rvalue;
+  private final ELvalue lvalue;
+  private final ERvalue rvalue;
 
-  public StoreLeaf(Lvalue lvalue, Rvalue rvalue) {
+  public StoreLeaf(ELvalue lvalue, ERvalue rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
   }
 
-  public Lvalue getLvalue() {
+  public ELvalue getLvalue() {
     return lvalue;
   }
 
-  public Rvalue getRvalue() {
+  public ERvalue getRvalue() {
     return rvalue;
   }
 

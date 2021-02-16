@@ -10,7 +10,20 @@ public class Code {
     this.items = new ArrayList<>();
   }
 
-  public void addItem(CodeItem e) {
+  public void appendItemLast(CodeItem e) {
     this.items.add(e);
   }
+
+  public void pushItem(CodeItem e) {
+    items.add(0, e);
+  }
+
+  public CodeItem popItem() {
+    return items.remove(0);
+  }
+
+  public List<CodeItem> getItems() {
+    return items;
+  }
+
 }

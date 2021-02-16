@@ -7,9 +7,9 @@ import ast_types.Type;
 public class Call {
   private final Type type;
   private final Var function;
-  private final List<Value> args;
+  private final List<ERvalue> args;
 
-  public Call(Type type, Var function, List<Value> args) {
+  public Call(Type type, Var function, List<ERvalue> args) {
     this.type = type;
     this.function = function;
     this.args = args;
@@ -23,7 +23,7 @@ public class Call {
     return function;
   }
 
-  public List<Value> getArgs() {
+  public List<ERvalue> getArgs() {
     return args;
   }
 
@@ -32,7 +32,7 @@ public class Call {
     sb.append("(");
 
     for (int i = 0; i < args.size(); i++) {
-      Value param = args.get(i);
+      ERvalue param = args.get(i);
       sb.append(param.toString());
 
       if (i + 1 < args.size()) {

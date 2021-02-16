@@ -25,12 +25,12 @@ public class Var {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    if (!mods.isEmpty()) {
-      sb.append(mods.toString());
-      sb.append(" ");
-    }
-    sb.append(type.toString());
-    sb.append(" ");
+    // if (!mods.isEmpty()) {
+    //   sb.append(mods.toString());
+    //   sb.append(" ");
+    // }
+    // sb.append(type.toString());
+    // sb.append(" ");
     sb.append(name.getName());
 
     return sb.toString();

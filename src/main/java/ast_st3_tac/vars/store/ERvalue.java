@@ -2,14 +2,16 @@ package ast_st3_tac.vars.store;
 
 import ast_st3_tac.vars.arith.Binop;
 import ast_st3_tac.vars.arith.Unop;
+import literals.IntLiteral;
 import utils_oth.NullChecker;
 
-public class Rvalue {
+public class ERvalue {
 
   /// L | R
   /// ..|..
   /// e = f
   /// e = 1
+  /// e = "1"
   /// e = f(h)
   /// e = f[h]
   /// e = f.h
@@ -17,10 +19,11 @@ public class Rvalue {
   /// e = -f
   /// e = new classname(!NO:ARGS!)
   ///
-  /// 3 lhs * 8 rhs = 24 combination of assign
+  /// 3 lhs * 9 rhs = 27 combination of assign
 
   private Var var;
-  private Value value;
+  private IntLiteral num;
+  private String str;
   private Call call;
   private ArrayAccess arrayAccess;
   private FieldAccess fieldAccess;
@@ -29,17 +32,19 @@ public class Rvalue {
   private AllocObject allocObject;
 
   //@formatter:off
-  public Rvalue(Var e) { NullChecker.check(e); this.var = e; }
-  public Rvalue(Value e) { NullChecker.check(e); this.value = e; }
-  public Rvalue(Call e) { NullChecker.check(e); this.call = e; }
-  public Rvalue(ArrayAccess e) { NullChecker.check(e); this.arrayAccess = e; }
-  public Rvalue(FieldAccess e) { NullChecker.check(e); this.fieldAccess = e; }
-  public Rvalue(Binop e) { NullChecker.check(e); this.binop = e; }
-  public Rvalue(Unop e) { NullChecker.check(e); this.unop = e; }
-  public Rvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
+  public ERvalue(Var e) { NullChecker.check(e); this.var = e; }
+  public ERvalue(IntLiteral e) { NullChecker.check(e); this.num = e; }
+  public ERvalue(String e) { NullChecker.check(e); this.str = e; }
+  public ERvalue(Call e) { NullChecker.check(e); this.call = e; }
+  public ERvalue(ArrayAccess e) { NullChecker.check(e); this.arrayAccess = e; }
+  public ERvalue(FieldAccess e) { NullChecker.check(e); this.fieldAccess = e; }
+  public ERvalue(Binop e) { NullChecker.check(e); this.binop = e; }
+  public ERvalue(Unop e) { NullChecker.check(e); this.unop = e; }
+  public ERvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
   
   public boolean isVar() { return var != null; }
-  public boolean isValue() { return value != null; }
+  public boolean isNum() { return num != null; }
+  public boolean isStr() { return str != null; }
   public boolean isCall() { return call != null; }
   public boolean isArrayAccess() { return arrayAccess != null; }
   public boolean isFieldAccess() { return fieldAccess != null; }
@@ -51,7 +56,8 @@ public class Rvalue {
   public String toString() {
     
     if (isVar()) { return var.toString(); }
-    if (isValue()) { return value.toString(); }
+    if (isNum()) { return num.toString(); }
+    if (isStr()) { return str.toString(); }
     if (isCall()) { return call.toString(); }
     if (isArrayAccess()) { return arrayAccess.toString(); }
     if (isFieldAccess()) { return fieldAccess.toString(); }
@@ -68,8 +74,12 @@ public class Rvalue {
     return var;
   }
 
-  public Value getValue() {
-    return value;
+  public IntLiteral getNum() {
+    return num;
+  }
+
+  public String getStr() {
+    return str;
   }
 
   public Call getCall() {

@@ -1,12 +1,12 @@
 package ast_st3_tac.vars.arith;
 
-import ast_st3_tac.vars.store.Value;
+import ast_st3_tac.vars.store.ERvalue;
 
 public class Unop {
   private final String op;
-  private final Value operand;
+  private final ERvalue operand;
 
-  public Unop(String op, Value operand) {
+  public Unop(String op, ERvalue operand) {
     this.op = op;
     this.operand = operand;
   }
@@ -15,7 +15,7 @@ public class Unop {
     return op;
   }
 
-  public Value getOperand() {
+  public ERvalue getOperand() {
     return operand;
   }
 
