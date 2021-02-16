@@ -45,6 +45,7 @@ import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.ELvalue;
 import ast_st3_tac.vars.store.ERvalue;
 import ast_st3_tac.vars.store.FieldAccess;
+import ast_st3_tac.vars.store.Literal;
 import ast_st3_tac.vars.store.Var;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -123,14 +124,14 @@ public class TacGenerator {
 
         final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getVar());
 
-        final StoreLeaf storeOp = new StoreLeaf(lvalueE, srcVarAssign.getVar());
+        final StoreLeaf storeOp = new StoreLeaf(lvalueE, new ERvalue(srcVarAssign.getVar()));
         outCode(new CodeItem(storeOp));
       }
 
       else if (dstVarAssign.getRvalue().isFieldAccess()) {
         final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getFieldAccess());
 
-        final StoreLeaf storeOp = new StoreLeaf(lvalueE, srcVarAssign.getVar());
+        final StoreLeaf storeOp = new StoreLeaf(lvalueE, new ERvalue(srcVarAssign.getVar()));
         outCode(new CodeItem(storeOp));
       }
 
@@ -141,37 +142,6 @@ public class TacGenerator {
     } else {
       throw new AstParseException("unimpl...");
     }
-    //
-
-    //     final Quad svSrc = pop();
-    //     final Quad svDst = pop();
-    //     
-    //     NullChecker.check(svDst.getBase());
-    //     
-    //     final ResultName rvalue = svSrc.getResult();
-    //     
-    //     if (svDst.getBase() == QuadOpc.ID_DECL) {
-    //       // id
-    //       StoreDst storeDst = new StoreDst(svDst.getLhs());
-    //       final Quad storeResult = new Quad(ht(), resultType, storeDst, rvalue);
-    //       quads(storeResult);
-    //     }
-    //     
-    //     else if (svDst.getBase() == QuadOpc.FIELD_ACCESS) {
-    //       // field
-    //       StoreDst storeDst = new StoreDst('.', svDst.getLhs(), svDst.getRhs());
-    //       quads(new Quad(ht(), resultType, storeDst, rvalue));
-    //     }
-    //     
-    //     else if (svDst.getBase() == QuadOpc.ARRAY_ACCESS) {
-    //       // array
-    //       StoreDst storeDst = new StoreDst('[', svDst.getLhs(), svDst.getRhs());
-    //       quads(new Quad(ht(), resultType, storeDst, rvalue));
-    //     }
-    //     
-    //     else {
-    //       throw new AstParseException("unknown store operation for: " + svDst.toString());
-    //     }
 
   }
 
@@ -186,14 +156,23 @@ public class TacGenerator {
 
     if (base == EASSIGN) {
 
-      final ExprAssign assing = e.getAssign();
+      final ExprAssign assign = e.getAssign();
 
-      final ExprExpression lvalue = assing.getLvalue();
-      gen(lvalue);
-      Lvalue.checkHard(lvalue);
+      if (assign.getRvalue().is(ECLASS_INSTANCE_CREATION)) {
+        genClassCreation(e, true);
+      }
 
-      gen(assing.getRvalue());
-      store(e.getResultType());
+      else {
+
+        final ExprExpression lvalue = assign.getLvalue();
+        gen(lvalue);
+        Lvalue.checkHard(lvalue);
+
+        final ExprExpression rvalue = assign.getRvalue();
+        gen(rvalue);
+
+        store(e.getResultType());
+      }
 
     }
 
@@ -358,7 +337,7 @@ public class TacGenerator {
     }
 
     else if (base == ECLASS_INSTANCE_CREATION) {
-      genClassCreation(e);
+      genClassCreation(e, false);
     }
 
     else if (base == ETHIS) {
@@ -384,45 +363,82 @@ public class TacGenerator {
   }
 
   // TODO:
-  private void genClassCreation(ExprExpression e) {
+  private void genClassCreation(ExprExpression e, boolean fromAssign) {
 
-    ExprClassCreation classCreation = e.getClassCreation();
-    ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
+    /// type tp = new type(1); 
+    /// ::
+    /// 0) int _tmp_0 = 1;
+    /// 1) type tp = null;
+    /// 2) type _tmp = null;
+    /// 3) _tmp = new type();
+    /// 4) type_init(_tmp, _tmp_0);
+    /// 5) tp = _tmp;
 
-    List<ExprExpression> arguments = classCreation.getArguments();
-    ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+    if (fromAssign) {
+      ExprAssign assign = e.getAssign();
+      gen(assign.getLvalue());
 
-    if (constructor == null) {
-      throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+      final ExprExpression rvalue = assign.getRvalue();
+      gen(rvalue);
+
+      // strtemp __t0 = x1
+      CodeItem objVar = popCode();
+      codeOut.popItem(); // remove it from result
+
+      ExprClassCreation classCreation = rvalue.getClassCreation();
+      ClassDeclaration clazz = classCreation.getType().getClassTypeFromRef();
+
+      List<ExprExpression> arguments = classCreation.getArguments();
+      ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
+      if (constructor == null) {
+        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+      }
+
+      List<Var> args = genArgsVars(arguments);
+
+      //1)
+      CodeItem item1 = new CodeItem(
+          new TempVarAssign(objVar.getVarAssign().getRvalue().getVar(), new ERvalue(new Literal("null"))));
+
+      //2
+      CodeItem item2 = new CodeItem(
+          new TempVarAssign(objVar.getVarAssign().getVar(), new ERvalue(new Literal("null"))));
+
+      //3
+      AllocObject allocObject = new AllocObject(
+          new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
+      StoreLeaf leaf = new StoreLeaf(new ELvalue(objVar.getVarAssign().getVar()), new ERvalue(allocObject));
+      CodeItem item3 = new CodeItem(leaf);
+
+      //4)
+      args.add(0, objVar.getVarAssign().getVar());
+      Call voidCall = new Call(constructor.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor)),
+          args);
+      CodeItem item4 = new CodeItem(voidCall);
+
+      //5)
+      StoreLeaf leaf5 = new StoreLeaf(new ELvalue(objVar.getVarAssign().getRvalue().getVar()),
+          new ERvalue(objVar.getVarAssign().getVar()));
+      CodeItem item5 = new CodeItem(leaf5);
+
+      /// append the result as is, without the stack logic
+      ///
+      codeOut.appendItemLast(item1);
+      codeOut.appendItemLast(item2);
+      codeOut.appendItemLast(item3);
+      codeOut.appendItemLast(item4);
+      codeOut.appendItemLast(item5);
+
+      // TODO: the last result.
+      // outCode(item5);
+
     }
 
-    final Symbol sym = classCreation.getSym();
-
-    Var obj = null;
-
-    if (sym == null) {
-      /// new token(new type(1));
-      /// ..........^
-      /// the class-creation without variable
-      /// we have to generate the temporary name
-
-      obj = new Var(VarBase.LOCAL_VAR, new Modifiers(), classCreation.getType(), CopierNamer.tmpIdent());
-
-    } else {
-
-      /// token tok = new token();
-      /// ......^
-      /// there we have a name
-
-      VarDeclarator var = sym.getVariable();
-      obj = CopierNamer.copyVarDecl(var);
+    else {
+      // TODO: ???
+      return;
+      // throw new AstParseException("unimpl. -> in-place constructor.");
     }
-
-    AllocObject allocObject = new AllocObject(
-        new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos()));
-
-    CodeItem item3 = new CodeItem(new TempVarAssign(obj, new ERvalue(allocObject)));
-    outCode(item3);
 
   }
 

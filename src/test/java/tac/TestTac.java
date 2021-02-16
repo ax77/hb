@@ -63,8 +63,8 @@ public class TestTac {
 //    sb.append("}                                                           //012 \n");
     sb.append("class strtemp {                                             //013 \n");
     sb.append("  int x;                                                    //014 \n");
-    sb.append("  strtemp() {                                          //015 \n");
-    sb.append("    this.x = 0;                                             //016 \n");
+    sb.append("  strtemp(int x) {                                          //015 \n");
+    sb.append("    this.x = x;                                             //016 \n");
     sb.append("  }                                                         //017 \n");
     sb.append("}                                                           //021 \n");
 //    sb.append("class type {                                                //022 \n");
@@ -94,7 +94,7 @@ public class TestTac {
     sb.append("    int a = 0;                                              //046 \n");
     sb.append("    int b = 1;                                              //047 \n");
     sb.append("    int c = 2;                                              //048 \n");
-    sb.append("    int e = -1; e=-1+2;                                     //049 \n");
+    sb.append("    int e = -1; x1 = new strtemp(1);                                     //049 \n");
 //    sb.append("    int f = x1.getX();                                      //050 \n");
 //    sb.append("    int g = x2.getValue().getX();                           //051 \n");
     sb.append("  }    int fun(int a,int b){}                                                     //052 \n");
