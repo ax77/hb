@@ -30,8 +30,10 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_method.MethodIdCounter;
+import ast_modifiers.Modifiers;
 import ast_printers.ExprPrinters;
 import ast_st2_annotate.Lvalue;
+import ast_st2_annotate.Mods;
 import ast_st2_annotate.Symbol;
 import ast_st3_tac.vars.Code;
 import ast_st3_tac.vars.CodeItem;
@@ -228,6 +230,10 @@ public class TacGenerator {
     return new Var(var.getBase(), var.getMods(), var.getType(), tmpIdent());
   }
 
+  private Ident _this_() {
+    return Hash_ident.getHashedIdent("_this_");
+  }
+
   public void gen(ExprExpression e) {
     NullChecker.check(e);
     ExpressionBase base = e.getBase();
@@ -370,16 +376,25 @@ public class TacGenerator {
       gen(fieldAccess.getObject());
 
       final String fName = fieldAccess.getFieldName().getName();
-      final Type fType = fieldAccess.getSym().getVariable().getType();
+      final VarDeclarator variable = fieldAccess.getSym().getVariable();
+      final Type fType = variable.getType();
 
       final Quad quad = new Quad(QuadOpc.FIELD_ACCESS, ht(), fType, popResultName(), h(fName));
-      quad.setVarSym(fieldAccess.getSym().getVariable());
+      quad.setVarSym(variable);
       quads(quad);
 
-      //TODO:THERE:1
-
       //E
-      //FieldAccess access = new FieldAccess(copyVarDecl(fieldAccess.getSym().getVariable()), new Var(VarBase.CLASS_FIELD, mods, type, name));
+      CodeItem thisItem = popCode();
+      if (thisItem.isVarAssign()) {
+
+        final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), copyVarDecl(variable));
+        final Var lhsvar = copyVarDeclAddNewName(variable);
+        final CodeItem item = new CodeItem(new TempVarAssign(lhsvar, new ERvalue(access)));
+        outCode(item);
+
+      } else {
+        throw new AstParseException("unimpl...");
+      }
       //
 
       //load(e.getResultType());
@@ -395,7 +410,14 @@ public class TacGenerator {
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
       quads(new Quad(QuadOpc.THIS_DECL, ht(), classType, h("_this_")));
 
-      //TODO:THERE:2
+      //E
+      // main_class __t2 = _this_
+      final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), classType, tmpIdent());
+      final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, _this_());
+      final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, new ERvalue(rhsVar)));
+      outCode(item);
+      //
+
     }
 
     else {
