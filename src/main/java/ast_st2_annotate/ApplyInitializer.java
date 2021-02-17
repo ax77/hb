@@ -20,9 +20,6 @@ public class ApplyInitializer {
       throw new AstParseException("unimpl. array-inits.");
     }
 
-    // TODO:
-    // maybeInitVariableByDefault(var);
-
     final ExprExpression init = var.getSimpleInitializer();
 
     if (init == null) {
@@ -36,39 +33,5 @@ public class ApplyInitializer {
       ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
     }
   }
-
-  // private void maybeInitVariableByDefault(final VarDeclarator var) {
-  // 
-  //   final ExprExpression init = var.getSimpleInitializer();
-  //   if (init != null) {
-  //     return;
-  //   }
-  //   if (var.is(VarBase.CLASS_FIELD)) {
-  //     return;
-  //   }
-  // 
-  //   // initialize variable with its default value:
-  //   // null for arrays and classes
-  //   // zero for primitives
-  //   // false for boolean
-  //   final Type tp = var.getType();
-  //   final Token beginPos = var.getBeginPos();
-  // 
-  //   if (tp.is_numeric()) {
-  //     ExprExpression zeroExpr = ExprUtil.getEmptyPrimitive(tp, beginPos);
-  //     var.setSimpleInitializer(zeroExpr);
-  //   }
-  // 
-  //   else if (tp.is_class()) {
-  //     ExprExpression nullExpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, beginPos);
-  //     var.setSimpleInitializer(nullExpr);
-  //   }
-  // 
-  //   else if (tp.is_boolean()) {
-  //     ExprExpression falseExpr = new ExprExpression(false, beginPos);
-  //     var.setSimpleInitializer(falseExpr);
-  //   }
-  // 
-  // }
 
 }

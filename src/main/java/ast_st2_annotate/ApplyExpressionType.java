@@ -158,8 +158,9 @@ public class ApplyExpressionType {
 
     }
 
-    // + -
-    else if (in(op, new T[] { T_PLUS, T_MINUS })) {
+    // TODO: check these OPS (* / %)
+    // + - * / %
+    else if (in(op, new T[] { T_PLUS, T_MINUS, T_TIMES, T_DIVIDE, T_PERCENT })) {
       // T_PLUS,T_MINUS->numeric
       // is_numeric|is_numeric
       if (lhsType.is_numeric() && rhsType.is_numeric()) {

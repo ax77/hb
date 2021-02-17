@@ -41,7 +41,6 @@ public class ApplyExpression {
       return;
     }
     if (e.getResultType() != null) {
-      // we may rewrite some expressions, so: TODO:
       return;
     }
 
@@ -186,6 +185,9 @@ public class ApplyExpression {
     final Symbol sym = symtabApplier.findVar(primaryIdent.getIdentifier(), F_ALL);
     if (sym == null) {
       ErrorLocation.errorExpression("symbol was not declared in this scope", e);
+    }
+    if (!sym.isVariable()) {
+      ErrorLocation.errorExpression("symbol is not a variable", e);
     }
 
     e.setResultType(sym.getType());

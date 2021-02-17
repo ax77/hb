@@ -21,6 +21,9 @@ public class ParseModifiers {
       if (parser.is(Keywords.static_ident)) {
         parser.unimplemented("static-semantic");
       }
+      if (parser.is(Keywords.abstract_ident)) {
+        parser.unimplemented("abstract-semantic");
+      }
 
       final Token tok = parser.checkedMove(T.TOKEN_IDENT);
       if (mods.contains(tok.getIdent())) {

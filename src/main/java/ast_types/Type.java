@@ -17,7 +17,6 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
-import ast_st2_annotate.IteratorChecker;
 import errors.ErrorLocation;
 import tokenize.Ident;
 import tokenize.Token;
@@ -342,12 +341,6 @@ public class Type implements Serializable, TypeApi, Location {
   @Override
   public int get_align() {
     return align;
-  }
-
-  @Override
-  public boolean is_iterated() {
-    final IteratorChecker checker = new IteratorChecker(this);
-    return checker.isIterable();
   }
 
   @Override

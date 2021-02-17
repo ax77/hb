@@ -11,33 +11,6 @@ import tokenize.Ident;
 
 public class SymbolTable {
 
-  //to define a symbol in a function or nested block and check redefinition
-  //1) check the current block 
-  //2) check the whole function scope
-  //
-  //to bind a symbol in a expression - 
-  //1) block scope
-  //2) function scope
-  //3) class scope
-  //4) file scope
-  //
-  //note: function parameters also a variables in a function scope
-
-  // you have to initialize each field with its default value
-  // you have to initialize each LHS like that, before you'll apply RHS
-  //
-  //  class Idn {
-  //    int i = func();
-  //    int func() {
-  //      return this.i;
-  //    }
-  //  }
-
-  // here we build the symbol table, bind all identifiers to its types
-  // also we annotate each expression with its type too
-  // deep semantic check will be later.
-  // we need to build middle-level AST here...
-
   // search masks
   //@formatter:off
   public static final int F_FILE    = 0x0001;
@@ -58,6 +31,8 @@ public class SymbolTable {
     this.variablesMethod = new Symtab<>();
     this.variablesBlock = new Symtab<>();
   }
+
+  /// SCOPES
 
   public void openFileScope() {
     this.typeNames.pushscope(ScopeLevels.FILE_SCOPE, "compilation_unit_scope");
@@ -102,7 +77,7 @@ public class SymbolTable {
     return new Symbol(var);
   }
 
-  // SYMTAB
+  /// SYMTAB
 
   public void defineFunctionParameter(ClassMethodDeclaration method, VarDeclarator var) {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
@@ -111,7 +86,10 @@ public class SymbolTable {
   }
 
   public void defineMethodVariable(ClassMethodDeclaration method, VarDeclarator var) {
-    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD); // | F_CLASS ???
+    /// method variables may redefine class-fields
+    /// it is not an error
+
+    Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
   }

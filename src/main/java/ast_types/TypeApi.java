@@ -16,7 +16,6 @@ public interface TypeApi {
   public int     get_align();
   public boolean is_equal_to(Type another);
   public boolean is_class_template();
-  public boolean is_iterated();
   public boolean is_reference();
   public boolean is_primitive();
   public boolean is_numeric();

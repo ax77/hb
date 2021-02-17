@@ -23,41 +23,40 @@ public class ApplyStatement {
   }
 
   public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement statement) {
+      final StmtStatement s) {
 
-    if (statement == null) {
+    if (s == null) {
       return;
     }
 
-    StatementBase base = statement.getBase();
+    StatementBase base = s.getBase();
     if (base == StatementBase.SFOREACH_TMP) {
-      visitForeach(object, method, statement);
+      visitForeach(object, method, s);
     } else if (base == StatementBase.SIF) {
-      visitSelectionStmt(object, method, statement);
+      visitSelectionStmt(object, method, s.getIfStmt());
     } else if (base == StatementBase.SEXPR) {
-      applyExpression(object, statement.getExprStmt());
+      applyExpression(object, s.getExprStmt());
     } else if (base == StatementBase.SBLOCK) {
-      visitBlock(object, method, statement.getBlockStmt());
+      visitBlock(object, method, s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      visitReturn(object, statement);
+      visitReturn(object, s.getReturnStmt());
     } else if (base == StatementBase.SWHILE) {
-      visitWhile(object, method, statement);
+      visitWhile(object, method, s.getWhileStmt());
     } else if (base == StatementBase.SFOR) {
-      applyFor(object, method, statement.getForStmt());
+      visitVor(object, method, s.getForStmt());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
   }
 
-  private void visitReturn(final ClassDeclaration object, final StmtStatement statement) {
-    final StmtReturn returnStmt = statement.getReturnStmt();
+  private void visitReturn(final ClassDeclaration object, final StmtReturn returnStmt) {
     if (returnStmt.hasExpression()) {
       applyExpression(object, returnStmt.getExpression());
     }
   }
 
-  private void applyFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
+  private void visitVor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
 
     if (stmtFor.getLoop() == null || stmtFor.getLoop().getBase() != StatementBase.SBLOCK) {
       throw new AstParseException("for-loop without the block");
@@ -75,15 +74,13 @@ public class ApplyStatement {
   }
 
   private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement statement) {
-    final StmtWhile whileStmt = statement.getWhileStmt();
+      final StmtWhile whileStmt) {
     applyExpression(object, whileStmt.getCondition());
     visitBlock(object, method, whileStmt.getBlock());
   }
 
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement statement) {
-    final StmtSelect ifStmt = statement.getIfStmt();
+      final StmtSelect ifStmt) {
     applyExpression(object, ifStmt.getCondition());
     applyStatement(object, method, ifStmt.getTrueStatement());
     applyStatement(object, method, ifStmt.getOptionalElseStatement());
