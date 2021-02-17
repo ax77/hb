@@ -1,12 +1,18 @@
 package ast_st2_annotate;
 
+import java.util.ArrayList;
+
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
+import ast_types.Type;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
+import tokenize.Token;
 
 public class ApplyUnit {
 
@@ -31,6 +37,8 @@ public class ApplyUnit {
 
     symtabApplier.openClassScope(object.getIdentifier().getName());
 
+    addDefaultMethods(object);
+
     //fields
     for (VarDeclarator field : object.getFields()) {
       symtabApplier.defineClassField(object, field); // check redefinition
@@ -52,6 +60,30 @@ public class ApplyUnit {
     }
 
     symtabApplier.closeClassScope();
+  }
+
+  private void addDefaultMethods(ClassDeclaration object) {
+    final StmtBlock block = new StmtBlock();
+    final Token beginPos = object.getBeginPos();
+
+    if (object.getConstructors().isEmpty()) {
+      final ArrayList<VarDeclarator> emptyParams = new ArrayList<>();
+      final Type voidType = new Type(beginPos);
+      final Modifiers emptyMods = new Modifiers();
+      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, emptyMods,
+          object, object.getIdentifier(), emptyParams, voidType, block, beginPos);
+
+      constructor.setGeneratedByDefault();
+      object.addConstructor(constructor);
+    }
+
+    if (object.getDestructor() == null) {
+      final ClassMethodDeclaration destructor = new ClassMethodDeclaration(object, block, beginPos);
+
+      destructor.setGeneratedByDefault();
+      object.addConstructor(destructor);
+    }
+
   }
 
   private void applyMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {

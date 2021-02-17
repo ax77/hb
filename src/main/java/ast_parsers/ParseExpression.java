@@ -48,7 +48,6 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
@@ -485,7 +484,7 @@ public class ParseExpression {
     // instead of just 'method_name()'
     Token tok = parser.tok();
 
-    ExprExpression selfExpression = new ExprExpression(new ExprThis(parser.getCurrentClass(true)), tok);
+    ExprExpression selfExpression = new ExprExpression(parser.getCurrentClass(true), tok);
     List<ExprExpression> arglist = parseArglist();
 
     tok = parser.tok();
@@ -531,7 +530,7 @@ public class ParseExpression {
 
     if (parser.is(Keywords.this_ident)) {
       Token saved = parser.moveget();
-      ExprExpression thisexpr = new ExprExpression(new ExprThis(parser.getCurrentClass(true)), saved);
+      ExprExpression thisexpr = new ExprExpression(parser.getCurrentClass(true), saved);
       return thisexpr;
     }
 

@@ -26,7 +26,6 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprThis;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
@@ -299,7 +298,7 @@ public class TacGenerator {
       if (var.is(VarBase.CLASS_FIELD)) {
 
         final ClassDeclaration clazz = var.getClazz();
-        final ExprExpression ethis = new ExprExpression(new ExprThis(clazz), clazz.getBeginPos());
+        final ExprExpression ethis = new ExprExpression(clazz, clazz.getBeginPos());
         final ExprFieldAccess eFaccess = new ExprFieldAccess(ethis, var.getIdentifier());
         eFaccess.setField(var);
 
@@ -406,8 +405,7 @@ public class TacGenerator {
 
     else if (base == ETHIS) {
 
-      final ExprThis exprSelf = e.getSelfExpression();
-      final ClassDeclaration clazz = exprSelf.getClazz();
+      final ClassDeclaration clazz = e.getSelfExpression();
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
 
       // main_class __t2 = _this_

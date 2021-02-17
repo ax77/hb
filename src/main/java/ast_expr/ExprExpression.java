@@ -2,6 +2,7 @@ package ast_expr;
 
 import java.io.Serializable;
 
+import ast_class.ClassDeclaration;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_types.Type;
@@ -26,7 +27,7 @@ public class ExprExpression implements Serializable, Location {
   private ExprFieldAccess fieldAccess;
   private ExprClassCreation classCreation;
   private ExprAssign assign;
-  private ExprThis selfExpression;
+  private ClassDeclaration selfExpression;
   private boolean booleanLiteral;
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
@@ -49,7 +50,7 @@ public class ExprExpression implements Serializable, Location {
     this.booleanLiteral = value;
   }
 
-  public ExprExpression(ExprThis selfExpression, Token beginPos) {
+  public ExprExpression(ClassDeclaration selfExpression, Token beginPos) {
     this.base = ExpressionBase.ETHIS;
 
     this.beginPos = beginPos;
@@ -132,7 +133,7 @@ public class ExprExpression implements Serializable, Location {
     return resultType;
   }
 
-  public ExprThis getSelfExpression() {
+  public ClassDeclaration getSelfExpression() {
     return selfExpression;
   }
 
@@ -199,7 +200,7 @@ public class ExprExpression implements Serializable, Location {
       return ident.toString();
     }
     if (base == ExpressionBase.ETHIS) {
-      return selfExpression.toString();
+      return "this";
     }
     if (base == ExpressionBase.EMETHOD_INVOCATION) {
       return methodInvocation.toString();

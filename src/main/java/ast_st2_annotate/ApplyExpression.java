@@ -110,7 +110,7 @@ public class ApplyExpression {
   }
 
   private void applySelfLiteral(final ExprExpression e) {
-    final ClassDeclaration clazz = e.getSelfExpression().getClazz();
+    final ClassDeclaration clazz = e.getSelfExpression();
     final ClassTypeRef ref = new ClassTypeRef(clazz, clazz.getTypeParametersT());
     e.setResultType(new Type(ref, e.getBeginPos()));
   }

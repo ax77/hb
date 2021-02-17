@@ -56,7 +56,7 @@ public class TestTac {
     sb.append("  token(type type) {                                        //033 \n");
     sb.append("    this.type = type;                                       //034 \n");
     sb.append("  }                                                         //035 \n");
-    sb.append("}                                                           //036 \n");
+    sb.append("} class temp { int stubfield; }                                                          //036 \n");
     sb.append("class main_class {                                          //037 \n");
     sb.append("  void main() {                                             //038 \n");
     sb.append("    tree tree = new tree(new tree(1), new tree(2));         //039 \n");

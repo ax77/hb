@@ -39,6 +39,9 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   /// this number dynamically
   private final int uniqueId;
 
+  /// auto-generated constructor/destructor/etc...
+  private boolean isGeneratedByDefault;
+
   // function/init
   public ClassMethodDeclaration(ClassMethodBase base, Modifiers mod, ClassDeclaration clazz, Ident identifier,
       List<VarDeclarator> parameters, Type returnType, StmtBlock block, Token beginPos) {
@@ -111,6 +114,14 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
   public StmtBlock getBlock() {
     return block;
+  }
+
+  public boolean isGeneratedByDefault() {
+    return isGeneratedByDefault;
+  }
+
+  public void setGeneratedByDefault() {
+    this.isGeneratedByDefault = true;
   }
 
   private String parametersToString() {
