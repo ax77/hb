@@ -7,6 +7,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
+import errors.ErrorLocation;
 import utils_oth.NullChecker;
 
 public class ExprClassCreation implements Serializable, TypeSetter {
@@ -22,6 +23,11 @@ public class ExprClassCreation implements Serializable, TypeSetter {
 
   public ExprClassCreation(Type classtype, List<ExprExpression> arguments) {
     NullChecker.check(classtype, arguments);
+
+    if (!classtype.is_class()) {
+      ErrorLocation.errorType("expect class type, but was: ", classtype);
+
+    }
 
     this.classtype = classtype;
     this.arguments = arguments;

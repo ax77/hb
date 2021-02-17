@@ -31,7 +31,6 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_printers.GenericListPrinter;
 import ast_st2_annotate.LvalueUtil;
 import ast_st2_annotate.Mods;
 import ast_st3_tac.vars.Code;
@@ -339,21 +338,26 @@ public class TacGenerator {
 
     else if (base == EMETHOD_INVOCATION) {
       final ExprMethodInvocation fcall = e.getMethodInvocation();
-      gen(fcall.getObject());
 
-      final ClassMethodDeclaration method = fcall.getMethod();
-      final List<Var> args = genArgsVars(fcall.getArguments());
+      //1
+      gen(fcall.getObject());
       final CodeItem obj = popCode();
+
+      //2
+      final List<Var> args = genArgsVars(fcall.getArguments());
       args.add(0, obj.getVarAssign().getVar());
 
+      //3
+      final ClassMethodDeclaration method = fcall.getMethod();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(method));
       final Call call = new Call(method.getType(), fn, args, false);
+
       if (method.isVoid()) {
-        CodeItem item = new CodeItem(call);
+        final CodeItem item = new CodeItem(call);
         genRaw(item);
       } else {
-        CodeItem item = new CodeItem(new TempVarAssign(
-            new Var(VarBase.LOCAL_VAR, new Modifiers(), method.getType(), CopierNamer.tmpIdent()), new Rvalue(call)));
+        final Var resultVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), method.getType(), CopierNamer.tmpIdent());
+        final CodeItem item = new CodeItem(new TempVarAssign(resultVar, new Rvalue(call)));
         genRaw(item);
       }
 
@@ -381,14 +385,15 @@ public class TacGenerator {
 
     else if (base == ECLASS_INSTANCE_CREATION) {
 
+      //1
       final ExprClassCreation fcall = e.getClassCreation();
-      final ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
-      final Type typename = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
+      final Type typename = fcall.getType();
 
-      final List<ExprExpression> arguments = fcall.getArguments();
+      //2
+      final List<Var> args = genArgsVars(fcall.getArguments());
+
+      //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
-
-      final List<Var> args = genArgsVars(arguments);
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
       final Call call = new Call(constructor.getType(), fn, args, true);
       final Var lvalue = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
