@@ -3,6 +3,7 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_st1_templates.TypeSetter;
 import ast_types.Type;
@@ -15,6 +16,9 @@ public class ExprClassCreation implements Serializable, TypeSetter {
 
   private Type classtype;
   private final List<ExprExpression> arguments;
+
+  //MIR:TREE
+  private ClassMethodDeclaration constructor;
 
   public ExprClassCreation(Type classtype, List<ExprExpression> arguments) {
     NullChecker.check(classtype, arguments);
@@ -40,6 +44,14 @@ public class ExprClassCreation implements Serializable, TypeSetter {
   @Override
   public Type getType() {
     return classtype;
+  }
+
+  public ClassMethodDeclaration getConstructor() {
+    return constructor;
+  }
+
+  public void setConstructor(ClassMethodDeclaration constructor) {
+    this.constructor = constructor;
   }
 
 }

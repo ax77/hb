@@ -386,11 +386,7 @@ public class TacGenerator {
       final Type typename = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
 
       final List<ExprExpression> arguments = fcall.getArguments();
-      final ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
-      if (constructor == null) {
-        throw new AstParseException(
-            "class has no constructor for args: " + GenericListPrinter.paramsToStringWithBraces(arguments));
-      }
+      final ClassMethodDeclaration constructor = fcall.getConstructor();
 
       final List<Var> args = genArgsVars(arguments);
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));

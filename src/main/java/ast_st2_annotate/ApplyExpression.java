@@ -2,7 +2,6 @@ package ast_st2_annotate;
 
 import static ast_st2_annotate.SymbolTable.F_ALL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -18,6 +17,7 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_printers.GenericListPrinter;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBase;
@@ -111,8 +111,7 @@ public class ApplyExpression {
 
   private void applySelfLiteral(final ExprExpression e) {
     final ClassDeclaration clazz = e.getSelfExpression().getClazz();
-    final ArrayList<Type> typeArguments = new ArrayList<>();
-    final ClassTypeRef ref = new ClassTypeRef(clazz, typeArguments);
+    final ClassTypeRef ref = new ClassTypeRef(clazz, clazz.getTypeParametersT());
     e.setResultType(new Type(ref, e.getBeginPos()));
   }
 
@@ -122,13 +121,27 @@ public class ApplyExpression {
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {
-    ExprClassCreation classInstanceCreation = e.getClassCreation();
+    final ExprClassCreation classCreation = e.getClassCreation();
 
-    for (ExprExpression arg : classInstanceCreation.getArguments()) {
-      applyExpression(object, arg);
+    applyArgs(object, classCreation.getArguments());
+
+    // type tp = new type(1)
+
+    final Type resultTypeOfObject = classCreation.getType();
+    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
+      ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
     }
 
-    e.setResultType(classInstanceCreation.getType());
+    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassTypeFromRef();
+    final ClassMethodDeclaration constructor = whereWeWantToFindTheMethod.getConstructor(classCreation.getArguments());
+
+    if (constructor == null) {
+      ErrorLocation.errorExpression("class has no constructor with args: "
+          + GenericListPrinter.paramsToStringWithBraces(classCreation.getArguments()), e);
+    }
+
+    e.setResultType(resultTypeOfObject);
+    classCreation.setConstructor(constructor);
   }
 
   private void applyAssign(final ClassDeclaration object, final ExprExpression e) {
@@ -231,7 +244,7 @@ public class ApplyExpression {
 
     final ExprMethodInvocation methodInvocation = e.getMethodInvocation();
     applyExpression(object, methodInvocation.getObject());
-    applyMethodCallArgs(object, methodInvocation);
+    applyArgs(object, methodInvocation.getArguments());
 
     // a.fn(1,2,3)
     // self.fn(1,2,3)
@@ -254,8 +267,7 @@ public class ApplyExpression {
 
   }
 
-  private void applyMethodCallArgs(final ClassDeclaration object, final ExprMethodInvocation methodInvocation) {
-    final List<ExprExpression> arguments = methodInvocation.getArguments();
+  private void applyArgs(final ClassDeclaration object, final List<ExprExpression> arguments) {
     for (ExprExpression arg : arguments) {
       applyExpression(object, arg);
     }
