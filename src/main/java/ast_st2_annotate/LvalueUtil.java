@@ -6,7 +6,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import errors.ErrorLocation;
 
-public abstract class Lvalue {
+public abstract class LvalueUtil {
 
   public static void checkHard(ExprExpression e) {
     final boolean isAnyIdentifier = e.is(EPRIMARY_IDENT);

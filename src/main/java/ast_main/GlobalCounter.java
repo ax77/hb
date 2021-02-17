@@ -1,6 +1,6 @@
-package ast_method;
+package ast_main;
 
-public class MethodIdCounter {
+public class GlobalCounter {
   private static int count = 0;
 
   public static int next() {

@@ -1,13 +1,13 @@
 package ast_st3_tac.vars;
 
-import ast_st3_tac.vars.store.ERvalue;
+import ast_st3_tac.vars.store.Rvalue;
 import ast_st3_tac.vars.store.Var;
 
 public class TempVarAssign {
   private final Var var;
-  private final ERvalue rvalue;
+  private final Rvalue rvalue;
 
-  public TempVarAssign(Var var, ERvalue rvalue) {
+  public TempVarAssign(Var var, Rvalue rvalue) {
     this.var = var;
     this.rvalue = rvalue;
   }
@@ -16,7 +16,7 @@ public class TempVarAssign {
     return var;
   }
 
-  public ERvalue getRvalue() {
+  public Rvalue getRvalue() {
     return rvalue;
   }
 

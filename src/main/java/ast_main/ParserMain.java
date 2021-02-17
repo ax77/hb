@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_method.ClassMethodDeclaration;
 import ast_st0_resolve.CUnitCompleteChecker;
 import ast_st1_templates.InstatantiationUnitBuilder;
 import ast_symtab.Keywords;

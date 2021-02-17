@@ -1,7 +1,7 @@
 package ast_st3_tac.vars;
 
+import ast_main.GlobalCounter;
 import ast_method.ClassMethodDeclaration;
-import ast_st3_tac.Counter;
 import ast_st3_tac.vars.store.Var;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -23,7 +23,7 @@ public abstract class CopierNamer {
   }
 
   public static Ident tmpIdent() {
-    return Hash_ident.getHashedIdent(String.format("__t%d", Counter.next()));
+    return Hash_ident.getHashedIdent(String.format("__t%d", GlobalCounter.next()));
   }
 
   public static Ident _this_() {

@@ -136,7 +136,7 @@ public class ApplyExpression {
     ExprAssign node = e.getAssign();
 
     final ExprExpression lvalue = node.getLvalue();
-    Lvalue.checkHard(lvalue);
+    LvalueUtil.checkHard(lvalue);
 
     final ExprExpression rvalue = node.getRvalue();
 

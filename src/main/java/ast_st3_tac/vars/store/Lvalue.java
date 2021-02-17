@@ -1,6 +1,6 @@
 package ast_st3_tac.vars.store;
 
-public class ELvalue {
+public class Lvalue {
 
   // a = b
   // a.b = c
@@ -10,15 +10,15 @@ public class ELvalue {
   private FieldAccess dstField;
   private ArrayAccess dstArray;
 
-  public ELvalue(Var dstVar) {
+  public Lvalue(Var dstVar) {
     this.dstVar = dstVar;
   }
 
-  public ELvalue(FieldAccess dstField) {
+  public Lvalue(FieldAccess dstField) {
     this.dstField = dstField;
   }
 
-  public ELvalue(ArrayAccess dstArray) {
+  public Lvalue(ArrayAccess dstArray) {
     this.dstArray = dstArray;
   }
 

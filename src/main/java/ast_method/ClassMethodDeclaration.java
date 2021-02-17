@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
 import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
@@ -53,7 +54,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.block = block;
     this.beginPos = beginPos;
 
-    this.uniqueId = MethodIdCounter.next();
+    this.uniqueId = GlobalCounter.next();
 
   }
 
@@ -71,7 +72,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.block = block;
     this.beginPos = beginPos;
 
-    this.uniqueId = MethodIdCounter.next();
+    this.uniqueId = GlobalCounter.next();
   }
 
   @Override

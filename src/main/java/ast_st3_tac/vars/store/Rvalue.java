@@ -5,7 +5,7 @@ import ast_st3_tac.vars.arith.Unop;
 import literals.IntLiteral;
 import utils_oth.NullChecker;
 
-public class ERvalue {
+public class Rvalue {
 
   ///     L | R
   /// 1 ) e = f
@@ -35,16 +35,16 @@ public class ERvalue {
   private Literal literal;
 
   //@formatter:off
-  public ERvalue(Var e) { NullChecker.check(e); this.var = e; }
-  public ERvalue(IntLiteral e) { NullChecker.check(e); this.num = e; }
-  public ERvalue(String e) { NullChecker.check(e); this.str = e; }
-  public ERvalue(Call e) { NullChecker.check(e); this.call = e; }
-  public ERvalue(ArrayAccess e) { NullChecker.check(e); this.arrayAccess = e; }
-  public ERvalue(FieldAccess e) { NullChecker.check(e); this.fieldAccess = e; }
-  public ERvalue(Binop e) { NullChecker.check(e); this.binop = e; }
-  public ERvalue(Unop e) { NullChecker.check(e); this.unop = e; }
-  public ERvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
-  public ERvalue(Literal e) { NullChecker.check(e); this.literal = e; }
+  public Rvalue(Var e) { NullChecker.check(e); this.var = e; }
+  public Rvalue(IntLiteral e) { NullChecker.check(e); this.num = e; }
+  public Rvalue(String e) { NullChecker.check(e); this.str = e; }
+  public Rvalue(Call e) { NullChecker.check(e); this.call = e; }
+  public Rvalue(ArrayAccess e) { NullChecker.check(e); this.arrayAccess = e; }
+  public Rvalue(FieldAccess e) { NullChecker.check(e); this.fieldAccess = e; }
+  public Rvalue(Binop e) { NullChecker.check(e); this.binop = e; }
+  public Rvalue(Unop e) { NullChecker.check(e); this.unop = e; }
+  public Rvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
+  public Rvalue(Literal e) { NullChecker.check(e); this.literal = e; }
   
   public boolean isVar() { return var != null; }
   public boolean isNum() { return num != null; }
