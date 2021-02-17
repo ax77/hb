@@ -76,7 +76,6 @@ public class TestTac {
     sb.append("}                                                           //053 \n");
     //@formatter:on
 
-
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
 
     UnitToText text = new UnitToText(unit);

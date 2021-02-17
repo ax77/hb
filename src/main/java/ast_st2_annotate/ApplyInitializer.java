@@ -29,14 +29,10 @@ public class ApplyInitializer {
       throw new AstParseException("unexpected, initializer should be there: " + var.getLocationToString());
     }
 
-    if (init.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-      init.getClassCreation().setSym(new Symbol(var));
-    }
-
     ApplyExpression applier = new ApplyExpression(symtabApplier);
     applier.applyExpression(object, init);
 
-    if (!var.getType().is_equal_to(init.getResultType())) {
+    if (!init.is(ExpressionBase.EPRIMARY_NULL_LITERAL) && !var.getType().is_equal_to(init.getResultType())) {
       ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
     }
   }

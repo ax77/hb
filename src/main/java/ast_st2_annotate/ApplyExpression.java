@@ -82,7 +82,7 @@ public class ApplyExpression {
   }
 
   private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {
-    // TODO Auto-generated method stub
+
   }
 
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
@@ -155,11 +155,6 @@ public class ApplyExpression {
       }
     }
 
-    // TODO: isn't it fragile?
-    if (rvalue.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-      rvalue.getClassCreation().setSym(lvalue.getIdent().getSym());
-    }
-
     e.setResultType(lhsType);
   }
 
@@ -194,7 +189,7 @@ public class ApplyExpression {
     }
 
     e.setResultType(sym.getType());
-    primaryIdent.setSym(sym);
+    primaryIdent.setVar(sym.getVariable());
 
   }
 
@@ -226,7 +221,7 @@ public class ApplyExpression {
     }
 
     e.setResultType(field.getType());
-    fieldAccess.setSym(new Symbol(field));
+    fieldAccess.setField(field);
 
   }
 
@@ -253,7 +248,7 @@ public class ApplyExpression {
     }
 
     e.setResultType(method.getType());
-    methodInvocation.setSym(new Symbol(method));
+    methodInvocation.setMethod(method);
 
   }
 

@@ -34,7 +34,6 @@ import ast_modifiers.Modifiers;
 import ast_printers.GenericListPrinter;
 import ast_st2_annotate.LvalueUtil;
 import ast_st2_annotate.Mods;
-import ast_st2_annotate.Symbol;
 import ast_st3_tac.vars.Code;
 import ast_st3_tac.vars.CodeItem;
 import ast_st3_tac.vars.CopierNamer;
@@ -45,11 +44,13 @@ import ast_st3_tac.vars.arith.Unop;
 import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.FieldAccess;
+import ast_st3_tac.vars.store.Literal;
 import ast_st3_tac.vars.store.Lvalue;
 import ast_st3_tac.vars.store.Rvalue;
 import ast_st3_tac.vars.store.Var;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import ast_types.TypeBindings;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -292,12 +293,7 @@ public class TacGenerator {
 
     else if (base == EPRIMARY_IDENT) {
       final ExprIdent exprId = e.getIdent();
-      final Symbol sym = exprId.getSym();
-
-      if (sym.isClazz()) {
-        throw new AstParseException("unimpl. abstract class method/field access.");
-      }
-      final VarDeclarator var = sym.getVariable();
+      final VarDeclarator var = exprId.getVar();
 
       /// rewrite an identifier to [this.field] form
       /// if it is possible
@@ -306,7 +302,7 @@ public class TacGenerator {
         final ClassDeclaration clazz = var.getClazz();
         final ExprExpression ethis = new ExprExpression(new ExprThis(clazz), clazz.getBeginPos());
         final ExprFieldAccess eFaccess = new ExprFieldAccess(ethis, var.getIdentifier());
-        eFaccess.setSym(new Symbol(var));
+        eFaccess.setField(var);
 
         final ExprExpression generated = new ExprExpression(eFaccess, clazz.getBeginPos());
         gen(generated);
@@ -345,7 +341,7 @@ public class TacGenerator {
       final ExprMethodInvocation fcall = e.getMethodInvocation();
       gen(fcall.getObject());
 
-      final ClassMethodDeclaration method = fcall.getSym().getMethod();
+      final ClassMethodDeclaration method = fcall.getMethod();
       final List<Var> args = genArgsVars(fcall.getArguments());
       final CodeItem obj = popCode();
       args.add(0, obj.getVarAssign().getVar());
@@ -367,13 +363,13 @@ public class TacGenerator {
       final ExprFieldAccess fieldAccess = e.getFieldAccess();
       gen(fieldAccess.getObject());
 
-      final VarDeclarator variable = fieldAccess.getSym().getVariable();
+      final VarDeclarator field = fieldAccess.getField();
 
       final CodeItem thisItem = popCode();
       if (thisItem.isVarAssign()) {
 
-        final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), CopierNamer.copyVarDecl(variable));
-        final Var lhsvar = CopierNamer.copyVarDeclAddNewName(variable);
+        final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), CopierNamer.copyVarDecl(field));
+        final Var lhsvar = CopierNamer.copyVarDeclAddNewName(field);
         final CodeItem item = new CodeItem(new TempVarAssign(lhsvar, new Rvalue(access)));
         genRaw(item);
 
@@ -418,6 +414,15 @@ public class TacGenerator {
       final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, CopierNamer._this_());
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, new Rvalue(rhsVar)));
       genRaw(item);
+    }
+
+    else if (base == ExpressionBase.EBOOLEAN_LITERAL) {
+      Literal lit = new Literal(e.getBooleanLiteral());
+      final Var lvalueTmp = new Var(VarBase.LOCAL_VAR, new Modifiers(), TypeBindings.make_boolean(e.getBeginPos()),
+          CopierNamer.tmpIdent());
+      final Rvalue rvalueTmp = new Rvalue(lit);
+      final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
+      genRaw(new CodeItem(tempVarAssign));
     }
 
     else {

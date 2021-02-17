@@ -3,12 +3,12 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
-import ast_st2_annotate.Symbol;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ExprMethodInvocation implements Serializable, MirSymbol {
+public class ExprMethodInvocation implements Serializable {
   private static final long serialVersionUID = -6288485017757935715L;
 
   // object.funcname(arguments)
@@ -17,7 +17,7 @@ public class ExprMethodInvocation implements Serializable, MirSymbol {
   private final List<ExprExpression> arguments;
 
   //MIR:TREE
-  private Symbol sym;
+  private ClassMethodDeclaration method;
 
   // a.b()
   // self.b()
@@ -41,14 +41,12 @@ public class ExprMethodInvocation implements Serializable, MirSymbol {
     return funcname;
   }
 
-  @Override
-  public Symbol getSym() {
-    return sym;
+  public ClassMethodDeclaration getMethod() {
+    return method;
   }
 
-  @Override
-  public void setSym(Symbol sym) {
-    this.sym = sym;
+  public void setMethod(ClassMethodDeclaration method) {
+    this.method = method;
   }
 
   @Override

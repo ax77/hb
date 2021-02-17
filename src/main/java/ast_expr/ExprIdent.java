@@ -2,15 +2,15 @@ package ast_expr;
 
 import java.io.Serializable;
 
-import ast_st2_annotate.Symbol;
+import ast_vars.VarDeclarator;
 import tokenize.Ident;
 
-public class ExprIdent implements Serializable, MirSymbol {
+public class ExprIdent implements Serializable {
   private static final long serialVersionUID = 7777441284065170375L;
   private final Ident identifier;
 
   //MIR:TREE
-  private Symbol sym;
+  private VarDeclarator var;
 
   public ExprIdent(Ident identifier) {
     this.identifier = identifier;
@@ -20,14 +20,12 @@ public class ExprIdent implements Serializable, MirSymbol {
     return identifier;
   }
 
-  @Override
-  public Symbol getSym() {
-    return sym;
+  public VarDeclarator getVar() {
+    return var;
   }
 
-  @Override
-  public void setSym(Symbol sym) {
-    this.sym = sym;
+  public void setVar(VarDeclarator var) {
+    this.var = var;
   }
 
   @Override
