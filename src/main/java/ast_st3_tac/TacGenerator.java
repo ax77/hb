@@ -14,7 +14,9 @@ import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
@@ -68,13 +70,17 @@ public class TacGenerator {
   /// the result after rewriting
   private final Code rewrittenResult;
 
-  /// 
+  /// the result-name for 'if' and 'return'
   private Var lastResultVar;
+
+  /// all names, for constant pasting
+  private final Map<Ident, ERvalue> allNames;
 
   public TacGenerator(ExprExpression expr) {
     temproraries = new Code();
     rawResult = new Code();
     rewrittenResult = new Code();
+    allNames = new HashMap<>();
 
     gen(expr);
     rewrite();
@@ -122,13 +128,29 @@ public class TacGenerator {
     if (lastResultVar != null) {
       return lastResultVar.getName().toString();
     }
-    return rewrittenResult.getItems().get(rewrittenResult.getItems().size() - 1).getVarAssign().getVar().getName()
-        .getName();
+
+    final List<CodeItem> items = rewrittenResult.getItems();
+    if (items.isEmpty()) {
+      throw new AstParseException("there is no code for result-name");
+    }
+
+    final CodeItem lastItem = items.get(items.size() - 1);
+    if (!lastItem.isVarAssign()) {
+      throw new AstParseException("there is no code for result-name");
+    }
+
+    final Var lastVar = lastItem.getVarAssign().getVar();
+    return lastVar.getName().getName();
   }
 
   private void genRaw(CodeItem item) {
     temproraries.pushItem(item);
     rawResult.appendItemLast(item);
+
+    if (item.isVarAssign()) {
+      final TempVarAssign varAssign = item.getVarAssign();
+      allNames.put(varAssign.getVar().getName(), varAssign.getRvalue());
+    }
   }
 
   private CodeItem popCode() {
