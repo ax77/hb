@@ -7,6 +7,7 @@ import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
@@ -38,8 +39,7 @@ public class ApplyStatement {
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, statement.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      final ApplyReturn applier = new ApplyReturn(symtabApplier);
-      applier.applyReturn(object, statement.getReturnStmt());
+      visitReturn(object, statement);
     } else if (base == StatementBase.SWHILE) {
       visitWhile(object, method, statement);
     } else if (base == StatementBase.SFOR) {
@@ -48,6 +48,13 @@ public class ApplyStatement {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
+  }
+
+  private void visitReturn(final ClassDeclaration object, final StmtStatement statement) {
+    final StmtReturn returnStmt = statement.getReturnStmt();
+    if (returnStmt.hasExpression()) {
+      applyExpression(object, returnStmt.getExpression());
+    }
   }
 
   private void applyFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
@@ -88,16 +95,7 @@ public class ApplyStatement {
 
   private void visitForeach(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtStatement statement) {
-
     throw new AstParseException("unimpl. foreach loop");
-
-    // final StmtForeach forloop = statement.getForeachStmt();
-    // 
-    // final ForeachToWhileRewriter rewriter = new ForeachToWhileRewriter(symtabApplier, object, forloop);
-    // final StmtBlock resultBlock = rewriter.genBlock();
-    // 
-    // statement.replaceForLoopWithBlock(resultBlock);
-    // applyStatement(object, method, statement);
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock body) {

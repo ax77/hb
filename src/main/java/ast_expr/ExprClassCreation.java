@@ -3,7 +3,7 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
-import ast_printers.ExprPrinters;
+import ast_printers.GenericListPrinter;
 import ast_st1_templates.TypeSetter;
 import ast_st2_annotate.Symbol;
 import ast_types.Type;
@@ -33,7 +33,7 @@ public class ExprClassCreation implements Serializable, TypeSetter, MirSymbol {
 
   @Override
   public String toString() {
-    return "new " + classtype.toString() + ExprPrinters.funcArgsToString(arguments);
+    return "new " + classtype.toString() + GenericListPrinter.paramsToStringWithBraces(arguments);
   }
 
   @Override

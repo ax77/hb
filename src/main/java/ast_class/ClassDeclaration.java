@@ -9,7 +9,6 @@ import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_printers.TypePrinters;
-import ast_printers.VarPrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_st1_templates.TypeSetter;
@@ -404,10 +403,7 @@ public class ClassDeclaration implements Serializable, Location {
       sb.append(method.toString() + "\n");
     }
 
-    sb.append("\n}");
-
-    sb.append(VarPrinters.bindedVarsComment(fields));
-    sb.append("\n");
+    sb.append("\n}\n");
     return sb.toString();
   }
 

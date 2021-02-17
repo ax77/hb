@@ -100,7 +100,7 @@ public class ParserMain implements ParserMainApi {
     if (mainClass == null) {
       throw new AstParseException("main class not found");
     }
-    
+
     // TODO:
     // if (mainClass.getMethods().size() != 1) {
     //   throw new AstParseException("main class should contain main-method");

@@ -4,31 +4,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_printers.VarPrinters;
-import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
-public class StmtBlock implements Serializable, VarRegistrator {
+public class StmtBlock implements Serializable {
   private static final long serialVersionUID = -3746821242002590684L;
 
   private final List<StmtBlockItem> blockItems;
 
-  //@REFCOUNT
-  private final List<VarDeclarator> variables;
-  private final List<StmtReturn> returns;
-
   // empty: { }
   public StmtBlock() {
     this.blockItems = new ArrayList<>();
-    this.variables = new ArrayList<>();
-    this.returns = new ArrayList<>();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
     this.blockItems = blockStatements;
-    this.variables = new ArrayList<>();
-    this.returns = new ArrayList<>();
   }
 
   public List<StmtBlockItem> getBlockItems() {
@@ -39,24 +29,6 @@ public class StmtBlock implements Serializable, VarRegistrator {
     this.blockItems.add(item);
   }
 
-  public List<StmtReturn> getReturns() {
-    return returns;
-  }
-
-  public void registerReturn(StmtReturn ret) {
-    this.returns.add(ret);
-  }
-
-  @Override
-  public List<VarDeclarator> getRelatedVariables() {
-    return variables;
-  }
-
-  @Override
-  public void registerVariable(VarDeclarator sym) {
-    variables.add(sym);
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -64,9 +36,7 @@ public class StmtBlock implements Serializable, VarRegistrator {
     for (StmtBlockItem blockItem : blockItems) {
       sb.append(blockItem.toString());
     }
-    sb.append("\n}");
-    sb.append(VarPrinters.bindedVarsComment(variables));
-    sb.append("\n");
+    sb.append("\n}\n");
     return sb.toString();
   }
 

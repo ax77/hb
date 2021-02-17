@@ -1,15 +1,11 @@
 package ast_st2_annotate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StmtBlock;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarDeclarator;
-import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
@@ -56,15 +52,11 @@ public class SymbolTable {
   private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
   private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
-  ///@REFCOUNT
-  private final List<StmtBlock> currentBlocksStack;
-
   public SymbolTable() {
     this.typeNames = new Symtab<>();
     this.variablesClass = new Symtab<>();
     this.variablesMethod = new Symtab<>();
     this.variablesBlock = new Symtab<>();
-    this.currentBlocksStack = new ArrayList<>();
   }
 
   public void openFileScope() {
@@ -85,22 +77,18 @@ public class SymbolTable {
 
   public void openMethodScope(String methodName, ClassMethodDeclaration method) {
     this.variablesMethod.pushscope(ScopeLevels.METHOD_SCOPE, methodName);
-    pushBlock(method.getBlock());
   }
 
   public void closeMethodScope() {
     this.variablesMethod.popscope();
-    popBlock();
   }
 
   public void openBlockScope(String name, StmtBlock block) {
     this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, name);
-    pushBlock(block);
   }
 
   public void closeBlockScope() {
     this.variablesBlock.popscope();
-    popBlock();
   }
 
   public void dump() {
@@ -126,16 +114,12 @@ public class SymbolTable {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_METHOD); // | F_CLASS ???
     checkRedefinition(var, maybeAlreadyDefined);
     variablesMethod.addsym(var.getIdentifier(), varsym(var));
-
-    getCurrentBlock().registerVariable(var);
   }
 
   public void defineBlockVar(VarDeclarator var) {
     Symbol maybeAlreadyDefined = findVar(var.getIdentifier(), F_BLOCK | F_METHOD);
     checkRedefinition(var, maybeAlreadyDefined);
     variablesBlock.addsym(var.getIdentifier(), varsym(var));
-
-    getCurrentBlock().registerVariable(var);
   }
 
   private boolean hasBit(int option, int mask) {
@@ -177,24 +161,6 @@ public class SymbolTable {
 
   public void defineClazz(ClassDeclaration td) {
     typeNames.addsym(td.getIdentifier(), new Symbol(td));
-  }
-
-  //////////////////////////////////////////////////////////////////////
-  // BLOCK
-
-  public StmtBlock getCurrentBlock() {
-    if (currentBlocksStack.isEmpty()) {
-      throw new AstParseException("the current block was not set before.");
-    }
-    return currentBlocksStack.get(0);
-  }
-
-  public void pushBlock(StmtBlock block) {
-    currentBlocksStack.add(0, block);
-  }
-
-  public void popBlock() {
-    currentBlocksStack.remove(0);
   }
 
 }

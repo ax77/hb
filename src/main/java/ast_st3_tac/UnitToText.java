@@ -7,7 +7,7 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_printers.VarPrinters;
+import ast_printers.GenericListPrinter;
 import ast_st3_tac.vars.CopierNamer;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
@@ -109,8 +109,8 @@ public class UnitToText {
     if (method.getIdentifier().getName().equals("main")) {
       g("void main()");
     } else {
-      g(method.getType().toString() + " " + CopierNamer.getMethodName(method) + "(" + VarPrinters.varsTosCode(params)
-          + ")");
+      g(method.getType().toString() + " " + CopierNamer.getMethodName(method)
+          + GenericListPrinter.paramsToStringWithBraces(params));
     }
 
     genBlock(method.getBlock());
@@ -200,22 +200,12 @@ public class UnitToText {
         genStatement(item.getStatement());
       }
     }
-    g("\n}" + VarPrinters.bindedVarsComment(blockStmt.getRelatedVariables()));
+    g("\n}\n");
   }
 
   private void genVar(VarDeclarator localVariable) {
 
     final ExprExpression expr = localVariable.getSimpleInitializer();
-
-    //    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-    //      TacGenerator tcg = new TacGenerator();
-    //      tcg.gen(expr);
-    //      String res = tcg.txt1(";\n");
-    //      g("// " + localVariable.toString());
-    //      g(res);
-    //    }
-    //
-    //    else {
 
     TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
@@ -224,7 +214,6 @@ public class UnitToText {
     String last = tcg.getLastResultNameToString();
     g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
 
-    //    }
   }
 
 }

@@ -31,7 +31,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_printers.ExprPrinters;
+import ast_printers.GenericListPrinter;
 import ast_st2_annotate.LvalueUtil;
 import ast_st2_annotate.Mods;
 import ast_st2_annotate.Symbol;
@@ -281,8 +281,7 @@ public class TacGenerator {
         final Var lvarRes = lvar.getVar();
 
         final Unop unop = new Unop(op.getValue(), lvarRes);
-        final TempVarAssign tempVarAssign = new TempVarAssign(CopierNamer.copyVarAddNewName(lvarRes),
-            new Rvalue(unop));
+        final TempVarAssign tempVarAssign = new TempVarAssign(CopierNamer.copyVarAddNewName(lvarRes), new Rvalue(unop));
 
         genRaw(new CodeItem(tempVarAssign));
 
@@ -393,7 +392,8 @@ public class TacGenerator {
       final List<ExprExpression> arguments = fcall.getArguments();
       final ClassMethodDeclaration constructor = clazz.getConstructor(arguments);
       if (constructor == null) {
-        throw new AstParseException("class has no constructor for args: " + ExprPrinters.funcArgsToString(arguments));
+        throw new AstParseException(
+            "class has no constructor for args: " + GenericListPrinter.paramsToStringWithBraces(arguments));
       }
 
       final List<Var> args = genArgsVars(arguments);
