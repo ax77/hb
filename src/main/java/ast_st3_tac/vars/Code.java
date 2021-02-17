@@ -26,4 +26,9 @@ public class Code {
     return items;
   }
 
+  @Override
+  public String toString() {
+    return items.toString();
+  }
+
 }

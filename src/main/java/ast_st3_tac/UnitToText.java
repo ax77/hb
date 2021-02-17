@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
-import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_printers.VarPrinters;
@@ -141,8 +140,7 @@ public class UnitToText {
   private void genSelection(StmtSelect ifStmt) {
 
     ExprExpression expr = ifStmt.getCondition();
-    TacGenerator tcg = new TacGenerator();
-    tcg.gen(expr);
+    TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
     g("// " + expr.toString());
     g(res);
@@ -175,8 +173,7 @@ public class UnitToText {
     String last = "";
     if (returnStmt.hasExpression()) {
       ExprExpression expr = returnStmt.getExpression();
-      TacGenerator tcg = new TacGenerator();
-      tcg.gen(expr);
+      TacGenerator tcg = new TacGenerator(expr);
       String res = tcg.txt1(";\n");
       g("// return " + expr.toString());
       g(res);
@@ -188,8 +185,7 @@ public class UnitToText {
 
   private void genExprStmt(StmtStatement statement) {
     ExprExpression expr = statement.getExprStmt();
-    TacGenerator tcg = new TacGenerator();
-    tcg.gen(expr);
+    TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
     g("// " + expr.toString());
     g(res);
@@ -211,25 +207,24 @@ public class UnitToText {
 
     final ExprExpression expr = localVariable.getSimpleInitializer();
 
-//    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
-//      TacGenerator tcg = new TacGenerator();
-//      tcg.gen(expr);
-//      String res = tcg.txt1(";\n");
-//      g("// " + localVariable.toString());
-//      g(res);
-//    }
-//
-//    else {
+    //    if (expr.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+    //      TacGenerator tcg = new TacGenerator();
+    //      tcg.gen(expr);
+    //      String res = tcg.txt1(";\n");
+    //      g("// " + localVariable.toString());
+    //      g(res);
+    //    }
+    //
+    //    else {
 
-      TacGenerator tcg = new TacGenerator();
-      tcg.gen(expr);
-      String res = tcg.txt1(";\n");
-      g("// " + localVariable.toString());
-      g(res);
-      String last = tcg.getLastResultNameToString();
-      g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
+    TacGenerator tcg = new TacGenerator(expr);
+    String res = tcg.txt1(";\n");
+    g("// " + localVariable.toString());
+    g(res);
+    String last = tcg.getLastResultNameToString();
+    g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
 
-//    }
+    //    }
   }
 
 }

@@ -11,10 +11,14 @@ public class Call {
   private final Ident function;
   private final List<Var> args;
 
-  public Call(Type type, Ident function, List<Var> args) {
+  /// for rewriting
+  private final boolean isConstructor;
+
+  public Call(Type type, Ident function, List<Var> args, boolean isConstructor) {
     this.type = type;
     this.function = function;
     this.args = args;
+    this.isConstructor = isConstructor;
   }
 
   public Type getType() {
@@ -27,6 +31,10 @@ public class Call {
 
   public List<Var> getArgs() {
     return args;
+  }
+
+  public boolean isConstructor() {
+    return isConstructor;
   }
 
   private String argsToString() {

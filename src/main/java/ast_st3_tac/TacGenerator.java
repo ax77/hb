@@ -40,6 +40,7 @@ import ast_st3_tac.vars.StoreLeaf;
 import ast_st3_tac.vars.TempVarAssign;
 import ast_st3_tac.vars.arith.Binop;
 import ast_st3_tac.vars.arith.Unop;
+import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.ELvalue;
 import ast_st3_tac.vars.store.ERvalue;
@@ -58,34 +59,85 @@ import utils_oth.NullChecker;
 
 public class TacGenerator {
 
-  private Code codeTmp = new Code();
-  private Code codeOut = new Code();
+  /// temporary expansion-stack
+  private final Code temproraries;
 
-  public TacGenerator() {
-    codeTmp = new Code();
-    codeOut = new Code();
+  /// the 'raw' result
+  private final Code rawResult;
+
+  /// the result after rewriting
+  private final Code rewrittenResult;
+
+  /// 
+  private Var lastResultVar;
+
+  public TacGenerator(ExprExpression expr) {
+    temproraries = new Code();
+    rawResult = new Code();
+    rewrittenResult = new Code();
+
+    gen(expr);
+    rewrite();
+  }
+
+  private void rewrite() {
+    for (CodeItem item : rawResult.getItems()) {
+      if (!item.isVarAssign()) {
+        rewrittenResult.appendItemLast(item);
+        continue;
+      }
+
+      final TempVarAssign assign = item.getVarAssign();
+      final Var lvalue = assign.getVar();
+      final ERvalue rvalue = assign.getRvalue();
+
+      if (!rvalue.isCall()) {
+        rewrittenResult.appendItemLast(item);
+        continue;
+      }
+
+      Call fcall = assign.getRvalue().getCall();
+      if (!fcall.isConstructor()) {
+        rewrittenResult.appendItemLast(item);
+        continue;
+      }
+
+      // strtemp __t1 = strtemp_init_0(__t0)
+      // ::
+      // 1) strtemp __t1 = new strtemp()
+      // 2) strtemp_init_0(__t1, __t0)
+      AllocObject allocObject = new AllocObject(lvalue.getType());
+      TempVarAssign newTempVarAssign = new TempVarAssign(lvalue, new ERvalue(allocObject));
+      rewrittenResult.appendItemLast(new CodeItem(newTempVarAssign));
+
+      fcall.getArgs().add(0, lvalue);
+      rewrittenResult.appendItemLast(new CodeItem(fcall));
+      lastResultVar = lvalue;
+    }
   }
 
   /// if (result_name)
   /// return (result_name)
   public String getLastResultNameToString() {
-    final CodeItem last = codeOut.getItems().get(codeOut.getItems().size() - 1);
-    final Var var = last.getVarAssign().getVar();
-    return var.getName().toString();
+    if (lastResultVar != null) {
+      return lastResultVar.getName().toString();
+    }
+    return rewrittenResult.getItems().get(rewrittenResult.getItems().size() - 1).getVarAssign().getVar().getName()
+        .getName();
   }
 
-  private void outCode(CodeItem item) {
-    codeTmp.pushItem(item);
-    codeOut.appendItemLast(item);
+  private void genRaw(CodeItem item) {
+    temproraries.pushItem(item);
+    rawResult.appendItemLast(item);
   }
 
   private CodeItem popCode() {
-    return codeTmp.popItem();
+    return temproraries.popItem();
   }
 
   public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
-    for (CodeItem item : codeOut.getItems()) {
+    for (CodeItem item : rewrittenResult.getItems()) {
       sb.append(item.toString().trim() + end);
     }
     return sb.toString().trim();
@@ -125,14 +177,14 @@ public class TacGenerator {
         final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getVar());
 
         final StoreLeaf storeOp = new StoreLeaf(lvalueE, new ERvalue(srcVarAssign.getVar()));
-        outCode(new CodeItem(storeOp));
+        genRaw(new CodeItem(storeOp));
       }
 
       else if (dstVarAssign.getRvalue().isFieldAccess()) {
         final ELvalue lvalueE = new ELvalue(dstVarAssign.getRvalue().getFieldAccess());
 
         final StoreLeaf storeOp = new StoreLeaf(lvalueE, new ERvalue(srcVarAssign.getVar()));
-        outCode(new CodeItem(storeOp));
+        genRaw(new CodeItem(storeOp));
       }
 
       else {
@@ -145,7 +197,7 @@ public class TacGenerator {
 
   }
 
-  public void gen(ExprExpression e) {
+  private void gen(ExprExpression e) {
     NullChecker.check(e);
     ExpressionBase base = e.getBase();
 
@@ -186,7 +238,7 @@ public class TacGenerator {
         final TempVarAssign tempVarAssign = new TempVarAssign(CopierNamer.copyVarAddNewName(lvarRes),
             new ERvalue(binop));
 
-        outCode(new CodeItem(tempVarAssign));
+        genRaw(new CodeItem(tempVarAssign));
 
       } else {
         throw new AstParseException("unimpl...");
@@ -210,7 +262,7 @@ public class TacGenerator {
         final TempVarAssign tempVarAssign = new TempVarAssign(CopierNamer.copyVarAddNewName(lvarRes),
             new ERvalue(unop));
 
-        outCode(new CodeItem(tempVarAssign));
+        genRaw(new CodeItem(tempVarAssign));
 
       } else {
         throw new AstParseException("unimpl...");
@@ -244,7 +296,7 @@ public class TacGenerator {
       final Var lvalueTmp = CopierNamer.copyVarDeclAddNewName(var);
       final ERvalue rvalueTmp = new ERvalue(CopierNamer.copyVarDecl(var));
       final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
-      outCode(new CodeItem(tempVarAssign));
+      genRaw(new CodeItem(tempVarAssign));
 
     }
 
@@ -257,7 +309,7 @@ public class TacGenerator {
       final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), number.getType(), CopierNamer.tmpIdent());
       final ERvalue rhsValue = new ERvalue(number);
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, rhsValue));
-      outCode(item);
+      genRaw(item);
     }
 
     else if (base == EPRIMARY_NULL_LITERAL) {
@@ -277,14 +329,15 @@ public class TacGenerator {
       final CodeItem obj = popCode();
       args.add(0, obj.getVarAssign().getVar());
 
-      final Call call = new Call(method.getType(), Hash_ident.getHashedIdent(CopierNamer.getMethodName(method)), args);
+      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(method));
+      final Call call = new Call(method.getType(), fn, args, false);
       if (method.isVoid()) {
         CodeItem item = new CodeItem(call);
-        outCode(item);
+        genRaw(item);
       } else {
         CodeItem item = new CodeItem(new TempVarAssign(
             new Var(VarBase.LOCAL_VAR, new Modifiers(), method.getType(), CopierNamer.tmpIdent()), new ERvalue(call)));
-        outCode(item);
+        genRaw(item);
       }
 
     }
@@ -301,7 +354,7 @@ public class TacGenerator {
         final FieldAccess access = new FieldAccess(thisItem.getVarAssign().getVar(), CopierNamer.copyVarDecl(variable));
         final Var lhsvar = CopierNamer.copyVarDeclAddNewName(variable);
         final CodeItem item = new CodeItem(new TempVarAssign(lhsvar, new ERvalue(access)));
-        outCode(item);
+        genRaw(item);
 
       } else {
         throw new AstParseException("unimpl...");
@@ -323,12 +376,12 @@ public class TacGenerator {
 
       final List<Var> args = genArgsVars(arguments);
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-      final Call call = new Call(typename, fn, args);
+      final Call call = new Call(constructor.getType(), fn, args, true);
       final Var lvalue = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
       final ERvalue rvalue = new ERvalue(call);
       final TempVarAssign varAssign = new TempVarAssign(lvalue, rvalue);
       final CodeItem item = new CodeItem(varAssign);
-      outCode(item);
+      genRaw(item);
 
     }
 
@@ -342,7 +395,7 @@ public class TacGenerator {
       final Var lhsVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), classType, CopierNamer.tmpIdent());
       final Var rhsVar = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), classType, CopierNamer._this_());
       final CodeItem item = new CodeItem(new TempVarAssign(lhsVar, new ERvalue(rhsVar)));
-      outCode(item);
+      genRaw(item);
     }
 
     else {

@@ -35,15 +35,18 @@ public abstract class VarPrinters {
   }
 
   public static String bindedVarsComment(List<VarDeclarator> variables) {
-    StringBuilder sb = new StringBuilder();
-
-    if (!variables.isEmpty()) {
-      sb.append(" // vars: [");
-      sb.append(VarPrinters.varsTos(variables));
-      sb.append("]");
-    }
-
-    return sb.toString();
+    
+    return "";
+    
+    /// StringBuilder sb = new StringBuilder();
+    /// 
+    /// if (!variables.isEmpty()) {
+    ///   sb.append(" // vars: [");
+    ///   sb.append(VarPrinters.varsTos(variables));
+    ///   sb.append("]");
+    /// }
+    /// 
+    /// return sb.toString();
   }
 
   private static String varBaseSimple(VarDeclarator var) {
