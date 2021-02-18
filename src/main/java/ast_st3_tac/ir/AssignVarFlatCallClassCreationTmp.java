@@ -4,9 +4,9 @@ import ast_st3_tac.vars.store.Var;
 
 public class AssignVarFlatCallClassCreationTmp {
   private final Var lvalue;
-  private final FlatCallClassCreationTmp rvalue;
+  private final FlatCallResult rvalue;
 
-  public AssignVarFlatCallClassCreationTmp(Var lvalue, FlatCallClassCreationTmp rvalue) {
+  public AssignVarFlatCallClassCreationTmp(Var lvalue, FlatCallResult rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
   }
@@ -15,7 +15,7 @@ public class AssignVarFlatCallClassCreationTmp {
     return lvalue;
   }
 
-  public FlatCallClassCreationTmp getRvalue() {
+  public FlatCallResult getRvalue() {
     return rvalue;
   }
 

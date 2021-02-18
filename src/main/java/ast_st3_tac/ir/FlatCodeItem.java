@@ -17,7 +17,6 @@ public class FlatCodeItem {
   private AssignVarTrue assignVarTrue;
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
-  private FlatCallClassCreationTmp flatCallClassCreationTmp;
   private FlatCallConstructor flatCallConstructor;
   private FlatCallResult flatCallResult;
   private FlatCallVoid flatCallVoid;
@@ -41,9 +40,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarTrue assignVarTrue) { this.opcode = Opc.AssignVarTrue; this.assignVarTrue = assignVarTrue; }
   public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
-  public FlatCodeItem(FlatCallClassCreationTmp flatCallClassCreationTmp) { this.opcode = Opc.FlatCallClassCreationTmp; this.flatCallClassCreationTmp = flatCallClassCreationTmp; }
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
-  public FlatCodeItem(FlatCallResult flatCallResult) { this.opcode = Opc.FlatCallResult; this.flatCallResult = flatCallResult; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
   public FlatCodeItem(StoreArrayAssignOpCall storeArrayAssignOpCall) { this.opcode = Opc.StoreArrayAssignOpCall; this.storeArrayAssignOpCall = storeArrayAssignOpCall; }
   public FlatCodeItem(StoreArrayVar storeArrayVar) { this.opcode = Opc.StoreArrayVar; this.storeArrayVar = storeArrayVar; }
@@ -65,9 +62,7 @@ public class FlatCodeItem {
   public boolean isAssignVarTrue() { return this.opcode == Opc.AssignVarTrue; }
   public boolean isAssignVarUnop() { return this.opcode == Opc.AssignVarUnop; }
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
-  public boolean isFlatCallClassCreationTmp() { return this.opcode == Opc.FlatCallClassCreationTmp; }
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
-  public boolean isFlatCallResult() { return this.opcode == Opc.FlatCallResult; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isStoreArrayAssignOpCall() { return this.opcode == Opc.StoreArrayAssignOpCall; }
   public boolean isStoreArrayVar() { return this.opcode == Opc.StoreArrayVar; }
@@ -91,9 +86,7 @@ public class FlatCodeItem {
     else if(isAssignVarTrue()) { return assignVarTrue.toString(); }
     else if(isAssignVarUnop()) { return assignVarUnop.toString(); }
     else if(isAssignVarVar()) { return assignVarVar.toString(); }
-    else if(isFlatCallClassCreationTmp()) { return flatCallClassCreationTmp.toString(); }
     else if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
-    else if(isFlatCallResult()) { return flatCallResult.toString(); }
     else if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     else if(isStoreArrayAssignOpCall()) { return storeArrayAssignOpCall.toString(); }
     else if(isStoreArrayVar()) { return storeArrayVar.toString(); }
@@ -159,10 +152,6 @@ public class FlatCodeItem {
 
   public AssignVarVar getAssignVarVar() {
     return assignVarVar;
-  }
-
-  public FlatCallClassCreationTmp getFlatCallClassCreationTmp() {
-    return flatCallClassCreationTmp;
   }
 
   public FlatCallConstructor getFlatCallConstructor() {

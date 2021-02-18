@@ -28,19 +28,28 @@ import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.LvalueUtil;
 import ast_st2_annotate.Mods;
+import ast_st3_tac.ir.AssignVarAllocObject;
+import ast_st3_tac.ir.AssignVarArrayAccess;
 import ast_st3_tac.ir.AssignVarBinop;
+import ast_st3_tac.ir.AssignVarFalse;
 import ast_st3_tac.ir.AssignVarFieldAccess;
 import ast_st3_tac.ir.AssignVarFlatCallClassCreationTmp;
 import ast_st3_tac.ir.AssignVarFlatCallResult;
+import ast_st3_tac.ir.AssignVarNull;
 import ast_st3_tac.ir.AssignVarNum;
+import ast_st3_tac.ir.AssignVarString;
+import ast_st3_tac.ir.AssignVarTrue;
 import ast_st3_tac.ir.AssignVarUnop;
 import ast_st3_tac.ir.AssignVarVar;
-import ast_st3_tac.ir.FlatCallClassCreationTmp;
+import ast_st3_tac.ir.FlatCallConstructor;
 import ast_st3_tac.ir.FlatCallResult;
 import ast_st3_tac.ir.FlatCallVoid;
 import ast_st3_tac.ir.FlatCodeItem;
-import ast_st3_tac.ir.Opc;
+import ast_st3_tac.ir.StoreArrayAssignOpCall;
+import ast_st3_tac.ir.StoreArrayVar;
+import ast_st3_tac.ir.StoreFieldAssignOpCall;
 import ast_st3_tac.ir.StoreFieldVar;
+import ast_st3_tac.ir.StoreVarAssignOpCall;
 import ast_st3_tac.ir.StoreVarVar;
 import ast_st3_tac.vars.CopierNamer;
 import ast_st3_tac.vars.arith.Binop;
@@ -62,12 +71,85 @@ public class TacGenerator {
 
   private final List<FlatCodeItem> temproraries;
   private final List<FlatCodeItem> rawResult;
+  private final List<FlatCodeItem> rv;
 
   public TacGenerator(ExprExpression expr) {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
+    this.rv = new ArrayList<>();
 
     gen(expr);
+    rewriteRaw();
+  }
+
+  private void rewriteRaw() {
+
+    for (final FlatCodeItem item : rawResult) {
+
+      if (item.isAssignVarAllocObject()) {
+        rv.add(item);
+      } else if (item.isAssignVarArrayAccess()) {
+        rv.add(item);
+      } else if (item.isAssignVarBinop()) {
+        rv.add(item);
+      } else if (item.isAssignVarFalse()) {
+        rv.add(item);
+      } else if (item.isAssignVarFieldAccess()) {
+        rv.add(item);
+      } else if (item.isAssignVarFlatCallClassCreationTmp()) {
+
+        // strtemp __t15 = strtemp_init_0(__t14)
+        // ::
+        // strtemp __t15 = null
+        // strtemp_init_0(__t15, __t14)
+
+        final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
+        final Var lvalueVar = node.getLvalue();
+        AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
+        rv.add(new FlatCodeItem(assignVarNull));
+
+        final FlatCallResult rvalue = node.getRvalue();
+        final List<Var> args = rvalue.getArgs();
+        args.add(0, lvalueVar);
+        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFunction(), args, lvalueVar);
+        rv.add(new FlatCodeItem(flatCallConstructor));
+
+      } else if (item.isAssignVarFlatCallResult()) {
+        rv.add(item);
+      } else if (item.isAssignVarNull()) {
+        rv.add(item);
+      } else if (item.isAssignVarNum()) {
+        rv.add(item);
+      } else if (item.isAssignVarString()) {
+        rv.add(item);
+      } else if (item.isAssignVarTrue()) {
+        rv.add(item);
+      } else if (item.isAssignVarUnop()) {
+        rv.add(item);
+      } else if (item.isAssignVarVar()) {
+        rv.add(item);
+      } else if (item.isFlatCallConstructor()) {
+        rv.add(item);
+      } else if (item.isFlatCallVoid()) {
+        rv.add(item);
+      } else if (item.isStoreArrayAssignOpCall()) {
+        rv.add(item);
+      } else if (item.isStoreArrayVar()) {
+        rv.add(item);
+      } else if (item.isStoreFieldAssignOpCall()) {
+        rv.add(item);
+      } else if (item.isStoreFieldVar()) {
+        rv.add(item);
+      } else if (item.isStoreVarAssignOpCall()) {
+        rv.add(item);
+      } else if (item.isStoreVarVar()) {
+        rv.add(item);
+      } else {
+        throw new AstParseException("unknown item: " + item.toString());
+      }
+
+    }
+
   }
 
   private void genRaw(FlatCodeItem item) {
@@ -81,7 +163,7 @@ public class TacGenerator {
 
   public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
-    for (FlatCodeItem item : rawResult) {
+    for (FlatCodeItem item : rv) {
       sb.append(item.toString().trim() + end);
     }
     return sb.toString().trim();
@@ -103,26 +185,121 @@ public class TacGenerator {
   }
 
   private Var getDest(FlatCodeItem item) {
-    if (item.isAssignVarBinop()) {
-      return item.getAssignVarBinop().getLvalue();
-    } else if (item.isAssignVarFieldAccess()) {
-      return item.getAssignVarFieldAccess().getLvalue();
-    } else if (item.isAssignVarFlatCallResult()) {
-      return item.getAssignVarFlatCallResult().getLvalue();
-    } else if (item.isAssignVarNull()) {
-      return item.getAssignVarNull().getLvalue();
-    } else if (item.isAssignVarNum()) {
-      return item.getAssignVarNum().getLvalue();
-    } else if (item.isAssignVarUnop()) {
-      return item.getAssignVarUnop().getLvalue();
-    } else if (item.isAssignVarVar()) {
-      return item.getAssignVarVar().getLvalue();
-    } else if (item.isFlatCallConstructor()) {
-      return item.getFlatCallConstructor().getThisVar();
-    } else if (item.getOpcode().equals(Opc.AssignVarFlatCallClassCreationTmp)) {
-      return item.getAssignVarFlatCallClassCreationTmp().getLvalue();
+
+    if (item.isAssignVarAllocObject()) {
+      AssignVarAllocObject node = item.getAssignVarAllocObject();
+      return node.getLvalue();
     }
-    throw new AstParseException(item.toString() + " ???");
+
+    else if (item.isAssignVarArrayAccess()) {
+      AssignVarArrayAccess node = item.getAssignVarArrayAccess();
+      err(item);
+    }
+
+    else if (item.isAssignVarBinop()) {
+      AssignVarBinop node = item.getAssignVarBinop();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarFalse()) {
+      AssignVarFalse node = item.getAssignVarFalse();
+      err(item);
+    }
+
+    else if (item.isAssignVarFieldAccess()) {
+      AssignVarFieldAccess node = item.getAssignVarFieldAccess();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarFlatCallClassCreationTmp()) {
+      AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarFlatCallResult()) {
+      AssignVarFlatCallResult node = item.getAssignVarFlatCallResult();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarNull()) {
+      AssignVarNull node = item.getAssignVarNull();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarNum()) {
+      AssignVarNum node = item.getAssignVarNum();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarString()) {
+      AssignVarString node = item.getAssignVarString();
+      err(item);
+    }
+
+    else if (item.isAssignVarTrue()) {
+      AssignVarTrue node = item.getAssignVarTrue();
+      err(item);
+    }
+
+    else if (item.isAssignVarUnop()) {
+      AssignVarUnop node = item.getAssignVarUnop();
+      return node.getLvalue();
+    }
+
+    else if (item.isAssignVarVar()) {
+      AssignVarVar node = item.getAssignVarVar();
+      return node.getLvalue();
+    }
+
+    else if (item.isFlatCallConstructor()) {
+      FlatCallConstructor node = item.getFlatCallConstructor();
+      return node.getThisVar();
+    }
+
+    else if (item.isFlatCallVoid()) {
+      FlatCallVoid node = item.getFlatCallVoid();
+      err(item);
+    }
+
+    else if (item.isStoreArrayAssignOpCall()) {
+      StoreArrayAssignOpCall node = item.getStoreArrayAssignOpCall();
+      err(item);
+    }
+
+    else if (item.isStoreArrayVar()) {
+      StoreArrayVar node = item.getStoreArrayVar();
+      err(item);
+    }
+
+    else if (item.isStoreFieldAssignOpCall()) {
+      StoreFieldAssignOpCall node = item.getStoreFieldAssignOpCall();
+      err(item);
+    }
+
+    else if (item.isStoreFieldVar()) {
+      StoreFieldVar node = item.getStoreFieldVar();
+      err(item);
+    }
+
+    else if (item.isStoreVarAssignOpCall()) {
+      StoreVarAssignOpCall node = item.getStoreVarAssignOpCall();
+      err(item);
+    }
+
+    else if (item.isStoreVarVar()) {
+      StoreVarVar node = item.getStoreVarVar();
+      err(item);
+    }
+
+    else {
+      throw new AstParseException("unknown item for result: " + item.toString());
+    }
+
+    throw new AstParseException("unknown item for result: " + item.toString());
+  }
+
+  private void err(FlatCodeItem item) {
+    throw new AstParseException("unexpected item for result: " + item.toString());
   }
 
   private void store(Type resultType) {
@@ -315,7 +492,7 @@ public class TacGenerator {
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-      final FlatCallClassCreationTmp call = new FlatCallClassCreationTmp(constructor.getType(), fn, args);
+      final FlatCallResult call = new FlatCallResult(constructor.getType(), fn, args);
       final Var lvalue = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);

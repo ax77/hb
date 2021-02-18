@@ -23,9 +23,7 @@ public enum Opc {
   , StoreVarVar                        // a = b
                                        //
   , FlatCallVoid                       // f(a, t1, t2) -> void
-  , FlatCallResult                     // f(a, t1, t2) -> type
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
                                        //
   , AssignVarFlatCallClassCreationTmp  // temporary
-  , FlatCallClassCreationTmp           // temporary
 }

@@ -19,4 +19,9 @@ public class AssignVarNull {
     return nullLiteral;
   }
 
+  @Override
+  public String toString() {
+    return lvalue.typeNameToString() + " = null;";
+  }
+
 }
