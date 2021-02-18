@@ -545,9 +545,7 @@ public class ParseExpression {
     }
 
     if (parser.is(Keywords.null_ident)) {
-      Token saved = parser.moveget();
-      ExprExpression nullexpr = new ExprExpression(ExpressionBase.EPRIMARY_NULL_LITERAL, saved);
-      return nullexpr;
+      parser.perror("`null` is deprecated by design, see docs.");
     }
 
     // simple name

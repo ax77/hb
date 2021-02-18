@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
-import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_printers.GenericListPrinter;
@@ -207,18 +206,12 @@ public class UnitToText {
   private void genVar(VarDeclarator localVariable) {
 
     final ExprExpression expr = localVariable.getSimpleInitializer();
-    if (expr.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
-      g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = null;");
-    }
-
-    else {
-      TacGenerator tcg = new TacGenerator(expr);
-      String res = tcg.txt1(";\n");
-      g("// " + localVariable.toString());
-      g(res);
-      String last = tcg.getLastResultNameToString();
-      g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
-    }
+    TacGenerator tcg = new TacGenerator(expr);
+    String res = tcg.txt1(";\n");
+    g("// " + localVariable.toString());
+    g(res);
+    String last = tcg.getLastResultNameToString();
+    g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
 
   }
 

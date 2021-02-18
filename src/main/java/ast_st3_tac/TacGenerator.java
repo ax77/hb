@@ -7,7 +7,6 @@ import static ast_expr.ExpressionBase.ECLASS_INSTANCE_CREATION;
 import static ast_expr.ExpressionBase.EFIELD_ACCESS;
 import static ast_expr.ExpressionBase.EMETHOD_INVOCATION;
 import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
-import static ast_expr.ExpressionBase.EPRIMARY_NULL_LITERAL;
 import static ast_expr.ExpressionBase.EPRIMARY_NUMBER;
 import static ast_expr.ExpressionBase.EPRIMARY_STRING;
 import static ast_expr.ExpressionBase.ETHIS;
@@ -42,7 +41,6 @@ import ast_st3_tac.vars.arith.Unop;
 import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.FieldAccess;
-import ast_st3_tac.vars.store.Literal;
 import ast_st3_tac.vars.store.Lvalue;
 import ast_st3_tac.vars.store.Rvalue;
 import ast_st3_tac.vars.store.Var;
@@ -327,10 +325,6 @@ public class TacGenerator {
       genRaw(item);
     }
 
-    else if (base == EPRIMARY_NULL_LITERAL) {
-      throw new RuntimeException(base.toString() + " ???");
-    }
-
     else if (base == ECAST) {
       throw new RuntimeException(base.toString() + " ???");
     }
@@ -416,10 +410,9 @@ public class TacGenerator {
     }
 
     else if (base == ExpressionBase.EBOOLEAN_LITERAL) {
-      Literal lit = new Literal(e.getBooleanLiteral());
       final Var lvalueTmp = new Var(VarBase.LOCAL_VAR, new Modifiers(), TypeBindings.make_boolean(e.getBeginPos()),
           CopierNamer.tmpIdent());
-      final Rvalue rvalueTmp = new Rvalue(lit);
+      final Rvalue rvalueTmp = new Rvalue(e.getBooleanLiteral());
       final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
       genRaw(new CodeItem(tempVarAssign));
     }

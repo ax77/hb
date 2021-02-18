@@ -233,7 +233,7 @@ public class ParseStatement {
     ExprExpression init = null;
     ExprExpression test = null;
     ExprExpression step = null;
-    StmtStatement loop = null;
+    StmtBlock loop = null;
 
     Token from = parser.checkedMove(for_ident);
     parser.lparen();
@@ -262,7 +262,7 @@ public class ParseStatement {
     parser.rparen();
 
     checkSemicolonAndLbrace();
-    loop = parseStatement();
+    loop = parseBlock(VarBase.LOCAL_VAR);
 
     return new StmtStatement(new StmtFor(decl, init, test, step, loop), from);
   }

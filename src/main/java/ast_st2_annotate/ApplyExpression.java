@@ -60,8 +60,6 @@ public class ApplyExpression {
       applySelfLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
       applyNumericLiteral(e);
-    } else if (e.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
-      applyNullLiteral(object, e);
     } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
       applyClassInstanceCreation(object, e);
     } else if (e.is(ExpressionBase.ESTRING_CONST)) {
@@ -77,10 +75,6 @@ public class ApplyExpression {
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
-
-  }
-
-  private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {
 
   }
 
@@ -145,26 +139,20 @@ public class ApplyExpression {
   }
 
   private void applyAssign(final ClassDeclaration object, final ExprExpression e) {
-    ExprAssign node = e.getAssign();
+    final ExprAssign node = e.getAssign();
 
     final ExprExpression lvalue = node.getLvalue();
-    LvalueUtil.checkHard(lvalue);
-
     final ExprExpression rvalue = node.getRvalue();
 
     applyExpression(object, lvalue);
     applyExpression(object, rvalue);
 
-    final Type lhsType = node.getLvalue().getResultType();
-    if (rvalue.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
-      // TODO:
-    }
+    LvalueUtil.checkHard(lvalue);
 
-    else {
-      final Type rhsType = node.getRvalue().getResultType();
-      if (!lhsType.is_equal_to(rhsType)) {
-        ErrorLocation.errorExpression("types are different for assign", e);
-      }
+    final Type lhsType = node.getLvalue().getResultType();
+    final Type rhsType = node.getRvalue().getResultType();
+    if (!lhsType.is_equal_to(rhsType)) {
+      ErrorLocation.errorExpression("types are different for assign", e);
     }
 
     e.setResultType(lhsType);

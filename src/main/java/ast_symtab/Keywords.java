@@ -39,7 +39,7 @@ public final class Keywords {
   public static final Ident static_ident         = g("static");
   public static final Ident while_ident          = g("while");
   // literals
-  public static final Ident null_ident           = g("null");
+  public static final Ident null_ident           = g("null"); /// deprecated, it will be the error in a parse stage
   public static final Ident true_ident           = g("true");
   public static final Ident false_ident          = g("false");
   public static final Ident this_ident           = g("this");

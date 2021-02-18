@@ -32,7 +32,7 @@ public class Rvalue {
   private Binop binop;
   private Unop unop;
   private AllocObject allocObject;
-  private Literal literal;
+  private Boolean boolLiteral;
 
   //@formatter:off
   public Rvalue(Var e) { NullChecker.check(e); this.var = e; }
@@ -44,7 +44,7 @@ public class Rvalue {
   public Rvalue(Binop e) { NullChecker.check(e); this.binop = e; }
   public Rvalue(Unop e) { NullChecker.check(e); this.unop = e; }
   public Rvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
-  public Rvalue(Literal e) { NullChecker.check(e); this.literal = e; }
+  public Rvalue(Boolean e) { NullChecker.check(e); this.boolLiteral = e; }
   
   public boolean isVar() { return var != null; }
   public boolean isNum() { return num != null; }
@@ -55,7 +55,7 @@ public class Rvalue {
   public boolean isBinop() { return binop != null; }
   public boolean isUnop() { return unop != null; }
   public boolean isAllocObject() { return allocObject != null; }
-  public boolean isLiteral() { return literal != null; }
+  public boolean isBoolLiteral() { return boolLiteral != null; }
   
   @Override
   public String toString() {
@@ -69,7 +69,7 @@ public class Rvalue {
     if (isBinop()) { return binop.toString(); }
     if (isUnop()) { return unop.toString(); }
     if (isAllocObject()) { return allocObject.toString(); }
-    if(isLiteral()) { return literal.toString(); }
+    if (isBoolLiteral()) { return boolLiteral.toString(); }
     
     return "???Rvalue";
   }
@@ -112,8 +112,8 @@ public class Rvalue {
     return allocObject;
   }
 
-  public Literal getLiteral() {
-    return literal;
+  public Boolean getBoolLiteral() {
+    return boolLiteral;
   }
 
 }

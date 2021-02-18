@@ -58,17 +58,13 @@ public class ApplyStatement {
 
   private void visitVor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
 
-    if (stmtFor.getLoop() == null || stmtFor.getLoop().getBase() != StatementBase.SBLOCK) {
-      throw new AstParseException("for-loop without the block");
-    }
-
-    symtabApplier.openBlockScope("block", stmtFor.getLoop().getBlockStmt());
+    symtabApplier.openBlockScope("block");
     visitLocalVar(object, stmtFor.getDecl());
 
     applyExpression(object, stmtFor.getInit());
     applyExpression(object, stmtFor.getTest());
     applyExpression(object, stmtFor.getStep());
-    applyStatement(object, method, stmtFor.getLoop());
+    visitBlock(object, method, stmtFor.getBlock());
 
     symtabApplier.closeBlockScope();
   }
@@ -95,13 +91,13 @@ public class ApplyStatement {
     throw new AstParseException("unimpl. foreach loop");
   }
 
-  private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock body) {
+  private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock block) {
 
-    symtabApplier.openBlockScope("block", body);
+    symtabApplier.openBlockScope("block");
 
-    for (StmtBlockItem block : body.getBlockItems()) {
-      visitLocalVar(object, block.getLocalVariable());
-      applyStatement(object, method, block.getStatement());
+    for (StmtBlockItem item : block.getBlockItems()) {
+      visitLocalVar(object, item.getLocalVariable());
+      applyStatement(object, method, item.getStatement());
     }
 
     symtabApplier.closeBlockScope();

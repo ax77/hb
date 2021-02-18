@@ -2,7 +2,6 @@ package ast_st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_stmt.StmtBlock;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarDeclarator;
@@ -58,7 +57,7 @@ public class SymbolTable {
     this.variablesMethod.popscope();
   }
 
-  public void openBlockScope(String name, StmtBlock block) {
+  public void openBlockScope(String name) {
     this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, name);
   }
 
