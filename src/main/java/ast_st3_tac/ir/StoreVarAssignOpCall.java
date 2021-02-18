@@ -11,4 +11,17 @@ public class StoreVarAssignOpCall {
     this.opAssign = opAssign;
   }
 
+  public Var getDst() {
+    return dst;
+  }
+
+  public AuxCallAssignOpArgVar getOpAssign() {
+    return opAssign;
+  }
+
+  @Override
+  public String toString() {
+    return dst.toString() + " = " + opAssign.toString();
+  }
+
 }

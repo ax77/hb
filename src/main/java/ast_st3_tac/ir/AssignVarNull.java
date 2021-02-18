@@ -21,7 +21,7 @@ public class AssignVarNull {
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = null;";
+    return lvalue.typeNameToString() + " = null";
   }
 
 }

@@ -20,4 +20,9 @@ public class AuxCallAssignOpArgVar {
     this.rvalueArg = rvalueArg;
   }
 
+  @Override
+  public String toString() {
+    return function.toString() + "(" + lvalueArg.toString() + ", " + rvalueArg + ")";
+  }
+
 }

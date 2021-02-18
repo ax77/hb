@@ -14,6 +14,7 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -41,6 +42,7 @@ import ast_st3_tac.ir.AssignVarString;
 import ast_st3_tac.ir.AssignVarTrue;
 import ast_st3_tac.ir.AssignVarUnop;
 import ast_st3_tac.ir.AssignVarVar;
+import ast_st3_tac.ir.AuxCallAssignOpArgVar;
 import ast_st3_tac.ir.FlatCallConstructor;
 import ast_st3_tac.ir.FlatCallResult;
 import ast_st3_tac.ir.FlatCallVoid;
@@ -72,11 +74,13 @@ public class TacGenerator {
   private final List<FlatCodeItem> temproraries;
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
+  private final String exprTos;
 
   public TacGenerator(ExprExpression expr) {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
+    this.exprTos = expr.toString();
 
     gen(expr);
     rewriteRaw();
@@ -100,13 +104,13 @@ public class TacGenerator {
 
         // strtemp __t15 = strtemp_init_0(__t14)
         // ::
-        // strtemp __t15 = null
+        // strtemp __t15 = new strtemp()
         // strtemp_init_0(__t15, __t14)
 
         final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
         final Var lvalueVar = node.getLvalue();
-        AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
-        rv.add(new FlatCodeItem(assignVarNull));
+        AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
+        rv.add(new FlatCodeItem(assignVarAllocObject));
 
         final FlatCallResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
@@ -126,9 +130,27 @@ public class TacGenerator {
         rv.add(item);
       } else if (item.isAssignVarUnop()) {
         rv.add(item);
-      } else if (item.isAssignVarVar()) {
-        rv.add(item);
-      } else if (item.isFlatCallConstructor()) {
+      }
+
+      else if (item.isAssignVarVar()) {
+        AssignVarVar node = item.getAssignVarVar();
+        final Var lvalueVar = node.getLvalue();
+
+        if (lvalueVar.getType().is_class()) {
+          // token __t14 = tok1;
+          // ::
+          // token __t14 = null
+          // __t14 = opAssign(__t14, tok1)
+          genOpAssign(lvalueVar, node.getRvalue());
+        }
+
+        else {
+          rv.add(item);
+        }
+
+      }
+
+      else if (item.isFlatCallConstructor()) {
         rv.add(item);
       } else if (item.isFlatCallVoid()) {
         rv.add(item);
@@ -142,14 +164,46 @@ public class TacGenerator {
         rv.add(item);
       } else if (item.isStoreVarAssignOpCall()) {
         rv.add(item);
-      } else if (item.isStoreVarVar()) {
-        rv.add(item);
-      } else {
+      }
+
+      else if (item.isStoreVarVar()) {
+
+        final StoreVarVar node = item.getStoreVarVar();
+        final Var lvalueVar = node.getDst();
+        if (lvalueVar.getType().is_class()) {
+
+          // tok1 = __t17;
+          // ::
+          // tok1 = null;
+          // tok1 = opAssign(tok1, __t17);
+          genOpAssign(lvalueVar, node.getSrc());
+        }
+
+        else {
+          rv.add(item);
+        }
+
+      }
+
+      else {
         throw new AstParseException("unknown item: " + item.toString());
       }
 
     }
 
+  }
+
+  private void genOpAssign(Var lvalueVar, Var rvalueVar) {
+    AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
+    rv.add(new FlatCodeItem(assignVarNull));
+
+    ClassMethodDeclaration opAssign = lvalueVar.getType().getClassTypeFromRef()
+        .getPredefinedMethod(BuiltinNames.opAssign_ident);
+
+    Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
+    AuxCallAssignOpArgVar aux = new AuxCallAssignOpArgVar(lvalueVar.getType(), fn, lvalueVar, rvalueVar);
+    StoreVarAssignOpCall store = new StoreVarAssignOpCall(lvalueVar, aux);
+    rv.add(new FlatCodeItem(store));
   }
 
   private void genRaw(FlatCodeItem item) {
@@ -163,8 +217,10 @@ public class TacGenerator {
 
   public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
+    sb.append("// " + exprTos + "\n");
     for (FlatCodeItem item : rv) {
-      sb.append(item.toString().trim() + end);
+      String f = String.format("%-23s :: %s", item.getOpcode().toString(), item.toString().trim() + end);
+      sb.append(f);
     }
     return sb.toString().trim();
   }
@@ -283,7 +339,7 @@ public class TacGenerator {
 
     else if (item.isStoreVarAssignOpCall()) {
       StoreVarAssignOpCall node = item.getStoreVarAssignOpCall();
-      err(item);
+      return node.getDst();
     }
 
     else if (item.isStoreVarVar()) {
@@ -334,6 +390,8 @@ public class TacGenerator {
     else {
       throw new AstParseException("unimplimented store for dst: " + dstItem.toString());
     }
+
+    rawResult.remove(dstItem);
 
   }
 

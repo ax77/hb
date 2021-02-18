@@ -1,28 +1,28 @@
 package ast_st3_tac.ir;
 
-import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Var;
+import ast_types.Type;
 
 public class AssignVarAllocObject {
   private final Var lvalue;
-  private final AllocObject rvalue;
+  private final Type typename;
 
-  public AssignVarAllocObject(Var lvalue, AllocObject rvalue) {
+  public AssignVarAllocObject(Var lvalue, Type typename) {
     this.lvalue = lvalue;
-    this.rvalue = rvalue;
+    this.typename = typename;
   }
 
   public Var getLvalue() {
     return lvalue;
   }
 
-  public AllocObject getRvalue() {
-    return rvalue;
+  public Type getTypename() {
+    return typename;
   }
 
   @Override
   public String toString() {
-    return lvalue.toString() + " = " + rvalue.toString();
+    return lvalue.typeNameToString() + " = new " + typename.getClassTypeFromRef().getIdentifier().toString() + "()";
   }
 
 }
