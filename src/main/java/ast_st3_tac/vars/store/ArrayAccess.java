@@ -2,9 +2,9 @@ package ast_st3_tac.vars.store;
 
 public class ArrayAccess {
   private final Var array;
-  private final Rvalue index;
+  private final Var index;
 
-  public ArrayAccess(Var array, Rvalue index) {
+  public ArrayAccess(Var array, Var index) {
     this.array = array;
     this.index = index;
   }
@@ -13,7 +13,7 @@ public class ArrayAccess {
     return array;
   }
 
-  public Rvalue getIndex() {
+  public Var getIndex() {
     return index;
   }
 

@@ -43,4 +43,8 @@ public class Var {
     return name;
   }
 
+  public String typeNameToString() {
+    return type.toString() + " " + name.getName();
+  }
+
 }

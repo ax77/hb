@@ -1,16 +1,10 @@
 package _temp;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
-import ast_st3_tac.TacGenerator;
-import ast_st3_tac.UnitToText;
-import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
-import utils.UtilSrcToStringLevel;
 
 public class Temp {
 

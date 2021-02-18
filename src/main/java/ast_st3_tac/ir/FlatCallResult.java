@@ -1,24 +1,21 @@
-package ast_st3_tac.vars.store;
+package ast_st3_tac.ir;
 
 import java.util.List;
 
 import ast_printers.GenericListPrinter;
+import ast_st3_tac.vars.store.Var;
 import ast_types.Type;
 import tokenize.Ident;
 
-public class Call {
+public class FlatCallResult {
   private final Type type;
   private final Ident function;
-  private final List<Rvalue> args;
+  private final List<Var> args;
 
-  /// for rewriting
-  private final boolean isConstructor;
-
-  public Call(Type type, Ident function, List<Rvalue> args, boolean isConstructor) {
+  public FlatCallResult(Type type, Ident function, List<Var> args) {
     this.type = type;
     this.function = function;
     this.args = args;
-    this.isConstructor = isConstructor;
   }
 
   public Type getType() {
@@ -29,12 +26,8 @@ public class Call {
     return function;
   }
 
-  public List<Rvalue> getArgs() {
+  public List<Var> getArgs() {
     return args;
-  }
-
-  public boolean isConstructor() {
-    return isConstructor;
   }
 
   @Override
