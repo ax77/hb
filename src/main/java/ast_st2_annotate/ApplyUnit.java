@@ -1,17 +1,24 @@
 package ast_st2_annotate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_expr.ExprExpression;
+import ast_expr.ExprIdent;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
+import hashed.Hash_ident;
 import tokenize.Token;
 
 public class ApplyUnit {
@@ -83,6 +90,31 @@ public class ApplyUnit {
       destructor.setGeneratedByDefault();
       object.addConstructor(destructor);
     }
+
+    /// Test:ASSIGN_operator
+
+    //@formatter:off
+    final Type typename = new Type(new ClassTypeRef(object, object.getTypeParametersT()), beginPos);
+    final List<VarDeclarator>parameters = new ArrayList<>();
+    parameters.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), typename, Hash_ident.getHashedIdent("lvalue"), beginPos));
+    parameters.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), typename, Hash_ident.getHashedIdent("rvalue"), beginPos));
+    
+    final StmtBlock assignBlock = new StmtBlock();
+    final StmtReturn stmtReturn = new StmtReturn();
+    final ExprExpression retExpr = new ExprExpression(new ExprIdent(Hash_ident.getHashedIdent("rvalue")), beginPos);
+    stmtReturn.setExpression(retExpr);
+    assignBlock.put(new StmtBlockItem(new StmtStatement(stmtReturn, beginPos)));
+    final ClassMethodDeclaration opAssignMethod = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC
+        , new Modifiers()
+        , object
+        , Hash_ident.getHashedIdent("opAssign")
+        , parameters
+        , typename
+        , assignBlock
+        , beginPos
+    );
+    object.addMethod(opAssignMethod);
+    //@formatter:on
 
   }
 

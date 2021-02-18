@@ -3,6 +3,8 @@ package ast_st3_tac.vars;
 import java.util.ArrayList;
 import java.util.List;
 
+import errors.AstParseException;
+
 public class Code {
   private List<CodeItem> items;
 
@@ -24,6 +26,13 @@ public class Code {
 
   public List<CodeItem> getItems() {
     return items;
+  }
+
+  public CodeItem getLast() {
+    if (items.isEmpty()) {
+      throw new AstParseException("empty items");
+    }
+    return items.get(items.size() - 1);
   }
 
   @Override

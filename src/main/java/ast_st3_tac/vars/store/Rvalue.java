@@ -33,6 +33,7 @@ public class Rvalue {
   private Unop unop;
   private AllocObject allocObject;
   private Boolean boolLiteral;
+  private Integer nullLiteral;
 
   //@formatter:off
   public Rvalue(Var e) { NullChecker.check(e); this.var = e; }
@@ -45,6 +46,7 @@ public class Rvalue {
   public Rvalue(Unop e) { NullChecker.check(e); this.unop = e; }
   public Rvalue(AllocObject e) { NullChecker.check(e); this.allocObject = e; }
   public Rvalue(Boolean e) { NullChecker.check(e); this.boolLiteral = e; }
+  public Rvalue(Integer e) { NullChecker.check(e); this.nullLiteral = e; }
   
   public boolean isVar() { return var != null; }
   public boolean isNum() { return num != null; }
@@ -56,6 +58,7 @@ public class Rvalue {
   public boolean isUnop() { return unop != null; }
   public boolean isAllocObject() { return allocObject != null; }
   public boolean isBoolLiteral() { return boolLiteral != null; }
+  public boolean isNullLiteral() { return nullLiteral != null; }
   
   @Override
   public String toString() {
@@ -70,6 +73,7 @@ public class Rvalue {
     if (isUnop()) { return unop.toString(); }
     if (isAllocObject()) { return allocObject.toString(); }
     if (isBoolLiteral()) { return boolLiteral.toString(); }
+    if (isNullLiteral()) { return "null"; }
     
     return "???Rvalue";
   }
