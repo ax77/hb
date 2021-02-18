@@ -3,6 +3,7 @@ package ast_st2_annotate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
@@ -107,7 +108,7 @@ public class ApplyUnit {
     final ClassMethodDeclaration opAssignMethod = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC
         , new Modifiers()
         , object
-        , Hash_ident.getHashedIdent("opAssign")
+        , BuiltinNames.opAssign_ident
         , parameters
         , typename
         , assignBlock

@@ -37,7 +37,6 @@ import ast_st3_tac.vars.StoreLeaf;
 import ast_st3_tac.vars.TempVarAssign;
 import ast_st3_tac.vars.arith.Binop;
 import ast_st3_tac.vars.arith.Unop;
-import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
 import ast_st3_tac.vars.store.FieldAccess;
 import ast_st3_tac.vars.store.Lvalue;
@@ -69,171 +68,32 @@ public class TacGenerator {
   /// all names, for constant pasting
   private final Map<Ident, Rvalue> allNames;
 
-  private final CodegenContext context;
-
-  public TacGenerator(ExprExpression expr, CodegenContext context) {
+  public TacGenerator(ExprExpression expr) {
     this.temproraries = new Code();
     this.rawResult = new Code();
-    this.rewrittenResult = new Code();
     this.allNames = new HashMap<>();
-    this.context = context;
 
     gen(expr);
-    rewrite();
+    this.rewrittenResult = new TacRewriter(rawResult).getRewrittenResult();
   }
 
-  public TacGenerator(VarDeclarator var, CodegenContext context) {
+  public TacGenerator(VarDeclarator var) {
     this.temproraries = new Code();
     this.rawResult = new Code();
-    this.rewrittenResult = new Code();
     this.allNames = new HashMap<>();
-    this.context = context;
 
     ExprExpression expr = var.getSimpleInitializer();
     if (expr == null) {
       throw new AstParseException("variable has no initializer: " + var.getLocationToString());
     }
+    if (!var.getType().is_class()) {
+      throw new AstParseException("variable is not a class-ref: " + var.getLocationToString());
+    }
 
     gen(expr);
-    rewrite();
 
-    /// strtemp x1 = new strtemp(1); 
-    /// ::
-    /// int __t13 = 1;
-    /// strtemp __t14 = new strtemp();
-    /// strtemp_init_0(__t14, __t13);
-    /// strtemp x1 = null;
-    /// x1 = opAssign(x1, __t14);
-
-    if (var.getType().is_class()) {
-      CodeItem last = rewrittenResult.getLast();
-      if (!last.isVoidCall()) {
-        throw new AstParseException("expected void-call for class-creation");
-      }
-
-      //1
-      Var lvalue = CopierNamer.copyVarDecl(var);
-      TempVarAssign lhsvar = new TempVarAssign(lvalue, new Rvalue(0));
-
-      //2
-      ClassMethodDeclaration opAssign = lvalue.getType().getClassTypeFromRef()
-          .getPredefinedMethod(Hash_ident.getHashedIdent("opAssign"));
-      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-      List<Var> args = new ArrayList<>();
-      args.add(lvalue);
-      args.add(last.getVoidCall().getArgs().get(0));
-      final Call call = new Call(opAssign.getType(), fn, args, false);
-      StoreLeaf leaf = new StoreLeaf(new Lvalue(lvalue), new Rvalue(call));
-
-      rewrittenResult.appendItemLast(new CodeItem(lhsvar));
-      rewrittenResult.appendItemLast(new CodeItem(leaf));
-    }
-  }
-
-  private void rewrite() {
-    for (CodeItem item : rawResult.getItems()) {
-      if (isConstructorTempVarAssignCall(item)) {
-        rewriteAllocObject(item);
-        continue;
-      }
-      if (isTempVarClassAssignToVar(item)) {
-        rewriteToAssignOp(item);
-        continue;
-      }
-      rewrittenResult.appendItemLast(item);
-    }
-  }
-
-  private void rewriteToAssignOp(CodeItem item) {
-
-    /// strtemp __t29 = x1
-    /// ::
-    /// 1) strtemp __t29 = null
-    /// 2) __t29 = opAssign(__t29, x1)
-
-    final TempVarAssign assign = item.getVarAssign();
-    final Var lvalue = assign.getVar();
-    final Rvalue rvalue = assign.getRvalue();
-
-    //1
-    TempVarAssign lhsvar = new TempVarAssign(lvalue, new Rvalue(0));
-
-    //2
-    ClassMethodDeclaration opAssign = lvalue.getType().getClassTypeFromRef()
-        .getPredefinedMethod(Hash_ident.getHashedIdent("opAssign"));
-    final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-    List<Var> args = new ArrayList<>();
-    args.add(lvalue);
-    args.add(rvalue.getVar());
-    final Call call = new Call(opAssign.getType(), fn, args, false);
-    StoreLeaf leaf = new StoreLeaf(new Lvalue(lvalue), new Rvalue(call));
-
-    rewrittenResult.appendItemLast(new CodeItem(lhsvar));
-    rewrittenResult.appendItemLast(new CodeItem(leaf));
-  }
-
-  private boolean isTempVarClassAssignToVar(final CodeItem item) {
-    if (!item.isVarAssign()) {
-      return false;
-    }
-
-    final TempVarAssign assign = item.getVarAssign();
-    final Var lvalue = assign.getVar();
-    final Rvalue rvalue = assign.getRvalue();
-
-    if (!lvalue.getType().is_class()) {
-      return false;
-    }
-
-    if (!rvalue.isVar()) {
-      return false;
-    }
-
-    if (context.getCurrentMethodName().getName().equals("opAssign")) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private boolean isConstructorTempVarAssignCall(final CodeItem item) {
-    if (!item.isVarAssign()) {
-      return false;
-    }
-
-    final TempVarAssign assign = item.getVarAssign();
-    final Rvalue rvalue = assign.getRvalue();
-
-    if (!rvalue.isCall()) {
-      return false;
-    }
-
-    Call fcall = assign.getRvalue().getCall();
-    if (!fcall.isConstructor()) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private void rewriteAllocObject(final CodeItem item) {
-
-    final TempVarAssign assign = item.getVarAssign();
-    final Var lvalue = assign.getVar();
-    Call fcall = assign.getRvalue().getCall();
-
-    // strtemp __t1 = strtemp_init_0(__t0)
-    // ::
-    // ::
-    // 1) strtemp __t1 = new strtemp()
-    // 2) strtemp_init_0(__t1, __t0)
-    //
-    AllocObject allocObject = new AllocObject(lvalue.getType());
-    TempVarAssign newTempVarAssign = new TempVarAssign(lvalue, new Rvalue(allocObject));
-    rewrittenResult.appendItemLast(new CodeItem(newTempVarAssign));
-
-    fcall.getArgs().add(0, lvalue);
-    rewrittenResult.appendItemLast(new CodeItem(fcall));
+    final TacRewriter tacRewriter = new TacRewriter(var, rawResult);
+    this.rewrittenResult = tacRewriter.getRewrittenResult();
 
   }
 

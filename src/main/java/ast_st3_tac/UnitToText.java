@@ -25,7 +25,6 @@ import hashed.Hash_ident;
 
 public class UnitToText {
 
-  private final CodegenContext context;
   private final StringBuilder textout;
 
   @Override
@@ -33,8 +32,7 @@ public class UnitToText {
     return textout.toString();
   }
 
-  public UnitToText(CodegenContext context, InstantiationUnit unit) {
-    this.context = context;
+  public UnitToText(InstantiationUnit unit) {
     this.textout = new StringBuilder();
     visit(unit);
   }
@@ -103,14 +101,22 @@ public class UnitToText {
 
   private void genMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {
 
-    context.setCurrentMethodName(method.getIdentifier());
+    /// XXX: do not touch inline-predefined methods,
+    /// it may cause recursion, if OpAssign call OpAssign inside
+    /// itself, and so on...
+    /// all these methods do not use any deep-field-access, or calls,
+    /// each expression or statement is simple as possible...
+    if (method.getIdentifier().getName().equals("opAssign")) {
+      g(method.getType().toString() + " " + CopierNamer.getMethodName(method)
+          + GenericListPrinter.paramsToStringWithBraces(method.getParameters()));
+      g(method.getBlock().toString());
+      return;
+    }
 
     Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
     List<VarDeclarator> params = method.getParameters();
-    if (!method.getIdentifier().getName().equals("opAssign")) {
-      params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
-          Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
-    }
+    params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
+        Hash_ident.getHashedIdent("_this_"), method.getBeginPos()));
 
     if (method.getIdentifier().getName().equals("main")) {
       g("void main()");
@@ -120,8 +126,6 @@ public class UnitToText {
     }
 
     genBlock(method.getBlock());
-
-    context.setCurrentMethodName(null);
 
   }
 
@@ -148,7 +152,7 @@ public class UnitToText {
   private void genSelection(StmtSelect ifStmt) {
 
     ExprExpression expr = ifStmt.getCondition();
-    TacGenerator tcg = new TacGenerator(expr, context);
+    TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
     g("// " + expr.toString());
     g(res);
@@ -181,7 +185,7 @@ public class UnitToText {
     String last = "";
     if (returnStmt.hasExpression()) {
       ExprExpression expr = returnStmt.getExpression();
-      TacGenerator tcg = new TacGenerator(expr, context);
+      TacGenerator tcg = new TacGenerator(expr);
       String res = tcg.txt1(";\n");
       g("// return " + expr.toString());
       g(res);
@@ -193,7 +197,7 @@ public class UnitToText {
 
   private void genExprStmt(StmtStatement statement) {
     ExprExpression expr = statement.getExprStmt();
-    TacGenerator tcg = new TacGenerator(expr, context);
+    TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
     g("// " + expr.toString());
     g(res);
@@ -213,18 +217,22 @@ public class UnitToText {
 
   private void genVar(VarDeclarator localVariable) {
 
-    // final ExprExpression expr = localVariable.getSimpleInitializer();
-    // TacGenerator tcg = new TacGenerator(expr, context);
-    // String res = tcg.txt1(";\n");
-    // g("// " + localVariable.toString());
-    // g(res);
-    // String last = tcg.getLastResultNameToString();
-    // g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
+    if (localVariable.getType().is_class()) {
+      TacGenerator tcg = new TacGenerator(localVariable);
+      String res = tcg.txt1(";\n");
+      g("// " + localVariable.toString());
+      g(res);
+    }
 
-    TacGenerator tcg = new TacGenerator(localVariable, context);
-    String res = tcg.txt1(";\n");
-    g("// " + localVariable.toString());
-    g(res);
+    else {
+      final ExprExpression expr = localVariable.getSimpleInitializer();
+      TacGenerator tcg = new TacGenerator(expr);
+      String res = tcg.txt1(";\n");
+      g("// " + localVariable.toString());
+      g(res);
+      String last = tcg.getLastResultNameToString();
+      g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
+    }
 
   }
 

@@ -9,7 +9,6 @@ import org.junit.Test;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_main.ParserMain;
-import ast_st3_tac.CodegenContext;
 import ast_st3_tac.TacGenerator;
 import ast_st3_tac.UnitToText;
 import ast_unit.InstantiationUnit;
@@ -41,7 +40,7 @@ public class TestTac {
     sb.append("  }                                                    \n");
     sb.append("}                                                      \n");
     sb.append("class main_class {                                     \n");
-    sb.append("  void main() {                                        \n");
+    sb.append("  void main() { int a=1; int b=a+1;                                        \n");
     sb.append("    strtemp x1 = new strtemp(1);                       \n");
     sb.append("    type x2 = new type(x1);                            \n");
     sb.append("    token x3 = new token(x2);                          \n");
@@ -52,8 +51,7 @@ public class TestTac {
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
 
-    CodegenContext context = new CodegenContext();
-    UnitToText text = new UnitToText(context, unit);
+    UnitToText text = new UnitToText(unit);
     System.out.println(UtilSrcToStringLevel.tos(text.toString()));
 
   }
