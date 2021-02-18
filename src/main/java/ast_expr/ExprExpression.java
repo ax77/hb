@@ -71,7 +71,7 @@ public class ExprExpression implements Serializable, Location {
   }
 
   public ExprExpression(ExprClassCreation classCreation, Token beginPos) {
-    this.base = ExpressionBase.ECLASS_INSTANCE_CREATION;
+    this.base = ExpressionBase.ECLASS_CREATION;
     this.beginPos = beginPos;
     this.classCreation = classCreation;
   }
@@ -199,16 +199,16 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.EPRIMARY_NUMBER) {
       return number.toString();
     }
-    if (base == ExpressionBase.ECLASS_INSTANCE_CREATION) {
+    if (base == ExpressionBase.ECLASS_CREATION) {
       return classCreation.toString();
     }
-    if (base == ExpressionBase.ESTRING_CONST) {
+    if (base == ExpressionBase.EPRIMARY_STRING) {
       return beginPos.getValue(); // because of the bootstrap: '\0' etc...
     }
     if (base == ExpressionBase.EUNARY) {
       return unary.toString();
     }
-    if (base == ExpressionBase.ECHAR_CONST) {
+    if (base == ExpressionBase.EPRIMARY_CHAR) {
       return beginPos.getValue(); // because of the bootstrap: '\0' etc...
     }
     if (base == ExpressionBase.EBOOLEAN_LITERAL) {

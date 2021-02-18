@@ -3,12 +3,11 @@ package ast_st3_tac;
 import static ast_expr.ExpressionBase.EASSIGN;
 import static ast_expr.ExpressionBase.EBINARY;
 import static ast_expr.ExpressionBase.ECAST;
-import static ast_expr.ExpressionBase.ECLASS_INSTANCE_CREATION;
+import static ast_expr.ExpressionBase.ECLASS_CREATION;
 import static ast_expr.ExpressionBase.EFIELD_ACCESS;
 import static ast_expr.ExpressionBase.EMETHOD_INVOCATION;
 import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
 import static ast_expr.ExpressionBase.EPRIMARY_NUMBER;
-import static ast_expr.ExpressionBase.EPRIMARY_STRING;
 import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
@@ -313,7 +312,7 @@ public class TacGenerator {
 
     }
 
-    else if (base == EPRIMARY_STRING) {
+    else if (base == ExpressionBase.EPRIMARY_STRING) {
       throw new RuntimeException(base.toString() + " ???");
     }
 
@@ -376,7 +375,7 @@ public class TacGenerator {
 
     }
 
-    else if (base == ECLASS_INSTANCE_CREATION) {
+    else if (base == ECLASS_CREATION) {
 
       //1
       final ExprClassCreation fcall = e.getClassCreation();

@@ -60,11 +60,11 @@ public class ApplyExpression {
       applySelfLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
       applyNumericLiteral(e);
-    } else if (e.is(ExpressionBase.ECLASS_INSTANCE_CREATION)) {
+    } else if (e.is(ExpressionBase.ECLASS_CREATION)) {
       applyClassInstanceCreation(object, e);
-    } else if (e.is(ExpressionBase.ESTRING_CONST)) {
+    } else if (e.is(ExpressionBase.EPRIMARY_STRING)) {
       applyStringLiteral(e);
-    } else if (e.is(ExpressionBase.ECHAR_CONST)) {
+    } else if (e.is(ExpressionBase.EPRIMARY_CHAR)) {
       e.setResultType(TypeBindings.make_char(e.getBeginPos()));
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));

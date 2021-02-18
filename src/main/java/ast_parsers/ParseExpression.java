@@ -519,7 +519,7 @@ public class ParseExpression {
     if (parser.is(T.TOKEN_CHAR)) {
       // TODO:
       Token saved = parser.moveget();
-      return new ExprExpression(ExpressionBase.ECHAR_CONST, saved);
+      return new ExprExpression(ExpressionBase.EPRIMARY_CHAR, saved);
     }
 
     // new ClassName<i32>(x, y, z) 
@@ -577,7 +577,7 @@ public class ParseExpression {
     }
 
     final List<ExprExpression> argums = new ArrayList<>();
-    argums.add(new ExprExpression(ExpressionBase.ESTRING_CONST, saved));
+    argums.add(new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved));
 
     final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
