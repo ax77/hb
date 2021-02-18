@@ -78,8 +78,18 @@ public class ApplyUnit {
       final ArrayList<VarDeclarator> emptyParams = new ArrayList<>();
       final Type voidType = new Type(beginPos);
       final Modifiers emptyMods = new Modifiers();
-      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, emptyMods,
-          object, object.getIdentifier(), emptyParams, voidType, block, beginPos);
+
+      //@formatter:off
+      final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR
+          , emptyMods
+          , object
+          , object.getIdentifier()
+          , emptyParams
+          , voidType
+          , block
+          , beginPos
+      );
+      //@formatter:on
 
       constructor.setGeneratedByDefault();
       object.addConstructor(constructor);

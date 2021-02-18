@@ -12,6 +12,7 @@ import ast_st3_tac.vars.StoreLeaf;
 import ast_st3_tac.vars.TempVarAssign;
 import ast_st3_tac.vars.store.AllocObject;
 import ast_st3_tac.vars.store.Call;
+import ast_st3_tac.vars.store.FieldAccess;
 import ast_st3_tac.vars.store.Lvalue;
 import ast_st3_tac.vars.store.Rvalue;
 import ast_st3_tac.vars.store.Var;
@@ -51,12 +52,18 @@ public class TacRewriter {
 
   private void appendVarL(VarDeclarator var) {
     CodeItem last = rewrittenResult.getLast();
-    if (!last.isVoidCall()) {
-      throw new AstParseException("expected void-call for class-creation");
+    if (last.isVoidCall()) {
+      Var lvalue = CopierNamer.copyVarDecl(var);
+      putRewrittenVarAssign(lvalue, last.getVoidCall().getArgs().get(0).getVar());
+     return;
+    }
+    if (last.isStore()) {
+      Var lvalue = CopierNamer.copyVarDecl(var);
+      putRewrittenVarAssign(lvalue, last.getStore().getLvalue().getDstVar());
+     return;
     }
 
-    Var lvalue = CopierNamer.copyVarDecl(var);
-    putRewrittenVarAssign(lvalue, last.getVoidCall().getArgs().get(0));
+    throw new AstParseException("expected void-call for class-creation");
   }
 
   private void rewrite(final Code rawResult) {
@@ -69,8 +76,48 @@ public class TacRewriter {
         rewriteToAssignOp(item);
         continue;
       }
+      if (isStoreFieldRefType(item)) {
+        rewriteStoreField(item);
+        continue;
+      }
       rewrittenResult.appendItemLast(item);
     }
+  }
+
+  private boolean isStoreFieldRefType(CodeItem item) {
+    if (!item.isStore()) {
+      return false;
+    }
+
+    final Lvalue lvalue = item.getStore().getLvalue();
+    if (!lvalue.isDstField()) {
+      return false;
+    }
+
+    final Var field = lvalue.getDstField().getField();
+    return field.getType().is_class();
+  }
+
+  private void rewriteStoreField(CodeItem item) {
+    StoreLeaf leaf = item.getStore();
+    Lvalue lvalue = leaf.getLvalue();
+    Rvalue rvalue = leaf.getRvalue();
+    FieldAccess access = lvalue.getDstField();
+    Var field = access.getField();
+
+    /// __t29.type = __t31
+    ///::
+    /// __t29.type = opAssign(__t29.type, __t31)
+
+    ClassMethodDeclaration opAssign = field.getType().getClassTypeFromRef()
+        .getPredefinedMethod(BuiltinNames.opAssign_ident);
+    final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
+    List<Rvalue> args = new ArrayList<>();
+    args.add(new Rvalue(lvalue.getDstField()));
+    args.add(rvalue);
+    final Call call = new Call(opAssign.getType(), fn, args, false);
+    StoreLeaf leafN = new StoreLeaf(new Lvalue(access), new Rvalue(call));
+    rewrittenResult.appendItemLast(new CodeItem(leafN));
   }
 
   private void putRewrittenVarAssign(Var lvalue, Var rvalue) {
@@ -82,9 +129,9 @@ public class TacRewriter {
     ClassMethodDeclaration opAssign = lvalue.getType().getClassTypeFromRef()
         .getPredefinedMethod(BuiltinNames.opAssign_ident);
     final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-    List<Var> args = new ArrayList<>();
-    args.add(lvalue);
-    args.add(rvalue);
+    List<Rvalue> args = new ArrayList<>();
+    args.add(new Rvalue(lvalue));
+    args.add(new Rvalue(rvalue));
     final Call call = new Call(opAssign.getType(), fn, args, false);
     StoreLeaf leaf = new StoreLeaf(new Lvalue(lvalue), new Rvalue(call));
 
@@ -163,7 +210,7 @@ public class TacRewriter {
     TempVarAssign newTempVarAssign = new TempVarAssign(lvalue, new Rvalue(allocObject));
     rewrittenResult.appendItemLast(new CodeItem(newTempVarAssign));
 
-    fcall.getArgs().add(0, lvalue);
+    fcall.getArgs().add(0, new Rvalue(lvalue));
     rewrittenResult.appendItemLast(new CodeItem(fcall));
 
   }

@@ -21,30 +21,16 @@ public class TestTac {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class strtemp {                                        \n");
+    sb.append("class str {                                        \n");
     sb.append("  int x;                                               \n");
-    sb.append("  strtemp(int x) {                                     \n");
+    sb.append("  str(int x) {                                     \n");
     sb.append("    this.x = x;                                        \n");
     sb.append("  }                                                    \n");
     sb.append("}                                                      \n");
-    sb.append("class type {                                           \n");
-    sb.append("  strtemp value;                                       \n");
-    sb.append("  type(strtemp value) {                                \n");
-    sb.append("    this.value = value;                                \n");
-    sb.append("  }                                                    \n");
-    sb.append("}                                                      \n");
-    sb.append("class token {                                          \n");
-    sb.append("  type type;                                           \n");
-    sb.append("  token(type type) {                                   \n");
-    sb.append("    this.type = type;                                  \n");
-    sb.append("  }                                                    \n");
-    sb.append("}                                                      \n");
     sb.append("class main_class {                                     \n");
-    sb.append("  void main() { int a=1; int b=a+1;                                        \n");
-    sb.append("    strtemp x1 = new strtemp(1);                       \n");
-    sb.append("    type x2 = new type(x1);                            \n");
-    sb.append("    token x3 = new token(x2);                          \n");
-    sb.append("    token tok1 = new token(new type(new strtemp(1)));  \n");
+    sb.append("  void main() {                                         \n");
+    sb.append("    str x1 = new str(1);                       \n");
+    sb.append("    str x2 = new str(2); str x3 = x2;                            \n");
     sb.append("  }                                                    \n");
     sb.append("}                                                      \n");
     //@formatter:on

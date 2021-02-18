@@ -12,9 +12,7 @@ import static ast_expr.ExpressionBase.ETHIS;
 import static ast_expr.ExpressionBase.EUNARY;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
@@ -56,22 +54,13 @@ import utils_oth.NullChecker;
 
 public class TacGenerator {
 
-  /// temporary expansion-stack
   private final Code temproraries;
-
-  /// the 'raw' result
   private final Code rawResult;
-
-  /// the result after rewriting
   private final Code rewrittenResult;
-
-  /// all names, for constant pasting
-  private final Map<Ident, Rvalue> allNames;
 
   public TacGenerator(ExprExpression expr) {
     this.temproraries = new Code();
     this.rawResult = new Code();
-    this.allNames = new HashMap<>();
 
     gen(expr);
     this.rewrittenResult = new TacRewriter(rawResult).getRewrittenResult();
@@ -80,7 +69,6 @@ public class TacGenerator {
   public TacGenerator(VarDeclarator var) {
     this.temproraries = new Code();
     this.rawResult = new Code();
-    this.allNames = new HashMap<>();
 
     ExprExpression expr = var.getSimpleInitializer();
     if (expr == null) {
@@ -91,14 +79,13 @@ public class TacGenerator {
     }
 
     gen(expr);
-
-    final TacRewriter tacRewriter = new TacRewriter(var, rawResult);
-    this.rewrittenResult = tacRewriter.getRewrittenResult();
+    this.rewrittenResult = new TacRewriter(var, rawResult).getRewrittenResult();
 
   }
 
   /// if (result_name)
-  /// return (result_name)
+  /// return result_name ;
+  /// int a = result_name ;
   public String getLastResultNameToString() {
 
     /// TODO:TODO:TODO!!!
@@ -118,7 +105,7 @@ public class TacGenerator {
       return lastVar.getName().getName();
     }
     if (lastItem.isVoidCall()) {
-      return lastItem.getVoidCall().getArgs().get(0).getName().toString();
+      return lastItem.getVoidCall().getArgs().get(0).getVar().getName().toString();
     }
 
     throw new AstParseException("there is no code for result-name");
@@ -127,11 +114,6 @@ public class TacGenerator {
   private void genRaw(CodeItem item) {
     temproraries.pushItem(item);
     rawResult.appendItemLast(item);
-
-    if (item.isVarAssign()) {
-      final TempVarAssign varAssign = item.getVarAssign();
-      allNames.put(varAssign.getVar().getName(), varAssign.getRvalue());
-    }
   }
 
   private CodeItem popCode() {
@@ -146,20 +128,20 @@ public class TacGenerator {
     return sb.toString().trim();
   }
 
-  private List<Var> genArgsVars(final List<ExprExpression> arguments) {
+  private List<Rvalue> genArgs(final List<ExprExpression> arguments) {
 
     for (ExprExpression arg : arguments) {
       gen(arg);
     }
 
-    List<Var> args = new ArrayList<>();
+    List<Rvalue> args = new ArrayList<>();
     for (int i = 0; i < arguments.size(); i++) {
       final CodeItem item = popCode();
       if (!item.isVarAssign()) {
         throw new AstParseException("unimpl.");
       }
       final TempVarAssign varAssign = item.getVarAssign();
-      args.add(0, varAssign.getVar());
+      args.add(0, new Rvalue(varAssign.getVar()));
     }
 
     return args;
@@ -197,6 +179,8 @@ public class TacGenerator {
     } else {
       throw new AstParseException("unimpl...");
     }
+    
+    rawResult.getItems().remove(dstItem);
 
   }
 
@@ -321,8 +305,8 @@ public class TacGenerator {
       final CodeItem obj = popCode();
 
       //2
-      final List<Var> args = genArgsVars(fcall.getArguments());
-      args.add(0, obj.getVarAssign().getVar());
+      final List<Rvalue> args = genArgs(fcall.getArguments());
+      args.add(0, new Rvalue(obj.getVarAssign().getVar()));
 
       //3
       final ClassMethodDeclaration method = fcall.getMethod();
@@ -367,7 +351,7 @@ public class TacGenerator {
       final Type typename = fcall.getType();
 
       //2
-      final List<Var> args = genArgsVars(fcall.getArguments());
+      final List<Rvalue> args = genArgs(fcall.getArguments());
 
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();

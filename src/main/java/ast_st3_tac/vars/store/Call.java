@@ -9,12 +9,12 @@ import tokenize.Ident;
 public class Call {
   private final Type type;
   private final Ident function;
-  private final List<Var> args;
+  private final List<Rvalue> args;
 
   /// for rewriting
   private final boolean isConstructor;
 
-  public Call(Type type, Ident function, List<Var> args, boolean isConstructor) {
+  public Call(Type type, Ident function, List<Rvalue> args, boolean isConstructor) {
     this.type = type;
     this.function = function;
     this.args = args;
@@ -29,7 +29,7 @@ public class Call {
     return function;
   }
 
-  public List<Var> getArgs() {
+  public List<Rvalue> getArgs() {
     return args;
   }
 
