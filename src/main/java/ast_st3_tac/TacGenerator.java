@@ -86,6 +86,11 @@ public class TacGenerator {
     rewriteRaw();
   }
 
+  public String getLastResultNameToString() {
+    FlatCodeItem item = rv.get(rv.size() - 1);
+    return getDest(item).getName().getName();
+  }
+
   private void rewriteRaw() {
 
     for (final FlatCodeItem item : rawResult) {
@@ -217,10 +222,10 @@ public class TacGenerator {
 
   public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
-    sb.append("// " + exprTos + "\n");
+    // sb.append("// " + exprTos + "\n");
     for (FlatCodeItem item : rv) {
-      String f = String.format("%-23s :: %s", item.getOpcode().toString(), item.toString().trim() + end);
-      sb.append(f);
+      // String f = String.format("%-23s :: %s", item.getOpcode().toString(), item.toString().trim() + end);
+      sb.append(item.toString().trim() + end);
     }
     return sb.toString().trim();
   }

@@ -1,5 +1,6 @@
 package ast_st1_templates;
 
+import java.io.IOException;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -15,7 +16,7 @@ public class InstatantiationUnitBuilder {
   private final InstantiationUnit instantiationUnit;
   private final CompilationUnit compilationUnit;
 
-  public InstatantiationUnitBuilder(CompilationUnit compilationUnit) {
+  public InstatantiationUnitBuilder(CompilationUnit compilationUnit) throws IOException {
     NullChecker.check(compilationUnit);
 
     this.templateCodegen = new TemplateCodegen();
@@ -46,12 +47,12 @@ public class InstatantiationUnitBuilder {
     }
   }
 
-  private void applyInstantiationUnit() {
+  private void applyInstantiationUnit() throws IOException {
 
     // resolve all symbols, identifiers, with scope rules,
     // and add result-type to each expression.
-    final ApplyUnit applier = new ApplyUnit();
-    applier.visit(instantiationUnit);
+    final ApplyUnit applier = new ApplyUnit(instantiationUnit);
+    applier.visit();
 
   }
 

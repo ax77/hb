@@ -364,7 +364,7 @@ public class ParseTypeDeclarations {
     return new Type(tok.getIdent(), tok);
   }
 
-  private List<VarDeclarator> parseMethodParameters() {
+  public List<VarDeclarator> parseMethodParameters() {
 
     // func name(param: int) -> int {  }
 
