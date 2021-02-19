@@ -265,15 +265,18 @@ public class TacGenerator {
   private String varsToStringWithBase() {
     StringBuilder sb = new StringBuilder();
     final List<Var> allVars = varCreator.getAllVars();
-    for (int i = 0; i < allVars.size(); i += 1) {
+    for (int i = allVars.size() - 1; i >= 0; i -= 1) {
       Var var = allVars.get(i);
+      if (var.is(VarBase.METHOD_PARAMETER)) {
+        continue;
+      }
+      if (!var.getType().is_class()) {
+        continue;
+      }
 
       sb.append(varBaseSimple(var.getBase()));
       sb.append(var.toString());
-
-      if (i + 1 < allVars.size()) {
-        sb.append(", ");
-      }
+      sb.append(", ");
     }
     return sb.toString();
   }
@@ -470,7 +473,7 @@ public class TacGenerator {
       final FlatCodeItem thisItem = popCode();
       final Var obj = thisItem.getDest();
 
-      final FieldAccess access = new FieldAccess(obj, varCreator.justNewVarFromFieldNoBindings(field.getType()));
+      final FieldAccess access = new FieldAccess(obj, varCreator.justNewVarFromFieldNoBindings(field));
       final Var lhsvar = varCreator.justNewVar(field.getType());
 
       final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));

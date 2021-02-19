@@ -22,108 +22,135 @@ public class TestAux2 {
   class main_class {
 
     /// METHODS: main_class
-    void main_class_init_8(main_class _this_) {
+    void main_class_init_8(main_class __this) {
     }
 
-    void main_class_deinit_9(main_class _this_) {
+    void main_class_deinit_9(main_class __this) {
     }
 
     void main() {
 
       /////// tree tree = new tree(new tree(1), new tree(2));
-      int __t19 = 1;
-      tree __t20 = new tree();
-      tree_init_0(__t20, __t19);
-      int __t21 = 2;
-      tree __t22 = new tree();
-      tree_init_0(__t22, __t21);
-      tree __t23 = new tree();
-      tree_init_1(__t23, __t20, __t22);
+
+      // [M:tree, L:t23, L:t22, L:t20, ]
+      int t19 = 1;
+      tree t20 = new tree();
+      tree_init_0(t20, t19);
+      int t21 = 2;
+      tree t22 = new tree();
+      tree_init_0(t22, t21);
+      tree t23 = new tree();
+      tree_init_1(t23, t20, t22);
       tree tree = null;
-      tree = tree_opAssign_18(tree, __t23);
+      tree = tree_opAssign_18(tree, t23);
 
       /////// strtemp x1 = new strtemp(1);
-      int __t24 = 1;
-      strtemp __t25 = new strtemp();
-      strtemp_init_2(__t25, __t24);
+
+      // [M:x1, L:t25, ]
+      int t24 = 1;
+      strtemp t25 = new strtemp();
+      strtemp_init_2(t25, t24);
       strtemp x1 = null;
-      x1 = strtemp_opAssign_16(x1, __t25);
+      x1 = strtemp_opAssign_16(x1, t25);
 
       /////// type x2 = new type(x1);
-      strtemp __t26 = null;
-      __t26 = strtemp_opAssign_16(__t26, x1);
-      type __t27 = new type();
-      type_init_4(__t27, __t26);
+
+      // [M:x2, L:t27, M:x1, L:t26, ]
+      strtemp t26 = null;
+      t26 = strtemp_opAssign_16(t26, x1);
+      type t27 = new type();
+      type_init_4(t27, t26);
       type x2 = null;
-      x2 = type_opAssign_14(x2, __t27);
+      x2 = type_opAssign_14(x2, t27);
 
       /////// token x3 = new token(x2);
-      type __t28 = null;
-      __t28 = type_opAssign_14(__t28, x2);
-      token __t29 = new token();
-      token_init_6(__t29, __t28);
+
+      // [M:x3, L:t29, M:x2, L:t28, ]
+      type t28 = null;
+      t28 = type_opAssign_14(t28, x2);
+      token t29 = new token();
+      token_init_6(t29, t28);
       token x3 = null;
-      x3 = token_opAssign_12(x3, __t29);
+      x3 = token_opAssign_12(x3, t29);
 
       /////// token tok1 = new token(new type(new strtemp(1)));
-      int __t30 = 1;
-      strtemp __t31 = new strtemp();
-      strtemp_init_2(__t31, __t30);
-      type __t32 = new type();
-      type_init_4(__t32, __t31);
-      token __t33 = new token();
-      token_init_6(__t33, __t32);
+
+      // [M:tok1, L:t33, L:t32, L:t31, ]
+      int t30 = 1;
+      strtemp t31 = new strtemp();
+      strtemp_init_2(t31, t30);
+      type t32 = new type();
+      type_init_4(t32, t31);
+      token t33 = new token();
+      token_init_6(t33, t32);
       token tok1 = null;
-      tok1 = token_opAssign_12(tok1, __t33);
+      tok1 = token_opAssign_12(tok1, t33);
 
       /////// int res = tok1.type.value.x;
-      token __t34 = null;
-      __t34 = token_opAssign_12(__t34, tok1);
-      type __t35 = __t34.type;
-      strtemp __t36 = __t35.value;
-      int __t37 = __t36.x;
-      int res = __t37;
+
+      // [L:t36, L:t35, M:tok1, L:t34, ]
+      token t34 = null;
+      t34 = token_opAssign_12(t34, tok1);
+      type t35 = t34.type;
+      strtemp t36 = t35.value;
+      int t37 = t36.x;
+      int res = t37;
 
       /////// tok1.type.value.x = 1024
-      token __t38 = null;
-      __t38 = token_opAssign_12(__t38, tok1);
-      type __t39 = __t38.type;
-      strtemp __t40 = __t39.value;
-      int __t42 = 1024;
-      __t40.x = __t42;
+
+      // [L:t40, L:t39, M:tok1, L:t38, ]
+      token t38 = null;
+      t38 = token_opAssign_12(t38, tok1);
+      type t39 = t38.type;
+      strtemp t40 = t39.value;
+      int t41 = t40.x;
+      int t42 = 1024;
+      t40.x = t42;
 
       /////// int a = 0;
-      int __t43 = 0;
-      int a = __t43;
+
+      // []
+      int t43 = 0;
+      int a = t43;
 
       /////// int b = 1;
-      int __t44 = 1;
-      int b = __t44;
+
+      // []
+      int t44 = 1;
+      int b = t44;
 
       /////// int c = 2;
-      int __t45 = 2;
-      int c = __t45;
+
+      // []
+      int t45 = 2;
+      int c = t45;
 
       /////// int e = a + b + c;
-      int __t46 = a;
-      int __t47 = b;
-      int __t48 = __t46 + __t47;
-      int __t49 = c;
-      int __t50 = __t48 + __t49;
-      int e = __t50;
+
+      // []
+      int t46 = a;
+      int t47 = b;
+      int t48 = t46 + t47;
+      int t49 = c;
+      int t50 = t48 + t49;
+      int e = t50;
 
       /////// int f = x1.getX();
-      strtemp __t51 = null;
-      __t51 = strtemp_opAssign_16(__t51, x1);
-      int __t52 = strtemp_getX_3(__t51);
-      int f = __t52;
+
+      // [M:x1, L:t51, ]
+      strtemp t51 = null;
+      t51 = strtemp_opAssign_16(t51, x1);
+      int t52 = strtemp_getX_3(t51);
+      int f = t52;
 
       /////// int g = x2.getValue().getX();
-      type __t53 = null;
-      __t53 = type_opAssign_14(__t53, x2);
-      strtemp __t54 = type_getValue_5(__t53);
-      int __t55 = strtemp_getX_3(__t54);
-      int g = __t55;
+
+      // [L:t54, M:x2, L:t53, ]
+      type t53 = null;
+      t53 = type_opAssign_14(t53, x2);
+      strtemp t54 = type_getValue_5(t53);
+      int t55 = strtemp_getX_3(t54);
+      int g = t55;
     }
 
     main_class main_class_opAssign_10(main_class lvalue, main_class rvalue) {
@@ -131,17 +158,20 @@ public class TestAux2 {
     }
 
     /// METHODS: token
-    void token_init_6(token _this_, type type) {
+    void token_init_6(token __this, type type) {
 
       /////// this.type = type
-      token __t56 = null;
-      __t56 = token_opAssign_12(__t56, _this_);
-      type __t58 = null;
-      __t58 = type_opAssign_14(__t58, type);
-      __t56.type = __t58;
+
+      // [L:t58, L:t57, L:t56, ]
+      token t56 = null;
+      t56 = token_opAssign_12(t56, __this);
+      type t57 = t56.type;
+      type t58 = null;
+      t58 = type_opAssign_14(t58, type);
+      t56.type = t58;
     }
 
-    void token_deinit_11(token _this_) {
+    void token_deinit_11(token __this) {
     }
 
     token token_opAssign_12(token lvalue, token rvalue) {
@@ -149,26 +179,31 @@ public class TestAux2 {
     }
 
     /// METHODS: type
-    void type_init_4(type _this_, strtemp value) {
+    void type_init_4(type __this, strtemp value) {
 
       /////// this.value = value
-      type __t59 = null;
-      __t59 = type_opAssign_14(__t59, _this_);
-      strtemp __t61 = null;
-      __t61 = strtemp_opAssign_16(__t61, value);
-      __t59.value = __t61;
+
+      // [L:t61, L:t60, L:t59, ]
+      type t59 = null;
+      t59 = type_opAssign_14(t59, __this);
+      strtemp t60 = t59.value;
+      strtemp t61 = null;
+      t61 = strtemp_opAssign_16(t61, value);
+      t59.value = t61;
     }
 
-    void type_deinit_13(type _this_) {
+    void type_deinit_13(type __this) {
     }
 
-    strtemp type_getValue_5(type _this_) {
+    strtemp type_getValue_5(type __this) {
 
       // return value
-      type __t62 = null;
-      __t62 = type_opAssign_14(__t62, _this_);
-      strtemp __t63 = __t62.value;
-      return __t63;
+
+      // [L:t63, L:t62, ]
+      type t62 = null;
+      t62 = type_opAssign_14(t62, __this);
+      strtemp t63 = t62.value;
+      return t63;
     }
 
     type type_opAssign_14(type lvalue, type rvalue) {
@@ -176,25 +211,30 @@ public class TestAux2 {
     }
 
     /// METHODS: strtemp
-    void strtemp_init_2(strtemp _this_, int x) {
+    void strtemp_init_2(strtemp __this, int x) {
 
       /////// this.x = x
-      strtemp __t64 = null;
-      __t64 = strtemp_opAssign_16(__t64, _this_);
-      int __t66 = x;
-      __t64.x = __t66;
+
+      // [L:t64, ]
+      strtemp t64 = null;
+      t64 = strtemp_opAssign_16(t64, __this);
+      int t65 = t64.x;
+      int t66 = x;
+      t64.x = t66;
     }
 
-    void strtemp_deinit_15(strtemp _this_) {
+    void strtemp_deinit_15(strtemp __this) {
     }
 
-    int strtemp_getX_3(strtemp _this_) {
+    int strtemp_getX_3(strtemp __this) {
 
       // return x
-      strtemp __t67 = null;
-      __t67 = strtemp_opAssign_16(__t67, _this_);
-      int __t68 = __t67.x;
-      return __t68;
+
+      // [L:t67, ]
+      strtemp t67 = null;
+      t67 = strtemp_opAssign_16(t67, __this);
+      int t68 = t67.x;
+      return t68;
     }
 
     strtemp strtemp_opAssign_16(strtemp lvalue, strtemp rvalue) {
@@ -202,33 +242,42 @@ public class TestAux2 {
     }
 
     /// METHODS: tree
-    void tree_init_0(tree _this_, int value) {
+    void tree_init_0(tree __this, int value) {
 
       /////// this.value = value
-      tree __t69 = null;
-      __t69 = tree_opAssign_18(__t69, _this_);
-      int __t71 = value;
-      __t69.value = __t71;
+
+      // [L:t69, ]
+      tree t69 = null;
+      t69 = tree_opAssign_18(t69, __this);
+      int t70 = t69.value;
+      int t71 = value;
+      t69.value = t71;
     }
 
-    void tree_init_1(tree _this_, tree lhs, tree rhs) {
+    void tree_init_1(tree __this, tree lhs, tree rhs) {
 
       /////// this.lhs = lhs
-      tree __t72 = null;
-      __t72 = tree_opAssign_18(__t72, _this_);
-      tree __t74 = null;
-      __t74 = tree_opAssign_18(__t74, lhs);
-      __t72.lhs = __t74;
+
+      // [L:t74, L:t73, L:t72, ]
+      tree t72 = null;
+      t72 = tree_opAssign_18(t72, __this);
+      tree t73 = t72.lhs;
+      tree t74 = null;
+      t74 = tree_opAssign_18(t74, lhs);
+      t72.lhs = t74;
 
       /////// this.rhs = rhs
-      tree __t75 = null;
-      __t75 = tree_opAssign_18(__t75, _this_);
-      tree __t77 = null;
-      __t77 = tree_opAssign_18(__t77, rhs);
-      __t75.rhs = __t77;
+
+      // [L:t77, L:t76, L:t75, ]
+      tree t75 = null;
+      t75 = tree_opAssign_18(t75, __this);
+      tree t76 = t75.rhs;
+      tree t77 = null;
+      t77 = tree_opAssign_18(t77, rhs);
+      t75.rhs = t77;
     }
 
-    void tree_deinit_17(tree _this_) {
+    void tree_deinit_17(tree __this) {
     }
 
     tree tree_opAssign_18(tree lvalue, tree rvalue) {

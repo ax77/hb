@@ -8,11 +8,7 @@ import tokenize.Ident;
 public abstract class CopierNamer {
 
   public static Ident tmpIdent() {
-    return Hash_ident.getHashedIdent(String.format("__t%d", GlobalCounter.next()));
-  }
-
-  public static Ident _this_() {
-    return Hash_ident.getHashedIdent("_this_");
+    return Hash_ident.getHashedIdent(String.format("t%d", GlobalCounter.next()));
   }
 
   public static String getMethodName(ClassMethodDeclaration m) {

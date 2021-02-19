@@ -3,6 +3,7 @@ package ast_st3_tac.ir;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_builtins.BuiltinNames;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.Mods;
 import ast_st3_tac.leaves.Var;
@@ -39,13 +40,13 @@ public class VarCreator {
     return result;
   }
 
-  public Var justNewVarFromFieldNoBindings(Type type) {
-    final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, CopierNamer.tmpIdent());
+  public Var justNewVarFromFieldNoBindings(VarDeclarator field) {
+    final Var result = new Var(field.getBase(), field.getMods(), field.getType(), field.getIdentifier());
     return result;
   }
 
   public Var just_this_(Type type) {
-    final Var result = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), type, CopierNamer._this_());
+    final Var result = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), type, BuiltinNames.__this_ident);
     if (!allVars.contains(result)) {
       allVars.add(result);
     }
