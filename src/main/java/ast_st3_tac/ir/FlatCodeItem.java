@@ -15,11 +15,13 @@ import ast_st3_tac.items.AssignVarUnop;
 import ast_st3_tac.items.AssignVarVar;
 import ast_st3_tac.items.FlatCallConstructor;
 import ast_st3_tac.items.FlatCallVoid;
-import ast_st3_tac.items.StoreArrayAssignOpCall;
+import ast_st3_tac.items.StoreArrayVarAssignOp;
 import ast_st3_tac.items.StoreArrayVar;
-import ast_st3_tac.items.StoreFieldAssignOpCall;
+import ast_st3_tac.items.StoreFieldVarAssignOp;
+import ast_st3_tac.items.StoreVarField;
+import ast_st3_tac.items.StoreVarFieldAssignOp;
 import ast_st3_tac.items.StoreFieldVar;
-import ast_st3_tac.items.StoreVarAssignOpCall;
+import ast_st3_tac.items.StoreVarVarAssignOp;
 import ast_st3_tac.items.StoreVarVar;
 
 public class FlatCodeItem {
@@ -41,12 +43,14 @@ public class FlatCodeItem {
   private AssignVarVar assignVarVar;
   private FlatCallConstructor flatCallConstructor;
   private FlatCallVoid flatCallVoid;
-  private StoreArrayAssignOpCall storeArrayAssignOpCall;
   private StoreArrayVar storeArrayVar;
-  private StoreFieldAssignOpCall storeFieldAssignOpCall;
+  private StoreArrayVarAssignOp storeArrayVarAssignOp;
   private StoreFieldVar storeFieldVar;
-  private StoreVarAssignOpCall storeVarAssignOpCall;
+  private StoreFieldVarAssignOp storeFieldVarAssignOp;
+  private StoreVarField storeVarField;
+  private StoreVarFieldAssignOp storeVarFieldAssignOp;
   private StoreVarVar storeVarVar;
+  private StoreVarVarAssignOp storeVarVarAssignOp;
 
   public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
   public FlatCodeItem(AssignVarArrayAccess assignVarArrayAccess) { this.opcode = Opc.AssignVarArrayAccess; this.assignVarArrayAccess = assignVarArrayAccess; }
@@ -63,12 +67,14 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
-  public FlatCodeItem(StoreArrayAssignOpCall storeArrayAssignOpCall) { this.opcode = Opc.StoreArrayAssignOpCall; this.storeArrayAssignOpCall = storeArrayAssignOpCall; }
   public FlatCodeItem(StoreArrayVar storeArrayVar) { this.opcode = Opc.StoreArrayVar; this.storeArrayVar = storeArrayVar; }
-  public FlatCodeItem(StoreFieldAssignOpCall storeFieldAssignOpCall) { this.opcode = Opc.StoreFieldAssignOpCall; this.storeFieldAssignOpCall = storeFieldAssignOpCall; }
+  public FlatCodeItem(StoreArrayVarAssignOp storeArrayVarAssignOp) { this.opcode = Opc.StoreArrayVarAssignOp; this.storeArrayVarAssignOp = storeArrayVarAssignOp; }
   public FlatCodeItem(StoreFieldVar storeFieldVar) { this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
-  public FlatCodeItem(StoreVarAssignOpCall storeVarAssignOpCall) { this.opcode = Opc.StoreVarAssignOpCall; this.storeVarAssignOpCall = storeVarAssignOpCall; }
+  public FlatCodeItem(StoreFieldVarAssignOp storeFieldVarAssignOp) { this.opcode = Opc.StoreFieldVarAssignOp; this.storeFieldVarAssignOp = storeFieldVarAssignOp; }
+  public FlatCodeItem(StoreVarField storeVarField) { this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
+  public FlatCodeItem(StoreVarFieldAssignOp storeVarFieldAssignOp) { this.opcode = Opc.StoreVarFieldAssignOp; this.storeVarFieldAssignOp = storeVarFieldAssignOp; }
   public FlatCodeItem(StoreVarVar storeVarVar) { this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
+  public FlatCodeItem(StoreVarVarAssignOp storeVarVarAssignOp) { this.opcode = Opc.StoreVarVarAssignOp; this.storeVarVarAssignOp = storeVarVarAssignOp; }
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarArrayAccess() { return this.opcode == Opc.AssignVarArrayAccess; }
@@ -85,126 +91,68 @@ public class FlatCodeItem {
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
-  public boolean isStoreArrayAssignOpCall() { return this.opcode == Opc.StoreArrayAssignOpCall; }
   public boolean isStoreArrayVar() { return this.opcode == Opc.StoreArrayVar; }
-  public boolean isStoreFieldAssignOpCall() { return this.opcode == Opc.StoreFieldAssignOpCall; }
+  public boolean isStoreArrayVarAssignOp() { return this.opcode == Opc.StoreArrayVarAssignOp; }
   public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
-  public boolean isStoreVarAssignOpCall() { return this.opcode == Opc.StoreVarAssignOpCall; }
+  public boolean isStoreFieldVarAssignOp() { return this.opcode == Opc.StoreFieldVarAssignOp; }
+  public boolean isStoreVarField() { return this.opcode == Opc.StoreVarField; }
+  public boolean isStoreVarFieldAssignOp() { return this.opcode == Opc.StoreVarFieldAssignOp; }
   public boolean isStoreVarVar() { return this.opcode == Opc.StoreVarVar; }
-  
+  public boolean isStoreVarVarAssignOp() { return this.opcode == Opc.StoreVarVarAssignOp; }
+
   @Override
   public String toString() {
     if(isAssignVarAllocObject()) { return assignVarAllocObject.toString(); }
-    else if(isAssignVarArrayAccess()) { return assignVarArrayAccess.toString(); }
-    else if(isAssignVarBinop()) { return assignVarBinop.toString(); }
-    else if(isAssignVarFalse()) { return assignVarFalse.toString(); }
-    else if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
-    else if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
-    else if(isAssignVarFlatCallResult()) { return assignVarFlatCallResult.toString(); }
-    else if(isAssignVarNull()) { return assignVarNull.toString(); }
-    else if(isAssignVarNum()) { return assignVarNum.toString(); }
-    else if(isAssignVarString()) { return assignVarString.toString(); }
-    else if(isAssignVarTrue()) { return assignVarTrue.toString(); }
-    else if(isAssignVarUnop()) { return assignVarUnop.toString(); }
-    else if(isAssignVarVar()) { return assignVarVar.toString(); }
-    else if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
-    else if(isFlatCallVoid()) { return flatCallVoid.toString(); }
-    else if(isStoreArrayAssignOpCall()) { return storeArrayAssignOpCall.toString(); }
-    else if(isStoreArrayVar()) { return storeArrayVar.toString(); }
-    else if(isStoreFieldAssignOpCall()) { return storeFieldAssignOpCall.toString(); }
-    else if(isStoreFieldVar()) { return storeFieldVar.toString(); }
-    else if(isStoreVarAssignOpCall()) { return storeVarAssignOpCall.toString(); }
-    else if(isStoreVarVar()) { return storeVarVar.toString(); }
-    return "???Item";
+    if(isAssignVarArrayAccess()) { return assignVarArrayAccess.toString(); }
+    if(isAssignVarBinop()) { return assignVarBinop.toString(); }
+    if(isAssignVarFalse()) { return assignVarFalse.toString(); }
+    if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
+    if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
+    if(isAssignVarFlatCallResult()) { return assignVarFlatCallResult.toString(); }
+    if(isAssignVarNull()) { return assignVarNull.toString(); }
+    if(isAssignVarNum()) { return assignVarNum.toString(); }
+    if(isAssignVarString()) { return assignVarString.toString(); }
+    if(isAssignVarTrue()) { return assignVarTrue.toString(); }
+    if(isAssignVarUnop()) { return assignVarUnop.toString(); }
+    if(isAssignVarVar()) { return assignVarVar.toString(); }
+    if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
+    if(isFlatCallVoid()) { return flatCallVoid.toString(); }
+    if(isStoreArrayVar()) { return storeArrayVar.toString(); }
+    if(isStoreArrayVarAssignOp()) { return storeArrayVarAssignOp.toString(); }
+    if(isStoreFieldVar()) { return storeFieldVar.toString(); }
+    if(isStoreFieldVarAssignOp()) { return storeFieldVarAssignOp.toString(); }
+    if(isStoreVarField()) { return storeVarField.toString(); }
+    if(isStoreVarFieldAssignOp()) { return storeVarFieldAssignOp.toString(); }
+    if(isStoreVarVar()) { return storeVarVar.toString(); }
+    if(isStoreVarVarAssignOp()) { return storeVarVarAssignOp.toString(); }
+    return "?UnknownItem"; 
   }
+
+  public Opc getOpcode() { return this.opcode; }
+  public AssignVarAllocObject getAssignVarAllocObject() { return this.assignVarAllocObject; }
+  public AssignVarArrayAccess getAssignVarArrayAccess() { return this.assignVarArrayAccess; }
+  public AssignVarBinop getAssignVarBinop() { return this.assignVarBinop; }
+  public AssignVarFalse getAssignVarFalse() { return this.assignVarFalse; }
+  public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
+  public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }
+  public AssignVarFlatCallResult getAssignVarFlatCallResult() { return this.assignVarFlatCallResult; }
+  public AssignVarNull getAssignVarNull() { return this.assignVarNull; }
+  public AssignVarNum getAssignVarNum() { return this.assignVarNum; }
+  public AssignVarString getAssignVarString() { return this.assignVarString; }
+  public AssignVarTrue getAssignVarTrue() { return this.assignVarTrue; }
+  public AssignVarUnop getAssignVarUnop() { return this.assignVarUnop; }
+  public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
+  public FlatCallConstructor getFlatCallConstructor() { return this.flatCallConstructor; }
+  public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
+  public StoreArrayVar getStoreArrayVar() { return this.storeArrayVar; }
+  public StoreArrayVarAssignOp getStoreArrayVarAssignOp() { return this.storeArrayVarAssignOp; }
+  public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
+  public StoreFieldVarAssignOp getStoreFieldVarAssignOp() { return this.storeFieldVarAssignOp; }
+  public StoreVarField getStoreVarField() { return this.storeVarField; }
+  public StoreVarFieldAssignOp getStoreVarFieldAssignOp() { return this.storeVarFieldAssignOp; }
+  public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
+  public StoreVarVarAssignOp getStoreVarVarAssignOp() { return this.storeVarVarAssignOp; }
+
   //@formatter:on
-
-  public Opc getOpcode() {
-    return opcode;
-  }
-
-  public AssignVarAllocObject getAssignVarAllocObject() {
-    return assignVarAllocObject;
-  }
-
-  public AssignVarArrayAccess getAssignVarArrayAccess() {
-    return assignVarArrayAccess;
-  }
-
-  public AssignVarBinop getAssignVarBinop() {
-    return assignVarBinop;
-  }
-
-  public AssignVarFalse getAssignVarFalse() {
-    return assignVarFalse;
-  }
-
-  public AssignVarFieldAccess getAssignVarFieldAccess() {
-    return assignVarFieldAccess;
-  }
-
-  public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() {
-    return assignVarFlatCallClassCreationTmp;
-  }
-
-  public AssignVarFlatCallResult getAssignVarFlatCallResult() {
-    return assignVarFlatCallResult;
-  }
-
-  public AssignVarNull getAssignVarNull() {
-    return assignVarNull;
-  }
-
-  public AssignVarNum getAssignVarNum() {
-    return assignVarNum;
-  }
-
-  public AssignVarString getAssignVarString() {
-    return assignVarString;
-  }
-
-  public AssignVarTrue getAssignVarTrue() {
-    return assignVarTrue;
-  }
-
-  public AssignVarUnop getAssignVarUnop() {
-    return assignVarUnop;
-  }
-
-  public AssignVarVar getAssignVarVar() {
-    return assignVarVar;
-  }
-
-  public FlatCallConstructor getFlatCallConstructor() {
-    return flatCallConstructor;
-  }
-
-  public FlatCallVoid getFlatCallVoid() {
-    return flatCallVoid;
-  }
-
-  public StoreArrayAssignOpCall getStoreArrayAssignOpCall() {
-    return storeArrayAssignOpCall;
-  }
-
-  public StoreArrayVar getStoreArrayVar() {
-    return storeArrayVar;
-  }
-
-  public StoreFieldAssignOpCall getStoreFieldAssignOpCall() {
-    return storeFieldAssignOpCall;
-  }
-
-  public StoreFieldVar getStoreFieldVar() {
-    return storeFieldVar;
-  }
-
-  public StoreVarAssignOpCall getStoreVarAssignOpCall() {
-    return storeVarAssignOpCall;
-  }
-
-  public StoreVarVar getStoreVarVar() {
-    return storeVarVar;
-  }
 
 }

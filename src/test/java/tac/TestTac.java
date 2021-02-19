@@ -76,6 +76,13 @@ public class TestTac {
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     UnitToText text = new UnitToText(unit);
     System.out.println(UtilSrcToStringLevel.tos(text.toString()));
+
+    // AssignVarFieldAccess
+    // type __t39 = __t38.type;
+    // ::
+    // type __t39 = null;
+    // __t39 = opAssign(__t39, __t38.type);
+
   }
 
 }

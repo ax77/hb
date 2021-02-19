@@ -149,7 +149,7 @@ public class UnitToText {
     ExprExpression expr = ifStmt.getCondition();
     TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
-    g("// " + expr.toString());
+    g("/////// " + expr.toString());
     g(res);
     String last = tcg.getLastResultNameToString();
 
@@ -194,7 +194,7 @@ public class UnitToText {
     ExprExpression expr = statement.getExprStmt();
     TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
-    g("// " + expr.toString());
+    g("/////// " + expr.toString());
     g(res);
   }
 
@@ -215,7 +215,7 @@ public class UnitToText {
     final ExprExpression expr = localVariable.getSimpleInitializer();
     TacGenerator tcg = new TacGenerator(expr);
     String res = tcg.txt1(";\n");
-    g("// " + localVariable.toString());
+    g("/////// " + localVariable.toString());
     g(res);
     String last = tcg.getLastResultNameToString();
     g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");

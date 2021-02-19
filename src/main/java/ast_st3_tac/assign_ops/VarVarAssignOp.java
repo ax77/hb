@@ -1,20 +1,19 @@
-package ast_st3_tac.calls;
+package ast_st3_tac.assign_ops;
 
-import ast_st3_tac.leaves.FieldAccess;
 import ast_st3_tac.leaves.Var;
 import ast_types.Type;
 import tokenize.Ident;
 
-public class FlatCallAssignOpArgField {
+public class VarVarAssignOp {
 
-  // a.b = opAssign(a.b, c)
+  // a = opAssign(a, b)
 
   private final Type type;
   private final Ident function;
-  private final FieldAccess lvalueArg;
+  private final Var lvalueArg;
   private final Var rvalueArg;
 
-  public FlatCallAssignOpArgField(Type type, Ident function, FieldAccess lvalueArg, Var rvalueArg) {
+  public VarVarAssignOp(Type type, Ident function, Var lvalueArg, Var rvalueArg) {
     this.type = type;
     this.function = function;
     this.lvalueArg = lvalueArg;
@@ -29,7 +28,7 @@ public class FlatCallAssignOpArgField {
     return function;
   }
 
-  public FieldAccess getLvalueArg() {
+  public Var getLvalueArg() {
     return lvalueArg;
   }
 

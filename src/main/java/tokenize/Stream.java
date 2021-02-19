@@ -196,20 +196,20 @@ public class Stream {
       }
 
       else if (c2 == '*') {
-        throw new AstParseException("/* c-style comments */ are not supported.");
-        // move();
-        // move();
-        // char prevc = '\0';
-        // while (!buffer.isEof()) {
-        //   char tmpch = buffer.nextc();
-        //   if (tmpch == HC_FEOF) {
-        //     throw new ScanExc(Integer.toString(buffer.getLine()));
-        //   }
-        //   if (tmpch == '/' && prevc == '*') {
-        //     return WSP_TOKEN;
-        //   }
-        //   prevc = tmpch;
-        // }
+        // throw new AstParseException("/* c-style comments */ are not supported.");
+        move();
+        move();
+        char prevc = '\0';
+        while (!buffer.isEof()) {
+          char tmpch = buffer.nextc();
+          if (tmpch == HC_FEOF) {
+            throw new ScanExc(Integer.toString(buffer.getLine()));
+          }
+          if (tmpch == '/' && prevc == '*') {
+            return WSP_TOKEN;
+          }
+          prevc = tmpch;
+        }
       }
 
     }

@@ -17,10 +17,12 @@ public enum Opc {
   , AssignVarVar                       // type a = b
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
-  , StoreArrayAssignOpCall             // a[b] = opAssign(a[b], c)
   , StoreArrayVar                      // a[b] = c
-  , StoreFieldAssignOpCall             // a.b = opAssign(a.b, c)
+  , StoreArrayVarAssignOp              // a[b] = opAssign(a[b], c)
   , StoreFieldVar                      // a.b = c
-  , StoreVarAssignOpCall               // a = opAssign(a, b)
+  , StoreFieldVarAssignOp              // a.b = opAssign(a.b, c)
+  , StoreVarField                      // a = b.c
+  , StoreVarFieldAssignOp              // a = opAssign(a, b.c)
   , StoreVarVar                        // a = b
+  , StoreVarVarAssignOp                // a = opAssign(a, b)
 }

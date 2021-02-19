@@ -1,13 +1,13 @@
 package ast_st3_tac.items;
 
-import ast_st3_tac.calls.FlatCallAssignOpArgVar;
+import ast_st3_tac.assign_ops.VarFieldAssignOp;
 import ast_st3_tac.leaves.Var;
 
-public class StoreVarAssignOpCall {
+public class StoreVarFieldAssignOp {
   private final Var dst;
-  private final FlatCallAssignOpArgVar opAssign;
+  private final VarFieldAssignOp opAssign;
 
-  public StoreVarAssignOpCall(Var dst, FlatCallAssignOpArgVar opAssign) {
+  public StoreVarFieldAssignOp(Var dst, VarFieldAssignOp opAssign) {
     this.dst = dst;
     this.opAssign = opAssign;
   }
@@ -16,7 +16,7 @@ public class StoreVarAssignOpCall {
     return dst;
   }
 
-  public FlatCallAssignOpArgVar getOpAssign() {
+  public VarFieldAssignOp getOpAssign() {
     return opAssign;
   }
 

@@ -1,18 +1,17 @@
-package ast_st3_tac.calls;
+package ast_st3_tac.leaves;
 
 import java.util.List;
 
 import ast_printers.GenericListPrinter;
-import ast_st3_tac.leaves.Var;
 import ast_types.Type;
 import tokenize.Ident;
 
-public class FlatCallResult {
+public class PureFunctionCallWithResult {
   private final Type type;
   private final Ident function;
   private final List<Var> args;
 
-  public FlatCallResult(Type type, Ident function, List<Var> args) {
+  public PureFunctionCallWithResult(Type type, Ident function, List<Var> args) {
     this.type = type;
     this.function = function;
     this.args = args;

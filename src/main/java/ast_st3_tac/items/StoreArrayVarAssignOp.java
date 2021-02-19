@@ -1,13 +1,13 @@
 package ast_st3_tac.items;
 
-import ast_st3_tac.calls.FlatCallAssignOpArgArray;
+import ast_st3_tac.assign_ops.ArrayVarAssignOp;
 import ast_st3_tac.leaves.ArrayAccess;
 
-public class StoreArrayAssignOpCall {
+public class StoreArrayVarAssignOp {
   private final ArrayAccess dst;
-  private final FlatCallAssignOpArgArray opAssign;
+  private final ArrayVarAssignOp opAssign;
 
-  public StoreArrayAssignOpCall(ArrayAccess dst, FlatCallAssignOpArgArray opAssign) {
+  public StoreArrayVarAssignOp(ArrayAccess dst, ArrayVarAssignOp opAssign) {
     this.dst = dst;
     this.opAssign = opAssign;
   }
@@ -16,7 +16,7 @@ public class StoreArrayAssignOpCall {
     return dst;
   }
 
-  public FlatCallAssignOpArgArray getOpAssign() {
+  public ArrayVarAssignOp getOpAssign() {
     return opAssign;
   }
 

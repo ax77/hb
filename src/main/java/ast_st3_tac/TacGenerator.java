@@ -29,8 +29,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.LvalueUtil;
 import ast_st2_annotate.Mods;
-import ast_st3_tac.calls.FlatCallAssignOpArgVar;
-import ast_st3_tac.calls.FlatCallResult;
+import ast_st3_tac.assign_ops.VarVarAssignOp;
 import ast_st3_tac.ir.CopierNamer;
 import ast_st3_tac.ir.FlatCodeItem;
 import ast_st3_tac.items.AssignVarAllocObject;
@@ -48,14 +47,15 @@ import ast_st3_tac.items.AssignVarUnop;
 import ast_st3_tac.items.AssignVarVar;
 import ast_st3_tac.items.FlatCallConstructor;
 import ast_st3_tac.items.FlatCallVoid;
-import ast_st3_tac.items.StoreArrayAssignOpCall;
 import ast_st3_tac.items.StoreArrayVar;
-import ast_st3_tac.items.StoreFieldAssignOpCall;
+import ast_st3_tac.items.StoreArrayVarAssignOp;
 import ast_st3_tac.items.StoreFieldVar;
-import ast_st3_tac.items.StoreVarAssignOpCall;
+import ast_st3_tac.items.StoreFieldVarAssignOp;
 import ast_st3_tac.items.StoreVarVar;
+import ast_st3_tac.items.StoreVarVarAssignOp;
 import ast_st3_tac.leaves.Binop;
 import ast_st3_tac.leaves.FieldAccess;
+import ast_st3_tac.leaves.PureFunctionCallWithResult;
 import ast_st3_tac.leaves.Unop;
 import ast_st3_tac.leaves.Var;
 import ast_types.ClassTypeRef;
@@ -117,7 +117,7 @@ public class TacGenerator {
         AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
         rv.add(new FlatCodeItem(assignVarAllocObject));
 
-        final FlatCallResult rvalue = node.getRvalue();
+        final PureFunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFunction(), args, lvalueVar);
@@ -159,15 +159,15 @@ public class TacGenerator {
         rv.add(item);
       } else if (item.isFlatCallVoid()) {
         rv.add(item);
-      } else if (item.isStoreArrayAssignOpCall()) {
+      } else if (item.isStoreArrayVarAssignOp()) {
         rv.add(item);
       } else if (item.isStoreArrayVar()) {
         rv.add(item);
-      } else if (item.isStoreFieldAssignOpCall()) {
+      } else if (item.isStoreFieldVarAssignOp()) {
         rv.add(item);
       } else if (item.isStoreFieldVar()) {
         rv.add(item);
-      } else if (item.isStoreVarAssignOpCall()) {
+      } else if (item.isStoreVarVarAssignOp()) {
         rv.add(item);
       }
 
@@ -206,8 +206,8 @@ public class TacGenerator {
         .getPredefinedMethod(BuiltinNames.opAssign_ident);
 
     Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-    FlatCallAssignOpArgVar aux = new FlatCallAssignOpArgVar(lvalueVar.getType(), fn, lvalueVar, rvalueVar);
-    StoreVarAssignOpCall store = new StoreVarAssignOpCall(lvalueVar, aux);
+    VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), fn, lvalueVar, rvalueVar);
+    StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
     rv.add(new FlatCodeItem(store));
   }
 
@@ -224,8 +224,9 @@ public class TacGenerator {
     StringBuilder sb = new StringBuilder();
     // sb.append("// " + exprTos + "\n");
     for (FlatCodeItem item : rv) {
-      // String f = String.format("%-23s :: %s", item.getOpcode().toString(), item.toString().trim() + end);
-      sb.append(item.toString().trim() + end);
+      String f = String.format("%s", item.toString().trim() + end);
+      sb.append("// " + item.getOpcode().toString() + "\n");
+      sb.append(f);
     }
     return sb.toString().trim();
   }
@@ -328,8 +329,8 @@ public class TacGenerator {
 
     /// store array
 
-    else if (item.isStoreArrayAssignOpCall()) {
-      StoreArrayAssignOpCall node = item.getStoreArrayAssignOpCall();
+    else if (item.isStoreArrayVarAssignOp()) {
+      StoreArrayVarAssignOp node = item.getStoreArrayVarAssignOp();
       err(item);
     }
 
@@ -340,8 +341,8 @@ public class TacGenerator {
 
     /// store field
 
-    else if (item.isStoreFieldAssignOpCall()) {
-      StoreFieldAssignOpCall node = item.getStoreFieldAssignOpCall();
+    else if (item.isStoreFieldVarAssignOp()) {
+      StoreFieldVarAssignOp node = item.getStoreFieldVarAssignOp();
       err(item);
     }
 
@@ -352,8 +353,8 @@ public class TacGenerator {
 
     /// store var
 
-    else if (item.isStoreVarAssignOpCall()) {
-      StoreVarAssignOpCall node = item.getStoreVarAssignOpCall();
+    else if (item.isStoreVarVarAssignOp()) {
+      StoreVarVarAssignOp node = item.getStoreVarVarAssignOp();
       return node.getDst();
     }
 
@@ -523,7 +524,7 @@ public class TacGenerator {
       }
 
       else {
-        final FlatCallResult call = new FlatCallResult(method.getType(), fn, args);
+        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.getType(), fn, args);
         final Var resultVar = new Var(VarBase.LOCAL_VAR, new Modifiers(), method.getType(), CopierNamer.tmpIdent());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
         genRaw(item);
@@ -565,7 +566,7 @@ public class TacGenerator {
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-      final FlatCallResult call = new FlatCallResult(constructor.getType(), fn, args);
+      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.getType(), fn, args);
       final Var lvalue = new Var(VarBase.LOCAL_VAR, new Modifiers(), typename, CopierNamer.tmpIdent());
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);
