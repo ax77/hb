@@ -2,9 +2,6 @@ package ast_st3_tac.ir;
 
 import ast_main.GlobalCounter;
 import ast_method.ClassMethodDeclaration;
-import ast_st3_tac.leaves.Var;
-import ast_vars.VarBase;
-import ast_vars.VarDeclarator;
 import hashed.Hash_ident;
 import tokenize.Ident;
 

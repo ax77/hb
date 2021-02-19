@@ -15,16 +15,16 @@ import ast_st3_tac.items.AssignVarUnop;
 import ast_st3_tac.items.AssignVarVar;
 import ast_st3_tac.items.FlatCallConstructor;
 import ast_st3_tac.items.FlatCallVoid;
-import ast_st3_tac.items.StoreArrayVarAssignOp;
 import ast_st3_tac.items.StoreArrayVar;
+import ast_st3_tac.items.StoreArrayVarAssignOp;
+import ast_st3_tac.items.StoreFieldVar;
 import ast_st3_tac.items.StoreFieldVarAssignOp;
 import ast_st3_tac.items.StoreVarField;
 import ast_st3_tac.items.StoreVarFieldAssignOp;
-import ast_st3_tac.items.StoreFieldVar;
+import ast_st3_tac.items.StoreVarVar;
 import ast_st3_tac.items.StoreVarVarAssignOp;
 import ast_st3_tac.leaves.Var;
 import errors.AstParseException;
-import ast_st3_tac.items.StoreVarVar;
 
 public class FlatCodeItem {
   private final Opc opcode;

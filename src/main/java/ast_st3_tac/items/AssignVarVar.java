@@ -18,7 +18,7 @@ public class AssignVarVar {
   public Var getRvalue() {
     return rvalue;
   }
-  
+
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = " + rvalue.toString();

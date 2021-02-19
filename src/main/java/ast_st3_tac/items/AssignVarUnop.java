@@ -19,7 +19,7 @@ public class AssignVarUnop {
   public Unop getUnop() {
     return unop;
   }
-  
+
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = " + unop.toString();

@@ -26,12 +26,11 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_modifiers.Modifiers;
 import ast_st2_annotate.LvalueUtil;
-import ast_st2_annotate.Mods;
 import ast_st3_tac.assign_ops.VarVarAssignOp;
 import ast_st3_tac.ir.CopierNamer;
 import ast_st3_tac.ir.FlatCodeItem;
+import ast_st3_tac.ir.VarCreator;
 import ast_st3_tac.items.AssignVarAllocObject;
 import ast_st3_tac.items.AssignVarBinop;
 import ast_st3_tac.items.AssignVarFieldAccess;
@@ -68,14 +67,14 @@ public class TacGenerator {
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
   private final String exprTos;
-  private final List<Var> allVars;
+  private final VarCreator varCreator;
 
   public TacGenerator(ExprExpression expr) {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.exprTos = expr.toString();
-    this.allVars = new ArrayList<>();
+    this.varCreator = new VarCreator();
 
     gen(expr);
     rewriteRaw();
@@ -86,7 +85,7 @@ public class TacGenerator {
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.exprTos = var.toString();
-    this.allVars = new ArrayList<>();
+    this.varCreator = new VarCreator();
 
     if (var.getSimpleInitializer() == null) {
       throw new AstParseException(
@@ -96,7 +95,7 @@ public class TacGenerator {
     gen(var.getSimpleInitializer());
     rewriteRaw();
 
-    Var lvaluevar = copyVarDecl(var);
+    Var lvaluevar = varCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
     if (var.getType().is_class()) {
@@ -107,60 +106,6 @@ public class TacGenerator {
       AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
       rv.add(new FlatCodeItem(assignVarVar));
     }
-  }
-
-  /// var holder-creator
-
-  private Var copyVarAddNewName(Var src) {
-    final Var result = new Var(checkBase(src.getBase()), src.getMods(), src.getType(), CopierNamer.tmpIdent());
-    if (!allVars.contains(result)) {
-      allVars.add(result);
-    }
-    return result;
-  }
-
-  private Var copyVarDecl(VarDeclarator src) {
-    final Var result = new Var(checkBase(src.getBase()), src.getMods(), src.getType(), src.getIdentifier());
-    if (!allVars.contains(result)) {
-      allVars.add(result);
-    }
-    return result;
-  }
-
-  private Var copyVarDeclAsFieldNoBindings(VarDeclarator src) {
-    final Var result = new Var(checkBase(src.getBase()), src.getMods(), src.getType(), src.getIdentifier());
-    return result;
-  }
-
-  private Var copyVarDeclAddNewName(VarDeclarator var) {
-    final Var result = new Var(checkBase(var.getBase()), var.getMods(), var.getType(), CopierNamer.tmpIdent());
-    if (!allVars.contains(result)) {
-      allVars.add(result);
-    }
-    return result;
-  }
-
-  private Var justNewVar(Type type) {
-    final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, CopierNamer.tmpIdent());
-    if (!allVars.contains(result)) {
-      allVars.add(result);
-    }
-    return result;
-  }
-
-  private Var just_this_(Type type) {
-    final Var result = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), type, CopierNamer._this_());
-    if (!allVars.contains(result)) {
-      allVars.add(result);
-    }
-    return result;
-  }
-
-  private VarBase checkBase(VarBase base) {
-    if (base != VarBase.METHOD_PARAMETER) {
-      return VarBase.LOCAL_VAR;
-    }
-    return VarBase.METHOD_PARAMETER;
   }
 
   private FlatCodeItem getLast() {
@@ -301,6 +246,38 @@ public class TacGenerator {
     return temproraries.remove(0);
   }
 
+  private String varBaseSimple(VarBase base) {
+    if (base == VarBase.LOCAL_VAR) {
+      return "L:";
+    }
+    if (base == VarBase.CLASS_FIELD) {
+      return "F:";
+    }
+    if (base == VarBase.METHOD_PARAMETER) {
+      return "P:";
+    }
+    if (base == VarBase.METHOD_VAR) {
+      return "M:";
+    }
+    return "";
+  }
+
+  private String varsToStringWithBase() {
+    StringBuilder sb = new StringBuilder();
+    final List<Var> allVars = varCreator.getAllVars();
+    for (int i = 0; i < allVars.size(); i += 1) {
+      Var var = allVars.get(i);
+
+      sb.append(varBaseSimple(var.getBase()));
+      sb.append(var.toString());
+
+      if (i + 1 < allVars.size()) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
   public String txt1(String end) {
     StringBuilder sb = new StringBuilder();
     // sb.append("// " + exprTos + "\n");
@@ -309,7 +286,7 @@ public class TacGenerator {
       // sb.append("// " + item.getOpcode().toString() + "\n");
       sb.append(f);
     }
-    return "// " + allVars.toString() + "\n" + sb.toString().trim();
+    return "// [" + varsToStringWithBase() + "]\n" + sb.toString().trim();
   }
 
   private List<Var> genArgs(final List<ExprExpression> arguments) {
@@ -396,7 +373,7 @@ public class TacGenerator {
       final Var rvarRes = Ritem.getDest();
       final Binop binop = new Binop(lvarRes, op.getValue(), rvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(copyVarAddNewName(lvarRes), binop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.copyVarAddNewName(lvarRes), binop));
       genRaw(item);
 
     }
@@ -411,7 +388,7 @@ public class TacGenerator {
       final Var lvarRes = Litem.getDest();
       final Unop unop = new Unop(op.getValue(), lvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(copyVarAddNewName(lvarRes), unop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.copyVarAddNewName(lvarRes), unop));
       genRaw(item);
     }
 
@@ -434,8 +411,8 @@ public class TacGenerator {
         return;
       }
 
-      final Var lvalueTmp = copyVarDeclAddNewName(var);
-      final Var rvalueTmp = copyVarDecl(var);
+      final Var lvalueTmp = varCreator.copyVarDeclAddNewName(var);
+      final Var rvalueTmp = varCreator.copyVarDecl(var);
       final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
       genRaw(item);
     }
@@ -446,7 +423,7 @@ public class TacGenerator {
 
     else if (base == EPRIMARY_NUMBER) {
       final IntLiteral number = e.getNumber();
-      final Var lhsVar = justNewVar(number.getType());
+      final Var lhsVar = varCreator.justNewVar(number.getType());
       AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
       genRaw(new FlatCodeItem(assignVarNum));
     }
@@ -478,7 +455,7 @@ public class TacGenerator {
 
       else {
         final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.getType(), fn, args);
-        final Var resultVar = justNewVar(method.getType());
+        final Var resultVar = varCreator.justNewVar(method.getType());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
         genRaw(item);
       }
@@ -493,8 +470,8 @@ public class TacGenerator {
       final FlatCodeItem thisItem = popCode();
       final Var obj = thisItem.getDest();
 
-      final FieldAccess access = new FieldAccess(obj, copyVarDeclAsFieldNoBindings(field));
-      final Var lhsvar = copyVarDeclAddNewName(field);
+      final FieldAccess access = new FieldAccess(obj, varCreator.copyVarDeclAsFieldNoBindings(field));
+      final Var lhsvar = varCreator.copyVarDeclAddNewName(field);
 
       final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));
       genRaw(item);
@@ -520,7 +497,7 @@ public class TacGenerator {
       final ClassMethodDeclaration constructor = fcall.getConstructor();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
       final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.getType(), fn, args);
-      final Var lvalue = justNewVar(typename);
+      final Var lvalue = varCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);
       final FlatCodeItem item = new FlatCodeItem(assignVarFlatCallResult);
@@ -534,8 +511,8 @@ public class TacGenerator {
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
 
       // main_class __t2 = _this_
-      final Var lhsVar = justNewVar(classType);
-      final Var rhsVar = just_this_(classType);
+      final Var lhsVar = varCreator.justNewVar(classType);
+      final Var rhsVar = varCreator.just_this_(classType);
       final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lhsVar, rhsVar));
       genRaw(item);
     }
