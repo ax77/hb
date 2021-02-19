@@ -1,5 +1,27 @@
 package ast_st3_tac.ir;
 
+import ast_st3_tac.items.AssignVarAllocObject;
+import ast_st3_tac.items.AssignVarArrayAccess;
+import ast_st3_tac.items.AssignVarBinop;
+import ast_st3_tac.items.AssignVarFalse;
+import ast_st3_tac.items.AssignVarFieldAccess;
+import ast_st3_tac.items.AssignVarFlatCallClassCreationTmp;
+import ast_st3_tac.items.AssignVarFlatCallResult;
+import ast_st3_tac.items.AssignVarNull;
+import ast_st3_tac.items.AssignVarNum;
+import ast_st3_tac.items.AssignVarString;
+import ast_st3_tac.items.AssignVarTrue;
+import ast_st3_tac.items.AssignVarUnop;
+import ast_st3_tac.items.AssignVarVar;
+import ast_st3_tac.items.FlatCallConstructor;
+import ast_st3_tac.items.FlatCallVoid;
+import ast_st3_tac.items.StoreArrayAssignOpCall;
+import ast_st3_tac.items.StoreArrayVar;
+import ast_st3_tac.items.StoreFieldAssignOpCall;
+import ast_st3_tac.items.StoreFieldVar;
+import ast_st3_tac.items.StoreVarAssignOpCall;
+import ast_st3_tac.items.StoreVarVar;
+
 public class FlatCodeItem {
   private final Opc opcode;
 
@@ -18,7 +40,6 @@ public class FlatCodeItem {
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
   private FlatCallConstructor flatCallConstructor;
-  private FlatCallResult flatCallResult;
   private FlatCallVoid flatCallVoid;
   private StoreArrayAssignOpCall storeArrayAssignOpCall;
   private StoreArrayVar storeArrayVar;
@@ -156,10 +177,6 @@ public class FlatCodeItem {
 
   public FlatCallConstructor getFlatCallConstructor() {
     return flatCallConstructor;
-  }
-
-  public FlatCallResult getFlatCallResult() {
-    return flatCallResult;
   }
 
   public FlatCallVoid getFlatCallVoid() {
