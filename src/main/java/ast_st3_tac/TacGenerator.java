@@ -86,8 +86,39 @@ public class TacGenerator {
     rewriteRaw();
   }
 
+  public TacGenerator(VarDeclarator var) {
+    this.temproraries = new ArrayList<>();
+    this.rawResult = new ArrayList<>();
+    this.rv = new ArrayList<>();
+    this.exprTos = var.toString();
+
+    if (var.getSimpleInitializer() == null) {
+      throw new AstParseException(
+          var.getLocationToString() + ":error: variable without an initializer: " + var.toString());
+    }
+
+    gen(var.getSimpleInitializer());
+    rewriteRaw();
+
+    Var lvaluevar = CopierNamer.copyVarDecl(var);
+    Var rvaluevar = getDest(getLast());
+
+    if (var.getType().is_class()) {
+      genOpAssign(lvaluevar, rvaluevar);
+    }
+
+    else {
+      AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
+      rv.add(new FlatCodeItem(assignVarVar));
+    }
+  }
+
+  private FlatCodeItem getLast() {
+    return rv.get(rv.size() - 1);
+  }
+
   public String getLastResultNameToString() {
-    FlatCodeItem item = rv.get(rv.size() - 1);
+    FlatCodeItem item = getLast();
     return getDest(item).getName().getName();
   }
 
@@ -225,7 +256,7 @@ public class TacGenerator {
     // sb.append("// " + exprTos + "\n");
     for (FlatCodeItem item : rv) {
       String f = String.format("%s", item.toString().trim() + end);
-      sb.append("// " + item.getOpcode().toString() + "\n");
+      // sb.append("// " + item.getOpcode().toString() + "\n");
       sb.append(f);
     }
     return sb.toString().trim();

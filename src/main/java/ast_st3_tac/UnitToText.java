@@ -212,37 +212,11 @@ public class UnitToText {
 
   private void genVar(VarDeclarator localVariable) {
 
-    final ExprExpression expr = localVariable.getSimpleInitializer();
-    TacGenerator tcg = new TacGenerator(expr);
+    TacGenerator tcg = new TacGenerator(localVariable);
     String res = tcg.txt1(";\n");
     g("/////// " + localVariable.toString());
     g(res);
-    String last = tcg.getLastResultNameToString();
-    g(localVariable.getType().toString() + " " + localVariable.getIdentifier().getName() + " = " + last + ";");
 
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

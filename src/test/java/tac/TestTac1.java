@@ -11,7 +11,7 @@ import ast_st3_tac.UnitToText;
 import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
 
-public class TestTac {
+public class TestTac1 {
 
   @Test
   public void testTac() throws IOException {
@@ -76,12 +76,6 @@ public class TestTac {
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     UnitToText text = new UnitToText(unit);
     System.out.println(UtilSrcToStringLevel.tos(text.toString()));
-
-    // AssignVarFieldAccess
-    // type __t39 = __t38.type;
-    // ::
-    // type __t39 = null;
-    // __t39 = opAssign(__t39, __t38.type);
 
   }
 
