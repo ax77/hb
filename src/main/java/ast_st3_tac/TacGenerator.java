@@ -242,6 +242,8 @@ public class TacGenerator {
 
   private Var getDest(FlatCodeItem item) {
 
+    /// assignments
+
     if (item.isAssignVarAllocObject()) {
       AssignVarAllocObject node = item.getAssignVarAllocObject();
       return node.getLvalue();
@@ -249,7 +251,7 @@ public class TacGenerator {
 
     else if (item.isAssignVarArrayAccess()) {
       AssignVarArrayAccess node = item.getAssignVarArrayAccess();
-      err(item);
+      return node.getLvalue();
     }
 
     else if (item.isAssignVarBinop()) {
@@ -259,7 +261,7 @@ public class TacGenerator {
 
     else if (item.isAssignVarFalse()) {
       AssignVarFalse node = item.getAssignVarFalse();
-      err(item);
+      return node.getLvalue();
     }
 
     else if (item.isAssignVarFieldAccess()) {
@@ -289,12 +291,12 @@ public class TacGenerator {
 
     else if (item.isAssignVarString()) {
       AssignVarString node = item.getAssignVarString();
-      err(item);
+      return node.getLvalue();
     }
 
     else if (item.isAssignVarTrue()) {
       AssignVarTrue node = item.getAssignVarTrue();
-      err(item);
+      return node.getLvalue();
     }
 
     else if (item.isAssignVarUnop()) {
@@ -307,6 +309,8 @@ public class TacGenerator {
       return node.getLvalue();
     }
 
+    /// calls
+
     else if (item.isFlatCallConstructor()) {
       FlatCallConstructor node = item.getFlatCallConstructor();
       return node.getThisVar();
@@ -316,6 +320,8 @@ public class TacGenerator {
       FlatCallVoid node = item.getFlatCallVoid();
       err(item);
     }
+
+    /// store array
 
     else if (item.isStoreArrayAssignOpCall()) {
       StoreArrayAssignOpCall node = item.getStoreArrayAssignOpCall();
@@ -327,6 +333,8 @@ public class TacGenerator {
       err(item);
     }
 
+    /// store field
+
     else if (item.isStoreFieldAssignOpCall()) {
       StoreFieldAssignOpCall node = item.getStoreFieldAssignOpCall();
       err(item);
@@ -336,6 +344,8 @@ public class TacGenerator {
       StoreFieldVar node = item.getStoreFieldVar();
       err(item);
     }
+
+    /// store var
 
     else if (item.isStoreVarAssignOpCall()) {
       StoreVarAssignOpCall node = item.getStoreVarAssignOpCall();

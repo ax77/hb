@@ -5,24 +5,24 @@ import literals.IntLiteral;
 
 public class AssignVarNum {
   private final Var lvalue;
-  private final IntLiteral num;
+  private final IntLiteral literal;
 
-  public AssignVarNum(Var lvalue, IntLiteral num) {
+  public AssignVarNum(Var lvalue, IntLiteral literal) {
     this.lvalue = lvalue;
-    this.num = num;
+    this.literal = literal;
   }
 
   public Var getLvalue() {
     return lvalue;
   }
 
-  public IntLiteral getNum() {
-    return num;
+  public IntLiteral getLiteral() {
+    return literal;
   }
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = " + num.toString();
+    return lvalue.typeNameToString() + " = " + literal.toString();
   }
 
 }

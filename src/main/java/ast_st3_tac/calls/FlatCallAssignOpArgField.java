@@ -21,4 +21,25 @@ public class FlatCallAssignOpArgField {
     this.rvalueArg = rvalueArg;
   }
 
+  public Type getType() {
+    return type;
+  }
+
+  public Ident getFunction() {
+    return function;
+  }
+
+  public FieldAccess getLvalueArg() {
+    return lvalueArg;
+  }
+
+  public Var getRvalueArg() {
+    return rvalueArg;
+  }
+
+  @Override
+  public String toString() {
+    return function.toString() + "(" + lvalueArg.toString() + ", " + rvalueArg + ")";
+  }
+
 }

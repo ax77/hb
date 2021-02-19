@@ -4,24 +4,24 @@ import ast_st3_tac.leaves.Var;
 
 public class AssignVarNull {
   private final Var lvalue;
-  private final String nullLiteral;
+  private final String literal;
 
   public AssignVarNull(Var lvalue) {
     this.lvalue = lvalue;
-    this.nullLiteral = "null";
+    this.literal = "null";
   }
 
   public Var getLvalue() {
     return lvalue;
   }
 
-  public String getNullLiteral() {
-    return nullLiteral;
+  public String getLiteral() {
+    return literal;
   }
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = null";
+    return lvalue.typeNameToString() + " = " + literal;
   }
 
 }

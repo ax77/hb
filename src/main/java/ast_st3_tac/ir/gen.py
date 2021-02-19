@@ -14,7 +14,6 @@ expr = 'EASSIGN|EBINARY|EUNARY|EPRIMARY_IDENT|EPRIMARY_STRING\
 |ESTRING_CONST|EARRAY_ACCESS'
 
 types = 'byte,char,short,int,long,float,double'
-fields = 'Var,Call,Array_Access,Field_Access,Binop,Unop,Alloc_Object,Literal_True,Literal_False,Literal_Null,Literal_int,literal_String'
 
 opcodes = """
     AssignVarVar,
@@ -36,10 +35,8 @@ opcodes = """
     StoreVarAssignOpCall,
     StoreVarVar,
     FlatCallVoid,
-    FlatCallResult,
     FlatCallConstructor,
-    AssignVarFlatCallClassCreationTmp,
-    FlatCallClassCreationTmp
+    AssignVarFlatCallClassCreationTmp
 """
 opcodes_arr = []
 for opc in opcodes.split(','):

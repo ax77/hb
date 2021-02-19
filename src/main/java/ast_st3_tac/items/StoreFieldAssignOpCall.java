@@ -12,4 +12,17 @@ public class StoreFieldAssignOpCall {
     this.opAssign = opAssign;
   }
 
+  public FieldAccess getDst() {
+    return dst;
+  }
+
+  public FlatCallAssignOpArgField getOpAssign() {
+    return opAssign;
+  }
+
+  @Override
+  public String toString() {
+    return dst.toString() + " = " + opAssign.toString();
+  }
+
 }
