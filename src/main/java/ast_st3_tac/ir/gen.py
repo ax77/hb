@@ -1,3 +1,4 @@
+from codecs import getdecoder
 types = 'i8|u8|i16|u16|i32|u32|i64|u64|f32|f64|boolean\
 |void|type_parameter|class|function|array|tuple'
 
@@ -52,11 +53,26 @@ opcodes_arr.sort()
 # if(isAssignVarBinop()) { return assignVarBinop.toString(); }
 # public AssignVarAllocObject getAssignVarAllocObject() { return assignVarAllocObject; }
 
+# public Var getDest() {
+# 
+#   if (isAssignVarAllocObject()) {
+#     return assignVarAllocObject.getLvalue();
+#   }
+#   if (isStoreArrayVar()) {
+#     err();
+#   }
+# 
+#   throw new AstParseException("unknown item for result: " + toString());
+# }
+# 
+# private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
+
 fields = ''
 constructors = ''
 methods = ''
 to_strings = '  @Override\n  public String toString() {\n'
 getters = '  public Opc getOpcode() { return this.opcode; }\n'
+get_dest = '  public Var getDest() {\n'
 
 for opc in opcodes_arr:
     varname = opc[0].lower() + opc[1:]
@@ -65,6 +81,16 @@ for opc in opcodes_arr:
     methods += '  public boolean is' + opc + '() { return this.opcode == Opc.' + opc + '; }\n'
     to_strings += '    if(is' + opc + '()) { return ' + varname + '.toString(); }\n'
     getters += '  public ' + opc + ' get' + opc + '() { return this.' + varname + '; }\n'
+    
+    get_dest += '    if(is' + opc + '()) {\n'
+    if str(opc).startswith('Assign'):
+        get_dest += '      return ' + varname + '.getLvalue();\n'
+    elif str(opc) == 'FlatCallConstructor':
+         get_dest += '      return ' + varname + '.getThisVar();\n'
+    else:
+        get_dest += '      err();\n'
+        
+    get_dest += '    }\n'
 
 print('  //@formatter:off')
 print(fields)
@@ -75,6 +101,13 @@ to_strings += '    return \"?UnknownItem\"; \n  }\n';
 print(to_strings)
 
 print(getters)
+
+get_dest += '    throw new AstParseException(\"unknown item for result: \" + toString());\n'
+get_dest += '  }\n'
+get_dest += '  private void err() { throw new AstParseException(\"unexpected item for result: \" + toString()); }'
+
+
+print(get_dest)
 print('  //@formatter:on')
 
 

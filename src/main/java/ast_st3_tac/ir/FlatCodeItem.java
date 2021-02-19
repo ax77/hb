@@ -22,6 +22,8 @@ import ast_st3_tac.items.StoreVarField;
 import ast_st3_tac.items.StoreVarFieldAssignOp;
 import ast_st3_tac.items.StoreFieldVar;
 import ast_st3_tac.items.StoreVarVarAssignOp;
+import ast_st3_tac.leaves.Var;
+import errors.AstParseException;
 import ast_st3_tac.items.StoreVarVar;
 
 public class FlatCodeItem {
@@ -153,6 +155,81 @@ public class FlatCodeItem {
   public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
   public StoreVarVarAssignOp getStoreVarVarAssignOp() { return this.storeVarVarAssignOp; }
 
+  public Var getDest() {
+    if(isAssignVarAllocObject()) {
+      return assignVarAllocObject.getLvalue();
+    }
+    if(isAssignVarArrayAccess()) {
+      return assignVarArrayAccess.getLvalue();
+    }
+    if(isAssignVarBinop()) {
+      return assignVarBinop.getLvalue();
+    }
+    if(isAssignVarFalse()) {
+      return assignVarFalse.getLvalue();
+    }
+    if(isAssignVarFieldAccess()) {
+      return assignVarFieldAccess.getLvalue();
+    }
+    if(isAssignVarFlatCallClassCreationTmp()) {
+      return assignVarFlatCallClassCreationTmp.getLvalue();
+    }
+    if(isAssignVarFlatCallResult()) {
+      return assignVarFlatCallResult.getLvalue();
+    }
+    if(isAssignVarNull()) {
+      return assignVarNull.getLvalue();
+    }
+    if(isAssignVarNum()) {
+      return assignVarNum.getLvalue();
+    }
+    if(isAssignVarString()) {
+      return assignVarString.getLvalue();
+    }
+    if(isAssignVarTrue()) {
+      return assignVarTrue.getLvalue();
+    }
+    if(isAssignVarUnop()) {
+      return assignVarUnop.getLvalue();
+    }
+    if(isAssignVarVar()) {
+      return assignVarVar.getLvalue();
+    }
+    if(isFlatCallConstructor()) {
+      return flatCallConstructor.getThisVar();
+    }
+    if(isFlatCallVoid()) {
+      err();
+    }
+    if(isStoreArrayVar()) {
+      err();
+    }
+    if(isStoreArrayVarAssignOp()) {
+      err();
+    }
+    if(isStoreFieldVar()) {
+      err();
+    }
+    if(isStoreFieldVarAssignOp()) {
+      err();
+    }
+    if(isStoreVarField()) {
+      err();
+    }
+    if(isStoreVarFieldAssignOp()) {
+      err();
+    }
+    if(isStoreVarVar()) {
+      err();
+    }
+    if(isStoreVarVarAssignOp()) {
+      return storeVarVarAssignOp.getDst();
+    }
+    throw new AstParseException("unknown item for result: " + toString());
+  }
+  
+  private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
+  
   //@formatter:on
 
 }
