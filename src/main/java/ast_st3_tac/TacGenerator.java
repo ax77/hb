@@ -337,7 +337,7 @@ public class TacGenerator {
       throw new AstParseException("unimplimented store for dst: " + dstItem.toString());
     }
 
-    rawResult.remove(dstItem);
+    // rawResult.remove(dstItem);
 
   }
 
@@ -373,7 +373,7 @@ public class TacGenerator {
       final Var rvarRes = Ritem.getDest();
       final Binop binop = new Binop(lvarRes, op.getValue(), rvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.copyVarAddNewName(lvarRes), binop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.justNewVar(lvarRes.getType()), binop));
       genRaw(item);
 
     }
@@ -388,7 +388,7 @@ public class TacGenerator {
       final Var lvarRes = Litem.getDest();
       final Unop unop = new Unop(op.getValue(), lvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.copyVarAddNewName(lvarRes), unop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.justNewVar(lvarRes.getType()), unop));
       genRaw(item);
     }
 
@@ -411,7 +411,7 @@ public class TacGenerator {
         return;
       }
 
-      final Var lvalueTmp = varCreator.copyVarDeclAddNewName(var);
+      final Var lvalueTmp = varCreator.justNewVar(var.getType());
       final Var rvalueTmp = varCreator.copyVarDecl(var);
       final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
       genRaw(item);
@@ -470,8 +470,8 @@ public class TacGenerator {
       final FlatCodeItem thisItem = popCode();
       final Var obj = thisItem.getDest();
 
-      final FieldAccess access = new FieldAccess(obj, varCreator.copyVarDeclAsFieldNoBindings(field));
-      final Var lhsvar = varCreator.copyVarDeclAddNewName(field);
+      final FieldAccess access = new FieldAccess(obj, varCreator.justNewVarFromFieldNoBindings(field.getType()));
+      final Var lhsvar = varCreator.justNewVar(field.getType());
 
       final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));
       genRaw(item);
