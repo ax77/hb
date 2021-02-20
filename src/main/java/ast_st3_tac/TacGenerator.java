@@ -69,6 +69,10 @@ public class TacGenerator {
   private final String exprTos;
   private final VarCreator varCreator;
 
+  public List<FlatCodeItem> getRv() {
+    return rv;
+  }
+
   public TacGenerator(ExprExpression expr) {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();

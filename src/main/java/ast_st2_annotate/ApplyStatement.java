@@ -30,12 +30,10 @@ public class ApplyStatement {
     }
 
     StatementBase base = s.getBase();
-    if (base == StatementBase.SFOREACH_TMP) {
-      visitForeach(object, method, s);
-    } else if (base == StatementBase.SIF) {
+    if (base == StatementBase.SIF) {
       visitSelectionStmt(object, method, s.getIfStmt());
     } else if (base == StatementBase.SEXPR) {
-      applyExpression(object, s.getExprStmt());
+      visitExprStmt(object, s);
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
@@ -43,52 +41,58 @@ public class ApplyStatement {
     } else if (base == StatementBase.SWHILE) {
       visitWhile(object, method, s.getWhileStmt());
     } else if (base == StatementBase.SFOR) {
-      visitVor(object, method, s.getForStmt());
+      visitFor(object, method, s.getForStmt());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
   }
 
-  private void visitReturn(final ClassDeclaration object, final StmtReturn returnStmt) {
-    if (returnStmt.hasExpression()) {
-      applyExpression(object, returnStmt.getExpression());
-    }
+  private void visitExprStmt(final ClassDeclaration object, final StmtStatement node) {
+    applyExpression(object, node.getExprStmt());
+    node.setLinearExprStmt(GetCodeItems.getFlatCode(node.getExprStmt()));
   }
 
-  private void visitVor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor stmtFor) {
+  private void visitReturn(final ClassDeclaration object, final StmtReturn node) {
+    if (node.hasExpression()) {
+      applyExpression(object, node.getExpression());
+    }
+    node.setLinearExpression(GetCodeItems.getFlatCode(node.getExpression()));
+  }
+
+  private void visitFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor node) {
 
     symtabApplier.openBlockScope("block");
-    visitLocalVar(object, stmtFor.getDecl());
-
-    applyExpression(object, stmtFor.getInit());
-    applyExpression(object, stmtFor.getTest());
-    applyExpression(object, stmtFor.getStep());
-    visitBlock(object, method, stmtFor.getBlock());
-
+    visitLocalVar(object, node.getDecl());
+    applyExpression(object, node.getInit());
+    applyExpression(object, node.getTest());
+    applyExpression(object, node.getStep());
+    visitBlock(object, method, node.getBlock());
     symtabApplier.closeBlockScope();
+
+    node.setLinearDecl(GetCodeItems.getFlatCode(node.getDecl()));
+    node.setLinearInit(GetCodeItems.getFlatCode(node.getInit()));
+    node.setLinearTest(GetCodeItems.getFlatCode(node.getTest()));
+    node.setLinearStep(GetCodeItems.getFlatCode(node.getStep()));
   }
 
-  private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtWhile whileStmt) {
-    applyExpression(object, whileStmt.getCondition());
-    visitBlock(object, method, whileStmt.getBlock());
+  private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtWhile node) {
+    applyExpression(object, node.getCondition());
+    visitBlock(object, method, node.getBlock());
+    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
   }
 
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtSelect ifStmt) {
-    applyExpression(object, ifStmt.getCondition());
-    visitBlock(object, method, ifStmt.getTrueStatement());
-    visitBlock(object, method, ifStmt.getOptionalElseStatement());
+      final StmtSelect node) {
+    applyExpression(object, node.getCondition());
+    visitBlock(object, method, node.getTrueStatement());
+    visitBlock(object, method, node.getOptionalElseStatement());
 
-    if (!ifStmt.getCondition().getResultType().is_boolean()) {
+    if (!node.getCondition().getResultType().is_boolean()) {
       throw new AstParseException("if condition must be only a boolean type");
     }
-  }
 
-  private void visitForeach(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement statement) {
-    throw new AstParseException("unimpl. foreach loop");
+    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock block) {
@@ -97,6 +101,8 @@ public class ApplyStatement {
 
     for (StmtBlockItem item : block.getBlockItems()) {
       visitLocalVar(object, item.getLocalVariable());
+      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
+
       applyStatement(object, method, item.getStatement());
     }
 

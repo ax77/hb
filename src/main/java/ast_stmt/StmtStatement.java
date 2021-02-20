@@ -5,6 +5,7 @@ import java.io.Serializable;
 import ast_expr.ExprExpression;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
+import ast_st3_tac.FlatCode;
 import tokenize.Token;
 
 public class StmtStatement implements Serializable, Location {
@@ -14,11 +15,13 @@ public class StmtStatement implements Serializable, Location {
   private final Token beginPos;
   private StmtBlock bloskStmt;
   private ExprExpression exprStmt;
-  private StmtForeach foreachStmt;
   private StmtSelect ifStmt;
   private StmtWhile whileStmt;
   private StmtFor forStmt;
   private StmtReturn returnStmt;
+
+  // 3ac
+  private FlatCode linearExprStmt;
 
   public StmtStatement(StmtFor forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
@@ -36,13 +39,6 @@ public class StmtStatement implements Serializable, Location {
     this.base = StatementBase.SWHILE;
     this.beginPos = beginPos;
     this.whileStmt = whileStmt;
-  }
-
-  // it will be rewritten to while() at the stage-2
-  public StmtStatement(StmtForeach foreachStmt, Token beginPos) {
-    this.base = StatementBase.SFOREACH_TMP;
-    this.beginPos = beginPos;
-    this.foreachStmt = foreachStmt;
   }
 
   public StmtStatement(StmtSelect ifStmt, Token beginPos) {
@@ -81,10 +77,6 @@ public class StmtStatement implements Serializable, Location {
     return exprStmt;
   }
 
-  public StmtForeach getForeachStmt() {
-    return foreachStmt;
-  }
-
   public StmtFor getForStmt() {
     return forStmt;
   }
@@ -97,22 +89,28 @@ public class StmtStatement implements Serializable, Location {
     return whileStmt;
   }
 
+  public FlatCode getLinearExprStmt() {
+    return linearExprStmt;
+  }
+
+  public void setLinearExprStmt(FlatCode linearExprStmt) {
+    this.linearExprStmt = linearExprStmt;
+  }
+
   @Override
   public String toString() {
     if (base == StatementBase.SIF) {
       return ifStmt.toString();
     }
     if (base == StatementBase.SEXPR) {
-      return exprStmt.toString() + ";\n";
+      String header = (linearExprStmt == null ? "" : linearExprStmt.toString());
+      return header + exprStmt.toString() + ";";
     }
     if (base == StatementBase.SBLOCK) {
       return bloskStmt.toString();
     }
     if (base == StatementBase.SRETURN) {
       return returnStmt.toString();
-    }
-    if (base == StatementBase.SFOREACH_TMP) {
-      return foreachStmt.toString();
     }
     if (base == StatementBase.SWHILE) {
       return whileStmt.toString();

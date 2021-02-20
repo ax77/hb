@@ -16,12 +16,10 @@ import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
-import ast_stmt.StmtForeach;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
-import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -221,21 +219,6 @@ public class ParseStatement {
     }
 
     return new StmtStatement(new StmtSelect(condition, trueStatement, null), ifKeyword);
-  }
-
-  @SuppressWarnings("unused")
-  private StmtStatement parseForeach() {
-
-    // for item in list {}
-
-    final Token beginPos = parser.checkedMove(for_ident);
-    final Ident iter = parser.getIdent();
-
-    parser.checkedMove(Keywords.in_ident);
-    final Ident collection = parser.getIdent();
-
-    final StmtBlock loop = parseBlock(VarBase.LOCAL_VAR);
-    return new StmtStatement(new StmtForeach(iter, collection, loop, beginPos), beginPos);
   }
 
   private StmtStatement parseForLoop() {

@@ -3,6 +3,7 @@ package ast_stmt;
 import java.io.Serializable;
 
 import ast_expr.ExprExpression;
+import ast_st3_tac.FlatCode;
 import utils_oth.NullChecker;
 
 public class StmtSelect implements Serializable {
@@ -39,6 +40,9 @@ public class StmtSelect implements Serializable {
   private final StmtBlock trueStatement;
   private final StmtBlock optionalElseStatement;
 
+  /// 3ac
+  private FlatCode linearCondition;
+
   public StmtSelect(ExprExpression condition, StmtBlock trueStatement, StmtBlock optionalElseStatement) {
     NullChecker.check(condition, trueStatement);
 
@@ -61,6 +65,14 @@ public class StmtSelect implements Serializable {
 
   public boolean hasElse() {
     return optionalElseStatement != null;
+  }
+
+  public FlatCode getLinearCondition() {
+    return linearCondition;
+  }
+
+  public void setLinearCondition(FlatCode linearCondition) {
+    this.linearCondition = linearCondition;
   }
 
   @Override

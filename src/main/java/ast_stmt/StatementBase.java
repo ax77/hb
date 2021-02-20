@@ -5,13 +5,9 @@ public enum StatementBase {
     SBLOCK
   , SIF
   , SWHILE
-//  , SDOWHILE
   , SEXPR
   , SBREAK
   , SCONTINUE
-  , SFOREACH_TMP
   , SRETURN
   , SFOR
-//  , SGOTO
-//  , SLABEL
 }

@@ -1,10 +1,14 @@
 package ast_stmt;
 
 import ast_expr.ExprExpression;
+import ast_st3_tac.FlatCode;
 
 public class StmtWhile {
   private final ExprExpression condition;
   private final StmtBlock block;
+
+  /// 3ac
+  private FlatCode linearCondition;
 
   public StmtWhile(ExprExpression condition, StmtBlock block) {
     this.condition = condition;
@@ -17,6 +21,14 @@ public class StmtWhile {
 
   public StmtBlock getBlock() {
     return block;
+  }
+
+  public FlatCode getLinearCondition() {
+    return linearCondition;
+  }
+
+  public void setLinearCondition(FlatCode linearCondition) {
+    this.linearCondition = linearCondition;
   }
 
   @Override

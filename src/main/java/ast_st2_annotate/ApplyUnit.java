@@ -24,6 +24,7 @@ public class ApplyUnit {
     symtabApplier.openFileScope();
     for (ClassDeclaration td : instantiationUnit.getClasses()) {
       symtabApplier.defineClazz(td);
+      addDefaultMethods(td);
     }
     for (ClassDeclaration td : instantiationUnit.getClasses()) {
       applyClazz(td);
@@ -34,8 +35,6 @@ public class ApplyUnit {
   private void applyClazz(final ClassDeclaration object) throws IOException {
 
     symtabApplier.openClassScope(object.getIdentifier().getName());
-
-    addDefaultMethods(object);
 
     //fields
     for (VarDeclarator field : object.getFields()) {
@@ -95,16 +94,16 @@ public class ApplyUnit {
 
     //body
     final StmtBlock body = method.getBlock();
-    for (StmtBlockItem block : body.getBlockItems()) {
+    for (StmtBlockItem item : body.getBlockItems()) {
 
       // method variables
-      final VarDeclarator var = block.getLocalVariable();
+      final VarDeclarator var = item.getLocalVariable();
       if (var != null) {
         symtabApplier.defineMethodVariable(method, var);
         applyInitializer(object, var);
       }
-
-      applyStatement(object, method, block.getStatement());
+      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
+      applyStatement(object, method, item.getStatement());
     }
 
     symtabApplier.closeMethodScope();

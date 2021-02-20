@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_main.ParserMain;
 import ast_st3_tac.TacGenerator;
@@ -74,8 +75,13 @@ public class TestTac1 {
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
-    UnitToText text = new UnitToText(unit);
-    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
+
+    for (ClassDeclaration c : unit.getClasses()) {
+      System.out.println(c.toString());
+    }
+
+    //    UnitToText text = new UnitToText(unit);
+    //    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
 
   }
 

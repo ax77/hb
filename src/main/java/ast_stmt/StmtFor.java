@@ -3,6 +3,7 @@ package ast_stmt;
 import java.io.Serializable;
 
 import ast_expr.ExprExpression;
+import ast_st3_tac.FlatCode;
 import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
@@ -14,6 +15,12 @@ public class StmtFor implements Serializable {
   private final ExprExpression test;
   private final ExprExpression step;
   private final StmtBlock block;
+
+  /// 3ac
+  private FlatCode linearDecl;
+  private FlatCode linearInit;
+  private FlatCode linearTest;
+  private FlatCode linearStep;
 
   public StmtFor(VarDeclarator decl, ExprExpression init, ExprExpression test, ExprExpression step, StmtBlock block) {
     NullChecker.check(block);
@@ -59,6 +66,38 @@ public class StmtFor implements Serializable {
 
   public boolean hasStep() {
     return step != null;
+  }
+
+  public FlatCode getLinearDecl() {
+    return linearDecl;
+  }
+
+  public void setLinearDecl(FlatCode linearDecl) {
+    this.linearDecl = linearDecl;
+  }
+
+  public FlatCode getLinearInit() {
+    return linearInit;
+  }
+
+  public void setLinearInit(FlatCode linearInit) {
+    this.linearInit = linearInit;
+  }
+
+  public FlatCode getLinearTest() {
+    return linearTest;
+  }
+
+  public void setLinearTest(FlatCode linearTest) {
+    this.linearTest = linearTest;
+  }
+
+  public FlatCode getLinearStep() {
+    return linearStep;
+  }
+
+  public void setLinearStep(FlatCode linearStep) {
+    this.linearStep = linearStep;
   }
 
   @Override

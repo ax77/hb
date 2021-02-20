@@ -2,6 +2,7 @@ package ast_stmt;
 
 import java.io.Serializable;
 
+import ast_st3_tac.FlatCode;
 import ast_vars.VarDeclarator;
 import utils_oth.NullChecker;
 
@@ -10,18 +11,18 @@ public class StmtBlockItem implements Serializable {
 
   private VarDeclarator localVariable;
   private StmtStatement statement;
-  private final boolean isVarDeclaration;
+
+  /// 3ac
+  private FlatCode linearLocalVariable;
 
   public StmtBlockItem(VarDeclarator localVariable) {
     NullChecker.check(localVariable);
     this.localVariable = localVariable;
-    this.isVarDeclaration = true;
   }
 
   public StmtBlockItem(StmtStatement statement) {
     NullChecker.check(statement);
     this.statement = statement;
-    this.isVarDeclaration = false;
   }
 
   public VarDeclarator getLocalVariable() {
@@ -37,17 +38,28 @@ public class StmtBlockItem implements Serializable {
   }
 
   public boolean isVarDeclarationItem() {
-    return isVarDeclaration;
+    return localVariable != null;
   }
 
   public boolean isStatementItem() {
-    return !isVarDeclaration;
+    return statement != null;
+  }
+
+  public FlatCode getLinearLocalVariable() {
+    return linearLocalVariable;
+  }
+
+  public void setLinearLocalVariable(FlatCode linearLocalVariable) {
+    this.linearLocalVariable = linearLocalVariable;
   }
 
   @Override
   public String toString() {
     if (localVariable != null) {
+      String header = (linearLocalVariable == null ? "" : linearLocalVariable.toString());
+
       StringBuilder sb = new StringBuilder();
+      sb.append(header);
       sb.append(localVariable.toString() + "\n");
       return sb.toString();
     }
