@@ -10,11 +10,11 @@ import utils_oth.NullChecker;
 public class StmtFor implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
 
-  private final VarDeclarator decl;
-  private final ExprExpression init;
-  private final ExprExpression test;
-  private final ExprExpression step;
-  private final StmtBlock block;
+  private /*final*/ VarDeclarator decl;
+  private /*final*/ ExprExpression init;
+  private /*final*/ ExprExpression test;
+  private /*final*/ ExprExpression step;
+  private /*final*/ StmtBlock block;
 
   /// 3ac
   private FlatCode linearDecl;
@@ -22,14 +22,7 @@ public class StmtFor implements Serializable {
   private FlatCode linearTest;
   private FlatCode linearStep;
 
-  public StmtFor(VarDeclarator decl, ExprExpression init, ExprExpression test, ExprExpression step, StmtBlock block) {
-    NullChecker.check(block);
-
-    this.decl = decl;
-    this.init = init;
-    this.test = test;
-    this.step = step;
-    this.block = block;
+  public StmtFor() {
   }
 
   public VarDeclarator getDecl() {
@@ -98,6 +91,26 @@ public class StmtFor implements Serializable {
 
   public void setLinearStep(FlatCode linearStep) {
     this.linearStep = linearStep;
+  }
+
+  public void setDecl(VarDeclarator decl) {
+    this.decl = decl;
+  }
+
+  public void setInit(ExprExpression init) {
+    this.init = init;
+  }
+
+  public void setTest(ExprExpression test) {
+    this.test = test;
+  }
+
+  public void setStep(ExprExpression step) {
+    this.step = step;
+  }
+
+  public void setBlock(StmtBlock block) {
+    this.block = block;
   }
 
   @Override

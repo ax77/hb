@@ -42,6 +42,8 @@ public class ApplyStatement {
       visitWhile(object, method, s.getWhileStmt());
     } else if (base == StatementBase.SFOR) {
       visitFor(object, method, s.getForStmt());
+    } else if (base == StatementBase.SBREAK || base == StatementBase.SCONTINUE) {
+      //TODO:
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }

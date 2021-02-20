@@ -19,9 +19,23 @@ public class StmtStatement implements Serializable, Location {
   private StmtWhile whileStmt;
   private StmtFor forStmt;
   private StmtReturn returnStmt;
+  private StmtBreak breakStmt;
+  private StmtContinue continueStmt;
 
   // 3ac
   private FlatCode linearExprStmt;
+
+  public StmtStatement(StmtContinue continueStmt, Token beginPos) {
+    this.base = StatementBase.SCONTINUE;
+    this.beginPos = beginPos;
+    this.continueStmt = continueStmt;
+  }
+
+  public StmtStatement(StmtBreak breakStmt, Token beginPos) {
+    this.base = StatementBase.SBREAK;
+    this.beginPos = beginPos;
+    this.breakStmt = breakStmt;
+  }
 
   public StmtStatement(StmtFor forStmt, Token beginPos) {
     this.base = StatementBase.SFOR;
@@ -117,6 +131,12 @@ public class StmtStatement implements Serializable, Location {
     }
     if (base == StatementBase.SFOR) {
       return forStmt.toString();
+    }
+    if (base == StatementBase.SBREAK) {
+      return breakStmt.toString();
+    }
+    if (base == StatementBase.SCONTINUE) {
+      return continueStmt.toString();
     }
     return base.toString();
   }

@@ -8,6 +8,9 @@ import static ast_symtab.Keywords.return_ident;
 import static ast_symtab.Keywords.while_ident;
 import static tokenize.T.T_SEMI_COLON;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
@@ -15,11 +18,14 @@ import ast_st2_annotate.Mods;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtBreak;
+import ast_stmt.StmtContinue;
 import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
+import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
@@ -31,9 +37,11 @@ import tokenize.Token;
 
 public class ParseStatement {
   private final Parse parser;
+  private final List<StmtStatement> loops;
 
   public ParseStatement(Parse parser) {
     this.parser = parser;
+    this.loops = new ArrayList<>();
   }
 
   public StmtBlock parseBlock(VarBase varBase) {
@@ -157,6 +165,20 @@ public class ParseStatement {
       return parseSelection();
     }
 
+    if (parser.is(Keywords.break_ident)) {
+      StmtStatement currentLoop = peekLoop();
+      Token beginPos = parser.checkedMove(Keywords.break_ident);
+      parser.semicolon();
+      return new StmtStatement(new StmtBreak(currentLoop), beginPos);
+    }
+
+    if (parser.is(Keywords.continue_ident)) {
+      StmtStatement currentLoop = peekLoop();
+      Token beginPos = parser.checkedMove(Keywords.continue_ident);
+      parser.semicolon();
+      return new StmtStatement(new StmtContinue(currentLoop), beginPos);
+    }
+
     if (parser.is(T.T_LEFT_BRACE)) {
       return new StmtStatement(parseBlock(VarBase.LOCAL_VAR), parser.tok());
     }
@@ -223,22 +245,22 @@ public class ParseStatement {
 
   private StmtStatement parseForLoop() {
 
-    VarDeclarator decl = null;
-    ExprExpression init = null;
-    ExprExpression test = null;
-    ExprExpression step = null;
-    StmtBlock loop = null;
-
     Token from = parser.checkedMove(for_ident);
     parser.lparen();
+
+    StmtFor forStmt = new StmtFor();
+    StmtStatement result = new StmtStatement(forStmt, from);
+    pushLoop(result);
 
     // 1) for (int i = 0; ;)
     // 2) for (i = 0; ;)
     if (parser.tp() != T_SEMI_COLON) {
       if (isLocalVarBegin()) {
-        decl = getLocalVar(VarBase.LOCAL_VAR);
+        VarDeclarator decl = getLocalVar(VarBase.LOCAL_VAR);
+        forStmt.setDecl(decl);
       } else {
-        init = parseForLoopExpressions();
+        ExprExpression init = parseForLoopExpressions();
+        forStmt.setInit(init);
         parser.semicolon();
       }
     } else {
@@ -246,19 +268,23 @@ public class ParseStatement {
     }
 
     if (parser.tp() != T_SEMI_COLON) {
-      test = parseForLoopExpressions();
+      ExprExpression test = parseForLoopExpressions();
+      forStmt.setTest(test);
     }
     parser.semicolon();
 
     if (parser.tp() != T.T_RIGHT_PAREN) {
-      step = parseForLoopExpressions();
+      ExprExpression step = parseForLoopExpressions();
+      forStmt.setStep(step);
     }
     parser.rparen();
 
     checkSemicolonAndLbrace();
-    loop = parseBlock(VarBase.LOCAL_VAR);
+    StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
+    forStmt.setBlock(block);
 
-    return new StmtStatement(new StmtFor(decl, init, test, step, loop), from);
+    popLoop();
+    return result;
   }
 
   private ExprExpression parseForLoopExpressions() {
@@ -287,6 +313,21 @@ public class ParseStatement {
       return;
     }
     parser.perror("expected '{', but was: " + parser.tok().getValue());
+  }
+
+  private void pushLoop(StmtStatement s) {
+    loops.add(0, s);
+  }
+
+  private void popLoop() {
+    loops.remove(0);
+  }
+
+  private StmtStatement peekLoop() {
+    if (loops.isEmpty()) {
+      parser.perror("there is no current loop");
+    }
+    return loops.get(0);
   }
 
 }
