@@ -21,7 +21,7 @@ public class TestTac2 {
     StringBuilder sb = new StringBuilder();
     sb.append(" class str { str(){} } class main_class {                                           \n");
     sb.append("  void main() {                                             \n");
-    sb.append("    int a=0; if(a==0) {a=1;}else if(a==1){a=2;}else if(a==2){a=3;}else{a=32;} \n");
+    sb.append("    int a=0; if(a==0) {a=1;}else if(a==1){a=2;}else if(a==-2){a=3;}else{a=-32;} \n");
     sb.append("  }                                                        \n");
     sb.append("}                                                        \n");
     //@formatter:on

@@ -22,7 +22,6 @@ import ast_unit.InstantiationUnit;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
-import hashed.Hash_ident;
 
 public class UnitToText {
 

@@ -376,7 +376,7 @@ public class TacGenerator {
       final Var rvarRes = Ritem.getDest();
       final Binop binop = new Binop(lvarRes, op.getValue(), rvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.justNewVar(lvarRes.getType()), binop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.justNewVar(e.getResultType()), binop));
       genRaw(item);
 
     }
@@ -391,7 +391,7 @@ public class TacGenerator {
       final Var lvarRes = Litem.getDest();
       final Unop unop = new Unop(op.getValue(), lvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.justNewVar(lvarRes.getType()), unop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.justNewVar(e.getResultType()), unop));
       genRaw(item);
     }
 
