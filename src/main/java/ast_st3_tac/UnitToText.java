@@ -110,8 +110,8 @@ public class UnitToText {
 
     Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
     List<VarDeclarator> params = method.getParameters();
-    params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType,
-       BuiltinNames.__this_ident, method.getBeginPos()));
+    params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType, BuiltinNames.__this_ident,
+        method.getBeginPos()));
 
     if (method.getIdentifier().getName().equals("main")) {
       g("void main()");
@@ -154,24 +154,11 @@ public class UnitToText {
     String last = tcg.getLastResultNameToString();
 
     g("if(" + last + ")");
-    genStatement(ifStmt.getTrueStatement());
+    genBlock(ifStmt.getTrueStatement());
 
     if (ifStmt.hasElse()) {
-      boolean isElseIf = ifStmt.isElseIf();
-
-      String header = "else";
-      if (isElseIf) {
-        header = "else {\n";
-      }
-      g(header);
-
-      genStatement(ifStmt.getOptionalElseStatement());
-
-      String footer = "";
-      if (isElseIf) {
-        footer = "\n}\n";
-      }
-      g(footer);
+      g("else ");
+      genBlock(ifStmt.getOptionalElseStatement());
     }
   }
 

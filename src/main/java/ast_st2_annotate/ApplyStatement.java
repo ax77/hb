@@ -78,8 +78,8 @@ public class ApplyStatement {
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtSelect ifStmt) {
     applyExpression(object, ifStmt.getCondition());
-    applyStatement(object, method, ifStmt.getTrueStatement());
-    applyStatement(object, method, ifStmt.getOptionalElseStatement());
+    visitBlock(object, method, ifStmt.getTrueStatement());
+    visitBlock(object, method, ifStmt.getOptionalElseStatement());
 
     if (!ifStmt.getCondition().getResultType().is_boolean()) {
       throw new AstParseException("if condition must be only a boolean type");

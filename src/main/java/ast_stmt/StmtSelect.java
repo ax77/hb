@@ -8,11 +8,38 @@ import utils_oth.NullChecker;
 public class StmtSelect implements Serializable {
   private static final long serialVersionUID = 8138015838549729527L;
 
-  private final ExprExpression condition;
-  private final StmtStatement trueStatement;
-  private final StmtStatement optionalElseStatement;
+  /// int a = 0;
+  /// if (a == 0) {
+  ///   a = 1;
+  /// } else if (a == 1) {
+  ///   a = 2;
+  /// } else if (a == 2) {
+  ///   a = 3;
+  /// } else {
+  ///   a = 32;
+  /// }
+  /// ::
+  /// ::
+  /// int a = 0;
+  /// if (a == 0) {
+  ///   a = 1;
+  /// } else {
+  ///   if (a == 1) {
+  ///     a = 2;
+  ///   } else {
+  ///     if (a == 3) {
+  ///       a = 3;
+  ///     } else {
+  ///       a = 32;
+  ///     }
+  ///   }
+  /// }
 
-  public StmtSelect(ExprExpression condition, StmtStatement trueStatement, StmtStatement optionalElseStatement) {
+  private final ExprExpression condition;
+  private final StmtBlock trueStatement;
+  private final StmtBlock optionalElseStatement;
+
+  public StmtSelect(ExprExpression condition, StmtBlock trueStatement, StmtBlock optionalElseStatement) {
     NullChecker.check(condition, trueStatement);
 
     this.condition = condition;
@@ -24,20 +51,16 @@ public class StmtSelect implements Serializable {
     return condition;
   }
 
-  public StmtStatement getTrueStatement() {
+  public StmtBlock getTrueStatement() {
     return trueStatement;
   }
 
-  public StmtStatement getOptionalElseStatement() {
+  public StmtBlock getOptionalElseStatement() {
     return optionalElseStatement;
   }
 
   public boolean hasElse() {
     return optionalElseStatement != null;
-  }
-
-  public boolean isElseIf() {
-    return hasElse() && optionalElseStatement.getBase() == StatementBase.SIF;
   }
 
   @Override

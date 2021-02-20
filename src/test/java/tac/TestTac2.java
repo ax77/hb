@@ -19,13 +19,13 @@ public class TestTac2 {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" class str { str(){} } class main_class {                                          //037 \n");
-    sb.append("  void main() {                                             //038 \n");
-    sb.append("    str str1 = new str(); str str2 = str1;                                              //046 \n");
-    sb.append("  }                                                         //052 \n");
-    sb.append("}                                                           //053 \n");
+    sb.append(" class str { str(){} } class main_class {                                           \n");
+    sb.append("  void main() {                                             \n");
+    sb.append("    int a=0; if(a==0) {a=1;}else if(a==1){a=2;}else if(a==2){a=3;}else{a=32;} \n");
+    sb.append("  }                                                        \n");
+    sb.append("}                                                        \n");
     //@formatter:on
-
+    
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     UnitToText text = new UnitToText(unit);
     System.out.println(UtilSrcToStringLevel.tos(text.toString()));

@@ -12,6 +12,7 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.Mods;
+import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
@@ -199,17 +200,27 @@ public class ParseStatement {
 
     final ExprExpression condition = new ParseExpression(parser).e_expression();
     shouldBeLeftBrace();
-    final StmtStatement trueStatement = parseStatement();
+    final StmtBlock trueStatement = parseBlock(VarBase.LOCAL_VAR);
 
-    StmtStatement optionalElseStatement = null;
     if (parser.is(else_ident)) {
       final Token elseKeyword = parser.checkedMove(else_ident);
       shouldBeIfOrLeftBrace();
-      optionalElseStatement = parseStatement();
-      return new StmtStatement(new StmtSelect(condition, trueStatement, optionalElseStatement), elseKeyword);
+
+      StmtStatement tmp = parseStatement();
+      StmtBlock block = new StmtBlock();
+
+      if (tmp.getBase() == StatementBase.SIF) {
+        block.put(new StmtBlockItem(tmp));
+      } else if (tmp.getBase() == StatementBase.SBLOCK) {
+        block = tmp.getBlockStmt();
+      } else {
+        parser.perror("else if statement error.");
+      }
+
+      return new StmtStatement(new StmtSelect(condition, trueStatement, block), elseKeyword);
     }
 
-    return new StmtStatement(new StmtSelect(condition, trueStatement, optionalElseStatement), ifKeyword);
+    return new StmtStatement(new StmtSelect(condition, trueStatement, null), ifKeyword);
   }
 
   @SuppressWarnings("unused")
