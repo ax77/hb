@@ -124,6 +124,11 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.isGeneratedByDefault = true;
   }
 
+  public void pushParameterFront(VarDeclarator param) {
+    NullChecker.check(param);
+    this.parameters.add(0, param);
+  }
+
   private String parametersToString() {
     StringBuilder sb = new StringBuilder();
     sb.append("(");

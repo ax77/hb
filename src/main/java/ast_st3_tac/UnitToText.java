@@ -109,8 +109,9 @@ public class UnitToText {
 
     Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
     List<VarDeclarator> params = method.getParameters();
-    params.add(0, new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType, BuiltinNames.__this_ident,
-        method.getBeginPos()));
+    final VarDeclarator __thisParam = new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType, BuiltinNames.__this_ident,
+        method.getBeginPos());
+    params.add(0, __thisParam);
 
     if (method.getIdentifier().getName().equals("main")) {
       g("void main()");

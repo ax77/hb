@@ -22,14 +22,26 @@ public class ApplyUnit {
 
   public void visit() throws IOException {
     symtabApplier.openFileScope();
-    for (ClassDeclaration td : instantiationUnit.getClasses()) {
-      symtabApplier.defineClazz(td);
-      addDefaultMethods(td);
-    }
-    for (ClassDeclaration td : instantiationUnit.getClasses()) {
-      applyClazz(td);
-    }
+    preEachClass();
+    eachClass();
+    postEachClass();
     symtabApplier.closeFileScope();
+  }
+
+  private void preEachClass() throws IOException {
+    ApplyUnitPreEachClass applier = new ApplyUnitPreEachClass(symtabApplier, instantiationUnit);
+    applier.preEachClass();
+  }
+
+  private void eachClass() throws IOException {
+    for (ClassDeclaration c : instantiationUnit.getClasses()) {
+      applyClazz(c);
+    }
+  }
+
+  private void postEachClass() {
+    ApplyUnitPostEachClass applier = new ApplyUnitPostEachClass(symtabApplier, instantiationUnit);
+    applier.postEachClass();
   }
 
   private void applyClazz(final ClassDeclaration object) throws IOException {
@@ -57,22 +69,6 @@ public class ApplyUnit {
     }
 
     symtabApplier.closeClassScope();
-  }
-
-  private void addDefaultMethods(ClassDeclaration object) throws IOException {
-
-    if (object.getConstructors().isEmpty()) {
-      object.addConstructor(BuildDefaultConstructor.build(object));
-    }
-
-    if (object.getDestructor() == null) {
-      object.setDestructor(BuildDefaultDestructor.build(object));
-    }
-
-    /// Test:ASSIGN_operator
-
-    object.addMethod(BuildOpAssignMethod.opAssign(instantiationUnit, object));
-
   }
 
   private void applyMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {

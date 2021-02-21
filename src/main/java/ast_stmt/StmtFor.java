@@ -5,7 +5,6 @@ import java.io.Serializable;
 import ast_expr.ExprExpression;
 import ast_st3_tac.FlatCode;
 import ast_vars.VarDeclarator;
-import utils_oth.NullChecker;
 
 public class StmtFor implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
