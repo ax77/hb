@@ -13,6 +13,7 @@ import ast_stmt.StmtStatement;
 import ast_stmt.StmtWhile;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import errors.ErrorLocation;
 
 public class ApplyStatement {
 
@@ -52,19 +53,17 @@ public class ApplyStatement {
 
   private void visitExprStmt(final ClassDeclaration object, final StmtStatement node) {
     applyExpression(object, node.getExprStmt());
-    node.setLinearExprStmt(GetCodeItems.getFlatCode(node.getExprStmt()));
+    semExprStmt(node);
   }
 
   private void visitReturn(final ClassDeclaration object, final StmtReturn node) {
-    if (node.hasExpression()) {
-      applyExpression(object, node.getExpression());
-    }
-    node.setLinearExpression(GetCodeItems.getFlatCode(node.getExpression()));
+    applyExpression(object, node.getExpression());
+    semReturn(node);
   }
 
   private void visitFor(ClassDeclaration object, ClassMethodDeclaration method, StmtFor node) {
 
-    symtabApplier.openBlockScope("block");
+    symtabApplier.openBlockScope("block", node.getBlock());
     visitLocalVar(object, node.getDecl());
     applyExpression(object, node.getInit());
     applyExpression(object, node.getTest());
@@ -72,16 +71,13 @@ public class ApplyStatement {
     visitBlock(object, method, node.getBlock());
     symtabApplier.closeBlockScope();
 
-    node.setLinearDecl(GetCodeItems.getFlatCode(node.getDecl()));
-    node.setLinearInit(GetCodeItems.getFlatCode(node.getInit()));
-    node.setLinearTest(GetCodeItems.getFlatCode(node.getTest()));
-    node.setLinearStep(GetCodeItems.getFlatCode(node.getStep()));
+    semFor(node);
   }
 
   private void visitWhile(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtWhile node) {
     applyExpression(object, node.getCondition());
     visitBlock(object, method, node.getBlock());
-    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
+    semWhile(node);
   }
 
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
@@ -89,23 +85,17 @@ public class ApplyStatement {
     applyExpression(object, node.getCondition());
     visitBlock(object, method, node.getTrueStatement());
     visitBlock(object, method, node.getOptionalElseStatement());
-
-    if (!node.getCondition().getResultType().is_boolean()) {
-      throw new AstParseException("if condition must be only a boolean type");
-    }
-
-    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
+    semSelection(node);
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock block) {
 
-    symtabApplier.openBlockScope("block");
+    symtabApplier.openBlockScope("block", block);
 
     for (StmtBlockItem item : block.getBlockItems()) {
       visitLocalVar(object, item.getLocalVariable());
-      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
-
       applyStatement(object, method, item.getStatement());
+      semBlockItem(item);
     }
 
     symtabApplier.closeBlockScope();
@@ -129,6 +119,51 @@ public class ApplyStatement {
     ApplyInitializer applier = new ApplyInitializer(symtabApplier);
     applier.applyInitializer(object, var);
 
+  }
+
+  /// 3ac-semantic
+
+  private void semExprStmt(final StmtStatement node) {
+    node.setLinearExprStmt(GetCodeItems.getFlatCode(node.getExprStmt()));
+  }
+
+  private void semBlockItem(StmtBlockItem item) {
+    item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
+  }
+
+  private void semWhile(final StmtWhile node) {
+    checkIsBoolean(node.getCondition());
+    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
+  }
+
+  private void semReturn(final StmtReturn node) {
+    node.setLinearExpression(GetCodeItems.getFlatCode(node.getExpression()));
+    symtabApplier.peekBlock().addReturn(node);
+  }
+
+  private void semFor(StmtFor node) {
+    checkIsBoolean(node.getTest());
+
+    node.setLinearDecl(GetCodeItems.getFlatCode(node.getDecl()));
+    node.setLinearInit(GetCodeItems.getFlatCode(node.getInit()));
+    node.setLinearTest(GetCodeItems.getFlatCode(node.getTest()));
+    node.setLinearStep(GetCodeItems.getFlatCode(node.getStep()));
+  }
+
+  private void semSelection(final StmtSelect node) {
+    checkIsBoolean(node.getCondition());
+    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
+  }
+
+  private void checkIsBoolean(ExprExpression e) {
+    // that's ok - the test expression of the for-loop must ne null
+    // for example.
+    if (e == null) {
+      return;
+    }
+    if (!e.getResultType().is_boolean()) {
+      ErrorLocation.errorExpression("expected boolean type: ", e);
+    }
   }
 
 }

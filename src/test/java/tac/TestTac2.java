@@ -22,7 +22,7 @@ public class TestTac2 {
     StringBuilder sb = new StringBuilder();
     sb.append(" class main_class {                                           \n");
     sb.append("  void main() {                                             \n");
-    sb.append("    for(int i=0;i<8;i+=1){ break; for(int j=0;j<8;j+=1) { continue; }} \n");
+    sb.append("    return; boolean b=1==1; if(b) {return;}else{return;} \n");
     sb.append("  }                                                        \n");
     sb.append("}                                                        \n");
     //@formatter:on

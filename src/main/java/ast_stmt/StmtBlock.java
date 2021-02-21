@@ -11,14 +11,19 @@ public class StmtBlock implements Serializable {
 
   private final List<StmtBlockItem> blockItems;
 
+  /// 3ac
+  private final List<StmtReturn> returns;
+
   // empty: { }
   public StmtBlock() {
     this.blockItems = new ArrayList<>();
+    this.returns = new ArrayList<>();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
     this.blockItems = blockStatements;
+    this.returns = new ArrayList<>();
   }
 
   public List<StmtBlockItem> getBlockItems() {
@@ -27,6 +32,14 @@ public class StmtBlock implements Serializable {
 
   public void put(StmtBlockItem item) {
     this.blockItems.add(item);
+  }
+
+  public void addReturn(StmtReturn e) {
+    returns.add(e);
+  }
+
+  public List<StmtReturn> getReturns() {
+    return returns;
   }
 
   @Override
