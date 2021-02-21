@@ -1,25 +1,19 @@
 package ast_st3_tac;
 
-import java.util.List;
-import java.util.UUID;
-
 import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
-import ast_modifiers.Modifiers;
 import ast_printers.GenericListPrinter;
 import ast_st3_tac.ir.CopierNamer;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
+import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
-import ast_types.ClassTypeRef;
-import ast_types.Type;
 import ast_unit.InstantiationUnit;
-import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
@@ -40,12 +34,6 @@ public class UnitToText {
   private void g(String what) {
     textout.append(what);
     textout.append("\n");
-  }
-
-  private String uid() {
-    String ret = UUID.randomUUID().toString();
-    ret = ret.replace('-', '_');
-    return "_" + ret;
   }
 
   private void visit(InstantiationUnit o) {
@@ -103,21 +91,16 @@ public class UnitToText {
 
     if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
       g(method.getType().toString() + " " + CopierNamer.getMethodName(method)
-          + GenericListPrinter.paramsToStringWithBraces(method.getParameters()) + method.getBlock().toString());
+          + GenericListPrinter.paramsToStringWithBraces(method.getParameters()));
+      g(method.getBlock().toString());
       return;
     }
-
-    Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
-    List<VarDeclarator> params = method.getParameters();
-    final VarDeclarator __thisParam = new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), paramType, BuiltinNames.__this_ident,
-        method.getBeginPos());
-    params.add(0, __thisParam);
 
     if (method.getIdentifier().getName().equals("main")) {
       g("void main()");
     } else {
       g(method.getType().toString() + " " + CopierNamer.getMethodName(method)
-          + GenericListPrinter.paramsToStringWithBraces(params));
+          + GenericListPrinter.paramsToStringWithBraces(method.getParameters()));
     }
 
     genBlock(method.getBlock());
@@ -137,21 +120,27 @@ public class UnitToText {
       genBlock(s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
       genReturn(s.getReturnStmt());
-    } else if (base == StatementBase.SWHILE) {
     } else if (base == StatementBase.SFOR) {
+      genFor(s.getForStmt());
+    } else if (base == StatementBase.SBREAK) {
+      g("break;");
+    } else if (base == StatementBase.SCONTINUE) {
+      g("continue;");
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
   }
 
+  private void genFor(StmtFor forStmt) {
+    g("for(;;)");
+    genBlock(forStmt.getBlock());
+  }
+
   private void genSelection(StmtSelect ifStmt) {
 
-    ExprExpression expr = ifStmt.getCondition();
-    TacGenerator tcg = new TacGenerator(expr);
-    String res = tcg.txt1(";\n");
-    g("/////// " + expr.toString());
-    g(res);
-    String last = tcg.getLastResultNameToString();
+    g("/////// " + ifStmt.getCondition().toString());
+    g(ifStmt.getLinearCondition().toString());
+    String last = ifStmt.getLinearCondition().getDestToString();
 
     g("if(" + last + ")");
     genBlock(ifStmt.getTrueStatement());
@@ -164,46 +153,33 @@ public class UnitToText {
 
   private void genReturn(StmtReturn returnStmt) {
 
-    String last = "";
     if (returnStmt.hasExpression()) {
-      ExprExpression expr = returnStmt.getExpression();
-      TacGenerator tcg = new TacGenerator(expr);
-      String res = tcg.txt1(";\n");
-      g("// return " + expr.toString());
-      g(res);
-      last = tcg.getLastResultNameToString();
+      g("/////// return " + returnStmt.getExpression().toString());
+      g(returnStmt.getLinearExpression().toString());
+      g("return " + returnStmt.getLinearExpression().getDestToString() + ";");
+    } else {
+      g("return;");
     }
 
-    g("return " + last + ";");
   }
 
   private void genExprStmt(StmtStatement statement) {
     ExprExpression expr = statement.getExprStmt();
-    TacGenerator tcg = new TacGenerator(expr);
-    String res = tcg.txt1(";\n");
     g("/////// " + expr.toString());
-    g(res);
+    g(statement.getLinearExprStmt().toString());
   }
 
   private void genBlock(StmtBlock blockStmt) {
     g("\n{\n");
     for (StmtBlockItem item : blockStmt.getBlockItems()) {
       if (item.isVarDeclarationItem()) {
-        genVar(item.getLocalVariable());
+        g("/////// " + item.getLocalVariable().toString());
+        g(item.getLinearLocalVariable().toString());
       } else {
         genStatement(item.getStatement());
       }
     }
     g("\n}\n");
-  }
-
-  private void genVar(VarDeclarator localVariable) {
-
-    TacGenerator tcg = new TacGenerator(localVariable);
-    String res = tcg.txt1(";\n");
-    g("/////// " + localVariable.toString());
-    g(res);
-
   }
 
 }

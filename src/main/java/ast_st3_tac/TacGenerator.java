@@ -55,6 +55,7 @@ import ast_types.Type;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import errors.ErrorLocation;
 import hashed.Hash_ident;
 import literals.IntLiteral;
 import tokenize.Ident;
@@ -66,7 +67,6 @@ public class TacGenerator {
   private final List<FlatCodeItem> temproraries;
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
-  private final String exprTos;
   private final VarCreator varCreator;
 
   public List<FlatCodeItem> getRv() {
@@ -74,10 +74,13 @@ public class TacGenerator {
   }
 
   public TacGenerator(ExprExpression expr) {
+    if (expr.getResultType() == null) {
+      ErrorLocation.errorExpression("the result-type of the expression is undefined: ", expr);
+    }
+
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
-    this.exprTos = expr.toString();
     this.varCreator = new VarCreator();
 
     gen(expr);
@@ -88,12 +91,15 @@ public class TacGenerator {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
-    this.exprTos = var.toString();
     this.varCreator = new VarCreator();
 
     if (var.getSimpleInitializer() == null) {
       throw new AstParseException(
           var.getLocationToString() + ":error: variable without an initializer: " + var.toString());
+    }
+
+    if (var.getSimpleInitializer().getResultType() == null) {
+      ErrorLocation.errorExpression("the result-type of the expression is undefined: ", var.getSimpleInitializer());
     }
 
     gen(var.getSimpleInitializer());

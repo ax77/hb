@@ -1,6 +1,18 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("(TYPENAME lvalue, TYPENAME rvalue) {   //001 \n");
-    sb.append("  return rvalue;                       //002 \n");
-    sb.append("}                                      //003 \n");
+    sb.append("for(int i = 0; i < 8; i += 1) {   //001 \n");
+    sb.append("  ...                             //002 \n");
+    sb.append("}                                 //003 \n");
+    sb.append("{                                 //004 \n");
+    sb.append("  int i = 0;                      //005 \n");
+    sb.append("  for(;;) {                       //006 \n");
+    sb.append("    if(!(i < 8)) {                //007 \n");
+    sb.append("      break;                      //008 \n");
+    sb.append("    }                             //009 \n");
+    sb.append("    ...                           //010 \n");
+    sb.append("    {                             //011 \n");
+    sb.append("      i += 1;                     //012 \n");
+    sb.append("    }                             //013 \n");
+    sb.append("  }                               //014 \n");
+    sb.append("}                                 //015 \n");
     //@formatter:on

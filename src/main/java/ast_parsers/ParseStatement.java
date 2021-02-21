@@ -24,7 +24,6 @@ import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
-import ast_stmt.StmtWhile;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarBase;
@@ -56,7 +55,7 @@ public class ParseStatement {
 
     while (!parser.is(T.T_RIGHT_BRACE)) {
       final StmtBlockItem item = parseOneBlockItem(varBase);
-      block.put(item);
+      block.pushItemBack(item);
     }
 
     parser.rbrace();
@@ -196,7 +195,10 @@ public class ParseStatement {
     final Token beginPos = parser.checkedMove(while_ident);
     final ExprExpression condition = new ParseExpression(parser).e_expression();
     final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
-    return new StmtStatement(new StmtWhile(condition, block), beginPos);
+    StmtFor stmtFor = new StmtFor();
+    stmtFor.setTest(condition);
+    stmtFor.setBlock(block);
+    return new StmtStatement(stmtFor, beginPos);
   }
 
   private StmtStatement parseReturn() {
@@ -230,7 +232,7 @@ public class ParseStatement {
       StmtBlock block = new StmtBlock();
 
       if (tmp.getBase() == StatementBase.SIF) {
-        block.put(new StmtBlockItem(tmp));
+        block.pushItemBack(new StmtBlockItem(tmp));
       } else if (tmp.getBase() == StatementBase.SBLOCK) {
         block = tmp.getBlockStmt();
       } else {

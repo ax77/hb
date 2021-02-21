@@ -26,12 +26,18 @@ public class StmtBlock implements Serializable {
     this.returns = new ArrayList<>();
   }
 
-  public List<StmtBlockItem> getBlockItems() {
-    return blockItems;
+  public void pushItemBack(StmtBlockItem item) {
+    NullChecker.check(item);
+    this.blockItems.add(item);
   }
 
-  public void put(StmtBlockItem item) {
-    this.blockItems.add(item);
+  public void pushItemFront(StmtBlockItem item) {
+    NullChecker.check(item);
+    this.blockItems.add(0, item);
+  }
+
+  public List<StmtBlockItem> getBlockItems() {
+    return blockItems;
   }
 
   public void addReturn(StmtReturn e) {

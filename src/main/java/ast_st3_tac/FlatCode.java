@@ -25,6 +25,11 @@ public class FlatCode {
     return getLast().getDest();
   }
 
+  public String getDestToString() {
+    Var res = getLast().getDest();
+    return res.getName().getName();
+  }
+
   public List<FlatCodeItem> getItems() {
     return items;
   }
@@ -33,7 +38,7 @@ public class FlatCode {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (FlatCodeItem item : items) {
-      sb.append("// " + item.toString() + "\n");
+      sb.append(item.toString() + ";\n");
     }
     return sb.toString();
   }

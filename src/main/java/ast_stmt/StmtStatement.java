@@ -11,12 +11,11 @@ import tokenize.Token;
 public class StmtStatement implements Serializable, Location {
   private static final long serialVersionUID = 2946438995245230886L;
 
-  private final StatementBase base;
+  private /*final*/ StatementBase base;
   private final Token beginPos;
-  private StmtBlock bloskStmt;
+  private StmtBlock blockStmt;
   private ExprExpression exprStmt;
   private StmtSelect ifStmt;
-  private StmtWhile whileStmt;
   private StmtFor forStmt;
   private StmtReturn returnStmt;
   private StmtBreak breakStmt;
@@ -49,12 +48,6 @@ public class StmtStatement implements Serializable, Location {
     this.returnStmt = returnStmt;
   }
 
-  public StmtStatement(StmtWhile whileStmt, Token beginPos) {
-    this.base = StatementBase.SWHILE;
-    this.beginPos = beginPos;
-    this.whileStmt = whileStmt;
-  }
-
   public StmtStatement(StmtSelect ifStmt, Token beginPos) {
     this.base = StatementBase.SIF;
     this.beginPos = beginPos;
@@ -72,7 +65,7 @@ public class StmtStatement implements Serializable, Location {
   public StmtStatement(StmtBlock bloskStmt, Token beginPos) {
     this.base = StatementBase.SBLOCK;
     this.beginPos = beginPos;
-    this.bloskStmt = bloskStmt;
+    this.blockStmt = bloskStmt;
   }
 
   public StmtReturn getReturnStmt() {
@@ -80,7 +73,7 @@ public class StmtStatement implements Serializable, Location {
   }
 
   public StmtBlock getBlockStmt() {
-    return bloskStmt;
+    return blockStmt;
   }
 
   public StatementBase getBase() {
@@ -99,16 +92,20 @@ public class StmtStatement implements Serializable, Location {
     return ifStmt;
   }
 
-  public StmtWhile getWhileStmt() {
-    return whileStmt;
-  }
-
   public FlatCode getLinearExprStmt() {
     return linearExprStmt;
   }
 
   public void setLinearExprStmt(FlatCode linearExprStmt) {
     this.linearExprStmt = linearExprStmt;
+  }
+
+  public StmtBreak getBreakStmt() {
+    return breakStmt;
+  }
+
+  public StmtContinue getContinueStmt() {
+    return continueStmt;
   }
 
   @Override
@@ -121,13 +118,10 @@ public class StmtStatement implements Serializable, Location {
       return header + exprStmt.toString() + ";";
     }
     if (base == StatementBase.SBLOCK) {
-      return bloskStmt.toString();
+      return blockStmt.toString();
     }
     if (base == StatementBase.SRETURN) {
       return returnStmt.toString();
-    }
-    if (base == StatementBase.SWHILE) {
-      return whileStmt.toString();
     }
     if (base == StatementBase.SFOR) {
       return forStmt.toString();
@@ -153,6 +147,23 @@ public class StmtStatement implements Serializable, Location {
 
   public Token getBeginPos() {
     return beginPos;
+  }
+
+  public void replaceForWithBlock(StmtBlock outerBlock) {
+    this.base = StatementBase.SBLOCK;
+    this.blockStmt = outerBlock;
+    this.forStmt = null;
+  }
+
+  public void replaceContinueWithBlock(StmtBlock stepBlock) {
+    this.base = StatementBase.SBLOCK;
+    this.blockStmt = stepBlock;
+    this.continueStmt = null;
+
+  }
+
+  public boolean isFor() {
+    return base == StatementBase.SFOR;
   }
 
 }
