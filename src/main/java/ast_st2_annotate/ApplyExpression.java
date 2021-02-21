@@ -116,7 +116,6 @@ public class ApplyExpression {
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {
     final ExprClassCreation classCreation = e.getClassCreation();
-
     applyArgs(object, classCreation.getArguments());
 
     // type tp = new type(1)
@@ -126,8 +125,8 @@ public class ApplyExpression {
       ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
     }
 
-    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassTypeFromRef();
-    final ClassMethodDeclaration constructor = whereWeWantToFindTheMethod.getConstructor(classCreation.getArguments());
+    final ClassDeclaration clazz = resultTypeOfObject.getClassTypeFromRef();
+    final ClassMethodDeclaration constructor = clazz.getConstructor(classCreation.getArguments());
 
     if (constructor == null) {
       ErrorLocation.errorExpression("class has no constructor with args: "
@@ -196,6 +195,18 @@ public class ApplyExpression {
 
   }
 
+  private ClassDeclaration getClassFromObject(final ExprExpression obj, final ExprExpression orig) {
+    final Type resultTypeOfObject = obj.getResultType(); // must be a reference!
+    if (resultTypeOfObject == null) {
+      ErrorLocation.errorExpression("type unspecified for field-access expression:", orig);
+    }
+    boolean isOkAccess = resultTypeOfObject.is_class();
+    if (!isOkAccess) {
+      ErrorLocation.errorExpression("member-access-expression expects a class", orig);
+    }
+    return resultTypeOfObject.getClassTypeFromRef();
+  }
+
   private void applyFieldAccess(final ClassDeclaration object, final ExprExpression e) {
 
     final ExprFieldAccess fieldAccess = e.getFieldAccess();
@@ -206,18 +217,8 @@ public class ApplyExpression {
 
     // find the field, and get its type
 
-    final Type resultTypeOfObject = fieldAccess.getObject().getResultType(); // must be a reference!
-    if (resultTypeOfObject == null) {
-      ErrorLocation.errorExpression("type unspecified for field-access expression:", e);
-    }
-    boolean isOkAccess = resultTypeOfObject.is_class();
-    if (!isOkAccess) {
-      ErrorLocation
-          .errorExpression("expect reference for field access like [a.b] -> a must be a class, or array.length", e);
-    }
-
-    final ClassDeclaration whereWeWantToFindTheField = resultTypeOfObject.getClassTypeFromRef();
-    final VarDeclarator field = whereWeWantToFindTheField.getField(fieldName);
+    final ClassDeclaration clazz = getClassFromObject(fieldAccess.getObject(), e);
+    final VarDeclarator field = clazz.getField(fieldName);
 
     if (field == null) {
       ErrorLocation.errorExpression("class has no field: " + fieldNameToString, e);
@@ -237,13 +238,8 @@ public class ApplyExpression {
     // a.fn(1,2,3)
     // self.fn(1,2,3)
 
-    final Type resultTypeOfObject = methodInvocation.getObject().getResultType(); // must be a reference!
-    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
-      ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
-    }
-
-    final ClassDeclaration whereWeWantToFindTheMethod = resultTypeOfObject.getClassTypeFromRef();
-    final ClassMethodDeclaration method = whereWeWantToFindTheMethod.getMethod(methodInvocation.getFuncname(),
+    final ClassDeclaration clazz = getClassFromObject(methodInvocation.getObject(), e);
+    final ClassMethodDeclaration method = clazz.getMethod(methodInvocation.getFuncname(),
         methodInvocation.getArguments());
 
     if (method == null) {
