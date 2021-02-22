@@ -13,6 +13,11 @@ class main_class {
     str s1 = new str();
     str s2 = new str(1);
     str s3 = s2;
+    
+    {
+      str s4 = new str();
+      str s5 = s4;
+    }
   }
 
 }

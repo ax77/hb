@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
+import ast_st3_tac.FlatCode;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
@@ -103,6 +104,8 @@ public class ApplyUnit {
     }
 
     symtabApplier.closeMethodScope();
+
+    GetDestr.semBlock(object, method, block);
   }
 
   private void applyStatement(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement statement) {

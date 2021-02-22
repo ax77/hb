@@ -8,17 +8,29 @@ import ast_st3_tac.leaves.Var;
 
 public class FlatCode {
   private final List<FlatCodeItem> items;
+  private final List<Var> allVars;
 
   public FlatCode() {
     this.items = new ArrayList<>();
+    this.allVars = new ArrayList<>();
   }
 
   public FlatCode(List<FlatCodeItem> items) {
     this.items = items;
+    this.allVars = new ArrayList<>();
+  }
+
+  public FlatCode(List<FlatCodeItem> items, List<Var> allVars) {
+    this.items = items;
+    this.allVars = allVars;
   }
 
   public FlatCodeItem getLast() {
     return items.get(items.size() - 1);
+  }
+
+  public boolean isEmpty() {
+    return items.isEmpty();
   }
 
   public Var getDest() {
@@ -32,6 +44,10 @@ public class FlatCode {
 
   public List<FlatCodeItem> getItems() {
     return items;
+  }
+
+  public List<Var> getAllVars() {
+    return allVars;
   }
 
   @Override

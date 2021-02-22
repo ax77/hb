@@ -179,6 +179,11 @@ public class UnitToText {
         genStatement(item.getStatement());
       }
     }
+    if (!blockStmt.getDestr().isEmpty()) {
+      g("\n{\n");
+      g(blockStmt.getDestr().toString());
+      g("\n}\n");
+    }
     g("\n}\n");
   }
 

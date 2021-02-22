@@ -13,7 +13,7 @@ public abstract class GetCodeItems {
       return new FlatCode();
     }
     TacGenerator tcg = new TacGenerator(e, method);
-    return new FlatCode(tcg.getRv());
+    return new FlatCode(tcg.getRv(), tcg.getVarCreator().getAllVars());
   }
 
   public static FlatCode getFlatCode(VarDeclarator e, ClassMethodDeclaration method) {
@@ -21,7 +21,7 @@ public abstract class GetCodeItems {
       return new FlatCode();
     }
     TacGenerator tcg = new TacGenerator(e, method);
-    return new FlatCode(tcg.getRv());
+    return new FlatCode(tcg.getRv(), tcg.getVarCreator().getAllVars());
   }
 
 }

@@ -74,6 +74,10 @@ public class TacGenerator {
     return rv;
   }
 
+  public VarCreator getVarCreator() {
+    return varCreator;
+  }
+
   public TacGenerator(ExprExpression expr, ClassMethodDeclaration method) {
     NullChecker.check(expr, method);
 

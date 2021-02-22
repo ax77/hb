@@ -4,6 +4,7 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
 import ast_method.ClassMethodDeclaration;
+import ast_st3_tac.FlatCode;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -140,6 +141,8 @@ public class ApplyStatement {
     }
 
     symtabApplier.closeBlockScope();
+
+    GetDestr.semBlock(object, method, block);
   }
 
   private void visitLocalVar(final ClassDeclaration object, final VarDeclarator var) {
