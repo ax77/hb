@@ -1,13 +1,13 @@
 package ast_stmt;
 
 public class StmtBreak {
-  private final StmtStatement loop;
+  private final StmtFor loop;
 
-  public StmtBreak(StmtStatement loop) {
+  public StmtBreak(StmtFor loop) {
     this.loop = loop;
   }
 
-  public StmtStatement getLoop() {
+  public StmtFor getLoop() {
     return loop;
   }
 

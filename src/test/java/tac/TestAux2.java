@@ -59,16 +59,20 @@ public class TestAux2 {
       {
 
         /////// int i = 0;
-        int t15 = 0;
-        int i = t15;
+        int t42 = 0;
+        int i = t42;
         for (;;) {
 
           /////// !i < 8
-          int t23 = i;
-          int t24 = 8;
-          boolean t25 = t23 < t24;
-          boolean t26 = !t25;
-          if (t26) {
+          int t50 = i;
+          int t51 = 8;
+          boolean t52 = t50 < t51;
+          boolean t53 = !t52;
+          if (t53) {
+            // {
+            //   str_deinit_6(s6);
+            //   str_deinit_6(t14);
+            // }
             break;
           }
 
@@ -77,14 +81,95 @@ public class TestAux2 {
           str_init_0(t14);
           str s6 = null;
           s6 = str_opAssign_7(s6, t14);
+
+          /////// i == 5
+          int t19 = i;
+          int t20 = 5;
+          boolean t21 = t19 == t20;
+          if (t21) {
+            {
+
+              /////// i = i + 1
+              int t15 = i;
+              int t16 = i;
+              int t17 = 1;
+              int t18 = t16 + t17;
+              i = t18;
+              {
+                str_deinit_6(s6);
+                str_deinit_6(t14);
+              }
+              continue;
+            }
+          }
+
+          /////// i == 7
+          int t39 = i;
+          int t40 = 7;
+          boolean t41 = t39 == t40;
+          if (t41) {
+            {
+
+              /////// int j = 0;
+              int t27 = 0;
+              int j = t27;
+              for (;;) {
+
+                /////// !j < 32
+                int t35 = j;
+                int t36 = 32;
+                boolean t37 = t35 < t36;
+                boolean t38 = !t37;
+                if (t38) {
+                  // {
+                  //   str_deinit_6(s7);
+                  //   str_deinit_6(t23);
+                  // }
+                  break;
+                }
+
+                /////// str s7 = new str(j);
+                int t22 = j;
+                str t23 = new str();
+                str_init_1(t23, t22);
+                str s7 = null;
+                s7 = str_opAssign_7(s7, t23);
+
+                /////// j == 1
+                int t24 = j;
+                int t25 = 1;
+                boolean t26 = t24 == t25;
+                if (t26) {
+                  {
+                    str_deinit_6(s7);
+                    str_deinit_6(t23);
+                  }
+                  break;
+                }
+                {
+
+                  /////// j = j + 1
+                  int t31 = j;
+                  int t32 = j;
+                  int t33 = 1;
+                  int t34 = t32 + t33;
+                  j = t34;
+                }
+                {
+                  str_deinit_6(s7);
+                  str_deinit_6(t23);
+                }
+              }
+            }
+          }
           {
 
             /////// i = i + 1
-            int t19 = i;
-            int t20 = i;
-            int t21 = 1;
-            int t22 = t20 + t21;
-            i = t22;
+            int t46 = i;
+            int t47 = i;
+            int t48 = 1;
+            int t49 = t47 + t48;
+            i = t49;
           }
           {
             str_deinit_6(s6);
@@ -113,13 +198,13 @@ public class TestAux2 {
     void str_init_1(final str __this, int value) {
 
       /////// this.value = value
-      str t29 = null;
-      t29 = str_opAssign_7(t29, __this);
-      int t30 = t29.value;
-      int t31 = value;
-      t29.value = t31;
+      str t56 = null;
+      t56 = str_opAssign_7(t56, __this);
+      int t57 = t56.value;
+      int t58 = value;
+      t56.value = t58;
       {
-        str_deinit_6(t29);
+        str_deinit_6(t56);
       }
     }
 

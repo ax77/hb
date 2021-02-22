@@ -1,13 +1,13 @@
 package ast_stmt;
 
 public class StmtContinue {
-  private final StmtStatement loop;
+  private final StmtFor loop;
 
-  public StmtContinue(StmtStatement loop) {
+  public StmtContinue(StmtFor loop) {
     this.loop = loop;
   }
 
-  public StmtStatement getLoop() {
+  public StmtFor getLoop() {
     return loop;
   }
 

@@ -21,6 +21,17 @@ class main_class {
     
     for(int i = 0; i < 8; i += 1) {
       str s6 = new str();
+      if(i == 5) {
+        continue;
+      }
+      if(i == 7) {
+        for(int j = 0; j < 32; j += 1) {
+          str s7 = new str(j);
+          if(j == 1) {
+            break;
+          }
+        }
+      }
     }
   }
 

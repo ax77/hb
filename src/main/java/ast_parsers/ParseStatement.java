@@ -36,7 +36,7 @@ import tokenize.Token;
 
 public class ParseStatement {
   private final Parse parser;
-  private final List<StmtStatement> loops;
+  private final List<StmtFor> loops;
 
   public ParseStatement(Parse parser) {
     this.parser = parser;
@@ -165,14 +165,14 @@ public class ParseStatement {
     }
 
     if (parser.is(Keywords.break_ident)) {
-      StmtStatement currentLoop = peekLoop();
+      StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.break_ident);
       parser.semicolon();
       return new StmtStatement(new StmtBreak(currentLoop), beginPos);
     }
 
     if (parser.is(Keywords.continue_ident)) {
-      StmtStatement currentLoop = peekLoop();
+      StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.continue_ident);
       parser.semicolon();
       return new StmtStatement(new StmtContinue(currentLoop), beginPos);
@@ -251,8 +251,7 @@ public class ParseStatement {
     parser.lparen();
 
     StmtFor forStmt = new StmtFor();
-    StmtStatement result = new StmtStatement(forStmt, from);
-    pushLoop(result);
+    pushLoop(forStmt);
 
     // 1) for (int i = 0; ;)
     // 2) for (i = 0; ;)
@@ -286,7 +285,7 @@ public class ParseStatement {
     forStmt.setBlock(block);
 
     popLoop();
-    return result;
+    return new StmtStatement(forStmt, from);
   }
 
   private ExprExpression parseForLoopExpressions() {
@@ -317,7 +316,7 @@ public class ParseStatement {
     parser.perror("expected '{', but was: " + parser.tok().getValue());
   }
 
-  private void pushLoop(StmtStatement s) {
+  private void pushLoop(StmtFor s) {
     loops.add(0, s);
   }
 
@@ -325,7 +324,7 @@ public class ParseStatement {
     loops.remove(0);
   }
 
-  private StmtStatement peekLoop() {
+  private StmtFor peekLoop() {
     if (loops.isEmpty()) {
       parser.perror("there is no current loop");
     }

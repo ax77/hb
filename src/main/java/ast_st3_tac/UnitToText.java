@@ -6,6 +6,7 @@ import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_st3_tac.ir.CopierNamer;
+import ast_st3_tac.items.FlatCallConstructor;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -123,8 +124,10 @@ public class UnitToText {
     } else if (base == StatementBase.SFOR) {
       genFor(s.getForStmt());
     } else if (base == StatementBase.SBREAK) {
+      destrTos(s.getBreakStmt().getLoop().getBlock().getDestr());
       g("break;");
     } else if (base == StatementBase.SCONTINUE) {
+      destrTos(s.getContinueStmt().getLoop().getBlock().getDestr());
       g("continue;");
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
@@ -180,10 +183,14 @@ public class UnitToText {
       }
     }
     if (!blockStmt.getDestr().isEmpty()) {
-      g("\n{\n");
-      g(blockStmt.getDestr().toString());
-      g("\n}\n");
+      destrTos(blockStmt.getDestr());
     }
+    g("\n}\n");
+  }
+
+  public void destrTos(FlatCode fc) {
+    g("\n{\n");
+    g(fc.toString());
     g("\n}\n");
   }
 

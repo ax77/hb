@@ -65,13 +65,8 @@ public class ApplyStatement {
     final Token beginPos = s.getBeginPos();
     final StmtContinue con = s.getContinueStmt();
 
-    /// ret-1
-    if (!con.getLoop().isFor()) {
-      return;
-    }
-
     /// ret-2
-    final StmtFor forStmt = con.getLoop().getForStmt();
+    final StmtFor forStmt = con.getLoop();
     if (forStmt.getStep() == null) {
       return;
     }
@@ -227,7 +222,7 @@ public class ApplyStatement {
 
       /// { break; }
       StmtBlock ifBlock = new StmtBlock();
-      ifBlock.pushItemBack(new StmtBlockItem(new StmtStatement(new StmtBreak(s), beginPos)));
+      ifBlock.pushItemBack(new StmtBlockItem(new StmtStatement(new StmtBreak(node), beginPos)));
 
       final StmtSelect selection = new StmtSelect(eNot, ifBlock, null);
       selection.setLinearCondition(GetCodeItems.getFlatCode(eNot, method));
