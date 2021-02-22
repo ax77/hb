@@ -20,19 +20,26 @@ public class TestTac2 {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append(" class main_class {                                           \n");
-    sb.append("  void main() {                                             \n");
-    sb.append("    return; boolean b=1==1; if(b) {return;}else{return;} \n");
-    sb.append("  }                                                        \n");
-    sb.append("}                                                        \n");
+    sb.append("class str {                //001 \n");
+    sb.append("  int value;               //002 \n");
+    sb.append("  str() {                  //003 \n");
+    sb.append("  }                        //004 \n");
+    sb.append("  str(int value) {         //005 \n");
+    sb.append("    this.value = value;    //006 \n");
+    sb.append("  }                        //007 \n");
+    sb.append("}                          //008 \n");
+    sb.append("class main_class {         //009 \n");
+    sb.append("  void main() {            //010 \n");
+    sb.append("    str s1 = new str();    //011 \n");
+    sb.append("    str s2 = new str(1);   //012 \n");
+    sb.append("    str s3 = s2;           //013 \n");
+    sb.append("  }                        //014 \n");
+    sb.append("}                          //015 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
-    for (ClassDeclaration c : unit.getClasses()) {
-      System.out.println(c.toString());
-    }
-    //    UnitToText text = new UnitToText(unit);
-    //    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
+    UnitToText text = new UnitToText(unit);
+    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
 
   }
 

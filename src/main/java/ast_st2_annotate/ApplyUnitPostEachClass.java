@@ -32,9 +32,9 @@ public class ApplyUnitPostEachClass {
   private void addThisParamToEachMethod(ClassDeclaration object) {
     //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
-      if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
-        continue;
-      }
+      // if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
+      //   continue;
+      // }
 
       method.pushParameterFront(createThisParameter(object, method));
     }

@@ -68,12 +68,15 @@ public class TacGenerator {
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
   private final VarCreator varCreator;
+  private final ClassMethodDeclaration method;
 
   public List<FlatCodeItem> getRv() {
     return rv;
   }
 
-  public TacGenerator(ExprExpression expr) {
+  public TacGenerator(ExprExpression expr, ClassMethodDeclaration method) {
+    NullChecker.check(expr, method);
+
     if (expr.getResultType() == null) {
       ErrorLocation.errorExpression("the result-type of the expression is undefined: ", expr);
     }
@@ -82,16 +85,20 @@ public class TacGenerator {
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.varCreator = new VarCreator();
+    this.method = method;
 
     gen(expr);
     rewriteRaw();
   }
 
-  public TacGenerator(VarDeclarator var) {
+  public TacGenerator(VarDeclarator var, ClassMethodDeclaration method) {
+    NullChecker.check(var, method);
+
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.varCreator = new VarCreator();
+    this.method = method;
 
     if (var.getSimpleInitializer() == null) {
       throw new AstParseException(
@@ -235,6 +242,13 @@ public class TacGenerator {
   }
 
   private void genOpAssign(Var lvalueVar, Var rvalueVar) {
+
+    /// we cannot generate opAssign call inside the method itself
+    /// it will cause a recursive infinite loop.
+    if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
+      return;
+    }
+
     AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
     rv.add(new FlatCodeItem(assignVarNull));
 

@@ -39,24 +39,24 @@ public class ApplyStatement {
     if (base == StatementBase.SIF) {
       visitSelectionStmt(object, method, s.getIfStmt());
     } else if (base == StatementBase.SEXPR) {
-      visitExprStmt(object, s);
+      visitExprStmt(object, method, s);
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(object, method, s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      visitReturn(object, s.getReturnStmt());
+      visitReturn(object, method, s.getReturnStmt());
     } else if (base == StatementBase.SFOR) {
       visitFor(object, method, s);
     } else if (base == StatementBase.SBREAK) {
       //TODO:
     } else if (base == StatementBase.SCONTINUE) {
-      visitContinue(s);
+      visitContinue(object, method, s);
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
   }
 
-  private void visitContinue(StmtStatement s) {
+  private void visitContinue(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
 
     /// we should execute the step of the for-loop 
     /// before the continue
@@ -82,7 +82,7 @@ public class ApplyStatement {
     }
 
     final StmtStatement statement = new StmtStatement(step, beginPos);
-    statement.setLinearExprStmt(GetCodeItems.getFlatCode(step));
+    statement.setLinearExprStmt(GetCodeItems.getFlatCode(step, method));
 
     stepBlock.pushItemBack(new StmtBlockItem(statement));
     stepBlock.pushItemBack(new StmtBlockItem(new StmtStatement(con, beginPos)));
@@ -91,14 +91,14 @@ public class ApplyStatement {
 
   }
 
-  private void visitExprStmt(final ClassDeclaration object, final StmtStatement node) {
+  private void visitExprStmt(final ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
     applyExpression(object, node.getExprStmt());
-    semExprStmt(node);
+    semExprStmt(object, method, node);
   }
 
-  private void visitReturn(final ClassDeclaration object, final StmtReturn node) {
+  private void visitReturn(final ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {
     applyExpression(object, node.getExpression());
-    semReturn(node);
+    semReturn(object, method, node);
   }
 
   private void visitFor(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
@@ -113,7 +113,7 @@ public class ApplyStatement {
     visitBlock(object, method, node.getBlock());
     symtabApplier.closeBlockScope();
 
-    semFor(s);
+    semFor(object, method, s);
   }
 
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
@@ -121,7 +121,7 @@ public class ApplyStatement {
     applyExpression(object, node.getCondition());
     visitBlock(object, method, node.getTrueStatement());
     visitBlock(object, method, node.getOptionalElseStatement());
-    semSelection(node);
+    semSelection(object, method, node);
   }
 
   private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock block) {
@@ -136,7 +136,7 @@ public class ApplyStatement {
     for (StmtBlockItem item : block.getBlockItems()) {
       visitLocalVar(object, item.getLocalVariable());
       applyStatement(object, method, item.getStatement());
-      semBlockItem(item);
+      semBlockItem(object, method, item);
     }
 
     symtabApplier.closeBlockScope();
@@ -164,28 +164,28 @@ public class ApplyStatement {
 
   /// 3ac-semantic
 
-  private void semExprStmt(final StmtStatement node) {
-    node.setLinearExprStmt(GetCodeItems.getFlatCode(node.getExprStmt()));
+  private void semExprStmt(ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
+    node.setLinearExprStmt(GetCodeItems.getFlatCode(node.getExprStmt(), method));
   }
 
-  private void semBlockItem(StmtBlockItem item) {
-    item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
+  private void semBlockItem(ClassDeclaration object, ClassMethodDeclaration method, StmtBlockItem item) {
+    item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable(), method));
   }
 
-  private void semReturn(final StmtReturn node) {
-    node.setLinearExpression(GetCodeItems.getFlatCode(node.getExpression()));
+  private void semReturn(ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {
+    node.setLinearExpression(GetCodeItems.getFlatCode(node.getExpression(), method));
     symtabApplier.peekBlock().addReturn(node);
   }
 
-  private void semFor(StmtStatement s) {
+  private void semFor(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
     StmtFor node = s.getForStmt();
 
     checkIsBoolean(node.getTest());
 
-    node.setLinearDecl(GetCodeItems.getFlatCode(node.getDecl()));
-    node.setLinearInit(GetCodeItems.getFlatCode(node.getInit()));
-    node.setLinearTest(GetCodeItems.getFlatCode(node.getTest()));
-    node.setLinearStep(GetCodeItems.getFlatCode(node.getStep()));
+    node.setLinearDecl(GetCodeItems.getFlatCode(node.getDecl(), method));
+    node.setLinearInit(GetCodeItems.getFlatCode(node.getInit(), method));
+    node.setLinearTest(GetCodeItems.getFlatCode(node.getTest(), method));
+    node.setLinearStep(GetCodeItems.getFlatCode(node.getStep(), method));
 
     /// rewrite for-loop
 
@@ -227,7 +227,7 @@ public class ApplyStatement {
       ifBlock.pushItemBack(new StmtBlockItem(new StmtStatement(new StmtBreak(s), beginPos)));
 
       final StmtSelect selection = new StmtSelect(eNot, ifBlock, null);
-      selection.setLinearCondition(GetCodeItems.getFlatCode(eNot));
+      selection.setLinearCondition(GetCodeItems.getFlatCode(eNot, method));
 
       final StmtBlockItem breakTheLoop = new StmtBlockItem(new StmtStatement(selection, beginPos));
       node.getBlock().pushItemFront(breakTheLoop);
@@ -252,9 +252,9 @@ public class ApplyStatement {
     s.replaceForWithBlock(outerBlock);
   }
 
-  private void semSelection(final StmtSelect node) {
+  private void semSelection(ClassDeclaration object, ClassMethodDeclaration method, final StmtSelect node) {
     checkIsBoolean(node.getCondition());
-    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition()));
+    node.setLinearCondition(GetCodeItems.getFlatCode(node.getCondition(), method));
   }
 
   private void checkIsBoolean(ExprExpression e) {

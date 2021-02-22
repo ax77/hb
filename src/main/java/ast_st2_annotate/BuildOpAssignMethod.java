@@ -53,7 +53,7 @@ public abstract class BuildOpAssignMethod {
     final String className = object.getIdentifier().getName();
 
     StringBuilder sb = new StringBuilder();
-    sb.append("(TYPENAME lvalue, TYPENAME rvalue) {   \n");
+    sb.append("(TYPENAME rvalue) {                    \n"); // TYPENAME lvalue, 
     sb.append("  return rvalue;                       \n");
     sb.append("}                                      \n");
 

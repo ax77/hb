@@ -1,16 +1,18 @@
-/// for(int i = 0; i < 8; i += 1) {
-///   ...
-/// }
-/// ::
-/// {
-///   int i = 0;
-///   for(;;) {
-///     if(!(i < 8)) {
-///       break;
-///     }
-///     ...
-///     {
-///       i += 1;
-///     }
-///   }
-/// }
+class str {
+  int value;
+  str() {
+  }
+  str(int value) {
+    this.value = value;
+  }
+}
+
+class main_class {
+
+  void main() {
+    str s1 = new str();
+    str s2 = new str(1);
+    str s3 = s2;
+  }
+
+}

@@ -89,8 +89,8 @@ public class ApplyUnit {
     }
 
     //body
-    final StmtBlock body = method.getBlock();
-    for (StmtBlockItem item : body.getBlockItems()) {
+    final StmtBlock block = method.getBlock();
+    for (StmtBlockItem item : block.getBlockItems()) {
 
       // method variables
       final VarDeclarator var = item.getLocalVariable();
@@ -98,7 +98,7 @@ public class ApplyUnit {
         symtabApplier.defineMethodVariable(method, var);
         applyInitializer(object, var);
       }
-      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable()));
+      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable(), method));
       applyStatement(object, method, item.getStatement());
     }
 
