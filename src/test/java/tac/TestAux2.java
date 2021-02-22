@@ -1,4 +1,4 @@
-package _temp;
+package tac;
 
 import org.junit.Test;
 
@@ -57,6 +57,42 @@ public class TestAux2 {
         }
       }
       {
+
+        /////// int i = 0;
+        int t15 = 0;
+        int i = t15;
+        for (;;) {
+
+          /////// !i < 8
+          int t23 = i;
+          int t24 = 8;
+          boolean t25 = t23 < t24;
+          boolean t26 = !t25;
+          if (t26) {
+            break;
+          }
+
+          /////// str s6 = new str();
+          str t14 = new str();
+          str_init_0(t14);
+          str s6 = null;
+          s6 = str_opAssign_7(s6, t14);
+          {
+
+            /////// i = i + 1
+            int t19 = i;
+            int t20 = i;
+            int t21 = 1;
+            int t22 = t20 + t21;
+            i = t22;
+          }
+          {
+            str_deinit_6(s6);
+            str_deinit_6(t14);
+          }
+        }
+      }
+      {
         str_deinit_6(s3);
         str_deinit_6(t11);
         str_deinit_6(s2);
@@ -77,11 +113,14 @@ public class TestAux2 {
     void str_init_1(final str __this, int value) {
 
       /////// this.value = value
-      str t16 = null;
-      t16 = str_opAssign_7(t16, __this);
-      int t17 = t16.value;
-      int t18 = value;
-      t16.value = t18;
+      str t29 = null;
+      t29 = str_opAssign_7(t29, __this);
+      int t30 = t29.value;
+      int t31 = value;
+      t29.value = t31;
+      {
+        str_deinit_6(t29);
+      }
     }
 
     void str_deinit_6(final str __this) {

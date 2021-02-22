@@ -166,4 +166,8 @@ public class StmtStatement implements Serializable, Location {
     return base == StatementBase.SFOR;
   }
 
+  public boolean isExprStmt() {
+    return base == StatementBase.SEXPR;
+  }
+
 }

@@ -24,28 +24,23 @@ public abstract class GetDestr {
     block.setDestr(fc);
   }
 
-  private static List<Var> revlist(List<Var> input) {
-    List<Var> rv = new ArrayList<>();
-    if (input.isEmpty()) {
-      return rv;
-    }
-    for (int i = input.size() - 1; i >= 0; i -= 1) {
-      rv.add(input.get(i));
-    }
-    return rv;
-  }
-
   private static FlatCode genDestr(StmtBlock block) {
     List<FlatCodeItem> items = new ArrayList<>();
     List<Var> collected = new ArrayList<>();
     List<Ident> names = new ArrayList<>();
 
     for (StmtBlockItem blockItem : block.getBlockItems()) {
-      if (!blockItem.isVarDeclarationItem()) {
-        continue;
+      FlatCode fc = new FlatCode();
+
+      if (blockItem.isVarDeclarationItem()) {
+        fc = blockItem.getLinearLocalVariable();
+      } else {
+        if (blockItem.getStatement().isExprStmt()) {
+          fc = blockItem.getStatement().getLinearExprStmt();
+        }
       }
-      FlatCode fc = blockItem.getLinearLocalVariable();
-      List<Var> allVars = revlist(fc.getAllVars());
+
+      List<Var> allVars = fc.getAllVars();
       for (Var v : allVars) {
         if (!v.getType().is_class()) {
           continue;
@@ -60,6 +55,8 @@ public abstract class GetDestr {
       }
     }
 
+    /// sort variables by its order of appearance
+    /// i.e. reverse order.
     Collections.sort(collected);
 
     for (Var v : collected) {

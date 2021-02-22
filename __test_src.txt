@@ -18,6 +18,10 @@ class main_class {
       str s4 = new str();
       str s5 = s4;
     }
+    
+    for(int i = 0; i < 8; i += 1) {
+      str s6 = new str();
+    }
   }
 
 }
