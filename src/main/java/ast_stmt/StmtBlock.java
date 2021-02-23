@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_st3_tac.FlatCode;
 import utils_oth.NullChecker;
 
 public class StmtBlock implements Serializable {
@@ -12,22 +11,14 @@ public class StmtBlock implements Serializable {
 
   private final List<StmtBlockItem> blockItems;
 
-  /// 3ac
-  private final List<StmtReturn> returns;
-  private FlatCode destr;
-
   // empty: { }
   public StmtBlock() {
     this.blockItems = new ArrayList<>();
-    this.returns = new ArrayList<>();
-    this.destr = new FlatCode();
   }
 
   public StmtBlock(List<StmtBlockItem> blockStatements) {
     NullChecker.check(blockStatements);
     this.blockItems = blockStatements;
-    this.returns = new ArrayList<>();
-    this.destr = new FlatCode();
   }
 
   public void pushItemBack(StmtBlockItem item) {
@@ -42,22 +33,6 @@ public class StmtBlock implements Serializable {
 
   public List<StmtBlockItem> getBlockItems() {
     return blockItems;
-  }
-
-  public void addReturn(StmtReturn e) {
-    returns.add(e);
-  }
-
-  public List<StmtReturn> getReturns() {
-    return returns;
-  }
-
-  public FlatCode getDestr() {
-    return destr;
-  }
-
-  public void setDestr(FlatCode destr) {
-    this.destr = destr;
   }
 
   @Override

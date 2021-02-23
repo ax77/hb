@@ -5,7 +5,6 @@ import java.io.Serializable;
 import ast_expr.ExprExpression;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
-import ast_st3_tac.FlatCode;
 import tokenize.Token;
 
 public class StmtStatement implements Serializable, Location {
@@ -20,9 +19,6 @@ public class StmtStatement implements Serializable, Location {
   private StmtReturn returnStmt;
   private StmtBreak breakStmt;
   private StmtContinue continueStmt;
-
-  // 3ac
-  private FlatCode linearExprStmt;
 
   public StmtStatement(StmtContinue continueStmt, Token beginPos) {
     this.base = StatementBase.SCONTINUE;
@@ -92,14 +88,6 @@ public class StmtStatement implements Serializable, Location {
     return ifStmt;
   }
 
-  public FlatCode getLinearExprStmt() {
-    return linearExprStmt;
-  }
-
-  public void setLinearExprStmt(FlatCode linearExprStmt) {
-    this.linearExprStmt = linearExprStmt;
-  }
-
   public StmtBreak getBreakStmt() {
     return breakStmt;
   }
@@ -114,8 +102,7 @@ public class StmtStatement implements Serializable, Location {
       return ifStmt.toString();
     }
     if (base == StatementBase.SEXPR) {
-      String header = (linearExprStmt == null ? "" : linearExprStmt.toString());
-      return header + exprStmt.toString() + ";";
+      return exprStmt.toString() + ";";
     }
     if (base == StatementBase.SBLOCK) {
       return blockStmt.toString();

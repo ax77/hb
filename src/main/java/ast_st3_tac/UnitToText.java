@@ -6,7 +6,6 @@ import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_st3_tac.ir.CopierNamer;
-import ast_st3_tac.items.FlatCallConstructor;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -124,10 +123,8 @@ public class UnitToText {
     } else if (base == StatementBase.SFOR) {
       genFor(s.getForStmt());
     } else if (base == StatementBase.SBREAK) {
-      destrTos(s.getBreakStmt().getLoop().getBlock().getDestr());
       g("break;");
     } else if (base == StatementBase.SCONTINUE) {
-      destrTos(s.getContinueStmt().getLoop().getBlock().getDestr());
       g("continue;");
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
@@ -142,10 +139,8 @@ public class UnitToText {
   private void genSelection(StmtSelect ifStmt) {
 
     g("/////// " + ifStmt.getCondition().toString());
-    g(ifStmt.getLinearCondition().toString());
-    String last = ifStmt.getLinearCondition().getDestToString();
 
-    g("if(" + last + ")");
+    g("if(" + "" + ")");
     genBlock(ifStmt.getTrueStatement());
 
     if (ifStmt.hasElse()) {
@@ -158,8 +153,6 @@ public class UnitToText {
 
     if (returnStmt.hasExpression()) {
       g("/////// return " + returnStmt.getExpression().toString());
-      g(returnStmt.getLinearExpression().toString());
-      g("return " + returnStmt.getLinearExpression().getDestToString() + ";");
     } else {
       g("return;");
     }
@@ -169,7 +162,6 @@ public class UnitToText {
   private void genExprStmt(StmtStatement statement) {
     ExprExpression expr = statement.getExprStmt();
     g("/////// " + expr.toString());
-    g(statement.getLinearExprStmt().toString());
   }
 
   private void genBlock(StmtBlock blockStmt) {
@@ -177,18 +169,14 @@ public class UnitToText {
     for (StmtBlockItem item : blockStmt.getBlockItems()) {
       if (item.isVarDeclarationItem()) {
         g("/////// " + item.getLocalVariable().toString());
-        g(item.getLinearLocalVariable().toString());
       } else {
         genStatement(item.getStatement());
       }
     }
-    if (!blockStmt.getDestr().isEmpty()) {
-      destrTos(blockStmt.getDestr());
-    }
     g("\n}\n");
   }
 
-  public void destrTos(FlatCode fc) {
+  public void destrTos(LinearExpression fc) {
     g("\n{\n");
     g(fc.toString());
     g("\n}\n");

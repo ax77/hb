@@ -6,21 +6,21 @@ import java.util.List;
 import ast_st3_tac.ir.FlatCodeItem;
 import ast_st3_tac.leaves.Var;
 
-public class FlatCode {
+public class LinearExpression {
   private final List<FlatCodeItem> items;
   private final List<Var> allVars;
 
-  public FlatCode() {
+  public LinearExpression() {
     this.items = new ArrayList<>();
     this.allVars = new ArrayList<>();
   }
 
-  public FlatCode(List<FlatCodeItem> items) {
+  public LinearExpression(List<FlatCodeItem> items) {
     this.items = items;
     this.allVars = new ArrayList<>();
   }
 
-  public FlatCode(List<FlatCodeItem> items, List<Var> allVars) {
+  public LinearExpression(List<FlatCodeItem> items, List<Var> allVars) {
     this.items = items;
     this.allVars = allVars;
   }

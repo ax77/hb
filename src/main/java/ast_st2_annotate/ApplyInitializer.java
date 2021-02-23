@@ -22,13 +22,14 @@ public class ApplyInitializer {
     final ExprExpression init = var.getSimpleInitializer();
 
     if (init == null) {
-      throw new AstParseException("unexpected, initializer should be there: " + var.getLocationToString());
+      throw new AstParseException("uninitialized variables are deprecated: " + var.getLocationToString());
     }
 
     ApplyExpression applier = new ApplyExpression(symtabApplier);
     applier.applyExpression(object, init);
 
-    if (!var.getType().is_equal_to(init.getResultType())) {
+    final boolean typesAreTheSame = var.getType().is_equal_to(init.getResultType());
+    if (!typesAreTheSame) {
       ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
     }
   }

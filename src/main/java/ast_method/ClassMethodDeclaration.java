@@ -150,29 +150,17 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    if (isFunction()) {
-      sb.append(mod.toString());
-      sb.append(" ");
-      sb.append(returnType.toString());
-      sb.append(" ");
-      sb.append(identifier);
-      sb.append(parametersToString());
-    }
+    sb.append(mod.toString());
+    sb.append(" ");
+    sb.append(returnType.toString());
+    sb.append(" ");
+    sb.append(identifier);
 
     if (isConstructor()) {
-      if (!mod.isEmpty()) {
-        sb.append(mod.toString());
-        sb.append(" ");
-      }
-      sb.append(identifier);
       sb.append(TypePrinters.typeArgumentsToString(clazz.getTypeParametersT()));
-      sb.append(parametersToString());
     }
 
-    if (isDestructor()) {
-      sb.append("deinit");
-    }
-
+    sb.append(parametersToString());
     sb.append(block.toString());
     return sb.toString();
   }

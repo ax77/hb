@@ -30,21 +30,14 @@ public class ApplyUnitPostEachClass {
   }
 
   private void addThisParamToEachMethod(ClassDeclaration object) {
-    //methods
     for (ClassMethodDeclaration method : object.getMethods()) {
-      // if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
-      //   continue;
-      // }
-
       method.pushParameterFront(createThisParameter(object, method));
     }
 
-    //constructors 
     for (ClassMethodDeclaration constructor : object.getConstructors()) {
       constructor.pushParameterFront(createThisParameter(object, constructor));
     }
 
-    //destructor
     final ClassMethodDeclaration destructor = object.getDestructor();
     destructor.pushParameterFront(createThisParameter(object, destructor));
   }

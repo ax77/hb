@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_st3_tac.FlatCode;
-import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
@@ -83,29 +81,26 @@ public class ApplyUnit {
 
     symtabApplier.openMethodScope(sb.toString(), method);
 
-    if (!method.isDestructor()) {
-      for (VarDeclarator fp : method.getParameters()) {
-        symtabApplier.defineFunctionParameter(method, fp);
-      }
+    // parameters
+    for (VarDeclarator fp : method.getParameters()) {
+      symtabApplier.defineFunctionParameter(method, fp);
     }
 
-    //body
-    final StmtBlock block = method.getBlock();
-    for (StmtBlockItem item : block.getBlockItems()) {
+    // block
+    for (StmtBlockItem item : method.getBlock().getBlockItems()) {
 
-      // method variables
-      final VarDeclarator var = item.getLocalVariable();
-      if (var != null) {
+      if (item.isVarDeclarationItem()) {
+        // method variables
+        final VarDeclarator var = item.getLocalVariable();
         symtabApplier.defineMethodVariable(method, var);
         applyInitializer(object, var);
+      } else {
+        applyStatement(object, method, item.getStatement());
       }
-      item.setLinearLocalVariable(GetCodeItems.getFlatCode(item.getLocalVariable(), method));
-      applyStatement(object, method, item.getStatement());
+
     }
 
     symtabApplier.closeMethodScope();
-
-    GetDestr.semBlock(object, method, block);
   }
 
   private void applyStatement(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement statement) {

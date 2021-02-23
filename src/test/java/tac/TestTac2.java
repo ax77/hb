@@ -56,8 +56,9 @@ public class TestTac2 {
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
-    UnitToText text = new UnitToText(unit);
-    System.out.println(UtilSrcToStringLevel.tos(text.toString()));
+    for (ClassDeclaration c : unit.getClasses()) {
+      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+    }
 
   }
 
