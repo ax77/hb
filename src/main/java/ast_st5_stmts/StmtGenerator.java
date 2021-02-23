@@ -3,7 +3,6 @@ package ast_st5_stmts;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_expr.ExprExpression;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
@@ -23,9 +22,10 @@ public class StmtGenerator {
   /// to add some semantic information into each of
   /// them, or to remove some things, etc...
 
+  private final List<StmtBlockItem> allBlockItems;
   private final List<VarDeclarator> allVarDecls;
   private final List<StmtSelect> allStmtSelect;
-  private final List<ExprExpression> allStmtExpression;
+  private final List<StmtStatement> allStmtExpression;
   private final List<StmtBlock> allStmtBlock;
   private final List<StmtReturn> allStmtReturn;
   private final List<StmtFor> allStmtFor;
@@ -33,6 +33,7 @@ public class StmtGenerator {
   private final List<StmtContinue> allStmtContinue;
 
   public StmtGenerator(final StmtBlock block) {
+    this.allBlockItems = new ArrayList<>();
     this.allVarDecls = new ArrayList<>();
     this.allStmtSelect = new ArrayList<>();
     this.allStmtExpression = new ArrayList<>();
@@ -50,6 +51,8 @@ public class StmtGenerator {
     }
     allStmtBlock.add(block);
     for (StmtBlockItem item : block.getBlockItems()) {
+      allBlockItems.add(item);
+
       if (item.isStatementItem()) {
         gen(item.getStatement());
       }
@@ -69,7 +72,7 @@ public class StmtGenerator {
       visitBlock(s.getIfStmt().getTrueStatement());
       visitBlock(s.getIfStmt().getOptionalElseStatement());
     } else if (base == StatementBase.SEXPR) {
-      allStmtExpression.add(s.getExprStmt());
+      allStmtExpression.add(s);
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
@@ -86,6 +89,10 @@ public class StmtGenerator {
     }
   }
 
+  public List<StmtBlockItem> getAllBlockItems() {
+    return allBlockItems;
+  }
+
   public List<VarDeclarator> getAllVarDecls() {
     return allVarDecls;
   }
@@ -94,7 +101,7 @@ public class StmtGenerator {
     return allStmtSelect;
   }
 
-  public List<ExprExpression> getAllStmtExpression() {
+  public List<StmtStatement> getAllStmtExpression() {
     return allStmtExpression;
   }
 

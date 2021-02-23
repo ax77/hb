@@ -18,39 +18,42 @@ public class TestTac2 {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class str {                                //001 \n");
-    sb.append("  int value;                               //002 \n");
-    sb.append("  str() {                                  //003 \n");
-    sb.append("  }                                        //004 \n");
-    sb.append("  str(int value) {                         //005 \n");
-    sb.append("    this.value = value;                    //006 \n");
-    sb.append("  }                                        //007 \n");
-    sb.append("}                                          //008 \n");
-    sb.append("class main_class {                         //009 \n");
-    sb.append("  void main() {                            //010 \n");
-    sb.append("    str s1 = new str();                    //011 \n");
-    sb.append("    str s2 = new str(1);                   //012 \n");
-    sb.append("    str s3 = s2;                           //013 \n");
-    sb.append("    {                                      //014 \n");
-    sb.append("      str s4 = new str();                  //015 \n");
-    sb.append("      str s5 = s4;                         //016 \n");
-    sb.append("    }                                      //017 \n");
-    sb.append("    for(int i = 0; i < 8; i += 1) {        //018 \n");
-    sb.append("      str s6 = new str();                  //019 \n");
-    sb.append("      if(i == 5) {                         //020 \n");
-    sb.append("        continue;                          //021 \n");
-    sb.append("      }                                    //022 \n");
-    sb.append("      if(i == 7) {                         //023 \n");
-    sb.append("        for(int j = 0; j < 32; j += 1) {   //024 \n");
-    sb.append("          str s7 = new str(j);             //025 \n");
-    sb.append("          if(j == 1) {                     //026 \n");
-    sb.append("            break;                         //027 \n");
-    sb.append("          }                                //028 \n");
-    sb.append("        }                                  //029 \n");
-    sb.append("      }                                    //030 \n");
-    sb.append("    }                                      //031 \n");
-    sb.append("  }                                        //032 \n");
-    sb.append("}                                          //033 \n");
+    sb.append("class str {                               \n");
+    sb.append("  int value;                              \n");
+    sb.append("  str() {                                 \n");
+    sb.append("  }                                       \n");
+    sb.append("  str(int value) {                        \n");
+    sb.append("    this.value = value;                   \n");
+    sb.append("  }                                       \n");
+    sb.append("}                                         \n");
+    sb.append("class main_class {                        \n");
+    sb.append("  void main() {                           \n");
+    sb.append("    str s1 = new str();                   \n");
+    sb.append("    str s2 = new str(1);                  \n");
+    sb.append("    str s3 = s2;                          \n");
+    sb.append("    s3 = s2;                              \n");
+    sb.append("    s2 = s3;                              \n");
+    sb.append("    {                                     \n");
+    sb.append("      str s4 = new str();                 \n");
+    sb.append("      str s5 = s4;                        \n");
+    sb.append("      s5 = s4;                            \n");
+    sb.append("    }                                     \n");
+    sb.append("    for(int i = 0; i < 8; i += 1) {       \n");
+    sb.append("      str s6 = new str();                 \n");
+    sb.append("      if(i == 5) {                        \n");
+    sb.append("        continue;                         \n");
+    sb.append("      }                                   \n");
+    sb.append("      if(i == 7) {                        \n");
+    sb.append("        for(int j = 0; j < 32; j += 1) {  \n");
+    sb.append("          str s7 = new str(j);            \n");
+    sb.append("          if(j == 1) {                    \n");
+    sb.append("            break;                        \n");
+    sb.append("          }                               \n");
+    sb.append("        }                                 \n");
+    sb.append("      }                                   \n");
+    sb.append("    }                                     \n");
+    sb.append("  }                                       \n");
+    sb.append("}                                         \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
@@ -63,6 +66,8 @@ public class TestTac2 {
     assertEquals(7, gn.getAllStmtBlock().size());
     assertEquals(1, gn.getAllStmtContinue().size());
     assertEquals(3, gn.getAllStmtSelect().size());
+    assertEquals(3, gn.getAllStmtExpression().size());
+    assertEquals(18, gn.getAllBlockItems().size());
 
   }
 
