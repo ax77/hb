@@ -52,6 +52,7 @@ public class TestTac2 {
     sb.append("        }                                 \n");
     sb.append("      }                                   \n");
     sb.append("    }                                     \n");
+    sb.append("    return;                               \n");
     sb.append("  }                                       \n");
     sb.append("}                                         \n");
     //@formatter:on
@@ -67,7 +68,9 @@ public class TestTac2 {
     assertEquals(1, gn.getAllStmtContinue().size());
     assertEquals(3, gn.getAllStmtSelect().size());
     assertEquals(3, gn.getAllStmtExpression().size());
-    assertEquals(18, gn.getAllBlockItems().size());
+    assertEquals(19, gn.getAllBlockItems().size());
+    assertEquals(1, gn.getAllStmtReturn().size());
+    assertEquals(block, gn.getAllStmtReturn().get(0).getClosestBlock());
 
   }
 
