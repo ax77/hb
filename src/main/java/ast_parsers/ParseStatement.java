@@ -36,20 +36,26 @@ import tokenize.Token;
 
 public class ParseStatement {
   private final Parse parser;
+
+  private final List<StmtBlock> blocks;
   private final List<StmtFor> loops;
 
   public ParseStatement(Parse parser) {
     this.parser = parser;
+    this.blocks = new ArrayList<>();
     this.loops = new ArrayList<>();
   }
 
   public StmtBlock parseBlock(VarBase varBase) {
 
     final StmtBlock block = new StmtBlock();
+    pushBlock(block);
+
     parser.lbrace();
 
     if (parser.is(T.T_RIGHT_BRACE)) {
       parser.rbrace();
+      popBlock();
       return block;
     }
 
@@ -59,6 +65,7 @@ public class ParseStatement {
     }
 
     parser.rbrace();
+    popBlock();
     return block;
   }
 
@@ -168,14 +175,14 @@ public class ParseStatement {
       StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.break_ident);
       parser.semicolon();
-      return new StmtStatement(new StmtBreak(currentLoop), beginPos);
+      return new StmtStatement(new StmtBreak(currentLoop, peekBlock()), beginPos);
     }
 
     if (parser.is(Keywords.continue_ident)) {
       StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.continue_ident);
       parser.semicolon();
-      return new StmtStatement(new StmtContinue(currentLoop), beginPos);
+      return new StmtStatement(new StmtContinue(currentLoop, peekBlock()), beginPos);
     }
 
     if (parser.is(T.T_LEFT_BRACE)) {
@@ -316,6 +323,8 @@ public class ParseStatement {
     parser.perror("expected '{', but was: " + parser.tok().getValue());
   }
 
+  /// LOOPS stack
+
   private void pushLoop(StmtFor s) {
     loops.add(0, s);
   }
@@ -329,6 +338,20 @@ public class ParseStatement {
       parser.perror("there is no current loop");
     }
     return loops.get(0);
+  }
+
+  /// BLOCKS stack
+
+  public void pushBlock(StmtBlock e) {
+    this.blocks.add(0, e);
+  }
+
+  public void popBlock() {
+    this.blocks.remove(0);
+  }
+
+  public StmtBlock peekBlock() {
+    return blocks.get(0);
   }
 
 }

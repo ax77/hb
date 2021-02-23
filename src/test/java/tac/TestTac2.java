@@ -1,17 +1,15 @@
 package tac;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
 
-import ast_class.ClassDeclaration;
-import ast_expr.ExprExpression;
 import ast_main.ParserMain;
-import ast_st3_tac.TacGenerator;
-import ast_st3_tac.UnitToText;
+import ast_st5_stmts.StmtGenerator;
+import ast_stmt.StmtBlock;
 import ast_unit.InstantiationUnit;
-import ast_vars.VarDeclarator;
-import utils.UtilSrcToStringLevel;
 
 public class TestTac2 {
 
@@ -56,9 +54,15 @@ public class TestTac2 {
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
-    for (ClassDeclaration c : unit.getClasses()) {
-      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
-    }
+    StmtBlock block = unit.getClassByName("main_class").getMethods().get(0).getBlock();
+    StmtGenerator gn = new StmtGenerator(block);
+
+    assertEquals(1, gn.getAllStmtBreak().size());
+    assertEquals(gn.getAllStmtSelect().get(2).getTrueStatement(), gn.getAllStmtBreak().get(0).getClosestBlock());
+    assertEquals(7, gn.getAllVarDecls().size());
+    assertEquals(7, gn.getAllStmtBlock().size());
+    assertEquals(1, gn.getAllStmtContinue().size());
+    assertEquals(3, gn.getAllStmtSelect().size());
 
   }
 
