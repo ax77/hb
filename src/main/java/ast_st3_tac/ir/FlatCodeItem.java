@@ -10,6 +10,7 @@ import ast_st3_tac.items.AssignVarFlatCallResult;
 import ast_st3_tac.items.AssignVarNull;
 import ast_st3_tac.items.AssignVarNum;
 import ast_st3_tac.items.AssignVarString;
+import ast_st3_tac.items.AssignVarTernaryOp;
 import ast_st3_tac.items.AssignVarTrue;
 import ast_st3_tac.items.AssignVarUnop;
 import ast_st3_tac.items.AssignVarVar;
@@ -40,6 +41,7 @@ public class FlatCodeItem {
   private AssignVarNull assignVarNull;
   private AssignVarNum assignVarNum;
   private AssignVarString assignVarString;
+  private AssignVarTernaryOp assignVarTernaryOp;
   private AssignVarTrue assignVarTrue;
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
@@ -64,6 +66,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarNull assignVarNull) { this.opcode = Opc.AssignVarNull; this.assignVarNull = assignVarNull; }
   public FlatCodeItem(AssignVarNum assignVarNum) { this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
   public FlatCodeItem(AssignVarString assignVarString) { this.opcode = Opc.AssignVarString; this.assignVarString = assignVarString; }
+  public FlatCodeItem(AssignVarTernaryOp assignVarTernaryOp) { this.opcode = Opc.AssignVarTernaryOp; this.assignVarTernaryOp = assignVarTernaryOp; }
   public FlatCodeItem(AssignVarTrue assignVarTrue) { this.opcode = Opc.AssignVarTrue; this.assignVarTrue = assignVarTrue; }
   public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
@@ -88,6 +91,7 @@ public class FlatCodeItem {
   public boolean isAssignVarNull() { return this.opcode == Opc.AssignVarNull; }
   public boolean isAssignVarNum() { return this.opcode == Opc.AssignVarNum; }
   public boolean isAssignVarString() { return this.opcode == Opc.AssignVarString; }
+  public boolean isAssignVarTernaryOp() { return this.opcode == Opc.AssignVarTernaryOp; }
   public boolean isAssignVarTrue() { return this.opcode == Opc.AssignVarTrue; }
   public boolean isAssignVarUnop() { return this.opcode == Opc.AssignVarUnop; }
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
@@ -114,6 +118,7 @@ public class FlatCodeItem {
     if(isAssignVarNull()) { return assignVarNull.toString(); }
     if(isAssignVarNum()) { return assignVarNum.toString(); }
     if(isAssignVarString()) { return assignVarString.toString(); }
+    if(isAssignVarTernaryOp()) { return assignVarTernaryOp.toString(); }
     if(isAssignVarTrue()) { return assignVarTrue.toString(); }
     if(isAssignVarUnop()) { return assignVarUnop.toString(); }
     if(isAssignVarVar()) { return assignVarVar.toString(); }
@@ -141,6 +146,7 @@ public class FlatCodeItem {
   public AssignVarNull getAssignVarNull() { return this.assignVarNull; }
   public AssignVarNum getAssignVarNum() { return this.assignVarNum; }
   public AssignVarString getAssignVarString() { return this.assignVarString; }
+  public AssignVarTernaryOp getAssignVarTernaryOp() { return this.assignVarTernaryOp; }
   public AssignVarTrue getAssignVarTrue() { return this.assignVarTrue; }
   public AssignVarUnop getAssignVarUnop() { return this.assignVarUnop; }
   public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
@@ -186,6 +192,9 @@ public class FlatCodeItem {
     if(isAssignVarString()) {
       return assignVarString.getLvalue();
     }
+    if(isAssignVarTernaryOp()) {
+      return assignVarTernaryOp.getLvalue();
+    }
     if(isAssignVarTrue()) {
       return assignVarTrue.getLvalue();
     }
@@ -227,9 +236,7 @@ public class FlatCodeItem {
     }
     throw new AstParseException("unknown item for result: " + toString());
   }
-  
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
-  
   //@formatter:on
 
 }

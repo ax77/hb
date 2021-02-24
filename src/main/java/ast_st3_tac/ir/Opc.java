@@ -12,6 +12,7 @@ public enum Opc {
   , AssignVarNull                      // type a = null
   , AssignVarNum                       // type a = 1
   , AssignVarString                    // type a = "..."
+  , AssignVarTernaryOp                 // type a = ?(varCnd, varTrue, varFalse)
   , AssignVarTrue                      // type a = true
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b

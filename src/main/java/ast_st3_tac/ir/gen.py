@@ -27,6 +27,7 @@ opcodes = """
     AssignVarNull                      ,
     AssignVarNum                       ,
     AssignVarString                    ,
+    AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
@@ -87,6 +88,8 @@ for opc in opcodes_arr:
         get_dest += '      return ' + varname + '.getLvalue();\n'
     elif str(opc) == 'FlatCallConstructor':
          get_dest += '      return ' + varname + '.getThisVar();\n'
+    elif str(opc) == 'StoreVarVarAssignOp':
+         get_dest += '      return ' + varname + '.getDst();\n'
     else:
         get_dest += '      err();\n'
         

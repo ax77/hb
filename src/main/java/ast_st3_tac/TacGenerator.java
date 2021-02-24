@@ -23,6 +23,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
@@ -38,6 +39,7 @@ import ast_st3_tac.items.AssignVarFlatCallClassCreationTmp;
 import ast_st3_tac.items.AssignVarFlatCallResult;
 import ast_st3_tac.items.AssignVarNull;
 import ast_st3_tac.items.AssignVarNum;
+import ast_st3_tac.items.AssignVarTernaryOp;
 import ast_st3_tac.items.AssignVarUnop;
 import ast_st3_tac.items.AssignVarVar;
 import ast_st3_tac.items.FlatCallConstructor;
@@ -48,6 +50,7 @@ import ast_st3_tac.items.StoreVarVarAssignOp;
 import ast_st3_tac.leaves.Binop;
 import ast_st3_tac.leaves.FieldAccess;
 import ast_st3_tac.leaves.PureFunctionCallWithResult;
+import ast_st3_tac.leaves.Ternary;
 import ast_st3_tac.leaves.Unop;
 import ast_st3_tac.leaves.Var;
 import ast_types.ClassTypeRef;
@@ -235,6 +238,10 @@ public class TacGenerator {
           rv.add(item);
         }
 
+      }
+
+      else if (item.isAssignVarTernaryOp()) {
+        rv.add(item);
       }
 
       else {
@@ -555,6 +562,27 @@ public class TacGenerator {
       //      final Rvalue rvalueTmp = new Rvalue(e.getBooleanLiteral());
       //      final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
       //      genRaw(new CodeItem(tempVarAssign));
+    }
+
+    else if (base == ExpressionBase.ETERNARY_OPERATOR) {
+      ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
+      gen(ternaryOperator.getCondition());
+      gen(ternaryOperator.getTrueResult());
+      gen(ternaryOperator.getFalseResult());
+
+      final FlatCodeItem Fitem = popCode();
+      final FlatCodeItem Titem = popCode();
+      final FlatCodeItem Citem = popCode();
+
+      final Var condition = Citem.getDest();
+      final Var trueResult = Titem.getDest();
+      final Var falseResult = Fitem.getDest();
+
+      Ternary ternary = new Ternary(condition, trueResult, falseResult);
+      AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(varCreator.justNewVar(e.getResultType()), ternary);
+      FlatCodeItem item = new FlatCodeItem(assignVarTernaryOp);
+      genRaw(item);
+
     }
 
     else {
