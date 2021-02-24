@@ -22,8 +22,8 @@ public class ApplyStatement {
     this.symtabApplier = symtabApplier;
   }
 
-  public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtStatement s,
-      VarBase varBase) {
+  public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method,
+      final StmtStatement s) {
 
     if (s == null) {
       return;
@@ -45,7 +45,7 @@ public class ApplyStatement {
     } else if (base == StatementBase.SCONTINUE) {
       visitContinue(object, method, s);
     } else if (base == StatementBase.SVAR_DECLARATION) {
-      visitLocalVar(object, method, s.getLocalVariable(), varBase);
+      visitLocalVar(object, method, s.getLocalVariable());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
@@ -75,7 +75,7 @@ public class ApplyStatement {
     StmtFor node = s.getForStmt();
 
     symtabApplier.openBlockScope("block", node.getBlock());
-    visitLocalVar(object, method, node.getDecl(), VarBase.LOCAL_VAR);
+    visitLocalVar(object, method, node.getDecl());
     applyExpression(object, node.getInit());
     applyExpression(object, node.getTest());
     applyExpression(object, node.getStep());
@@ -103,21 +103,23 @@ public class ApplyStatement {
     symtabApplier.openBlockScope("block", block);
 
     for (StmtStatement item : block.getBlockItems()) {
-      applyStatement(object, method, item, VarBase.LOCAL_VAR);
+      applyStatement(object, method, item);
     }
 
     symtabApplier.closeBlockScope();
   }
 
-  private void visitLocalVar(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var,
-      VarBase varBase) {
-    if (var == null) {
-      return;
-    }
+  private void visitLocalVar(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var) {
 
-    if (varBase == VarBase.METHOD_VAR) {
+    if (var.is(VarBase.METHOD_VAR)) {
+      if (symtabApplier.howMuchBlocks() != 1) {
+        throw new AstParseException("aux. error, too much blocks for method-variable declaration. ");
+      }
       symtabApplier.defineMethodVariable(method, var);
     } else {
+      if (symtabApplier.howMuchBlocks() == 1) {
+        throw new AstParseException("aux. error, too few blocks for local-variable declaration. ");
+      }
       symtabApplier.defineBlockVar(var);
     }
 

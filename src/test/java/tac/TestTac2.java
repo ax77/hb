@@ -53,7 +53,7 @@ public class TestTac2 {
     sb.append("          }                               \n");
     sb.append("        }                                 \n");
     sb.append("      }                                   \n");
-    sb.append("    }                                     \n");
+    sb.append("    } //str s8 = new str();                                     \n");
     sb.append("    return;                               \n");
     sb.append("  }                                       \n");
     sb.append("}                                         \n");

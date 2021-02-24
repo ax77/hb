@@ -165,4 +165,8 @@ public class SymbolTable {
     return blocks.get(0);
   }
 
+  public int howMuchBlocks() {
+    return blocks.size();
+  }
+
 }
