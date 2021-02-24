@@ -2,6 +2,7 @@ package ast_st2_annotate;
 
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
+import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_types.Type;
@@ -13,6 +14,16 @@ public abstract class ConstexprEval {
 
   public static long ce(ExprExpression e) {
     ExpressionBase base = e.getBase();
+
+    if (base == ExpressionBase.ETERNARY_OPERATOR) {
+      ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
+      long result = ce(ternaryOperator.getCondition());
+      if (result == 0) {
+        return ce(ternaryOperator.getFalseResult());
+      } else {
+        return ce(ternaryOperator.getTrueResult());
+      }
+    }
 
     if (base == ExpressionBase.EBINARY) {
       ExprBinary expression = e.getBinary();
