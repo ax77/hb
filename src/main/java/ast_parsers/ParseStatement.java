@@ -208,11 +208,13 @@ public class ParseStatement {
 
   private StmtStatement parseWhile() {
     final Token beginPos = parser.checkedMove(while_ident);
-    final ExprExpression condition = new ParseExpression(parser).e_expression();
-    final StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
+
     StmtFor stmtFor = new StmtFor();
-    stmtFor.setTest(condition);
-    stmtFor.setBlock(block);
+    pushLoop(stmtFor);
+
+    stmtFor.setTest(new ParseExpression(parser).e_expression());
+    stmtFor.setBlock(parseBlock(VarBase.LOCAL_VAR));
+
     return new StmtStatement(stmtFor, beginPos);
   }
 
