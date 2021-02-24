@@ -31,6 +31,13 @@ public class ExprExpression implements Serializable, Location {
   private Boolean booleanLiteral;
   private ExprCast castExpression;
   private ExprBuiltinFn builtinFn;
+  private ExprTernaryOperator ternaryOperator;
+
+  public ExprExpression(ExprTernaryOperator ternaryOperator, Token beginPos) {
+    this.base = ExpressionBase.ETERNARY_OPERATOR;
+    this.beginPos = beginPos;
+    this.ternaryOperator = ternaryOperator;
+  }
 
   public ExprExpression(ExprBuiltinFn builtinFn, Token beginPos) {
     this.base = ExpressionBase.EBUILTIN_FN;
@@ -220,7 +227,14 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.EBUILTIN_FN) {
       return builtinFn.toString();
     }
+    if (base == ExpressionBase.ETERNARY_OPERATOR) {
+      return ternaryOperator.toString();
+    }
     return base.toString();
+  }
+
+  public ExprTernaryOperator getTernaryOperator() {
+    return ternaryOperator;
   }
 
   @Override

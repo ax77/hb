@@ -210,7 +210,7 @@ public class ParseStatement {
 
   private StmtStatement parseReturn() {
     final Token beginPos = parser.checkedMove(return_ident);
-    final StmtReturn ret = new StmtReturn(peekBlock());
+    final StmtReturn ret = new StmtReturn(blocks.get(0), peekBlock());
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();

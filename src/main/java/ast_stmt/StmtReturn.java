@@ -9,10 +9,12 @@ public class StmtReturn implements Serializable {
   private static final long serialVersionUID = -3087335776553034864L;
 
   private ExprExpression expression;
+  private final StmtBlock methodBlock;
   private final StmtBlock closestBlock;
 
-  public StmtReturn(StmtBlock closestBlock) {
-    NullChecker.check(closestBlock);
+  public StmtReturn(StmtBlock methodBlock, StmtBlock closestBlock) {
+    NullChecker.check(methodBlock, closestBlock);
+    this.methodBlock = methodBlock;
     this.closestBlock = closestBlock;
   }
 
@@ -30,6 +32,10 @@ public class StmtReturn implements Serializable {
 
   public StmtBlock getClosestBlock() {
     return closestBlock;
+  }
+
+  public StmtBlock getMethodBlock() {
+    return methodBlock;
   }
 
   @Override

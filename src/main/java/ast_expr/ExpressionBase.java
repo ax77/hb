@@ -16,4 +16,5 @@ public enum ExpressionBase {
  , EPRIMARY_NUMBER
  , EBOOLEAN_LITERAL
  , EBUILTIN_FN
+ , ETERNARY_OPERATOR
 }

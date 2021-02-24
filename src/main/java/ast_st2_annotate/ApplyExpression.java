@@ -14,6 +14,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
@@ -72,10 +73,28 @@ public class ApplyExpression {
       asslyCast(object, e);
     } else if (e.is(ExpressionBase.EBUILTIN_FN)) {
       applyBuiltinFn(object, e);
+    } else if (e.is(ExpressionBase.ETERNARY_OPERATOR)) {
+      appyTernary(object, e);
     } else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void appyTernary(ClassDeclaration object, ExprExpression e) {
+    ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
+    applyExpression(object, ternaryOperator.getCondition());
+    applyExpression(object, ternaryOperator.getTrueResult());
+    applyExpression(object, ternaryOperator.getFalseResult());
+
+    checkIsBoolean(ternaryOperator.getCondition());
+
+    Type trueType = ternaryOperator.getTrueResult().getResultType();
+    Type falseType = ternaryOperator.getFalseResult().getResultType();
+    if (!trueType.is_equal_to(falseType)) {
+      ErrorLocation.errorExpression("ternary operands types are diferent", e);
+    }
+    e.setResultType(falseType);
   }
 
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
@@ -254,6 +273,17 @@ public class ApplyExpression {
   private void applyArgs(final ClassDeclaration object, final List<ExprExpression> arguments) {
     for (ExprExpression arg : arguments) {
       applyExpression(object, arg);
+    }
+  }
+
+  private void checkIsBoolean(ExprExpression e) {
+    // that's ok - the test expression of the for-loop must ne null
+    // for example.
+    if (e == null) {
+      return;
+    }
+    if (!e.getResultType().is_boolean()) {
+      ErrorLocation.errorExpression("expected boolean type: ", e);
     }
   }
 

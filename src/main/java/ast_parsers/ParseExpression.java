@@ -48,6 +48,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_symtab.Keywords;
@@ -502,6 +503,24 @@ public class ParseExpression {
   }
 
   private ExprExpression e_prim() {
+
+    /// ?(condition, trueResult, falseResult) 
+    if (parser.is(T.T_QUESTION)) {
+      Token beginPos = parser.checkedMove(T.T_QUESTION);
+      parser.lparen();
+
+      ExprExpression condition = e_cnd();
+      parser.checkedMove(T.T_COMMA);
+
+      ExprExpression trueResult = e_cnd();
+      parser.checkedMove(T.T_COMMA);
+
+      ExprExpression falseResult = e_cnd();
+      parser.rparen();
+
+      ExprTernaryOperator ternaryOperator = new ExprTernaryOperator(condition, trueResult, falseResult);
+      return new ExprExpression(ternaryOperator, beginPos);
+    }
 
     if (parser.is(BuiltinNames.std_ident)) {
       return new ParseBuiltinsFn(parser).parse();

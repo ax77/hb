@@ -6,11 +6,6 @@ import java.util.List;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBlockItem;
-import ast_stmt.StmtBreak;
-import ast_stmt.StmtContinue;
-import ast_stmt.StmtFor;
-import ast_stmt.StmtReturn;
-import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -24,13 +19,13 @@ public class StmtGenerator {
 
   private final List<StmtBlockItem> allBlockItems;
   private final List<VarDeclarator> allVarDecls;
-  private final List<StmtSelect> allStmtSelect;
+  private final List<StmtStatement> allStmtSelect;
   private final List<StmtStatement> allStmtExpression;
   private final List<StmtBlock> allStmtBlock;
-  private final List<StmtReturn> allStmtReturn;
-  private final List<StmtFor> allStmtFor;
-  private final List<StmtBreak> allStmtBreak;
-  private final List<StmtContinue> allStmtContinue;
+  private final List<StmtStatement> allStmtReturn;
+  private final List<StmtStatement> allStmtFor;
+  private final List<StmtStatement> allStmtBreak;
+  private final List<StmtStatement> allStmtContinue;
 
   public StmtGenerator(final StmtBlock block) {
     this.allBlockItems = new ArrayList<>();
@@ -68,7 +63,7 @@ public class StmtGenerator {
     }
     StatementBase base = s.getBase();
     if (base == StatementBase.SIF) {
-      allStmtSelect.add(s.getIfStmt());
+      allStmtSelect.add(s);
       visitBlock(s.getIfStmt().getTrueStatement());
       visitBlock(s.getIfStmt().getOptionalElseStatement());
     } else if (base == StatementBase.SEXPR) {
@@ -76,14 +71,14 @@ public class StmtGenerator {
     } else if (base == StatementBase.SBLOCK) {
       visitBlock(s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      allStmtReturn.add(s.getReturnStmt());
+      allStmtReturn.add(s);
     } else if (base == StatementBase.SFOR) {
-      allStmtFor.add(s.getForStmt());
+      allStmtFor.add(s);
       visitBlock(s.getForStmt().getBlock());
     } else if (base == StatementBase.SBREAK) {
-      allStmtBreak.add(s.getBreakStmt());
+      allStmtBreak.add(s);
     } else if (base == StatementBase.SCONTINUE) {
-      allStmtContinue.add(s.getContinueStmt());
+      allStmtContinue.add(s);
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
@@ -97,7 +92,7 @@ public class StmtGenerator {
     return allVarDecls;
   }
 
-  public List<StmtSelect> getAllStmtSelect() {
+  public List<StmtStatement> getAllStmtSelect() {
     return allStmtSelect;
   }
 
@@ -109,19 +104,19 @@ public class StmtGenerator {
     return allStmtBlock;
   }
 
-  public List<StmtReturn> getAllStmtReturn() {
+  public List<StmtStatement> getAllStmtReturn() {
     return allStmtReturn;
   }
 
-  public List<StmtFor> getAllStmtFor() {
+  public List<StmtStatement> getAllStmtFor() {
     return allStmtFor;
   }
 
-  public List<StmtBreak> getAllStmtBreak() {
+  public List<StmtStatement> getAllStmtBreak() {
     return allStmtBreak;
   }
 
-  public List<StmtContinue> getAllStmtContinue() {
+  public List<StmtStatement> getAllStmtContinue() {
     return allStmtContinue;
   }
 
