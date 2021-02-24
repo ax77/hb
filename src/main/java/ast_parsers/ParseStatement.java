@@ -264,8 +264,11 @@ public class ParseStatement {
 
   private StmtStatement parseForLoop() {
 
-    Token from = parser.checkedMove(for_ident);
+    Token beginPos = parser.checkedMove(for_ident);
     parser.lparen();
+
+    StmtBlock forBlock = new StmtBlock(getBlockInfo());
+    pushBlock(forBlock);
 
     StmtFor forStmt = new StmtFor();
     pushLoop(forStmt);
@@ -275,10 +278,10 @@ public class ParseStatement {
     if (parser.tp() != T_SEMI_COLON) {
       if (isLocalVarBegin()) {
         VarDeclarator decl = getLocalVar(VarBase.LOCAL_VAR);
-        forStmt.setDecl(decl);
+        forBlock.pushItemBack(new StmtStatement(decl, beginPos));
       } else {
         ExprExpression init = parseForLoopExpressions();
-        forStmt.setInit(init);
+        forBlock.pushItemBack(new StmtStatement(init, beginPos));
         parser.semicolon();
       }
     } else {
@@ -286,23 +289,24 @@ public class ParseStatement {
     }
 
     if (parser.tp() != T_SEMI_COLON) {
-      ExprExpression test = parseForLoopExpressions();
-      forStmt.setTest(test);
+      forStmt.setTest(parseForLoopExpressions());
     }
     parser.semicolon();
 
     if (parser.tp() != T.T_RIGHT_PAREN) {
-      ExprExpression step = parseForLoopExpressions();
-      forStmt.setStep(step);
+      forStmt.setStep(parseForLoopExpressions());
     }
     parser.rparen();
 
     checkSemicolonAndLbrace();
-    StmtBlock block = parseBlock(VarBase.LOCAL_VAR);
-    forStmt.setBlock(block);
+    forStmt.setBlock(parseBlock(VarBase.LOCAL_VAR));
+
+    forBlock.pushItemBack(new StmtStatement(forStmt, beginPos));
+    final StmtStatement result = new StmtStatement(forBlock, beginPos);
 
     popLoop();
-    return new StmtStatement(forStmt, from);
+    popBlock();
+    return result;
   }
 
   private ExprExpression parseForLoopExpressions() {

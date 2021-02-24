@@ -75,8 +75,6 @@ public class ApplyStatement {
     StmtFor node = s.getForStmt();
 
     symtabApplier.openBlockScope("block", node.getBlock());
-    visitLocalVar(object, method, node.getDecl());
-    applyExpression(object, node.getInit());
     applyExpression(object, node.getTest());
     applyExpression(object, node.getStep());
     visitBlock(object, method, node.getBlock());
