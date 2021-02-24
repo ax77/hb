@@ -9,4 +9,5 @@ public enum StatementBase {
   , SCONTINUE
   , SRETURN
   , SFOR
+  , SVAR_DECLARATION
 }

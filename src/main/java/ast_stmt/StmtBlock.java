@@ -4,42 +4,50 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast_main.GlobalCounter;
 import utils_oth.NullChecker;
 
 public class StmtBlock implements Serializable {
   private static final long serialVersionUID = -3746821242002590684L;
 
-  private final List<StmtBlockItem> blockItems;
+  private final List<StmtStatement> blockItems;
+  private final BlockInfo blockInfo;
+  private final int uniqueId;
 
   // empty: { }
-  public StmtBlock() {
+  public StmtBlock(BlockInfo blockInfo) {
     this.blockItems = new ArrayList<>();
+    this.blockInfo = blockInfo;
+    this.uniqueId = GlobalCounter.next();
   }
 
-  public StmtBlock(List<StmtBlockItem> blockStatements) {
-    NullChecker.check(blockStatements);
-    this.blockItems = blockStatements;
-  }
-
-  public void pushItemBack(StmtBlockItem item) {
+  public void pushItemBack(StmtStatement item) {
     NullChecker.check(item);
     this.blockItems.add(item);
   }
 
-  public void pushItemFront(StmtBlockItem item) {
+  public void pushItemFront(StmtStatement item) {
     NullChecker.check(item);
     this.blockItems.add(0, item);
   }
 
-  public List<StmtBlockItem> getBlockItems() {
+  public List<StmtStatement> getBlockItems() {
     return blockItems;
+  }
+
+  public BlockInfo getBlockInfo() {
+    return blockInfo;
+  }
+
+  public String getUniqueIdToString() {
+    return String.format("%d", uniqueId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("\n{\n");
-    for (StmtBlockItem blockItem : blockItems) {
+    for (StmtStatement blockItem : blockItems) {
       sb.append(blockItem.toString());
     }
     sb.append("\n}\n");

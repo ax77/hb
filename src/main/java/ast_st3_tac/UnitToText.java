@@ -8,7 +8,6 @@ import ast_printers.GenericListPrinter;
 import ast_st3_tac.ir.CopierNamer;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
@@ -166,13 +165,13 @@ public class UnitToText {
 
   private void genBlock(StmtBlock blockStmt) {
     g("\n{\n");
-    for (StmtBlockItem item : blockStmt.getBlockItems()) {
-      if (item.isVarDeclarationItem()) {
-        g("/////// " + item.getLocalVariable().toString());
-      } else {
-        genStatement(item.getStatement());
-      }
-    }
+    //    for (StmtBlockItem item : blockStmt.getBlockItems()) {
+    //      if (item.isVarDeclarationItem()) {
+    //        g("/////// " + item.getLocalVariable().toString());
+    //      } else {
+    //        genStatement(item.getStatement());
+    //      }
+    //    }
     g("\n}\n");
   }
 

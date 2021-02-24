@@ -68,8 +68,6 @@ public class TestTac2 {
     StmtGenerator gn = new StmtGenerator(block);
 
     assertEquals(1, gn.getAllStmtBreak().size());
-    assertEquals(gn.getAllStmtSelect().get(2).getIfStmt().getTrueStatement(),
-        gn.getAllStmtBreak().get(0).getBreakStmt().getClosestBlock());
     assertEquals(7, gn.getAllVarDecls().size());
     assertEquals(7, gn.getAllStmtBlock().size());
     assertEquals(1, gn.getAllStmtContinue().size());
@@ -77,8 +75,6 @@ public class TestTac2 {
     assertEquals(3, gn.getAllStmtExpression().size());
     assertEquals(19, gn.getAllBlockItems().size());
     assertEquals(1, gn.getAllStmtReturn().size());
-    assertEquals(block, gn.getAllStmtReturn().get(0).getReturnStmt().getClosestBlock());
-    assertEquals(block, gn.getAllStmtReturn().get(0).getReturnStmt().getMethodBlock());
 
   }
 

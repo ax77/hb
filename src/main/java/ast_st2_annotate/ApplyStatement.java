@@ -5,11 +5,11 @@ import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
@@ -22,8 +22,8 @@ public class ApplyStatement {
     this.symtabApplier = symtabApplier;
   }
 
-  public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement s) {
+  public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtStatement s,
+      VarBase varBase) {
 
     if (s == null) {
       return;
@@ -44,6 +44,8 @@ public class ApplyStatement {
       visitBreak(object, method, s);
     } else if (base == StatementBase.SCONTINUE) {
       visitContinue(object, method, s);
+    } else if (base == StatementBase.SVAR_DECLARATION) {
+      visitLocalVar(object, method, s.getLocalVariable(), varBase);
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
@@ -73,7 +75,7 @@ public class ApplyStatement {
     StmtFor node = s.getForStmt();
 
     symtabApplier.openBlockScope("block", node.getBlock());
-    visitLocalVar(object, node.getDecl());
+    visitLocalVar(object, method, node.getDecl(), VarBase.LOCAL_VAR);
     applyExpression(object, node.getInit());
     applyExpression(object, node.getTest());
     applyExpression(object, node.getStep());
@@ -100,21 +102,25 @@ public class ApplyStatement {
 
     symtabApplier.openBlockScope("block", block);
 
-    for (StmtBlockItem item : block.getBlockItems()) {
-      visitLocalVar(object, item.getLocalVariable());
-      applyStatement(object, method, item.getStatement());
-      semBlockItem(object, method, item);
+    for (StmtStatement item : block.getBlockItems()) {
+      applyStatement(object, method, item, VarBase.LOCAL_VAR);
     }
 
     symtabApplier.closeBlockScope();
   }
 
-  private void visitLocalVar(final ClassDeclaration object, final VarDeclarator var) {
+  private void visitLocalVar(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var,
+      VarBase varBase) {
     if (var == null) {
       return;
     }
 
-    symtabApplier.defineBlockVar(var);
+    if (varBase == VarBase.METHOD_VAR) {
+      symtabApplier.defineMethodVariable(method, var);
+    } else {
+      symtabApplier.defineBlockVar(var);
+    }
+
     applyInitializer(object, var);
   }
 
@@ -132,9 +138,6 @@ public class ApplyStatement {
   /// 3ac-semantic
 
   private void semExprStmt(ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
-  }
-
-  private void semBlockItem(ClassDeclaration object, ClassMethodDeclaration method, StmtBlockItem item) {
   }
 
   private void semReturn(ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {

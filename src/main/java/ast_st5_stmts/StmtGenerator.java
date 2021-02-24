@@ -5,9 +5,7 @@ import java.util.List;
 
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
-import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
 public class StmtGenerator {
@@ -17,8 +15,8 @@ public class StmtGenerator {
   /// to add some semantic information into each of
   /// them, or to remove some things, etc...
 
-  private final List<StmtBlockItem> allBlockItems;
-  private final List<VarDeclarator> allVarDecls;
+  private final List<StmtStatement> allBlockItems;
+  private final List<StmtStatement> allVarDecls;
   private final List<StmtStatement> allStmtSelect;
   private final List<StmtStatement> allStmtExpression;
   private final List<StmtBlock> allStmtBlock;
@@ -45,15 +43,9 @@ public class StmtGenerator {
       return;
     }
     allStmtBlock.add(block);
-    for (StmtBlockItem item : block.getBlockItems()) {
+    for (StmtStatement item : block.getBlockItems()) {
       allBlockItems.add(item);
-
-      if (item.isStatementItem()) {
-        gen(item.getStatement());
-      }
-      if (item.isVarDeclarationItem()) {
-        allVarDecls.add(item.getLocalVariable());
-      }
+      gen(item);
     }
   }
 
@@ -79,16 +71,18 @@ public class StmtGenerator {
       allStmtBreak.add(s);
     } else if (base == StatementBase.SCONTINUE) {
       allStmtContinue.add(s);
+    } else if (base == StatementBase.SVAR_DECLARATION) {
+      allVarDecls.add(s);
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
   }
 
-  public List<StmtBlockItem> getAllBlockItems() {
+  public List<StmtStatement> getAllBlockItems() {
     return allBlockItems;
   }
 
-  public List<VarDeclarator> getAllVarDecls() {
+  public List<StmtStatement> getAllVarDecls() {
     return allVarDecls;
   }
 

@@ -3,19 +3,13 @@ package ast_stmt;
 import java.io.Serializable;
 
 import ast_expr.ExprExpression;
-import utils_oth.NullChecker;
 
 public class StmtReturn implements Serializable {
   private static final long serialVersionUID = -3087335776553034864L;
 
   private ExprExpression expression;
-  private final StmtBlock methodBlock;
-  private final StmtBlock closestBlock;
 
-  public StmtReturn(StmtBlock methodBlock, StmtBlock closestBlock) {
-    NullChecker.check(methodBlock, closestBlock);
-    this.methodBlock = methodBlock;
-    this.closestBlock = closestBlock;
+  public StmtReturn() {
   }
 
   public ExprExpression getExpression() {
@@ -28,14 +22,6 @@ public class StmtReturn implements Serializable {
 
   public boolean hasExpression() {
     return expression != null;
-  }
-
-  public StmtBlock getClosestBlock() {
-    return closestBlock;
-  }
-
-  public StmtBlock getMethodBlock() {
-    return methodBlock;
   }
 
   @Override

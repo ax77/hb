@@ -5,6 +5,7 @@ import java.io.Serializable;
 import ast_expr.ExprExpression;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
+import ast_vars.VarDeclarator;
 import tokenize.Token;
 
 public class StmtStatement implements Serializable, Location {
@@ -19,6 +20,13 @@ public class StmtStatement implements Serializable, Location {
   private StmtReturn returnStmt;
   private StmtBreak breakStmt;
   private StmtContinue continueStmt;
+  private VarDeclarator localVariable;
+
+  public StmtStatement(VarDeclarator localVariable, Token beginPos) {
+    this.base = StatementBase.SVAR_DECLARATION;
+    this.beginPos = beginPos;
+    this.localVariable = localVariable;
+  }
 
   public StmtStatement(StmtContinue continueStmt, Token beginPos) {
     this.base = StatementBase.SCONTINUE;
@@ -64,6 +72,10 @@ public class StmtStatement implements Serializable, Location {
     this.blockStmt = bloskStmt;
   }
 
+  public VarDeclarator getLocalVariable() {
+    return localVariable;
+  }
+
   public StmtReturn getReturnStmt() {
     return returnStmt;
   }
@@ -102,7 +114,7 @@ public class StmtStatement implements Serializable, Location {
       return ifStmt.toString();
     }
     if (base == StatementBase.SEXPR) {
-      return exprStmt.toString() + ";";
+      return exprStmt.toString() + ";\n";
     }
     if (base == StatementBase.SBLOCK) {
       return blockStmt.toString();
@@ -118,6 +130,9 @@ public class StmtStatement implements Serializable, Location {
     }
     if (base == StatementBase.SCONTINUE) {
       return continueStmt.toString();
+    }
+    if (base == StatementBase.SVAR_DECLARATION) {
+      return localVariable.toString() + "\n";
     }
     return base.toString();
   }

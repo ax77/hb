@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 
 public class ApplyUnit {
@@ -87,31 +87,17 @@ public class ApplyUnit {
     }
 
     // block
-    for (StmtBlockItem item : method.getBlock().getBlockItems()) {
-
-      if (item.isVarDeclarationItem()) {
-        // method variables
-        final VarDeclarator var = item.getLocalVariable();
-        symtabApplier.defineMethodVariable(method, var);
-        applyInitializer(object, var);
-      } else {
-        applyStatement(object, method, item.getStatement());
-      }
-
+    for (StmtStatement item : method.getBlock().getBlockItems()) {
+      applyStatement(object, method, item, VarBase.METHOD_VAR);
     }
 
     symtabApplier.closeMethodScope();
   }
 
-  private void applyStatement(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement statement) {
+  private void applyStatement(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement statement,
+      VarBase methodVar) {
     ApplyStatement applier = new ApplyStatement(symtabApplier);
-    applier.applyStatement(object, method, statement);
-  }
-
-  private void applyInitializer(ClassDeclaration object, VarDeclarator var) {
-    ApplyInitializer applier = new ApplyInitializer(symtabApplier);
-    applier.applyInitializer(object, var);
-
+    applier.applyStatement(object, method, statement, methodVar);
   }
 
 }

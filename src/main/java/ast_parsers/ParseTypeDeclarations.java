@@ -242,7 +242,7 @@ public class ParseTypeDeclarations {
 
     final List<VarDeclarator> parameters = parseMethodParameters();
 
-    StmtBlock block = new StmtBlock();
+    StmtBlock block = new StmtBlock(null);
     if (!isInterfaceMethod) {
       block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
     }

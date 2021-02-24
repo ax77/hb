@@ -15,9 +15,9 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
 import ast_st2_annotate.Mods;
+import ast_stmt.BlockInfo;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtBlockItem;
 import ast_stmt.StmtBreak;
 import ast_stmt.StmtContinue;
 import ast_stmt.StmtFor;
@@ -46,9 +46,16 @@ public class ParseStatement {
     this.loops = new ArrayList<>();
   }
 
+  private BlockInfo getBlockInfo() {
+    if (blocks.isEmpty()) {
+      return new BlockInfo();
+    }
+    return new BlockInfo(blocks.get(blocks.size() - 1), peekBlock());
+  }
+
   public StmtBlock parseBlock(VarBase varBase) {
 
-    final StmtBlock block = new StmtBlock();
+    final StmtBlock block = new StmtBlock(getBlockInfo());
     pushBlock(block);
 
     parser.lbrace();
@@ -60,7 +67,7 @@ public class ParseStatement {
     }
 
     while (!parser.is(T.T_RIGHT_BRACE)) {
-      final StmtBlockItem item = parseOneBlockItem(varBase);
+      final StmtStatement item = parseOneBlockItem(varBase);
       block.pushItemBack(item);
     }
 
@@ -69,17 +76,18 @@ public class ParseStatement {
     return block;
   }
 
-  private StmtBlockItem parseOneBlockItem(VarBase varBase) {
+  private StmtStatement parseOneBlockItem(VarBase varBase) {
 
     if (isLocalVarBegin()) {
-      return new StmtBlockItem(getLocalVar(varBase));
+      Token beginPos = parser.tok();
+      return new StmtStatement(getLocalVar(varBase), beginPos);
     }
 
     final StmtStatement stmt = parseStatement();
     if (stmt == null) {
       parser.perror("something wrong with a statement");
     }
-    return new StmtBlockItem(stmt);
+    return stmt;
   }
 
   private VarDeclarator getLocalVar(VarBase varBase) {
@@ -175,14 +183,14 @@ public class ParseStatement {
       StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.break_ident);
       parser.semicolon();
-      return new StmtStatement(new StmtBreak(currentLoop, peekBlock()), beginPos);
+      return new StmtStatement(new StmtBreak(currentLoop), beginPos);
     }
 
     if (parser.is(Keywords.continue_ident)) {
       StmtFor currentLoop = peekLoop();
       Token beginPos = parser.checkedMove(Keywords.continue_ident);
       parser.semicolon();
-      return new StmtStatement(new StmtContinue(currentLoop, peekBlock()), beginPos);
+      return new StmtStatement(new StmtContinue(currentLoop), beginPos);
     }
 
     if (parser.is(T.T_LEFT_BRACE)) {
@@ -210,7 +218,7 @@ public class ParseStatement {
 
   private StmtStatement parseReturn() {
     final Token beginPos = parser.checkedMove(return_ident);
-    final StmtReturn ret = new StmtReturn(blocks.get(0), peekBlock());
+    final StmtReturn ret = new StmtReturn();
 
     if (parser.tp() == T_SEMI_COLON) {
       parser.move();
@@ -236,10 +244,10 @@ public class ParseStatement {
       shouldBeIfOrLeftBrace();
 
       StmtStatement tmp = parseStatement();
-      StmtBlock block = new StmtBlock();
+      StmtBlock block = new StmtBlock(getBlockInfo());
 
       if (tmp.getBase() == StatementBase.SIF) {
-        block.pushItemBack(new StmtBlockItem(tmp));
+        block.pushItemBack(tmp);
       } else if (tmp.getBase() == StatementBase.SBLOCK) {
         block = tmp.getBlockStmt();
       } else {

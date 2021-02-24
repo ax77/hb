@@ -4,21 +4,14 @@ import utils_oth.NullChecker;
 
 public class StmtBreak {
   private final StmtFor loop;
-  private final StmtBlock closestBlock;
 
-  public StmtBreak(StmtFor loop, StmtBlock closestBlock) {
-    NullChecker.check(loop, closestBlock);
-
+  public StmtBreak(StmtFor loop) {
+    NullChecker.check(loop);
     this.loop = loop;
-    this.closestBlock = closestBlock;
   }
 
   public StmtFor getLoop() {
     return loop;
-  }
-
-  public StmtBlock getClosestBlock() {
-    return closestBlock;
   }
 
   @Override
