@@ -1,20 +1,33 @@
 package ast_st5_stmts.execs;
 
-import ast_st3_tac.LinearExpression;
-
 public class LinearContinue {
   private final LinearLoop loop;
-
-  private LinearExpression step;
   private LocalDestructors destructors;
 
   public LinearContinue(LinearLoop loop) {
     this.loop = loop;
   }
 
+  public LinearLoop getLoop() {
+    return loop;
+  }
+
+  public LocalDestructors getDestructors() {
+    return destructors;
+  }
+
+  public void setDestructors(LocalDestructors destructors) {
+    this.destructors = destructors;
+  }
+
   @Override
   public String toString() {
-    return "continue;";
+    StringBuilder sb = new StringBuilder();
+    if (destructors != null) {
+      sb.append(destructors.toString());
+    }
+    sb.append("\ncontinue;");
+    return sb.toString();
   }
 
 }

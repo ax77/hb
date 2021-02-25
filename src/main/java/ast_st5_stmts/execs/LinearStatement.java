@@ -73,6 +73,14 @@ public class LinearStatement {
     return linearBreak;
   }
 
+  public LinearContinue getLinearContinue() {
+    return linearContinue;
+  }
+
+  public LinearReturn getLinearReturn() {
+    return linearReturn;
+  }
+
   @Override
   public String toString() {
     if (base == StatementBase.SIF) {

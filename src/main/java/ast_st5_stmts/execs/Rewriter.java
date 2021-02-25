@@ -1,32 +1,20 @@
 package ast_st5_stmts.execs;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
 
-import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
 import ast_method.ClassMethodDeclaration;
 import ast_st3_tac.LinearExpression;
 import ast_st3_tac.LinearExpressionBuilder;
-import ast_st3_tac.ir.CopierNamer;
-import ast_st3_tac.items.FlatCallVoid;
-import ast_st3_tac.leaves.Var;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
-import ast_symtab.Scope;
-import ast_symtab.ScopeLevels;
-import ast_symtab.Symtab;
 import ast_types.TypeBindings;
-import ast_vars.VarBase;
 import errors.AstParseException;
-import hashed.Hash_ident;
 import tokenize.T;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -36,87 +24,16 @@ public class Rewriter {
   private final ClassMethodDeclaration method;
   private final LinearBlock result;
   private final List<LinearLoop> loops;
-  private final Symtab<String, Var> variablesLoop;
 
   public Rewriter(ClassMethodDeclaration method) {
     this.method = method;
     this.result = new LinearBlock();
     this.loops = new ArrayList<>();
-    this.variablesLoop = new Symtab<>();
-
     visitBlock(method.getBlock(), result);
-  }
 
-  /// SYMTAB 
-  /// we have to trace all the variables defined in a loop
-  /// because we should generate destructors before each
-  /// break or continue statement for each var defined 
-  /// ABOVE, NOT for each variable in a loop...
-  /// ::
-  /// for(int i=0; i<8 i+=1) {
-  ///   str s1 = new str();
-  ///   
-  ///   if(i==2) {
-  ///     @ delete s1;
-  ///     break;
-  ///   }
-  ///   
-  ///   str s2 = new str();
-  ///   
-  ///   if(i == 3) {
-  ///     @ delete s1;
-  ///     @ delete s2;
-  ///     continue;
-  ///   }
-  /// }
-  private void defineVars(List<Var> allVars) {
-    for (Var v : allVars) {
-      variablesLoop.addsym(UUID.randomUUID().toString(), v);
-    }
+    // @SuppressWarnings("unused")
+    // Rewriter2 deinits = new Rewriter2(result);
   }
-
-  public void openLoopScope(String blockId) {
-    this.variablesLoop.pushscope(ScopeLevels.BLOCK_SCOPE, blockId);
-  }
-
-  public void closeLoopScope() {
-    this.variablesLoop.popscope();
-  }
-
-  private List<Var> getAllVarsDefinedAbove() {
-    List<Var> res = new ArrayList<>();
-    Scope<String, Var> current = variablesLoop.peekScope();
-    for (Entry<String, Var> ent : current.getScope().entrySet()) {
-      final Var var = ent.getValue();
-      if (!var.getType().is_class()) {
-        continue;
-      }
-      if (!var.is(VarBase.LOCAL_VAR)) {
-        continue;
-      }
-      if (!res.contains(var)) {
-        res.add(var);
-      }
-    }
-    Collections.sort(res);
-    return res;
-  }
-
-  private LocalDestructors genDestructors() {
-    List<Var> vars = getAllVarsDefinedAbove();
-    LocalDestructors res = new LocalDestructors();
-    for (Var v : vars) {
-      List<Var> args = new ArrayList<>();
-      args.add(v);
-      final ClassDeclaration classType = v.getType().getClassTypeFromRef();
-      final ClassMethodDeclaration destructor = classType.getDestructor();
-      FlatCallVoid fc = new FlatCallVoid(Hash_ident.getHashedIdent(CopierNamer.getMethodName(destructor)), args);
-      res.add(fc);
-    }
-    return res;
-  }
-
-  /// 
 
   public LinearBlock getResult() {
     return result;

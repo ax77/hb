@@ -29,4 +29,8 @@ public class LocalDestructors {
     return sb.toString();
   }
 
+  public boolean isEmpty() {
+    return destructors.isEmpty();
+  }
+
 }

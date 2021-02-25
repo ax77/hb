@@ -5,7 +5,7 @@ import java.util.List;
 
 public class LinearBlock {
   private final List<LinearStatement> items;
-  private final LocalDestructors destructors;
+  private LocalDestructors destructors;
 
   public LinearBlock() {
     this.items = new ArrayList<>();
@@ -20,6 +20,10 @@ public class LinearBlock {
     return items;
   }
 
+  public void setDestructors(LocalDestructors destructors) {
+    this.destructors = destructors;
+  }
+
   public LocalDestructors getDestructors() {
     return destructors;
   }
@@ -31,6 +35,11 @@ public class LinearBlock {
     for (LinearStatement s : items) {
       sb.append(s.toString());
       sb.append("\n");
+    }
+    if (destructors != null) {
+      if(!destructors.isEmpty()) {
+        sb.append(destructors.toString());
+      }
     }
     sb.append("\n}\n");
     return sb.toString();
