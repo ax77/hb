@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_st3_tac.LinearExpression;
 import ast_st3_tac.ir.CopierNamer;
+import ast_st3_tac.ir.FlatCodeItem;
 import ast_st3_tac.items.FlatCallVoid;
 import ast_st3_tac.leaves.Var;
 import ast_stmt.StatementBase;
@@ -24,20 +24,24 @@ import utils_oth.NullChecker;
 public class Rewriter2 {
 
   private final Symtab<String, Var> variablesBlock;
+  private final Symtab<String, Var> variablesLoop;
+  private final List<LinearLoop> loops;
 
   public Rewriter2(LinearBlock input) {
     this.variablesBlock = new Symtab<>();
+    this.variablesLoop = new Symtab<>();
+    this.loops = new ArrayList<>();
     visitBlock(input);
   }
 
   private void visitBlock(LinearBlock currentBlockPtr) {
     NullChecker.check(currentBlockPtr);
-    openScope();
+    openBlockScope();
     for (final LinearStatement item : currentBlockPtr.getItems()) {
       visitStmt(item);
     }
-    currentBlockPtr.setDestructors(genDestructors());
-    closeScope();
+    currentBlockPtr.setDestructors(genDestructors(variablesBlock));
+    closeBlockScope();
   }
 
   /// SYMTAB 
@@ -63,22 +67,57 @@ public class Rewriter2 {
   ///   }
   /// }
   private void defineVars(LinearExpression linearExpression) {
-    for (Var v : linearExpression.getAllVars()) {
+    for (FlatCodeItem fc : linearExpression.getItems()) {
+
+      //@formatter:off
+      boolean isOk = 
+         fc.isAssignVarAllocObject()  
+      || fc.isAssignVarArrayAccess()  
+      || fc.isAssignVarBinop()  
+      || fc.isAssignVarFalse()  
+      || fc.isAssignVarFieldAccess()  
+      || fc.isAssignVarFlatCallClassCreationTmp()
+      || fc.isAssignVarFlatCallResult()
+      || fc.isAssignVarNull()   
+      || fc.isAssignVarNum()   
+      || fc.isAssignVarString()  
+      || fc.isAssignVarTernaryOp()  
+      || fc.isAssignVarTrue()   
+      || fc.isAssignVarUnop()   
+      || fc.isAssignVarVar();   
+      //@formatter:on
+      if (!isOk) {
+        continue;
+      }
+
+      Var v = fc.getDest();
       variablesBlock.addsym(v.getName().getName(), v);
+
+      if (!loops.isEmpty()) {
+        variablesLoop.addsym(v.getName().getName(), v);
+      }
     }
   }
 
-  public void openScope() {
-    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, "_");
+  public void openBlockScope() {
+    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, "B");
   }
 
-  public void closeScope() {
+  public void closeBlockScope() {
     this.variablesBlock.popscope();
   }
 
-  private List<Var> getAllVarsDefinedAbove() {
+  public void openLoopScope() {
+    this.variablesLoop.pushscope(ScopeLevels.BLOCK_SCOPE, "L");
+  }
+
+  public void closeLoopScope() {
+    this.variablesLoop.popscope();
+  }
+
+  private List<Var> getAllVarsDefinedAbove(Symtab<String, Var> scope) {
     List<Var> res = new ArrayList<>();
-    Scope<String, Var> current = variablesBlock.peekScope();
+    Scope<String, Var> current = scope.peekScope();
     for (Entry<String, Var> ent : current.getScope().entrySet()) {
       final Var var = ent.getValue();
       if (!var.getType().is_class()) {
@@ -95,8 +134,8 @@ public class Rewriter2 {
     return res;
   }
 
-  private LocalDestructors genDestructors() {
-    List<Var> vars = getAllVarsDefinedAbove();
+  private LocalDestructors genDestructors(Symtab<String, Var> scope) {
+    List<Var> vars = getAllVarsDefinedAbove(scope);
     LocalDestructors res = new LocalDestructors();
     for (Var v : vars) {
       List<Var> args = new ArrayList<>();
@@ -123,9 +162,7 @@ public class Rewriter2 {
     } else if (base == StatementBase.SRETURN) {
       rewriteReturn(s);
     } else if (base == StatementBase.SFOR) {
-      //openScope();
       rewriteLoop(s);
-      //closeScope();
     } else if (base == StatementBase.SBREAK) {
       rewriteBreak(s);
     } else if (base == StatementBase.SCONTINUE) {
@@ -147,17 +184,24 @@ public class Rewriter2 {
     if (loop.hasStep()) {
       defineVars(loop.getStep());
     }
-    linearContinue.setDestructors(genDestructors());
+    linearContinue.setDestructors(genDestructors(variablesLoop));
   }
 
   private void rewriteBreak(LinearStatement s) {
     LinearBreak brk = s.getLinearBreak();
-    brk.setDestructors(genDestructors());
+    brk.setDestructors(genDestructors(variablesLoop));
   }
 
   private void rewriteLoop(LinearStatement s) {
+    openLoopScope();
+
     LinearLoop loop = s.getLinearLoop();
+    pushLoop(loop);
+
     visitBlock(loop.getBlock());
+
+    popLoop();
+    closeLoopScope();
   }
 
   private void rewriteReturn(LinearStatement s) {
@@ -165,9 +209,8 @@ public class Rewriter2 {
   }
 
   private void rewriteBlock(LinearStatement s) {
-
     final LinearBlock linearBlock = s.getLinearBlock();
-    linearBlock.setDestructors(genDestructors());
+    linearBlock.setDestructors(genDestructors(variablesBlock));
 
     visitBlock(linearBlock);
   }
@@ -182,6 +225,20 @@ public class Rewriter2 {
     if (linearSelection.hasElse()) {
       visitBlock(linearSelection.getElseBlock());
     }
+  }
+
+  /// LOOPS stack
+
+  private void pushLoop(LinearLoop s) {
+    loops.add(0, s);
+  }
+
+  private void popLoop() {
+    loops.remove(0);
+  }
+
+  private LinearLoop peekLoop() {
+    return loops.get(0);
   }
 
 }

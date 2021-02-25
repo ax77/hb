@@ -2,6 +2,7 @@ package ast_st3_tac.assign_ops;
 
 import ast_st3_tac.leaves.Var;
 import ast_types.Type;
+import ast_vars.VarBase;
 import tokenize.Ident;
 
 public class VarVarAssignOp {

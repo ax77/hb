@@ -340,7 +340,8 @@ public class TacGenerator {
     List<Var> args = new ArrayList<>();
     for (int i = 0; i < arguments.size(); i++) {
       final FlatCodeItem item = popCode();
-      args.add(0, item.getDest());
+      final Var var = item.getDest();
+      args.add(0, var);
     }
 
     return args;

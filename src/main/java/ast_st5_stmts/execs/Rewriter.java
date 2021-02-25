@@ -31,8 +31,8 @@ public class Rewriter {
     this.loops = new ArrayList<>();
     visitBlock(method.getBlock(), result);
 
-    // @SuppressWarnings("unused")
-    // Rewriter2 deinits = new Rewriter2(result);
+    @SuppressWarnings("unused")
+    Rewriter2 deinits = new Rewriter2(result);
   }
 
   public LinearBlock getResult() {

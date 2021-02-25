@@ -32,6 +32,7 @@ public class TestAux2 {
         boolean t47 = !t46;
         boolean t48 = !t47;
         if (t48) {
+          str_deinit_37(t45);
           break;
         }
         str t49 = null;
@@ -40,6 +41,9 @@ public class TestAux2 {
         t50 = str_opAssign_39(t50, s1);
         int t51 = str_remove_12(t50);
         str_append_9(t49, t51);
+        str_deinit_37(t50);
+        str_deinit_37(t49);
+        str_deinit_37(t45);
       }
       {
         int t52 = 0;
@@ -52,6 +56,7 @@ public class TestAux2 {
           boolean t56 = t53 < t55;
           boolean t57 = !t56;
           if (t57) {
+            str_deinit_37(t54);
             break;
           }
           str t62 = null;
@@ -70,6 +75,9 @@ public class TestAux2 {
             int t60 = 1;
             int t61 = t59 + t60;
             i = t61;
+            str_deinit_37(t63);
+            str_deinit_37(t62);
+            str_deinit_37(t54);
             continue;
           }
           str t69 = null;
@@ -78,6 +86,10 @@ public class TestAux2 {
           int t71 = 2;
           boolean t72 = t70 == t71;
           if (t72) {
+            str_deinit_37(t69);
+            str_deinit_37(t63);
+            str_deinit_37(t62);
+            str_deinit_37(t54);
             break;
           }
           int t73 = i;
@@ -90,6 +102,12 @@ public class TestAux2 {
           int t60 = 1;
           int t61 = t59 + t60;
           i = t61;
+          str_deinit_37(s3);
+          str_deinit_37(t74);
+          str_deinit_37(t69);
+          str_deinit_37(t63);
+          str_deinit_37(t62);
+          str_deinit_37(t54);
         }
       }
       {
@@ -105,6 +123,7 @@ public class TestAux2 {
           boolean t79 = !t78;
           boolean t80 = !t79;
           if (t80) {
+            str_deinit_37(t77);
             break;
           }
           str t81 = new str();
@@ -115,8 +134,19 @@ public class TestAux2 {
           t82 = str_opAssign_39(t82, s6tmp);
           int t83 = 1;
           str_append_9(t82, t83);
+          str_deinit_37(t82);
+          str_deinit_37(s6tmp);
+          str_deinit_37(t81);
+          str_deinit_37(t77);
         }
+        str_deinit_37(s5);
+        str_deinit_37(t76);
       }
+      str_deinit_37(t43);
+      str_deinit_37(s2);
+      str_deinit_37(t42);
+      str_deinit_37(s1);
+      str_deinit_37(t40);
     }
 
     main_class main_class_opAssign_35(final main_class __this, main_class rvalue) {
@@ -136,6 +166,7 @@ public class TestAux2 {
       int t86 = t85.value;
       int t87 = value;
       t85.value = t87;
+      str_deinit_37(t85);
     }
 
     boolean str_isEmpty_6(final str __this) {
