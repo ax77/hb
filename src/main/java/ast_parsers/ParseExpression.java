@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -51,6 +50,7 @@ import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
+import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;

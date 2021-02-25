@@ -2,9 +2,9 @@ package ast_parsers;
 
 import java.util.List;
 
-import ast_builtins.BuiltinNames;
 import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprExpression;
+import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_types.TypeBase;
 import ast_types.TypeBuiltinArray;

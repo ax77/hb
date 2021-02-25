@@ -9,10 +9,10 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import _st2_annotate.ConstexprEval;
 import ast_expr.ExprExpression;
 import ast_main.ParserMain;
 import ast_parsers.ParseExpression;
-import ast_st2_annotate.ConstexprEval;
 import parse.Parse;
 
 public class Test_ConstExprEval1 {

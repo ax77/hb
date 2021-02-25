@@ -1,20 +1,11 @@
 package tac;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
 import org.junit.Test;
 
-import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
-import ast_method.ClassMethodDeclaration;
-import ast_st5_stmts.StmtGenerator;
-import ast_st5_stmts.execs.LinearBlock;
-import ast_st5_stmts.execs.Rewriter;
-import ast_stmt.StmtBlock;
 import ast_unit.InstantiationUnit;
-import utils.UtilSrcToStringLevel;
 
 public class TestTac2 {
 

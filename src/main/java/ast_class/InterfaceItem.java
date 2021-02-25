@@ -2,7 +2,7 @@ package ast_class;
 
 import java.io.Serializable;
 
-import ast_st1_templates.TypeSetter;
+import _st1_templates.TypeSetter;
 import ast_types.Type;
 
 /// class may implements the list of interfaces

@@ -2,12 +2,12 @@ package ast_vars;
 
 import java.io.Serializable;
 
+import _st1_templates.TypeSetter;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
-import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import tokenize.Ident;
 import tokenize.Token;

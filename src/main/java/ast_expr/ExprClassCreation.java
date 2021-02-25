@@ -3,9 +3,9 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import _st1_templates.TypeSetter;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
-import ast_st1_templates.TypeSetter;
 import ast_types.Type;
 import errors.ErrorLocation;
 import utils_oth.NullChecker;

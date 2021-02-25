@@ -3,8 +3,8 @@ package ast_parsers;
 import java.util.ArrayList;
 import java.util.List;
 
-import ast_builtins.BuiltinNames;
 import ast_class.ClassDeclaration;
+import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;

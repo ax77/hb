@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import _st2_annotate.Mods;
 import ast_class.ClassDeclaration;
 import ast_class.InterfaceItem;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_st2_annotate.Mods;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;

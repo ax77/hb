@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import _st1_templates.TypeSetter;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
-import ast_st1_templates.TypeSetter;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;

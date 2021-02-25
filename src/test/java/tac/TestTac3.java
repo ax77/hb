@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import _st3_linearize_expr.RewriterExpr;
+import _st3_linearize_expr.ir.FlatCodeItem;
 import ast_main.ParserMain;
 import ast_method.ClassMethodDeclaration;
-import ast_st3_tac.TacGenerator;
-import ast_st3_tac.ir.FlatCodeItem;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 
@@ -43,7 +43,7 @@ public class TestTac3 {
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     final ClassMethodDeclaration mainMethod = unit.getClassByName("main_class").getMethods().get(0);
     VarDeclarator var = mainMethod.getBlock().getBlockItems().get(2).getLocalVariable();
-    TacGenerator tcg = new TacGenerator(var, mainMethod);
+    RewriterExpr tcg = new RewriterExpr(var, mainMethod);
     List<FlatCodeItem> items = tcg.getRv();
     for (FlatCodeItem item : items) {
       System.out.println(item.toString());

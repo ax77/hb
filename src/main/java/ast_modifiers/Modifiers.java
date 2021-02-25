@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import ast_st2_annotate.Mods;
+import _st2_annotate.Mods;
 import ast_symtab.Keywords;
 import errors.AstParseException;
 import tokenize.Ident;

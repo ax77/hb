@@ -1,7 +1,7 @@
 package ast_parsers;
 
+import _st2_annotate.Mods;
 import ast_modifiers.Modifiers;
-import ast_st2_annotate.Mods;
 import ast_symtab.Keywords;
 import parse.Parse;
 import tokenize.T;

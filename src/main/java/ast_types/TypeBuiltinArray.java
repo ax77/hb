@@ -2,7 +2,7 @@ package ast_types;
 
 import java.io.Serializable;
 
-import ast_st1_templates.TypeSetter;
+import _st1_templates.TypeSetter;
 
 /// why do we need this special type?
 /// why not an array itelf like: [u8]?
