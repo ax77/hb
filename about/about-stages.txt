@@ -1,0 +1,64 @@
+
+/// st1: templates
+
+At this stage we create the InstantiationUnit from  CompilationUnit. 
+Each type (in a variable, method-return, etc...) if this type is
+a templated class will be expanded into new class by given 
+type-parameters and according to the type-arguments of the template
+class. 
+
+/// st2: annotate
+Instantiation unit at this moment if completed. We know all the 
+classes we have, and we can work with them.
+We should bind all symbols, check scope-rules, and apply the 
+result type to each expression.
+We iterate over each class, create default methods (constructors,
+destructor, and builtin methods), we apply the variable to each 
+identifier according to symbol-tables, we apply type to each 
+expression, and then we push into each method the default parameter
+'__this'.
+
+/// st3: linearize expressions
+We walk over the given expression-tree-node, and generate flatten
+version of this expression: i.e. 3-address-code. 
+
+/// st4: linearize statements
+We take the block of the given method, and create the linearized
+version of the statements. It is much clean neither add fields into
+ast-statements, because of the design... At this stage we rewrite the
+loops, continues, and add some semantic information about tree we
+walked. 
+For example: given the statement "if(a.isEmpty()) { b = 0; }", and
+we should linearize the condition of the if-statement before we can 
+use this statement, the linearized condition will be pushed into the
+newly created block before the if-statement, and the the resulting
+if-statement will be appended to newly created block, but with the
+simple condition: the condition will be a variable, not an 
+expression: "if(tmp_1) { ... }". And so on...
+We also rewrite continues: before each continue-stmt we should 
+execute the step of the loop (if any), and clean the local-variables
+which were defined in CURRENT loop, that's shy we need the stack of
+the loops at this stage.
+
+/// st5: deinits
+We have the LinearBlock as input, and we can walk over the flatten 
+nodes and append destuctors after each block. We also should make the
+deal with loops, because breaks and continues should clean the local
+variabled defined in CURRENT loop, etc... We use the simple symbol
+tables at this stage, for loops and blocks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

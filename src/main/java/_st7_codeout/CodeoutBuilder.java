@@ -1,7 +1,6 @@
 package _st7_codeout;
 
 import _st4_linearize_stmt.RewriterStmt;
-import _st4_linearize_stmt.items.Function;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_unit.InstantiationUnit;

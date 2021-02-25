@@ -3,7 +3,6 @@ package _st7_codeout;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st4_linearize_stmt.items.Function;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
 import ast_vars.VarDeclarator;

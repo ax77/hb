@@ -1,4 +1,4 @@
-package _st4_linearize_stmt.items;
+package _st7_codeout;
 
 import _st3_linearize_expr.ir.CopierNamer;
 import _st4_linearize_stmt.LinearBlock;
