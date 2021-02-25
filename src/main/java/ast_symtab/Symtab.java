@@ -22,10 +22,19 @@ public class Symtab<K, V> {
   }
 
   public void popscope() {
+    checkIsEmpty();
+    this.scopes.remove(0);
+  }
+
+  private void checkIsEmpty() {
     if (scopes.isEmpty()) {
       throw new AstParseException("empty symbol table. no scopes are available");
     }
-    this.scopes.remove(0);
+  }
+
+  public Scope<K, V> peekScope() {
+    checkIsEmpty();
+    return scopes.get(0);
   }
 
   public boolean isFileScope() {
@@ -59,9 +68,7 @@ public class Symtab<K, V> {
   }
 
   public void addsym(K key, V sym) {
-    if (scopes.isEmpty()) {
-      throw new AstParseException("empty symbol table. no scopes are available");
-    }
+    checkIsEmpty();
     if (key == null) {
       throw new AstParseException("null key for symbol entry...");
     }

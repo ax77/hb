@@ -11,7 +11,7 @@ import tokenize.Token;
 public class StmtStatement implements Serializable, Location {
   private static final long serialVersionUID = 2946438995245230886L;
 
-  private /*final*/ StatementBase base;
+  private final StatementBase base;
   private final Token beginPos;
   private StmtBlock blockStmt;
   private ExprExpression exprStmt;
@@ -149,19 +149,6 @@ public class StmtStatement implements Serializable, Location {
 
   public Token getBeginPos() {
     return beginPos;
-  }
-
-  public void replaceForWithBlock(StmtBlock outerBlock) {
-    this.base = StatementBase.SBLOCK;
-    this.blockStmt = outerBlock;
-    this.forStmt = null;
-  }
-
-  public void replaceContinueWithBlock(StmtBlock stepBlock) {
-    this.base = StatementBase.SBLOCK;
-    this.blockStmt = stepBlock;
-    this.continueStmt = null;
-
   }
 
   public boolean isFor() {
