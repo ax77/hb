@@ -58,13 +58,16 @@ public class TestRewriter {
     sb.append("        break;                                     //039 \n");
     sb.append("      }                                            //040 \n");
     sb.append("      str s3 = new str(i);                         //041 \n");
-    sb.append("    }                                              //042 \n");
-    sb.append("    for(str s5 = new str(32); !s5.isEmpty(); ) {   //043 \n");
-    sb.append("      str s6tmp = new str();                       //044 \n");
-    sb.append("      s6tmp.append(1);                             //045 \n");
-    sb.append("    }                                              //046 \n");
-    sb.append("  }                                                //047 \n");
-    sb.append("}                                                  //048 \n");
+    sb.append("      if(s3.isEmpty()) {                           //042 \n");
+    sb.append("        return;                                    //043 \n");
+    sb.append("      }                                            //044 \n");
+    sb.append("    }                                              //045 \n");
+    sb.append("    for(str s5 = new str(32); !s5.isEmpty(); ) {   //046 \n");
+    sb.append("      str s6tmp = new str();                       //047 \n");
+    sb.append("      s6tmp.append(1);                             //048 \n");
+    sb.append("    }                                              //049 \n");
+    sb.append("  }                                                //050 \n");
+    sb.append("}                                                  //051 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

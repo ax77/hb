@@ -37,6 +37,10 @@ public class Symtab<K, V> {
     return scopes.get(0);
   }
 
+  public List<Scope<K, V>> getScopes() {
+    return scopes;
+  }
+
   public boolean isFileScope() {
     return scopes.size() == 1;
   }

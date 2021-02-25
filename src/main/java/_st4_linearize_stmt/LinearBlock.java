@@ -5,6 +5,7 @@ import java.util.List;
 
 import _st4_linearize_stmt.items.LinearStatement;
 import _st4_linearize_stmt.items.LocalDestructors;
+import ast_stmt.StatementBase;
 
 public class LinearBlock {
   private final List<LinearStatement> items;
@@ -29,6 +30,17 @@ public class LinearBlock {
 
   public LocalDestructors getDestructors() {
     return destructors;
+  }
+
+  public boolean theLastItemIsReturn() {
+    if (items.isEmpty()) {
+      return false;
+    }
+    LinearStatement last = items.get(items.size() - 1);
+    if (last.getBase() == StatementBase.SBLOCK) {
+      return last.getLinearBlock().theLastItemIsReturn();
+    }
+    return last.getBase() == StatementBase.SRETURN;
   }
 
   @Override

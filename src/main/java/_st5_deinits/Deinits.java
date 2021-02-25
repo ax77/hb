@@ -51,7 +51,9 @@ public class Deinits {
     for (final LinearStatement item : currentBlockPtr.getItems()) {
       visitStmt(item);
     }
-    currentBlockPtr.setDestructors(genDestructors(variablesBlock));
+    if (!currentBlockPtr.theLastItemIsReturn()) {
+      currentBlockPtr.setDestructors(genDestructorsForGivenScope(variablesBlock));
+    }
     closeBlockScope();
   }
 
@@ -109,9 +111,8 @@ public class Deinits {
     this.variablesLoop.popscope();
   }
 
-  private List<Var> getAllVarsDefinedAbove(Symtab<String, Var> scope) {
+  private List<Var> buildVarListFromGivenScope(Scope<String, Var> current) {
     List<Var> res = new ArrayList<>();
-    Scope<String, Var> current = scope.peekScope();
     for (Entry<String, Var> ent : current.getScope().entrySet()) {
       final Var var = ent.getValue();
       if (!var.getType().is_class()) {
@@ -124,12 +125,38 @@ public class Deinits {
         res.add(var);
       }
     }
+    return res;
+  }
+
+  private List<Var> getAllVarsDefinedAbove(Symtab<String, Var> scope) {
+    Scope<String, Var> current = scope.peekScope();
+    List<Var> res = buildVarListFromGivenScope(current);
+
     Collections.sort(res);
     return res;
   }
 
-  private LocalDestructors genDestructors(Symtab<String, Var> scope) {
+  private List<Var> getAllVarsDefinedAboveToTop(Symtab<String, Var> scope) {
+    List<Var> res = new ArrayList<>();
+    List<Scope<String, Var>> scopes = scope.getScopes();
+    for (Scope<String, Var> s : scopes) {
+      res.addAll(buildVarListFromGivenScope(s));
+    }
+    Collections.sort(res);
+    return res;
+  }
+
+  private LocalDestructors genDestructorsFromCurrentScopeToTop(Symtab<String, Var> scope) {
+    List<Var> vars = getAllVarsDefinedAboveToTop(scope);
+    return genDestructorsForGivenVars(vars);
+  }
+
+  private LocalDestructors genDestructorsForGivenScope(Symtab<String, Var> scope) {
     List<Var> vars = getAllVarsDefinedAbove(scope);
+    return genDestructorsForGivenVars(vars);
+  }
+
+  private LocalDestructors genDestructorsForGivenVars(List<Var> vars) {
     LocalDestructors res = new LocalDestructors();
     for (Var v : vars) {
       List<Var> args = new ArrayList<>();
@@ -178,12 +205,12 @@ public class Deinits {
     if (loop.hasStep()) {
       defineVars(loop.getStep());
     }
-    linearContinue.setDestructors(genDestructors(variablesLoop));
+    linearContinue.setDestructors(genDestructorsForGivenScope(variablesLoop));
   }
 
   private void rewriteBreak(LinearStatement s) {
     LinearBreak brk = s.getLinearBreak();
-    brk.setDestructors(genDestructors(variablesLoop));
+    brk.setDestructors(genDestructorsForGivenScope(variablesLoop));
   }
 
   private void rewriteLoop(LinearStatement s) {
@@ -200,11 +227,32 @@ public class Deinits {
 
   private void rewriteReturn(LinearStatement s) {
     LinearReturn linearReturn = s.getLinearReturn();
+
+    /// TODO: rewrite this more clean
+    final LocalDestructors destructors = genDestructorsFromCurrentScopeToTop(variablesBlock);
+    final LocalDestructors withoutTheVar = new LocalDestructors();
+
+    if (linearReturn.hasResult()) {
+      for (FlatCallVoid fc : destructors.getDestructors()) {
+        Var v = fc.getArgs().get(0);
+        if (v.equals(linearReturn.getResult())) {
+          continue;
+        }
+        withoutTheVar.add(fc);
+      }
+
+      linearReturn.setDestructors(withoutTheVar);
+    }
+
+    else {
+      linearReturn.setDestructors(destructors);
+    }
+
   }
 
   private void rewriteBlock(LinearStatement s) {
     final LinearBlock linearBlock = s.getLinearBlock();
-    linearBlock.setDestructors(genDestructors(variablesBlock));
+    linearBlock.setDestructors(genDestructorsForGivenScope(variablesBlock));
 
     visitBlock(linearBlock);
   }

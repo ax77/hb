@@ -48,6 +48,9 @@ class main_class {
         break;
       }
       str s3 = new str(i);
+      if(s3.isEmpty()) {
+        return;
+      }
     }
     for(str s5 = new str(32); !s5.isEmpty(); ) {
       str s6tmp = new str();
@@ -55,3 +58,24 @@ class main_class {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

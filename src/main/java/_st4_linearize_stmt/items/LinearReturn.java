@@ -29,7 +29,14 @@ public class LinearReturn {
 
   @Override
   public String toString() {
-    return "return " + (result != null ? result.toString() : "") + ";";
+
+    StringBuilder sb = new StringBuilder();
+    if (destructors != null) {
+      sb.append(destructors.toString());
+    }
+    sb.append("\nreturn " + (result != null ? result.toString() : "") + ";");
+    return sb.toString();
+
   }
 
 }
