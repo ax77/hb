@@ -1,12 +1,30 @@
 class str {
   int value;
+  
   str() {
   }
+  
   str(int value) {
     this.value = value;
   }
+  
   boolean isEmpty() {
     return 0 == 0;
+  }
+  
+  void append(int i) {
+  }
+  
+  int remove() { 
+    return 0; 
+  }
+  
+  int length() {
+    return 0;
+  }
+  
+  int get(int at) {
+    return 0;
   }
 }
 
@@ -15,6 +33,18 @@ class main_class {
   void main() {
     str s1 = new str();
     str s2 = new str(1);
-    str s3 = ?(s1.isEmpty(), s2, new str(32));
-
+    while(!s1.isEmpty()) {
+      s2.append(s1.remove());
+    }
+    for(int i=0; i<s2.length(); i+=1) {
+      s1.append(s2.get(i));
+      if(i == 2) {
+        continue;
+      }
+      if(s1.length() == 2) {
+        break;
+      }
+      str s3 = new str(i);
+    }
+  }
 }

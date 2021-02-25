@@ -8,7 +8,10 @@ import org.junit.Test;
 
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
+import ast_method.ClassMethodDeclaration;
 import ast_st5_stmts.StmtGenerator;
+import ast_st5_stmts.execs.LinearBlock;
+import ast_st5_stmts.execs.Rewriter;
 import ast_stmt.StmtBlock;
 import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
@@ -30,42 +33,12 @@ public class TestTac2 {
     sb.append("}                                         \n");
     sb.append("class main_class {                        \n");
     sb.append("  void main() {                           \n");
-    sb.append("    str s1 = new str();                   \n");
-    sb.append("    str s2 = new str(1);                  \n");
-    sb.append("    str s3 = s2;                          \n");
-    sb.append("    s3 = ?(0==0, s2, s1);                              \n");
-    sb.append("    s2 = s3;                              \n");
-    sb.append("    {                                     \n");
-    sb.append("      str s4 = new str();                 \n");
-    sb.append("      str s5 = s4;                        \n");
-    sb.append("      s5 = s4;                            \n");
-    sb.append("    }                                     \n");
-    sb.append("    for(int i = 0; i < 8; i += 1) {       \n");
-    sb.append("      str s6 = new str();                 \n");
-    sb.append("      if(i == 5) {                        \n");
-    sb.append("        continue;                         \n");
-    sb.append("      }                                   \n");
-    sb.append("      if(i == 7) {                        \n");
-    sb.append("        for(int j = 0; j < 32; j += 1) {  \n");
-    sb.append("          str s7 = new str(j);            \n");
-    sb.append("          if(j == 1) {                    \n");
-    sb.append("            break;                        \n");
-    sb.append("          }  while(!s7.isEmpty()) { j-=1; } for( str s8 = new str(); !s8.isEmpty(); j+=2 ) { if(1==2){}else{} break; }                             \n");
-    sb.append("        }                                 \n");
-    sb.append("      }                                   \n");
-    sb.append("    } //str s8 = new str();                                     \n");
-    sb.append("    return;                               \n");
+    sb.append("    str s1 = new str(); if(s1.isEmpty()){}                   \n");
     sb.append("  }                                       \n");
     sb.append("}                                         \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
-    for (ClassDeclaration c : unit.getClasses()) {
-      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
-    }
-
-    StmtBlock block = unit.getClassByName("main_class").getMethods().get(0).getBlock();
-    StmtGenerator gn = new StmtGenerator(block);
 
   }
 
