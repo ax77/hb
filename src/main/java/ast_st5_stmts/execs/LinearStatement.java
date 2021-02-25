@@ -12,6 +12,7 @@ public class LinearStatement {
   private LinearExpression linearExpression;
   private LinearBreak linearBreak;
   private LinearContinue linearContinue;
+  private LinearReturn linearReturn;
 
   public LinearStatement(LinearSelection linearSelection) {
     this.base = StatementBase.SIF;
@@ -41,6 +42,11 @@ public class LinearStatement {
   public LinearStatement(LinearContinue linearContinue) {
     this.base = StatementBase.SCONTINUE;
     this.linearContinue = linearContinue;
+  }
+
+  public LinearStatement(LinearReturn linearReturn) {
+    this.base = StatementBase.SRETURN;
+    this.linearReturn = linearReturn;
   }
 
   public StatementBase getBase() {
@@ -79,7 +85,7 @@ public class LinearStatement {
       return linearBlock.toString();
     }
     if (base == StatementBase.SRETURN) {
-      // return returnStmt.toString();
+      return linearReturn.toString();
     }
     if (base == StatementBase.SFOR) {
       return linearLoop.toString();

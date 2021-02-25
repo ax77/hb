@@ -129,7 +129,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.parameters.add(0, param);
   }
 
-  private String parametersToString() {
+  public String parametersToString() {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
 

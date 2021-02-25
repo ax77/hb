@@ -191,7 +191,7 @@ public class TacGenerator {
         AssignVarVar node = item.getAssignVarVar();
         final Var lvalueVar = node.getLvalue();
 
-        if (lvalueVar.getType().is_class()) {
+        if (lvalueVar.getType().is_class() && !isOpAssignMethod()) {
           // token __t14 = tok1;
           // ::
           // token __t14 = null
@@ -225,7 +225,7 @@ public class TacGenerator {
 
         final StoreVarVar node = item.getStoreVarVar();
         final Var lvalueVar = node.getDst();
-        if (lvalueVar.getType().is_class()) {
+        if (lvalueVar.getType().is_class() && !isOpAssignMethod()) {
 
           // tok1 = __t17;
           // ::
@@ -256,8 +256,8 @@ public class TacGenerator {
 
     /// we cannot generate opAssign call inside the method itself
     /// it will cause a recursive infinite loop.
-    if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
-      return;
+    if (isOpAssignMethod()) {
+      throw new AstParseException("unexpected opAssign method");
     }
 
     AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
@@ -270,6 +270,10 @@ public class TacGenerator {
     VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), fn, lvalueVar, rvalueVar);
     StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
     rv.add(new FlatCodeItem(store));
+  }
+
+  private boolean isOpAssignMethod() {
+    return method.getIdentifier().equals(BuiltinNames.opAssign_ident);
   }
 
   private void genRaw(FlatCodeItem item) {

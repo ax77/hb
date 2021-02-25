@@ -11,11 +11,13 @@ import ast_st3_tac.LinearExpressionBuilder;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtFor;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_types.TypeBindings;
 import errors.AstParseException;
 import tokenize.T;
 import tokenize.Token;
+import utils_oth.NullChecker;
 
 public class Rewriter {
 
@@ -35,19 +37,15 @@ public class Rewriter {
     return result;
   }
 
-  private void visitBlock(StmtBlock block, LinearBlock result) {
-    if (block == null) {
-      throw new AstParseException("unexpected empty block");
-    }
+  private void visitBlock(StmtBlock block, LinearBlock currentBlockPtr) {
+    NullChecker.check(block, currentBlockPtr);
     for (StmtStatement item : block.getBlockItems()) {
-      gen(item, result);
+      gen(item, currentBlockPtr);
     }
   }
 
-  private void gen(final StmtStatement s, LinearBlock result) {
-    if (s == null) {
-      throw new AstParseException("unexpected empty statement");
-    }
+  private void gen(final StmtStatement s, final LinearBlock currentBlockPtr) {
+    NullChecker.check(s, currentBlockPtr);
 
     StatementBase base = s.getBase();
 
@@ -55,11 +53,11 @@ public class Rewriter {
 
       /// 1) linearize the if-expression, and put it into the block
       LinearExpression lexpr = LinearExpressionBuilder.build(s.getIfStmt().getCondition(), method.getClazz(), method);
-      result.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
+      currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
 
       /// 2) create the if-statement with the result variable
       LinearSelection linearSelection = new LinearSelection(lexpr.getDest());
-      result.pushItemBack(new LinearStatement(linearSelection));
+      currentBlockPtr.pushItemBack(new LinearStatement(linearSelection));
 
       /// 3) visit the true block of the created if, with the true-statement 
       /// of the original block.
@@ -75,17 +73,34 @@ public class Rewriter {
 
     else if (base == StatementBase.SEXPR) {
       LinearExpression lexpr = LinearExpressionBuilder.build(s.getExprStmt(), method.getClazz(), method);
-      result.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
+      currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
     }
 
     else if (base == StatementBase.SBLOCK) {
       final LinearStatement nestedStmt = new LinearStatement(new LinearBlock());
-      result.pushItemBack(nestedStmt);
+      currentBlockPtr.pushItemBack(nestedStmt);
 
       visitBlock(s.getBlockStmt(), nestedStmt.getLinearBlock());
     }
 
     else if (base == StatementBase.SRETURN) {
+      StmtReturn stmtReturn = s.getReturnStmt();
+
+      if (stmtReturn.hasExpression()) {
+
+        /// 1) linearize the if-expression, and put it into the block
+        LinearExpression lexpr = LinearExpressionBuilder.build(stmtReturn.getExpression(), method.getClazz(), method);
+        currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
+
+        /// 2) create the if-statement with the result variable
+        LinearReturn linearReturn = new LinearReturn(lexpr.getDest());
+        currentBlockPtr.pushItemBack(new LinearStatement(linearReturn));
+      }
+
+      else {
+        LinearReturn linearReturn = new LinearReturn(null);
+        currentBlockPtr.pushItemBack(new LinearStatement(linearReturn));
+      }
     }
 
     else if (base == StatementBase.SFOR) {
@@ -96,7 +111,7 @@ public class Rewriter {
 
       final LinearLoop resultLoop = new LinearLoop();
       pushLoop(resultLoop);
-      result.pushItemBack(new LinearStatement(resultLoop));
+      currentBlockPtr.pushItemBack(new LinearStatement(resultLoop));
 
       if (test != null) {
         final Token beginPos = test.getBeginPos();
@@ -146,7 +161,7 @@ public class Rewriter {
       /// point... all variables defined below are ignored.
       ///
       LinearBreak label = new LinearBreak(peekLoop());
-      result.pushItemBack(new LinearStatement(label));
+      currentBlockPtr.pushItemBack(new LinearStatement(label));
     }
 
     else if (base == StatementBase.SCONTINUE) {
@@ -161,17 +176,17 @@ public class Rewriter {
       if (theLoopOfTheContinue.hasStep()) {
         /// we should append the 'step' expression
         /// if it was a for-loop before 'continue'
-        result.pushItemBack(new LinearStatement(StatementBase.SEXPR, theLoopOfTheContinue.getStep()));
+        currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, theLoopOfTheContinue.getStep()));
       }
 
       LinearContinue label = new LinearContinue(theLoopOfTheContinue);
-      result.pushItemBack(new LinearStatement(label));
+      currentBlockPtr.pushItemBack(new LinearStatement(label));
     }
 
     else if (base == StatementBase.SVAR_DECLARATION) {
 
-      LinearExpression lexpr = LinearExpressionBuilder.build(s.getLocalVariable(), method.getClazz(), method);
-      result.pushItemBack(new LinearStatement(StatementBase.SVAR_DECLARATION, lexpr));
+      LinearExpression lvars = LinearExpressionBuilder.build(s.getLocalVariable(), method.getClazz(), method);
+      currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SVAR_DECLARATION, lvars));
 
     }
 
