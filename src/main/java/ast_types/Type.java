@@ -168,21 +168,15 @@ public class Type implements Serializable, TypeApi, Location {
       if (!another.is(TypeBase.TP_char)) {
         return false;
       }
-    }
-
-    else if (is(TypeBase.TP_short)) {
+    } else if (is(TypeBase.TP_short)) {
       if (!another.is(TypeBase.TP_short)) {
         return false;
       }
-    }
-
-    else if (is(TypeBase.TP_int)) {
+    } else if (is(TypeBase.TP_int)) {
       if (!another.is(TypeBase.TP_int)) {
         return false;
       }
-    }
-
-    else if (is(TypeBase.TP_long)) {
+    } else if (is(TypeBase.TP_long)) {
       if (!another.is(TypeBase.TP_long)) {
         return false;
       }
@@ -257,15 +251,6 @@ public class Type implements Serializable, TypeApi, Location {
 
   public boolean is(TypeBase withBase) {
     return this.base.equals(withBase);
-  }
-
-  private boolean isOneOf(TypeBase withBase[]) {
-    for (TypeBase item : withBase) {
-      if (is(item)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   @Override
@@ -350,8 +335,7 @@ public class Type implements Serializable, TypeApi, Location {
 
   @Override
   public boolean isInteger() {
-    TypeBase bases[] = { TP_char, TP_short, TP_int, TP_long };
-    return isOneOf(bases);
+    return is(TP_char) || is(TP_short) || is(TP_int) || is(TP_long);
   }
 
   @Override

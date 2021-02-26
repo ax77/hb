@@ -1,8 +1,8 @@
 package _st3_linearize_expr.ir;
 
-import _st2_annotate.Mods;
 import _st3_linearize_expr.leaves.Var;
 import ast_modifiers.Modifiers;
+import ast_modifiers.ModifiersChecker;
 import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarBase;
@@ -21,7 +21,7 @@ public abstract class VarCreator {
   }
 
   public static Var just_this_(Type type) {
-    final Var result = new Var(VarBase.METHOD_PARAMETER, Mods.letMods(), type, BuiltinNames.__this_ident);
+    final Var result = new Var(VarBase.METHOD_PARAMETER, ModifiersChecker.letMods(), type, BuiltinNames.__this_ident);
     return result;
   }
 

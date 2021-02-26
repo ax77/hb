@@ -2,6 +2,7 @@ package _st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.ModifiersChecker;
 import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -46,7 +47,7 @@ public class ApplyUnitPostEachClass {
     //@formatter:off
     final Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
     final VarDeclarator __thisParam = new VarDeclarator(VarBase.METHOD_PARAMETER
-        , Mods.letMods()
+        , ModifiersChecker.letMods()
         , paramType
         , BuiltinNames.__this_ident
         , method.getBeginPos()

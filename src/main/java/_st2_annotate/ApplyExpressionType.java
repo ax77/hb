@@ -21,6 +21,8 @@ import static tokenize.T.T_TILDE;
 import static tokenize.T.T_TIMES;
 import static tokenize.T.T_XOR;
 
+import java.util.List;
+
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
@@ -36,7 +38,7 @@ public class ApplyExpressionType {
 
   private static final String RESULT_TYPE_NOT_RESOLVED = "result type not resolved";
 
-  private static boolean in(T op, T[] where) {
+  private static boolean in(T op, List<T> where) {
     for (T t : where) {
       if (op.equals(t)) {
         return true;
@@ -64,7 +66,7 @@ public class ApplyExpressionType {
 
     final Type lhsType = operand.getResultType();
 
-    if (in(op, new T[] { T_PLUS, T_MINUS })) {
+    if (op == T_PLUS || op == T_MINUS) {
       if (lhsType.isNumeric()) {
         e.setResultType(lhsType);
       }
@@ -106,7 +108,7 @@ public class ApplyExpressionType {
     final Type lhsType = lhs.getResultType();
     final Type rhsType = rhs.getResultType();
 
-    if (!in(op, new T[] { T_EQ, T_NE })) {
+    if (!isEqualityOp(op)) {
       checkTypeNotNull(e, lhsType);
       checkTypeNotNull(e, rhsType);
       if (!lhsType.isEqualTo(rhsType)) {
@@ -115,7 +117,7 @@ public class ApplyExpressionType {
     }
 
     // == !=
-    if (in(op, new T[] { T_EQ, T_NE })) {
+    if (isEqualityOp(op)) {
       // T_EQ,T_NE->boolean
       // is_numeric|is_numeric
       // is_boolean|is_boolean
@@ -159,7 +161,7 @@ public class ApplyExpressionType {
 
     // TODO: check these OPS (* / %)
     // + - * / %
-    else if (in(op, new T[] { T_PLUS, T_MINUS, T_TIMES, T_DIVIDE, T_PERCENT })) {
+    else if (op == T_PLUS || op == T_MINUS || op == T_TIMES || op == T_DIVIDE || op == T_PERCENT) {
       // T_PLUS,T_MINUS->numeric
       // is_numeric|is_numeric
       if (lhsType.isNumeric() && rhsType.isNumeric()) {
@@ -168,7 +170,7 @@ public class ApplyExpressionType {
     }
 
     // << >>
-    else if (in(op, new T[] { T_LSHIFT, T_RSHIFT })) {
+    else if (op == T_LSHIFT || op == T_RSHIFT) {
       // T_LSHIFT,T_RSHIFT->integral
       // is_integer|is_integer
       if (lhsType.isInteger() && rhsType.isInteger()) {
@@ -177,7 +179,7 @@ public class ApplyExpressionType {
     }
 
     // < <= > >=
-    else if (in(op, new T[] { T_LT, T_LE, T_GT, T_GE })) {
+    else if (op == T_LT || op == T_LE || op == T_GT || op == T_GE) {
       // T_LT,T_LE,T_GT,T_GE->boolean
       // is_numeric|is_numeric
       if (lhsType.isNumeric() && rhsType.isNumeric()) {
@@ -186,7 +188,7 @@ public class ApplyExpressionType {
     }
 
     // && ||
-    else if (in(op, new T[] { T_AND_AND, T_OR_OR })) {
+    else if (op == T_AND_AND || op == T_OR_OR) {
       // T_AND_AND,T_OR_OR->boolean
       // is_boolean|is_boolean
       if (lhsType.isBoolean() && rhsType.isBoolean()) {
@@ -195,7 +197,7 @@ public class ApplyExpressionType {
     }
 
     // & | ^
-    else if (in(op, new T[] { T_AND, T_OR, T_XOR })) {
+    else if (op == T_AND || op == T_OR || op == T_XOR) {
       // T_AND,T_OR,T_XOR->integral
       // is_integer|is_integer
       if (lhsType.isInteger() && rhsType.isInteger()) {
@@ -213,10 +215,14 @@ public class ApplyExpressionType {
 
   }
 
+  private static boolean isEqualityOp(final T op) {
+    return op == T_EQ || op == T_NE;
+  }
+
   public static boolean isBinaryOperator(final T op) {
     //@formatter:off
     boolean isOk = 
-         op == T_EQ          
+         op == T_EQ 
       || op == T_NE          
       || op == T_LT          
       || op == T_LE          

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st2_annotate.Mods;
 import ast_class.ClassDeclaration;
 import ast_class.InterfaceItem;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
+import ast_modifiers.ModifiersChecker;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
@@ -220,7 +220,7 @@ public class ParseTypeDeclarations {
 
   private void putField(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident name, Token beginPos) {
 
-    if (!Mods.isCorrectFieldMods(modifiers)) {
+    if (!ModifiersChecker.isCorrectFieldMods(modifiers)) {
       parser.perror("field modifiers are incorrect: " + modifiers.toString());
     }
 
@@ -236,7 +236,7 @@ public class ParseTypeDeclarations {
   private void putMethod(ClassDeclaration clazz, Modifiers mod, Type type, Ident name, Token beginPos,
       boolean isInterfaceMethod) {
 
-    if (!Mods.isCorrectMethodMods(mod)) {
+    if (!ModifiersChecker.isCorrectMethodMods(mod)) {
       parser.perror("method modifiers are incorrect: " + mod.toString());
     }
 
@@ -269,7 +269,7 @@ public class ParseTypeDeclarations {
 
   private void putConstructor(ClassDeclaration clazz, Modifiers modifiers) {
 
-    if (!Mods.isCorrectConstructorMods(modifiers)) {
+    if (!ModifiersChecker.isCorrectConstructorMods(modifiers)) {
       parser.perror("constructor modifiers are incorrect: " + modifiers.toString());
     }
 

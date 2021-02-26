@@ -1,82 +1,67 @@
-package _st2_annotate;
+package ast_modifiers;
 
-import ast_modifiers.Modifiers;
+import java.util.ArrayList;
+import java.util.List;
+
 import ast_symtab.Keywords;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 
-public abstract class Mods {
+//@formatter:off
+public abstract class ModifiersChecker {
 
   public static Modifiers varMods() {
     return new Modifiers();
   }
 
   public static Modifiers letMods() {
-    Ident[] mods = { Keywords.final_ident };
-    return new Modifiers(mods);
+    List<Ident> res = new ArrayList<>();
+    res.add(Keywords.final_ident);
+    return new Modifiers(res);
   }
 
-  //@formatter:off
-  
-  public static final Ident ALL_MODS[] = { 
-      Keywords.private_ident,
-      Keywords.public_ident, 
-      Keywords.native_ident, 
-      Keywords.static_ident, 
-      Keywords.final_ident,
-      Keywords.abstract_ident,
-      Keywords.mut_ident,
-  };
-  
-  public static final Ident METHOD_MODS[] = {
-      Keywords.private_ident, 
-      Keywords.public_ident,  
-      Keywords.native_ident,  
-      Keywords.static_ident,  
-  };
-  
-  public static final Ident FIELD_MODS[] = { 
-      Keywords.private_ident,
-      Keywords.public_ident, 
-      Keywords.static_ident, 
-      Keywords.final_ident,
-  };
-  
-  private static boolean in(Ident what, Ident[] where) {
-    for(Ident id: where) {
-      if(what.equals(id)) {
-        return true;
-      }
-    }
-    return false;
-  }
-  
   public static boolean isAnyModifier(Token what) {
     return what.ofType(T.TOKEN_IDENT) && isAnyModifierId(what.getIdent());
   }
   
   public static boolean isAnyModifierId(Ident what) {
-    return in(what, ALL_MODS);
+    return 
+       what.equals(Keywords.private_ident  )
+    || what.equals(Keywords.public_ident   )
+    || what.equals(Keywords.native_ident   )
+    || what.equals(Keywords.static_ident   )
+    || what.equals(Keywords.final_ident    )
+    || what.equals(Keywords.abstract_ident )
+    || what.equals(Keywords.mut_ident      );
   }
 
-  //@formatter:on
 
   private static boolean isMethodModifierId(Ident what) {
-    return in(what, METHOD_MODS);
+    return 
+        what.equals(Keywords.private_ident  )
+     || what.equals(Keywords.public_ident   )
+     || what.equals(Keywords.native_ident   )
+     || what.equals(Keywords.static_ident   );
   }
 
-  // TODO:
   private static boolean isMethodParameterModifierId(Ident what) {
     return what.equals(Keywords.final_ident);
   }
 
   private static boolean isClassFieldModifierId(Ident what) {
-    return in(what, FIELD_MODS);
+    return 
+        what.equals(Keywords.private_ident  )
+     || what.equals(Keywords.public_ident   )
+     || what.equals(Keywords.static_ident   )
+     || what.equals(Keywords.final_ident    )
+     || what.equals(Keywords.mut_ident      );
   }
 
   private static boolean isConstructorModifierId(Ident what) {
-    return what.equals(Keywords.private_ident) || what.equals(Keywords.public_ident);
+    return 
+        what.equals(Keywords.private_ident) 
+     || what.equals(Keywords.public_ident);
   }
 
   public static boolean isCorrectMethodMods(Modifiers mods) {

@@ -2,9 +2,9 @@ package ast_modifiers;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
-import _st2_annotate.Mods;
 import ast_symtab.Keywords;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -20,7 +20,7 @@ public class Modifiers implements Serializable {
     this.modifiers = new LinkedHashSet<>();
   }
 
-  public Modifiers(Ident[] mods) {
+  public Modifiers(List<Ident> mods) {
     this.modifiers = new LinkedHashSet<>();
     for (Ident mod : mods) {
       check(mod);
@@ -39,7 +39,7 @@ public class Modifiers implements Serializable {
 
   private void check(Ident mod) {
     final String name = mod.getName();
-    if (!Mods.isAnyModifierId(mod)) {
+    if (!ModifiersChecker.isAnyModifierId(mod)) {
       throw new AstParseException("not a modifier: " + name);
     }
     if (contains(mod)) {

@@ -11,10 +11,10 @@ import static tokenize.T.T_SEMI_COLON;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st2_annotate.Mods;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
+import ast_modifiers.ModifiersChecker;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBreak;
@@ -115,7 +115,7 @@ public class ParseStatement {
 
     /// 100% short-circuit
     /// `final` int a; -> this is a declaration, not an expression
-    if (Mods.isAnyModifier(parser.tok())) {
+    if (ModifiersChecker.isAnyModifier(parser.tok())) {
       parser.restoreState(state);
       return true;
     }

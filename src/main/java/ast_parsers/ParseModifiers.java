@@ -1,7 +1,7 @@
 package ast_parsers;
 
-import _st2_annotate.Mods;
 import ast_modifiers.Modifiers;
+import ast_modifiers.ModifiersChecker;
 import ast_symtab.Keywords;
 import parse.Parse;
 import tokenize.T;
@@ -17,7 +17,7 @@ public class ParseModifiers {
   public Modifiers parse() {
     Modifiers mods = new Modifiers();
 
-    while (Mods.isAnyModifier(parser.tok())) {
+    while (ModifiersChecker.isAnyModifier(parser.tok())) {
       if (parser.is(Keywords.static_ident)) {
         parser.unimplemented("static-semantic");
       }
