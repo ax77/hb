@@ -161,7 +161,7 @@ public class FlatCodeItem {
   public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
   public StoreVarVarAssignOp getStoreVarVarAssignOp() { return this.storeVarVarAssignOp; }
 
-  public boolean isOneOfAssings() {
+  public boolean isOneOfAssigns() {
     return 
        isAssignVarAllocObject()  
     || isAssignVarArrayAccess()  

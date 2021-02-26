@@ -5,24 +5,24 @@ import _st3_linearize_expr.leaves.Var;
 
 public class AssignVarBinop {
   private final Var lvalue;
-  private final Binop binop;
+  private final Binop rvalue;
 
-  public AssignVarBinop(Var lvalue, Binop binop) {
+  public AssignVarBinop(Var lvalue, Binop rvalue) {
     this.lvalue = lvalue;
-    this.binop = binop;
+    this.rvalue = rvalue;
   }
 
   public Var getLvalue() {
     return lvalue;
   }
 
-  public Binop getBinop() {
-    return binop;
+  public Binop getRvalue() {
+    return rvalue;
   }
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = " + binop.toString();
+    return lvalue.typeNameToString() + " = " + rvalue.toString();
   }
 
 }

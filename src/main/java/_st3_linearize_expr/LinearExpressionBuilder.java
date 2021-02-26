@@ -12,7 +12,7 @@ public abstract class LinearExpressionBuilder {
       return new LinearExpression();
     }
     RewriterExpr tcg = new RewriterExpr(from, method);
-    return new LinearExpression(tcg.getRv(), tcg.getVarCreator().getAllVars());
+    return new LinearExpression(tcg.getRv());
   }
 
   public static LinearExpression build(VarDeclarator from, ClassDeclaration clazz, ClassMethodDeclaration method) {
@@ -20,7 +20,7 @@ public abstract class LinearExpressionBuilder {
       return new LinearExpression();
     }
     RewriterExpr tcg = new RewriterExpr(from, method);
-    return new LinearExpression(tcg.getRv(), tcg.getVarCreator().getAllVars());
+    return new LinearExpression(tcg.getRv());
   }
 
 }

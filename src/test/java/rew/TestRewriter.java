@@ -26,7 +26,7 @@ public class TestRewriter {
     sb.append("    this.value = value;                            //006 \n");
     sb.append("  }                                                //007 \n");
     sb.append("  boolean isEmpty() {                              //008 \n");
-    sb.append("    return 0 == 0;                                 //009 \n");
+    sb.append("    return true;                                   //009 \n");
     sb.append("  }                                                //010 \n");
     sb.append("  void append(int i) {                             //011 \n");
     sb.append("  }                                                //012 \n");
@@ -88,8 +88,11 @@ public class TestRewriter {
     sb.append("      str s6tmp = new str();                       //068 \n");
     sb.append("      s6tmp.append(1);                             //069 \n");
     sb.append("    }                                              //070 \n");
-    sb.append("  }                                                //071 \n");
-    sb.append("}                                                  //072 \n");
+    sb.append("    if(s1.isEmpty()) {                             //071 \n");
+    sb.append("    } else {                                       //072 \n");
+    sb.append("    }                                              //073 \n");
+    sb.append("  }                                                //074 \n");
+    sb.append("}                                                  //075 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

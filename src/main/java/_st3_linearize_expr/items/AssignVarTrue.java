@@ -21,7 +21,7 @@ public class AssignVarTrue {
 
   @Override
   public String toString() {
-    return lvalue.toString() + " = " + literal;
+    return lvalue.typeNameToString() + " = " + literal;
   }
 
 }

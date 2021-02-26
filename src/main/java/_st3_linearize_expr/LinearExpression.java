@@ -8,21 +8,13 @@ import _st3_linearize_expr.leaves.Var;
 
 public class LinearExpression {
   private final List<FlatCodeItem> items;
-  private final List<Var> allVars;
 
   public LinearExpression() {
     this.items = new ArrayList<>();
-    this.allVars = new ArrayList<>();
   }
 
   public LinearExpression(List<FlatCodeItem> items) {
     this.items = items;
-    this.allVars = new ArrayList<>();
-  }
-
-  public LinearExpression(List<FlatCodeItem> items, List<Var> allVars) {
-    this.items = items;
-    this.allVars = allVars;
   }
 
   public FlatCodeItem getLast() {
@@ -44,10 +36,6 @@ public class LinearExpression {
 
   public List<FlatCodeItem> getItems() {
     return items;
-  }
-
-  public List<Var> getAllVars() {
-    return allVars;
   }
 
   @Override

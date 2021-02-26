@@ -18,282 +18,297 @@ public class TestAux2 {
   }
 
   class main_class {
-    void main_class_init_34(final main_class __this) {
+    void main_class_init_41(final main_class __this) {
     }
 
-    void main_class_main_32(final main_class __this) {
-      str t53 = new str();
-      str_init_1(t53);
+    void main_class_main_39(final main_class __this) {
+      str t56 = new str();
+      str_init_1(t56);
       str s1 = null;
-      s1 = str_opAssign_52(s1, t53);
-      int t54 = 1;
-      str t55 = new str();
-      str_init_3(t55, t54);
+      s1 = str_opAssign_55(s1, t56);
+      int t57 = 1;
+      str t58 = new str();
+      str_init_3(t58, t57);
       str s2 = null;
-      s2 = str_opAssign_52(s2, t55);
-      str t56 = null;
-      t56 = str_opAssign_52(t56, s1);
-      boolean t57 = str_isEmpty_6(t56);
-      if (t57) {
-        str_deinit_50(t56);
-        str_deinit_50(s2);
-        str_deinit_50(t55);
-        str_deinit_50(s1);
-        str_deinit_50(t53);
+      s2 = str_opAssign_55(s2, t58);
+      str t59 = null;
+      t59 = str_opAssign_55(t59, s1);
+      boolean t60 = str_isEmpty_6(t59);
+      if (t60) {
+        str_deinit_20(t59);
+        str_deinit_20(s2);
+        str_deinit_20(t58);
+        str_deinit_20(s1);
+        str_deinit_20(t56);
         return;
       }
       for (;;) {
-        str t58 = null;
-        t58 = str_opAssign_52(t58, s1);
-        boolean t59 = str_isEmpty_6(t58);
-        boolean t60 = !t59;
-        boolean t61 = !t60;
-        if (t61) {
-          str_deinit_50(t58);
+        str t61 = null;
+        t61 = str_opAssign_55(t61, s1);
+        boolean t62 = str_isEmpty_6(t61);
+        boolean t63 = !t62;
+        boolean t64 = !t63;
+        if (t64) {
+          str_deinit_20(t61);
           break;
         }
-        str t62 = null;
-        t62 = str_opAssign_52(t62, s2);
-        str t63 = null;
-        t63 = str_opAssign_52(t63, s1);
-        int t64 = str_remove_12(t63);
-        str_append_9(t62, t64);
-        str_deinit_50(t63);
-        str_deinit_50(t62);
-        str_deinit_50(t58);
+        str t65 = null;
+        t65 = str_opAssign_55(t65, s2);
+        str t66 = null;
+        t66 = str_opAssign_55(t66, s1);
+        int t67 = str_remove_12(t66);
+        str_append_9(t65, t67);
+        str_deinit_20(t66);
+        str_deinit_20(t65);
+        str_deinit_20(t61);
       }
       {
-        int t65 = 0;
-        int i = t65;
+        int t68 = 0;
+        int i = t68;
         for (;;) {
-          int t66 = i;
-          str t67 = null;
-          t67 = str_opAssign_52(t67, s2);
-          int t68 = str_length_15(t67);
-          boolean t69 = t66 < t68;
-          boolean t70 = !t69;
-          if (t70) {
-            str_deinit_50(t67);
+          int t69 = i;
+          str t70 = null;
+          t70 = str_opAssign_55(t70, s2);
+          int t71 = str_length_15(t70);
+          boolean t72 = t69 < t71;
+          boolean t73 = !t72;
+          if (t73) {
+            str_deinit_20(t70);
             break;
           }
-          str t75 = null;
-          t75 = str_opAssign_52(t75, s1);
-          str t76 = null;
-          t76 = str_opAssign_52(t76, s2);
-          int t77 = i;
-          int t78 = str_get_18(t76, t77);
-          str_append_9(t75, t78);
-          int t79 = i;
-          int t80 = 2;
-          boolean t81 = t79 == t80;
-          if (t81) {
-            int t71 = i;
-            int t72 = i;
-            int t73 = 1;
-            int t74 = t72 + t73;
-            i = t74;
-            str_deinit_50(t76);
-            str_deinit_50(t75);
-            str_deinit_50(t67);
+          str t78 = null;
+          t78 = str_opAssign_55(t78, s1);
+          str t79 = null;
+          t79 = str_opAssign_55(t79, s2);
+          int t80 = i;
+          int t81 = str_get_18(t79, t80);
+          str_append_9(t78, t81);
+          int t82 = i;
+          int t83 = 2;
+          boolean t84 = t82 == t83;
+          if (t84) {
+            int t74 = i;
+            int t75 = i;
+            int t76 = 1;
+            int t77 = t75 + t76;
+            i = t77;
+            str_deinit_20(t79);
+            str_deinit_20(t78);
+            str_deinit_20(t70);
             continue;
           }
-          str t82 = null;
-          t82 = str_opAssign_52(t82, s1);
-          int t83 = str_length_15(t82);
-          int t84 = 2;
-          boolean t85 = t83 == t84;
-          if (t85) {
-            str_deinit_50(t82);
-            str_deinit_50(t76);
-            str_deinit_50(t75);
-            str_deinit_50(t67);
+          str t85 = null;
+          t85 = str_opAssign_55(t85, s1);
+          int t86 = str_length_15(t85);
+          int t87 = 2;
+          boolean t88 = t86 == t87;
+          if (t88) {
+            str_deinit_20(t85);
+            str_deinit_20(t79);
+            str_deinit_20(t78);
+            str_deinit_20(t70);
             break;
           }
-          int t86 = i;
-          str t87 = new str();
-          str_init_3(t87, t86);
+          int t89 = i;
+          str t90 = new str();
+          str_init_3(t90, t89);
           str s3 = null;
-          s3 = str_opAssign_52(s3, t87);
-          str t88 = null;
-          t88 = str_opAssign_52(t88, s3);
-          boolean t89 = str_isEmpty_6(t88);
-          if (t89) {
-            str_deinit_50(t88);
-            str_deinit_50(s3);
-            str_deinit_50(t87);
-            str_deinit_50(t82);
-            str_deinit_50(t76);
-            str_deinit_50(t75);
-            str_deinit_50(t67);
-            str_deinit_50(t56);
-            str_deinit_50(s2);
-            str_deinit_50(t55);
-            str_deinit_50(s1);
-            str_deinit_50(t53);
+          s3 = str_opAssign_55(s3, t90);
+          str t91 = null;
+          t91 = str_opAssign_55(t91, s3);
+          boolean t92 = str_isEmpty_6(t91);
+          if (t92) {
+            str_deinit_20(t91);
+            str_deinit_20(s3);
+            str_deinit_20(t90);
+            str_deinit_20(t85);
+            str_deinit_20(t79);
+            str_deinit_20(t78);
+            str_deinit_20(t70);
+            str_deinit_20(t59);
+            str_deinit_20(s2);
+            str_deinit_20(t58);
+            str_deinit_20(s1);
+            str_deinit_20(t56);
             return;
           }
-          int t71 = i;
-          int t72 = i;
-          int t73 = 1;
-          int t74 = t72 + t73;
-          i = t74;
-          str_deinit_50(t88);
-          str_deinit_50(s3);
-          str_deinit_50(t87);
-          str_deinit_50(t82);
-          str_deinit_50(t76);
-          str_deinit_50(t75);
-          str_deinit_50(t67);
+          int t74 = i;
+          int t75 = i;
+          int t76 = 1;
+          int t77 = t75 + t76;
+          i = t77;
+          str_deinit_20(t91);
+          str_deinit_20(s3);
+          str_deinit_20(t90);
+          str_deinit_20(t85);
+          str_deinit_20(t79);
+          str_deinit_20(t78);
+          str_deinit_20(t70);
         }
       }
       {
-        int t90 = 32;
-        str t91 = new str();
-        str_init_3(t91, t90);
+        int t93 = 32;
+        str t94 = new str();
+        str_init_3(t94, t93);
         str s5 = null;
-        s5 = str_opAssign_52(s5, t91);
+        s5 = str_opAssign_55(s5, t94);
         for (;;) {
-          str t92 = null;
-          t92 = str_opAssign_52(t92, s5);
-          boolean t93 = str_isEmpty_6(t92);
-          boolean t94 = !t93;
-          boolean t95 = !t94;
-          if (t95) {
-            str_deinit_50(t92);
+          str t95 = null;
+          t95 = str_opAssign_55(t95, s5);
+          boolean t96 = str_isEmpty_6(t95);
+          boolean t97 = !t96;
+          boolean t98 = !t97;
+          if (t98) {
+            str_deinit_20(t95);
             break;
           }
-          str t96 = new str();
-          str_init_1(t96);
+          str t99 = new str();
+          str_init_1(t99);
           str s6tmp = null;
-          s6tmp = str_opAssign_52(s6tmp, t96);
-          str t97 = null;
-          t97 = str_opAssign_52(t97, s6tmp);
-          int t98 = 1;
-          str_append_9(t97, t98);
-          str_deinit_50(t97);
-          str_deinit_50(s6tmp);
-          str_deinit_50(t96);
-          str_deinit_50(t92);
+          s6tmp = str_opAssign_55(s6tmp, t99);
+          str t100 = null;
+          t100 = str_opAssign_55(t100, s6tmp);
+          int t101 = 1;
+          str_append_9(t100, t101);
+          str_deinit_20(t100);
+          str_deinit_20(s6tmp);
+          str_deinit_20(t99);
+          str_deinit_20(t95);
         }
-        str_deinit_50(s5);
-        str_deinit_50(t91);
+        str_deinit_20(s5);
+        str_deinit_20(t94);
       }
-      str_deinit_50(t56);
-      str_deinit_50(s2);
-      str_deinit_50(t55);
-      str_deinit_50(s1);
-      str_deinit_50(t53);
+      str t102 = null;
+      t102 = str_opAssign_55(t102, s1);
+      boolean t103 = str_isEmpty_6(t102);
+      if (t103) {
+      } else {
+      }
+      str_deinit_20(t102);
+      str_deinit_20(t59);
+      str_deinit_20(s2);
+      str_deinit_20(t58);
+      str_deinit_20(s1);
+      str_deinit_20(t56);
     }
 
-    main_class main_class_opAssign_38(final main_class __this, main_class rvalue) {
-      main_class t99 = rvalue;
-      return t99;
+    main_class main_class_opAssign_45(final main_class __this, main_class rvalue) {
+      main_class t104 = rvalue;
+      return t104;
     }
 
-    void main_class_deinit_36(final main_class __this) {
+    void main_class_deinit_43(final main_class __this) {
     }
 
-    void type_init_40(final type __this) {
+    void type_init_47(final type __this) {
     }
 
-    type type_opAssign_44(final type __this, type rvalue) {
-      type t100 = rvalue;
-      return t100;
+    type type_opAssign_51(final type __this, type rvalue) {
+      type t105 = rvalue;
+      return t105;
     }
 
-    void type_deinit_42(final type __this) {
-      type t101 = __this;
-      node t102 = t101.n;
-      node_deinit_46(t102);
-      type t103 = __this;
-      str t104 = t103.v;
-      str_deinit_50(t104);
+    void type_deinit_49(final type __this) {
+      type t106 = __this;
+      node t107 = t106.n;
+      node_deinit_24(t107);
+      type t108 = __this;
+      str t109 = t108.v;
+      str_deinit_20(t109);
     }
 
-    void node_init_20(final node __this, node prev, node last, int value) {
-      node t105 = null;
-      t105 = node_opAssign_48(t105, __this);
-      node t106 = t105.prev;
-      node t107 = null;
-      t107 = node_opAssign_48(t107, prev);
-      t105.prev = t107;
-      node t108 = null;
-      t108 = node_opAssign_48(t108, __this);
-      node t109 = t108.last;
+    void node_init_22(final node __this, node prev, node last, int value) {
       node t110 = null;
-      t110 = node_opAssign_48(t110, last);
-      t108.last = t110;
-      node t111 = null;
-      t111 = node_opAssign_48(t111, __this);
-      int t112 = t111.value;
-      int t113 = value;
-      t111.value = t113;
-      node_deinit_46(t111);
-      node_deinit_46(t110);
-      node_deinit_46(t109);
-      node_deinit_46(t108);
-      node_deinit_46(t107);
-      node_deinit_46(t106);
-      node_deinit_46(t105);
+      t110 = node_opAssign_53(t110, __this);
+      node t111 = t110.prev;
+      node t112 = null;
+      t112 = node_opAssign_53(t112, prev);
+      t110.prev = t112;
+      node t113 = null;
+      t113 = node_opAssign_53(t113, __this);
+      node t114 = t113.last;
+      node t115 = null;
+      t115 = node_opAssign_53(t115, last);
+      t113.last = t115;
+      node t116 = null;
+      t116 = node_opAssign_53(t116, __this);
+      int t117 = t116.value;
+      int t118 = value;
+      t116.value = t118;
+      node_deinit_24(t116);
+      node_deinit_24(t115);
+      node_deinit_24(t114);
+      node_deinit_24(t113);
+      node_deinit_24(t112);
+      node_deinit_24(t111);
+      node_deinit_24(t110);
     }
 
-    node node_opAssign_48(final node __this, node rvalue) {
-      node t114 = rvalue;
-      return t114;
+    node node_opAssign_53(final node __this, node rvalue) {
+      node t119 = rvalue;
+      return t119;
     }
 
-    void node_deinit_46(final node __this) {
-      node t115 = __this;
-      node t116 = t115.last;
-      node_deinit_46(t116);
-      node t117 = __this;
-      node t118 = t117.prev;
-      node_deinit_46(t118);
+    void node_deinit_24(final node __this) {
+      node t120 = __this;
+      node t121 = t120.prev;
+      node t122 = __this;
+      node t123 = t122.last;
+      t120.prev = t123;
+      node t124 = __this;
+      node t125 = t124.last;
+      node_deinit_24(t125);
+      node t126 = __this;
+      node t127 = t126.prev;
+      node_deinit_24(t127);
     }
 
     void str_init_1(final str __this) {
     }
 
     void str_init_3(final str __this, int value) {
-      str t119 = null;
-      t119 = str_opAssign_52(t119, __this);
-      int t120 = t119.value;
-      int t121 = value;
-      t119.value = t121;
-      str_deinit_50(t119);
+      str t128 = null;
+      t128 = str_opAssign_55(t128, __this);
+      int t129 = t128.value;
+      int t130 = value;
+      t128.value = t130;
+      str_deinit_20(t128);
     }
 
     boolean str_isEmpty_6(final str __this) {
-      int t122 = 0;
-      int t123 = 0;
-      boolean t124 = t122 == t123;
-      return t124;
+      boolean t131 = true;
+      return t131;
     }
 
     void str_append_9(final str __this, int i) {
     }
 
     int str_remove_12(final str __this) {
-      int t125 = 0;
-      return t125;
+      int t132 = 0;
+      return t132;
     }
 
     int str_length_15(final str __this) {
-      int t126 = 0;
-      return t126;
+      int t133 = 0;
+      return t133;
     }
 
     int str_get_18(final str __this, int at) {
-      int t127 = 0;
-      return t127;
+      int t134 = 0;
+      return t134;
     }
 
-    str str_opAssign_52(final str __this, str rvalue) {
-      str t128 = rvalue;
-      return t128;
+    str str_opAssign_55(final str __this, str rvalue) {
+      str t135 = rvalue;
+      return t135;
     }
 
-    void str_deinit_50(final str __this) {
+    void str_deinit_20(final str __this) {
+      str t136 = __this;
+      int t137 = t136.value;
+      int t138 = 1;
+      int t139 = -t138;
+      t136.value = t139;
     }
   }
 

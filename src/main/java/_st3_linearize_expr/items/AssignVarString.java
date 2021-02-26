@@ -21,6 +21,6 @@ public class AssignVarString {
 
   @Override
   public String toString() {
-    return lvalue.toString() + " = " + literal;
+    return lvalue.typeNameToString() + " = " + literal;
   }
 }

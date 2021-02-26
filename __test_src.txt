@@ -9,7 +9,7 @@ class str {
   }
   
   boolean isEmpty() {
-    return 0 == 0;
+    return true;
   }
   
   void append(int i) {
@@ -79,6 +79,11 @@ class main_class {
     for(str s5 = new str(32); !s5.isEmpty(); ) {
       str s6tmp = new str();
       s6tmp.append(1);
+    }
+    if(s1.isEmpty()) {
+    
+    } else {
+      
     }
   }
 }

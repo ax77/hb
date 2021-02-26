@@ -86,7 +86,7 @@ public class Deinits {
   private void defineVars(LinearExpression linearExpression) {
     for (FlatCodeItem fc : linearExpression.getItems()) {
 
-      if (!fc.isOneOfAssings()) {
+      if (!fc.isOneOfAssigns()) {
         continue;
       }
 

@@ -21,12 +21,14 @@ import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
+import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarNull;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarTernaryOp;
+import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
@@ -70,15 +72,10 @@ public class RewriterExpr {
   private final List<FlatCodeItem> temproraries;
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
-  private final VarCreator varCreator;
   private final ClassMethodDeclaration method;
 
   public List<FlatCodeItem> getRv() {
     return rv;
-  }
-
-  public VarCreator getVarCreator() {
-    return varCreator;
   }
 
   public RewriterExpr(ExprExpression expr, ClassMethodDeclaration method) {
@@ -91,7 +88,6 @@ public class RewriterExpr {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
-    this.varCreator = new VarCreator();
     this.method = method;
 
     gen(expr);
@@ -104,7 +100,6 @@ public class RewriterExpr {
     this.temproraries = new ArrayList<>();
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
-    this.varCreator = new VarCreator();
     this.method = method;
 
     if (var.getSimpleInitializer() == null) {
@@ -119,7 +114,7 @@ public class RewriterExpr {
     gen(var.getSimpleInitializer());
     rewriteRaw();
 
-    Var lvaluevar = varCreator.copyVarDecl(var);
+    Var lvaluevar = VarCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
     if (var.getType().isClass()) {
@@ -285,52 +280,6 @@ public class RewriterExpr {
     return temproraries.remove(0);
   }
 
-  private String varBaseSimple(VarBase base) {
-    if (base == VarBase.LOCAL_VAR) {
-      return "L:";
-    }
-    if (base == VarBase.CLASS_FIELD) {
-      return "F:";
-    }
-    if (base == VarBase.METHOD_PARAMETER) {
-      return "P:";
-    }
-    if (base == VarBase.METHOD_VAR) {
-      return "M:";
-    }
-    return "";
-  }
-
-  private String varsToStringWithBase() {
-    StringBuilder sb = new StringBuilder();
-    final List<Var> allVars = varCreator.getAllVars();
-    for (int i = allVars.size() - 1; i >= 0; i -= 1) {
-      Var var = allVars.get(i);
-      if (var.is(VarBase.METHOD_PARAMETER)) {
-        continue;
-      }
-      if (!var.getType().isClass()) {
-        continue;
-      }
-
-      sb.append(varBaseSimple(var.getBase()));
-      sb.append(var.toString());
-      sb.append(", ");
-    }
-    return sb.toString();
-  }
-
-  public String txt1(String end) {
-    StringBuilder sb = new StringBuilder();
-    // sb.append("// " + exprTos + "\n");
-    for (FlatCodeItem item : rv) {
-      String f = String.format("%s", item.toString().trim() + end);
-      // sb.append("// " + item.getOpcode().toString() + "\n");
-      sb.append(f);
-    }
-    return "// [" + varsToStringWithBase() + "]\n" + sb.toString().trim();
-  }
-
   private List<Var> genArgs(final List<ExprExpression> arguments) {
 
     for (ExprExpression arg : arguments) {
@@ -380,8 +329,6 @@ public class RewriterExpr {
       throw new AstParseException("unimplimented store for dst: " + dstItem.toString());
     }
 
-    // rawResult.remove(dstItem);
-
   }
 
   private void gen(ExprExpression e) {
@@ -416,7 +363,7 @@ public class RewriterExpr {
       final Var rvarRes = Ritem.getDest();
       final Binop binop = new Binop(lvarRes, op.getValue(), rvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(varCreator.justNewVar(e.getResultType()), binop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(VarCreator.justNewVar(e.getResultType()), binop));
       genRaw(item);
 
     }
@@ -431,7 +378,7 @@ public class RewriterExpr {
       final Var lvarRes = Litem.getDest();
       final Unop unop = new Unop(op.getValue(), lvarRes);
 
-      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(varCreator.justNewVar(e.getResultType()), unop));
+      FlatCodeItem item = new FlatCodeItem(new AssignVarUnop(VarCreator.justNewVar(e.getResultType()), unop));
       genRaw(item);
     }
 
@@ -454,8 +401,8 @@ public class RewriterExpr {
         return;
       }
 
-      final Var lvalueTmp = varCreator.justNewVar(var.getType());
-      final Var rvalueTmp = varCreator.copyVarDecl(var);
+      final Var lvalueTmp = VarCreator.justNewVar(var.getType());
+      final Var rvalueTmp = VarCreator.copyVarDecl(var);
       final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
       genRaw(item);
     }
@@ -466,7 +413,7 @@ public class RewriterExpr {
 
     else if (base == EPRIMARY_NUMBER) {
       final IntLiteral number = e.getNumber();
-      final Var lhsVar = varCreator.justNewVar(number.getType());
+      final Var lhsVar = VarCreator.justNewVar(number.getType());
       AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
       genRaw(new FlatCodeItem(assignVarNum));
     }
@@ -498,7 +445,7 @@ public class RewriterExpr {
 
       else {
         final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.getType(), fn, args);
-        final Var resultVar = varCreator.justNewVar(method.getType());
+        final Var resultVar = VarCreator.justNewVar(method.getType());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
         genRaw(item);
       }
@@ -513,8 +460,8 @@ public class RewriterExpr {
       final FlatCodeItem thisItem = popCode();
       final Var obj = thisItem.getDest();
 
-      final FieldAccess access = new FieldAccess(obj, varCreator.justNewVarFromFieldNoBindings(field));
-      final Var lhsvar = varCreator.justNewVar(field.getType());
+      final FieldAccess access = new FieldAccess(obj, VarCreator.copyVarDecl(field));
+      final Var lhsvar = VarCreator.justNewVar(field.getType());
 
       final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));
       genRaw(item);
@@ -540,7 +487,7 @@ public class RewriterExpr {
       final ClassMethodDeclaration constructor = fcall.getConstructor();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
       final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.getType(), fn, args);
-      final Var lvalue = varCreator.justNewVar(typename);
+      final Var lvalue = VarCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);
       final FlatCodeItem item = new FlatCodeItem(assignVarFlatCallResult);
@@ -554,19 +501,23 @@ public class RewriterExpr {
       final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
 
       // main_class __t2 = _this_
-      final Var lhsVar = varCreator.justNewVar(classType);
-      final Var rhsVar = varCreator.just_this_(classType);
+      final Var lhsVar = VarCreator.justNewVar(classType);
+      final Var rhsVar = VarCreator.just_this_(classType);
       final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lhsVar, rhsVar));
       genRaw(item);
     }
 
     else if (base == ExpressionBase.EBOOLEAN_LITERAL) {
-      throw new RuntimeException(base.toString() + " ???");
-      //      final Var lvalueTmp = new Var(VarBase.LOCAL_VAR, new Modifiers(), TypeBindings.make_boolean(e.getBeginPos()),
-      //          CopierNamer.tmpIdent());
-      //      final Rvalue rvalueTmp = new Rvalue(e.getBooleanLiteral());
-      //      final TempVarAssign tempVarAssign = new TempVarAssign(lvalueTmp, rvalueTmp);
-      //      genRaw(new CodeItem(tempVarAssign));
+      Boolean result = e.getBooleanLiteral();
+      if (result) {
+        AssignVarTrue node = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+        FlatCodeItem item = new FlatCodeItem(node);
+        genRaw(item);
+      } else {
+        AssignVarFalse node = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+        FlatCodeItem item = new FlatCodeItem(node);
+        genRaw(item);
+      }
     }
 
     else if (base == ExpressionBase.ETERNARY_OPERATOR) {
@@ -584,7 +535,7 @@ public class RewriterExpr {
       final Var falseResult = Fitem.getDest();
 
       Ternary ternary = new Ternary(condition, trueResult, falseResult);
-      AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(varCreator.justNewVar(e.getResultType()), ternary);
+      AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(VarCreator.justNewVar(e.getResultType()), ternary);
       FlatCodeItem item = new FlatCodeItem(assignVarTernaryOp);
       genRaw(item);
 

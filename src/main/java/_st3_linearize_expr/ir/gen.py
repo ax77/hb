@@ -76,7 +76,7 @@ getters = '  public Opc getOpcode() { return this.opcode; }\n'
 get_dest = '  public Var getDest() {\n'
 
 assigns_ops = """
-  public boolean isOneOfAssings() {
+  public boolean isOneOfAssigns() {
       return 
          isAssignVarAllocObject()  
       || isAssignVarArrayAccess()  
