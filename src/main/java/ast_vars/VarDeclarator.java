@@ -19,7 +19,7 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
   // main part, it may be the field, method-parameter, local-var, etc...
   private final VarBase base;
   private final Modifiers mods;
-  private /*final*/ Type type;
+  private Type type;
   private final Ident identifier;
   private final Token beginPos;
 

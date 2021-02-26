@@ -30,7 +30,7 @@ import _st1_templates.TypeSetter;
 public class TypeBuiltinArray implements Serializable, TypeSetter {
   private static final long serialVersionUID = 2597681550464877019L;
 
-  private /*final*/ Type elementType;
+  private Type elementType;
 
   public TypeBuiltinArray(Type elementType) {
     this.elementType = elementType;

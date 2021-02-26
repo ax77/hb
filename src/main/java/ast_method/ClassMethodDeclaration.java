@@ -29,7 +29,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private final ClassDeclaration clazz;
   private final Ident identifier;
   private final List<VarDeclarator> parameters;
-  private /*final*/ Type returnType;
+  private Type returnType;
   private final StmtBlock block;
 
   /// for code-generation only,

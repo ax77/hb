@@ -27,7 +27,7 @@ public class Type implements Serializable, TypeApi, Location {
 
   /// location, for debug printing
   /// 
-  private /*final*/ Token beginPos;
+  private Token beginPos;
 
   /// main properties
   private int size;

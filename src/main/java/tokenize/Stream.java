@@ -169,7 +169,7 @@ public class Stream {
       return EOL_TOKEN;
     }
 
-    if (c1 == '/') { /* [//], [/*], [/=], [/] */
+    if (c1 == '/') {
 
       if (c2 == '/') {
         final StringBuilder comments = new StringBuilder();

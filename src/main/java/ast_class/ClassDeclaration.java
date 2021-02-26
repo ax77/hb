@@ -30,7 +30,7 @@ public class ClassDeclaration implements Serializable, Location {
   private final Ident keyword;
   private Modifiers modifiers;
 
-  private /*final*/ Token beginPos;
+  private Token beginPos;
   private final Ident identifier;
   private final List<ClassMethodDeclaration> constructors;
   private final List<VarDeclarator> fields;
@@ -59,7 +59,7 @@ public class ClassDeclaration implements Serializable, Location {
   /// we'll replace each at once in every places it used by its pointer
   /// it is important to not screw this reference up before
   ///
-  private /*final*/ List<Type> typeParametersT;
+  private List<Type> typeParametersT;
   private boolean typeParametersWasSet = false;
 
   /// we'll collect all type-setters here

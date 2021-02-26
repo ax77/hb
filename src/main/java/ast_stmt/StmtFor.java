@@ -7,9 +7,9 @@ import ast_expr.ExprExpression;
 public class StmtFor implements Serializable {
   private static final long serialVersionUID = 427234708626782894L;
 
-  private /*final*/ ExprExpression test;
-  private /*final*/ ExprExpression step;
-  private /*final*/ StmtBlock block;
+  private ExprExpression test;
+  private ExprExpression step;
+  private StmtBlock block;
 
   public StmtFor() {
   }
