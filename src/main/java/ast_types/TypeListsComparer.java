@@ -17,7 +17,7 @@ public abstract class TypeListsComparer {
     for (int i = 0; i < first.size(); i++) {
       Type tp1 = first.get(i);
       Type tp2 = second.get(i);
-      if (!tp1.is_equal_to(tp2)) {
+      if (!tp1.isEqualTo(tp2)) {
         return false;
       }
     }

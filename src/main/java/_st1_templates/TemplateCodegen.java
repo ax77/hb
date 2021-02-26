@@ -27,7 +27,7 @@ public class TemplateCodegen {
 
   public Type getTypeFromTemplate(final Type from) {
 
-    if (!from.is_class_template()) {
+    if (!from.isClassTemplate()) {
       return from;
     }
 
@@ -112,7 +112,7 @@ public class TemplateCodegen {
 
   private void checkIsClass(Type result) {
     NullChecker.check(result);
-    if (!result.is_class()) {
+    if (!result.isClass()) {
       throw new AstParseException("expect class-type, but was: " + result.toString());
     }
   }

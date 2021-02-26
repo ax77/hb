@@ -100,7 +100,7 @@ public class ClassDeclaration implements Serializable, Location {
 
   private void checkTypeParameters(List<Type> typeParametersT) {
     for (Type tp : typeParametersT) {
-      if (!tp.is_typename_id()) {
+      if (!tp.isTypenameID()) {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
@@ -110,7 +110,7 @@ public class ClassDeclaration implements Serializable, Location {
     NullChecker.check(typeParametersT);
 
     for (Type tp : typeParametersT) {
-      if (!tp.is_typename_id()) {
+      if (!tp.isTypenameID()) {
         throw new AstParseException("is not a type-parameter: " + tp.toString());
       }
     }
@@ -325,7 +325,7 @@ public class ClassDeclaration implements Serializable, Location {
     for (int i = 0; i < formalParameters.size(); i++) {
       Type tp1 = formalParameters.get(i).getType();
       Type tp2 = arguments.get(i).getResultType();
-      if (!tp1.is_equal_to(tp2)) {
+      if (!tp1.isEqualTo(tp2)) {
         return false;
       }
     }

@@ -101,7 +101,7 @@ public class ParseType {
 
     // 3) class-name
     Type referenceType = getReftype();
-    if (!referenceType.is_class()) {
+    if (!referenceType.isClass()) {
       parser.perror("expect class-name, but was: " + referenceType.toString());
     }
 

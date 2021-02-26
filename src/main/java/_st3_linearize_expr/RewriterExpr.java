@@ -122,7 +122,7 @@ public class RewriterExpr {
     Var lvaluevar = varCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
-    if (var.getType().is_class()) {
+    if (var.getType().isClass()) {
       genOpAssign(lvaluevar, rvaluevar);
     }
 
@@ -191,7 +191,7 @@ public class RewriterExpr {
         AssignVarVar node = item.getAssignVarVar();
         final Var lvalueVar = node.getLvalue();
 
-        if (lvalueVar.getType().is_class() && !isOpAssignMethod()) {
+        if (lvalueVar.getType().isClass() && !isOpAssignMethod()) {
           // token __t14 = tok1;
           // ::
           // token __t14 = null
@@ -225,7 +225,7 @@ public class RewriterExpr {
 
         final StoreVarVar node = item.getStoreVarVar();
         final Var lvalueVar = node.getDst();
-        if (lvalueVar.getType().is_class() && !isOpAssignMethod()) {
+        if (lvalueVar.getType().isClass() && !isOpAssignMethod()) {
 
           // tok1 = __t17;
           // ::
@@ -309,7 +309,7 @@ public class RewriterExpr {
       if (var.is(VarBase.METHOD_PARAMETER)) {
         continue;
       }
-      if (!var.getType().is_class()) {
+      if (!var.getType().isClass()) {
         continue;
       }
 

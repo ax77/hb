@@ -65,19 +65,19 @@ public class ApplyExpressionType {
     final Type lhsType = operand.getResultType();
 
     if (in(op, new T[] { T_PLUS, T_MINUS })) {
-      if (lhsType.is_numeric()) {
+      if (lhsType.isNumeric()) {
         e.setResultType(lhsType);
       }
     }
 
     else if (op == T_TILDE) {
-      if (lhsType.is_integer()) {
+      if (lhsType.isInteger()) {
         e.setResultType(lhsType);
       }
     }
 
     else if (op == T_EXCLAMATION) {
-      if (lhsType.is_boolean()) {
+      if (lhsType.isBoolean()) {
         e.setResultType(lhsType);
       }
     }
@@ -109,7 +109,7 @@ public class ApplyExpressionType {
     if (!in(op, new T[] { T_EQ, T_NE })) {
       checkTypeNotNull(e, lhsType);
       checkTypeNotNull(e, rhsType);
-      if (!lhsType.is_equal_to(rhsType)) {
+      if (!lhsType.isEqualTo(rhsType)) {
         errorNoComatible(e, lhs, operator, rhs);
       }
     }
@@ -124,16 +124,16 @@ public class ApplyExpressionType {
       final Type resultType = TypeBindings.make_boolean(e.getBeginPos());
 
       if (lhsType != null && rhsType != null) {
-        if (!lhsType.is_equal_to(rhsType)) {
+        if (!lhsType.isEqualTo(rhsType)) {
           errorNoComatible(e, lhs, operator, rhs);
         }
-        if (lhsType.is_numeric() && rhsType.is_numeric()) {
+        if (lhsType.isNumeric() && rhsType.isNumeric()) {
           e.setResultType(resultType);
         }
-        if (lhsType.is_boolean() && rhsType.is_boolean()) {
+        if (lhsType.isBoolean() && rhsType.isBoolean()) {
           e.setResultType(resultType);
         }
-        if (lhsType.is_reference() && rhsType.is_reference()) {
+        if (lhsType.isClass() && rhsType.isClass()) {
           e.setResultType(resultType);
         }
       }
@@ -162,7 +162,7 @@ public class ApplyExpressionType {
     else if (in(op, new T[] { T_PLUS, T_MINUS, T_TIMES, T_DIVIDE, T_PERCENT })) {
       // T_PLUS,T_MINUS->numeric
       // is_numeric|is_numeric
-      if (lhsType.is_numeric() && rhsType.is_numeric()) {
+      if (lhsType.isNumeric() && rhsType.isNumeric()) {
         e.setResultType(lhsType);
       }
     }
@@ -171,7 +171,7 @@ public class ApplyExpressionType {
     else if (in(op, new T[] { T_LSHIFT, T_RSHIFT })) {
       // T_LSHIFT,T_RSHIFT->integral
       // is_integer|is_integer
-      if (lhsType.is_integer() && rhsType.is_integer()) {
+      if (lhsType.isInteger() && rhsType.isInteger()) {
         e.setResultType(lhsType);
       }
     }
@@ -180,7 +180,7 @@ public class ApplyExpressionType {
     else if (in(op, new T[] { T_LT, T_LE, T_GT, T_GE })) {
       // T_LT,T_LE,T_GT,T_GE->boolean
       // is_numeric|is_numeric
-      if (lhsType.is_numeric() && rhsType.is_numeric()) {
+      if (lhsType.isNumeric() && rhsType.isNumeric()) {
         e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));
       }
     }
@@ -189,7 +189,7 @@ public class ApplyExpressionType {
     else if (in(op, new T[] { T_AND_AND, T_OR_OR })) {
       // T_AND_AND,T_OR_OR->boolean
       // is_boolean|is_boolean
-      if (lhsType.is_boolean() && rhsType.is_boolean()) {
+      if (lhsType.isBoolean() && rhsType.isBoolean()) {
         e.setResultType(lhsType);
       }
     }
@@ -198,7 +198,7 @@ public class ApplyExpressionType {
     else if (in(op, new T[] { T_AND, T_OR, T_XOR })) {
       // T_AND,T_OR,T_XOR->integral
       // is_integer|is_integer
-      if (lhsType.is_integer() && rhsType.is_integer()) {
+      if (lhsType.isInteger() && rhsType.isInteger()) {
         e.setResultType(lhsType);
       }
     }

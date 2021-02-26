@@ -109,7 +109,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   }
 
   public boolean isVoid() {
-    return returnType.is_void();
+    return returnType.isVoid();
   }
 
   public StmtBlock getBlock() {

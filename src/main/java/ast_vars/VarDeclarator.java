@@ -48,7 +48,7 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
     if (!base.equals(another.getBase())) {
       return false;
     }
-    if (!type.is_equal_to(another.getType())) {
+    if (!type.isEqualTo(another.getType())) {
       return false;
     }
     if (!identifier.equals(another.getIdentifier())) {

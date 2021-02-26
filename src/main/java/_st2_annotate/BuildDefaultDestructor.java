@@ -37,7 +37,7 @@ public abstract class BuildDefaultDestructor {
     if (!fields.isEmpty()) {
       for (int i = fields.size() - 1; i >= 0; i -= 1) {
         VarDeclarator field = fields.get(i);
-        if (field.getType().is_class()) {
+        if (field.getType().isClass()) {
           ExprExpression deinit = deinitForField(object, field);
           rv.add(new StmtStatement(deinit, object.getBeginPos()));
         }

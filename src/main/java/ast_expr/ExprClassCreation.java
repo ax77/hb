@@ -24,7 +24,7 @@ public class ExprClassCreation implements Serializable, TypeSetter {
   public ExprClassCreation(Type classtype, List<ExprExpression> arguments) {
     NullChecker.check(classtype, arguments);
 
-    if (!classtype.is_class()) {
+    if (!classtype.isClass()) {
       ErrorLocation.errorType("expect class type, but was: ", classtype);
 
     }

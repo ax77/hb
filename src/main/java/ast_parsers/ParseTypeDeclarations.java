@@ -204,7 +204,7 @@ public class ParseTypeDeclarations {
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final Ident name = beginPos.getIdent();
 
-    if (type.is_void() || parser.is(T.T_LEFT_PAREN)) {
+    if (type.isVoid() || parser.is(T.T_LEFT_PAREN)) {
       putMethod(clazz, mods, type, name, beginPos, false);
       return;
     }
@@ -330,7 +330,7 @@ public class ParseTypeDeclarations {
     for (int i = 0; i < bound; i++) {
       Type tp1 = first.get(i).getType();
       Type tp2 = another.get(i).getType();
-      if (!tp1.is_equal_to(tp2)) {
+      if (!tp1.isEqualTo(tp2)) {
         return false;
       }
     }

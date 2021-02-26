@@ -6,7 +6,7 @@ import errors.ErrorLocation;
 public abstract class InterfaceChecker {
 
   public static void checkItIsAnInterfaceClass(Type interface_) {
-    if (!interface_.is_class()) {
+    if (!interface_.isClass()) {
       ErrorLocation.errorType("expected interface, but was", interface_);
     }
     ClassDeclaration clazz = interface_.getClassTypeFromRef();

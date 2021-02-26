@@ -119,21 +119,21 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   public ClassDeclaration getClassTypeFromRef() {
-    if (!is_class()) {
+    if (!isClass()) {
       ErrorLocation.errorType("is not a class", this);
     }
     return classTypeRef.getClazz();
   }
 
   public List<Type> getTypeArgumentsFromRef() {
-    if (!is_class()) {
+    if (!isClass()) {
       ErrorLocation.errorType("is not a class", this);
     }
     return classTypeRef.getTypeArguments();
   }
 
   public Ident getTypenameId() {
-    if (!is_typename_id()) {
+    if (!isTypenameID()) {
       ErrorLocation.errorType("is not typename T", this);
     }
     return typenameId;
@@ -156,7 +156,7 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   @Override
-  public boolean is_equal_to(Type another) {
+  public boolean isEqualTo(Type another) {
     NullChecker.check(another);
 
     // short: two pointers are equal
@@ -224,7 +224,7 @@ public class Type implements Serializable, TypeApi, Location {
         return false;
       }
       final TypeBuiltinArray anotherArr = another.getBuiltinArrayType();
-      if (!builtinArrayType.getType().is_equal_to(anotherArr.getType())) {
+      if (!builtinArrayType.getType().isEqualTo(anotherArr.getType())) {
         return false;
       }
     } else {
@@ -237,19 +237,19 @@ public class Type implements Serializable, TypeApi, Location {
 
   @Override
   public String toString() {
-    if (is_primitive()) {
+    if (isPrimitive()) {
       return TypeBindings.BIND_PRIMITIVE_TO_STRING.get(base);
     }
-    if (is_typename_id()) {
+    if (isTypenameID()) {
       return typenameId.getName();
     }
-    if (is_void()) {
+    if (isVoid()) {
       return "void";
     }
-    if (is_class()) {
+    if (isClass()) {
       return classTypeRef.toString();
     }
-    if (is_builtin_array()) {
+    if (isBuiltinArray()) {
       return builtinArrayType.toString();
     }
     return base.toString();
@@ -269,98 +269,93 @@ public class Type implements Serializable, TypeApi, Location {
   }
 
   @Override
-  public boolean is_char() {
+  public boolean isChar() {
     return is(TP_char);
   }
 
   @Override
-  public boolean is_short() {
+  public boolean isShort() {
     return is(TP_short);
   }
 
   @Override
-  public boolean is_int() {
+  public boolean isInt() {
     return is(TP_int);
   }
 
   @Override
-  public boolean is_long() {
+  public boolean isLong() {
     return is(TP_long);
   }
 
   @Override
-  public boolean is_float() {
+  public boolean isFloat() {
     return is(TP_float);
   }
 
   @Override
-  public boolean is_double() {
+  public boolean isDouble() {
     return is(TP_double);
   }
 
   @Override
-  public boolean is_boolean() {
+  public boolean isBoolean() {
     return is(TP_boolean);
   }
 
   @Override
-  public boolean is_void() {
+  public boolean isVoid() {
     return is(TP_void);
   }
 
   @Override
-  public boolean is_primitive() {
+  public boolean isPrimitive() {
     return is_primitive(base);
   }
 
   @Override
-  public boolean is_typename_id() {
+  public boolean isTypenameID() {
     return is(TP_TYPENAME_ID);
   }
 
   @Override
-  public boolean is_class() {
+  public boolean isClass() {
     return is(TP_CLASS);
   }
 
   @Override
-  public boolean is_builtin_array() {
+  public boolean isBuiltinArray() {
     return is(TypeBase.TP_BUILTIN_ARRAY);
   }
 
   @Override
-  public boolean is_class_template() {
-    return is_class() && classTypeRef.isTemplate();
+  public boolean isClassTemplate() {
+    return isClass() && classTypeRef.isTemplate();
   }
 
   @Override
-  public int get_size() {
+  public int getSize() {
     return size;
   }
 
   @Override
-  public int get_align() {
+  public int getAlign() {
     return align;
   }
 
   @Override
-  public boolean is_reference() {
-    return is_class();
+  public boolean isNumeric() {
+    return isInteger() || isFloating();
   }
 
   @Override
-  public boolean is_numeric() {
-    return is_integer() || is_floating();
-  }
-
-  @Override
-  public boolean is_integer() {
+  public boolean isInteger() {
     TypeBase bases[] = { TP_char, TP_short, TP_int, TP_long };
     return isOneOf(bases);
   }
 
   @Override
-  public boolean is_floating() {
+  public boolean isFloating() {
     return is(TP_float) || is(TypeBase.TP_double);
   }
 

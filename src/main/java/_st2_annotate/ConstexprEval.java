@@ -141,7 +141,7 @@ public abstract class ConstexprEval {
     if (base == ExpressionBase.EPRIMARY_NUMBER) {
       final IntLiteral number = e.getNumber();
       Type tp = number.getType();
-      if (!tp.is_integer()) {
+      if (!tp.isInteger()) {
         ErrorLocation.errorExpression("expect integer: " + number.toString(), e);
       }
       return number.getInteger();

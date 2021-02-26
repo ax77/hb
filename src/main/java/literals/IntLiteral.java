@@ -35,7 +35,7 @@ public class IntLiteral implements Serializable {
   }
 
   public void checkType(Type type) {
-    boolean isOk = type.is_integer() || type.is_floating();
+    boolean isOk = type.isInteger() || type.isFloating();
     if (!isOk) {
       throw new AstParseException("not a number: " + type.toString());
     }

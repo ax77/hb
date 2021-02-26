@@ -119,7 +119,7 @@ public class Deinits {
     List<Var> res = new ArrayList<>();
     for (Entry<String, Var> ent : current.getScope().entrySet()) {
       final Var var = ent.getValue();
-      if (!var.getType().is_class()) {
+      if (!var.getType().isClass()) {
         continue;
       }
       if (var.is(VarBase.METHOD_PARAMETER)) {

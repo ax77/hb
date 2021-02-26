@@ -619,7 +619,7 @@ public class ParseExpression {
     // new list<i32>(0)
 
     final Type classtype = new ParseType(parser).getType();
-    if (!classtype.is_class()) {
+    if (!classtype.isClass()) {
       parser.perror("expect class for 'new', but was: " + classtype.toString());
     }
 

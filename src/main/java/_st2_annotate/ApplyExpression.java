@@ -92,7 +92,7 @@ public class ApplyExpression {
 
     Type trueType = ternaryOperator.getTrueResult().getResultType();
     Type falseType = ternaryOperator.getFalseResult().getResultType();
-    if (!trueType.is_equal_to(falseType)) {
+    if (!trueType.isEqualTo(falseType)) {
       ErrorLocation.errorExpression("ternary operands types are diferent", e);
     }
     e.setResultType(falseType);
@@ -141,7 +141,7 @@ public class ApplyExpression {
     // type tp = new type(1)
 
     final Type resultTypeOfObject = classCreation.getType();
-    if (resultTypeOfObject == null || resultTypeOfObject.is_primitive()) {
+    if (resultTypeOfObject == null || resultTypeOfObject.isPrimitive()) {
       ErrorLocation.errorExpression("expect reference for method invocation like [a.b()] -> a must be a class.", e);
     }
 
@@ -170,7 +170,7 @@ public class ApplyExpression {
 
     final Type lhsType = node.getLvalue().getResultType();
     final Type rhsType = node.getRvalue().getResultType();
-    if (!lhsType.is_equal_to(rhsType)) {
+    if (!lhsType.isEqualTo(rhsType)) {
       ErrorLocation.errorExpression("types are different for assign", e);
     }
 
@@ -220,7 +220,7 @@ public class ApplyExpression {
     if (resultTypeOfObject == null) {
       ErrorLocation.errorExpression("type unspecified for field-access expression:", orig);
     }
-    boolean isOkAccess = resultTypeOfObject.is_class();
+    boolean isOkAccess = resultTypeOfObject.isClass();
     if (!isOkAccess) {
       ErrorLocation.errorExpression("member-access-expression expects a class", orig);
     }
@@ -287,7 +287,7 @@ public class ApplyExpression {
     if (e == null) {
       return;
     }
-    if (!e.getResultType().is_boolean()) {
+    if (!e.getResultType().isBoolean()) {
       ErrorLocation.errorExpression("expected boolean type: ", e);
     }
   }

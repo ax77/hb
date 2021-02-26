@@ -158,7 +158,7 @@ public class ApplyStatement {
     if (e == null) {
       return;
     }
-    if (!e.getResultType().is_boolean()) {
+    if (!e.getResultType().isBoolean()) {
       ErrorLocation.errorExpression("expected boolean type: ", e);
     }
   }

@@ -28,7 +28,7 @@ public class ApplyInitializer {
     ApplyExpression applier = new ApplyExpression(symtabApplier);
     applier.applyExpression(object, init);
 
-    final boolean typesAreTheSame = var.getType().is_equal_to(init.getResultType());
+    final boolean typesAreTheSame = var.getType().isEqualTo(init.getResultType());
     if (!typesAreTheSame) {
       ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
     }
