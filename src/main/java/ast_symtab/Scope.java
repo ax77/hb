@@ -7,14 +7,11 @@ import java.util.Map.Entry;
 /// file or block
 public class Scope<K, V> {
   private final HashMap<K, V> scope;
-
   private final ScopeLevels level;
-  private final String name; // for debug
 
-  public Scope(ScopeLevels level, String name) {
+  public Scope(ScopeLevels level) {
     this.scope = new HashMap<K, V>();
     this.level = level;
-    this.name = name;
   }
 
   public void put(K key, V value) {
@@ -35,7 +32,7 @@ public class Scope<K, V> {
 
   public void dump() {
     for (Entry<K, V> e : scope.entrySet()) {
-      System.out.println(name + ": <" + e.getKey().toString() + "> = <" + e.getValue().toString() + ">");
+      System.out.println("<" + e.getKey().toString() + "> = <" + e.getValue().toString() + ">");
       System.out.println();
     }
 
@@ -43,10 +40,6 @@ public class Scope<K, V> {
 
   public ScopeLevels getLevel() {
     return level;
-  }
-
-  public String getName() {
-    return name;
   }
 
 }

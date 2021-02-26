@@ -3,6 +3,7 @@ package _st2_annotate;
 import java.io.IOException;
 
 import ast_class.ClassDeclaration;
+import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
 import ast_unit.InstantiationUnit;
 
@@ -31,6 +32,10 @@ public class ApplyUnitPreEachClass {
 
     if (object.getDestructor() == null) {
       object.setDestructor(BuildDefaultDestructor.build(object));
+    } else {
+      for (StmtStatement s : BuildDefaultDestructor.deinits(object)) {
+        object.getDestructor().getBlock().pushItemBack(s);
+      }
     }
 
     /// Test:ASSIGN_operator

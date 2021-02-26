@@ -41,23 +41,23 @@ public class SymbolTable {
   /// SCOPES
 
   public void openFileScope() {
-    this.typeNames.pushscope(ScopeLevels.FILE_SCOPE, "compilation_unit_scope");
+    this.typeNames.pushscope(ScopeLevels.FILE_SCOPE);
   }
 
   public void closeFileScope() {
     this.typeNames.popscope();
   }
 
-  public void openClassScope(String className) {
-    this.variablesClass.pushscope(ScopeLevels.CLASS_SCOPE, className);
+  public void openClassScope() {
+    this.variablesClass.pushscope(ScopeLevels.CLASS_SCOPE);
   }
 
   public void closeClassScope() {
     this.variablesClass.popscope();
   }
 
-  public void openMethodScope(String methodName, ClassMethodDeclaration method) {
-    this.variablesMethod.pushscope(ScopeLevels.METHOD_SCOPE, methodName);
+  public void openMethodScope(ClassMethodDeclaration method) {
+    this.variablesMethod.pushscope(ScopeLevels.METHOD_SCOPE);
     pushBlock(method.getBlock());
   }
 
@@ -66,8 +66,8 @@ public class SymbolTable {
     popBlock();
   }
 
-  public void openBlockScope(String name, StmtBlock block) {
-    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, name);
+  public void openBlockScope(StmtBlock block) {
+    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE);
     pushBlock(block);
   }
 

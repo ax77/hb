@@ -44,7 +44,7 @@ public class ApplyUnit {
 
   private void applyClazz(final ClassDeclaration object) throws IOException {
 
-    symtabApplier.openClassScope(object.getIdentifier().getName());
+    symtabApplier.openClassScope();
 
     //fields
     for (VarDeclarator field : object.getFields()) {
@@ -71,14 +71,7 @@ public class ApplyUnit {
 
   private void applyMethod(final ClassDeclaration object, final ClassMethodDeclaration method) {
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(object.getIdentifier().getName());
-    sb.append("_");
-    sb.append(method.getBase().toString());
-    sb.append("_");
-    sb.append(method.getUniqueIdToString());
-
-    symtabApplier.openMethodScope(sb.toString(), method);
+    symtabApplier.openMethodScope(method);
 
     // parameters
     for (VarDeclarator fp : method.getParameters()) {

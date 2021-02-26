@@ -27,14 +27,8 @@ class str {
     return 0;
   }
   
-  str opAssign(str lhs, str rhs) {
-    if(lhs == null) {
-      return null;
-    }
-    if(lhs == rhs) {
-      return lhs;
-    }
-    return rhs;
+  deinit {
+    value = -1;
   }
 }
 
@@ -42,6 +36,14 @@ class node {
   node prev;
   node last;
   int value;
+  node(node prev, node last, int value) {
+    this.prev = prev;
+    this.last = last;
+    this.value = value;
+  }
+  deinit {
+    this.prev = this.last;
+  }
 }
 
 class type {

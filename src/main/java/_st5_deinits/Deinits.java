@@ -100,7 +100,7 @@ public class Deinits {
   }
 
   private void openBlockScope() {
-    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE, "B");
+    this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE);
   }
 
   private void closeBlockScope() {
@@ -108,7 +108,7 @@ public class Deinits {
   }
 
   private void openLoopScope() {
-    this.variablesLoop.pushscope(ScopeLevels.BLOCK_SCOPE, "L");
+    this.variablesLoop.pushscope(ScopeLevels.BLOCK_SCOPE);
   }
 
   private void closeLoopScope() {
