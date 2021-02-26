@@ -352,6 +352,15 @@ public class ClassDeclaration implements Serializable, Location {
     throw new AstParseException("class has no method: " + name.toString());
   }
 
+  public boolean hasPredefinedMethod(Ident name) {
+    for (ClassMethodDeclaration method : methods) {
+      if (method.getIdentifier().equals(name)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public ClassMethodDeclaration getConstructor(List<ExprExpression> arguments) {
     for (ClassMethodDeclaration method : constructors) {
       if (isCompatibleByArguments(method, arguments)) {

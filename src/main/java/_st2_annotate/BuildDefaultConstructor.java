@@ -6,7 +6,6 @@ import ast_class.ClassDeclaration;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_stmt.BlockInfo;
 import ast_stmt.StmtBlock;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
@@ -19,7 +18,7 @@ public abstract class BuildDefaultConstructor {
     final ArrayList<VarDeclarator> emptyParams = new ArrayList<>();
     final Type voidType = new Type(beginPos);
     final Modifiers emptyMods = new Modifiers();
-    final StmtBlock block = new StmtBlock(new BlockInfo());
+    final StmtBlock block = new StmtBlock();
 
     //@formatter:off
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR

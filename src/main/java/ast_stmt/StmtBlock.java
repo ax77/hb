@@ -11,13 +11,11 @@ public class StmtBlock implements Serializable {
   private static final long serialVersionUID = -3746821242002590684L;
 
   private final List<StmtStatement> blockItems;
-  private final BlockInfo blockInfo;
   private final int uniqueId;
 
   // empty: { }
-  public StmtBlock(BlockInfo blockInfo) {
+  public StmtBlock() {
     this.blockItems = new ArrayList<>();
-    this.blockInfo = blockInfo;
     this.uniqueId = GlobalCounter.next();
   }
 
@@ -33,10 +31,6 @@ public class StmtBlock implements Serializable {
 
   public List<StmtStatement> getBlockItems() {
     return blockItems;
-  }
-
-  public BlockInfo getBlockInfo() {
-    return blockInfo;
   }
 
   public String getUniqueIdToString() {

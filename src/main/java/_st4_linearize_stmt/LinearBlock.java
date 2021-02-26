@@ -38,7 +38,8 @@ public class LinearBlock {
     }
     LinearStatement last = items.get(items.size() - 1);
     if (last.getBase() == StatementBase.SBLOCK) {
-      return last.getLinearBlock().theLastItemIsReturn();
+      final boolean theLastItemIsReturn = last.getLinearBlock().theLastItemIsReturn();
+      return theLastItemIsReturn;
     }
     return last.getBase() == StatementBase.SRETURN;
   }
@@ -53,7 +54,9 @@ public class LinearBlock {
     }
     if (destructors != null) {
       if (!destructors.isEmpty()) {
-        sb.append(destructors.toString());
+        if (!theLastItemIsReturn()) {
+          sb.append(destructors.toString());
+        }
       }
     }
     sb.append("\n}\n");

@@ -273,7 +273,7 @@ public class RewriterExpr {
   }
 
   private boolean isOpAssignMethod() {
-    return method.getIdentifier().equals(BuiltinNames.opAssign_ident);
+    return method.getIdentifier().equals(BuiltinNames.opAssign_ident) || method.isDestructor();
   }
 
   private void genRaw(FlatCodeItem item) {

@@ -38,7 +38,7 @@ public class RewriterStmt {
     this.loops = new ArrayList<>();
     visitBlock(method.getBlock(), result);
 
-    Deinits applier = new Deinits();
+    Deinits applier = new Deinits(method);
     applier.apply(result);
   }
 

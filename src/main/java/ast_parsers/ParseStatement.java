@@ -15,7 +15,6 @@ import _st2_annotate.Mods;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_modifiers.Modifiers;
-import ast_stmt.BlockInfo;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtBreak;
@@ -46,16 +45,9 @@ public class ParseStatement {
     this.loops = new ArrayList<>();
   }
 
-  private BlockInfo getBlockInfo() {
-    if (blocks.isEmpty()) {
-      return new BlockInfo();
-    }
-    return new BlockInfo(blocks.get(blocks.size() - 1), peekBlock());
-  }
-
   public StmtBlock parseBlock(VarBase varBase) {
 
-    final StmtBlock block = new StmtBlock(getBlockInfo());
+    final StmtBlock block = new StmtBlock();
     pushBlock(block);
 
     parser.lbrace();
@@ -246,7 +238,7 @@ public class ParseStatement {
       shouldBeIfOrLeftBrace();
 
       StmtStatement tmp = parseStatement();
-      StmtBlock block = new StmtBlock(getBlockInfo());
+      StmtBlock block = new StmtBlock();
 
       if (tmp.getBase() == StatementBase.SIF) {
         block.pushItemBack(tmp);
@@ -267,7 +259,7 @@ public class ParseStatement {
     Token beginPos = parser.checkedMove(for_ident);
     parser.lparen();
 
-    StmtBlock forBlock = new StmtBlock(getBlockInfo());
+    StmtBlock forBlock = new StmtBlock();
     pushBlock(forBlock);
 
     StmtFor forStmt = new StmtFor();

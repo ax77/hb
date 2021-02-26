@@ -34,11 +34,13 @@ public class Deinits {
   private final Symtab<String, Var> variablesBlock;
   private final Symtab<String, Var> variablesLoop;
   private final List<LinearLoop> loops;
+  private final ClassMethodDeclaration method;
 
-  public Deinits() {
+  public Deinits(ClassMethodDeclaration method) {
     this.variablesBlock = new Symtab<>();
     this.variablesLoop = new Symtab<>();
     this.loops = new ArrayList<>();
+    this.method = method;
   }
 
   public void apply(LinearBlock input) {
@@ -52,7 +54,9 @@ public class Deinits {
       visitStmt(item);
     }
     if (!currentBlockPtr.theLastItemIsReturn()) {
-      currentBlockPtr.setDestructors(genDestructorsForGivenScope(variablesBlock));
+      if (!method.isDestructor()) {
+        currentBlockPtr.setDestructors(genDestructorsForGivenScope(variablesBlock));
+      }
     }
     closeBlockScope();
   }

@@ -3,6 +3,7 @@ package _st2_annotate;
 import java.io.IOException;
 
 import ast_class.ClassDeclaration;
+import ast_symtab.BuiltinNames;
 import ast_unit.InstantiationUnit;
 
 public class ApplyUnitPreEachClass {
@@ -33,8 +34,9 @@ public class ApplyUnitPreEachClass {
     }
 
     /// Test:ASSIGN_operator
-
-    object.addMethod(BuildOpAssignMethod.opAssign(instantiationUnit, object));
+    if (!object.hasPredefinedMethod(BuiltinNames.opAssign_ident)) {
+      object.addMethod(BuildOpAssignMethod.opAssign(instantiationUnit, object));
+    }
 
   }
 

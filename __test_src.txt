@@ -26,6 +26,28 @@ class str {
   int get(int at) {
     return 0;
   }
+  
+  str opAssign(str lhs, str rhs) {
+    if(lhs == null) {
+      return null;
+    }
+    if(lhs == rhs) {
+      return lhs;
+    }
+    return rhs;
+  }
+}
+
+class node {
+  node prev;
+  node last;
+  int value;
+}
+
+class type {
+  int k;
+  str v;
+  node n;
 }
 
 class main_class {
