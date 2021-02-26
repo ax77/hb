@@ -40,7 +40,7 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
     this.beginPos = beginPos;
   }
 
-  public boolean is_equal_to(final VarDeclarator another) {
+  public boolean isEqualTo(final VarDeclarator another) {
     if (this == another) {
       return true;
     }
@@ -73,7 +73,7 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
       if (another.getBase() != VarBase.CLASS_FIELD) {
         return false;
       }
-      if (!clazz.is_equal_to(another.getClazz())) {
+      if (!clazz.isEqualTo(another.getClazz())) {
         return false;
       }
     }

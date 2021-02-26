@@ -33,11 +33,11 @@ public class ClassTypeRef implements Serializable {
     return typeArguments;
   }
 
-  public boolean is_equal_to(ClassTypeRef another) {
+  public boolean isEqualTo(ClassTypeRef another) {
     if (this == another) {
       return true;
     }
-    if (!clazz.is_equal_to(another.getClazz())) {
+    if (!clazz.isEqualTo(another.getClazz())) {
       return false;
     }
 

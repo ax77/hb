@@ -216,7 +216,7 @@ public class Type implements Serializable, TypeApi, Location {
       if (!another.is(TypeBase.TP_CLASS)) {
         return false;
       }
-      if (!classTypeRef.is_equal_to(another.getClassTypeRef())) {
+      if (!classTypeRef.isEqualTo(another.getClassTypeRef())) {
         return false;
       }
     } else if (is(TypeBase.TP_BUILTIN_ARRAY)) {

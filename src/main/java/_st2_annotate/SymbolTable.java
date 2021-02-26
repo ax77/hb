@@ -1,11 +1,7 @@
 package _st2_annotate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_stmt.StmtBlock;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarDeclarator;
@@ -28,14 +24,14 @@ public class SymbolTable {
   private Symtab<Ident, Symbol> variablesMethod; // parameters+locals_outside_block
   private Symtab<Ident, Symbol> variablesBlock; // locals_inside_block
 
-  private final List<StmtBlock> blocks;
+  private int blocksLevel;
 
   public SymbolTable() {
     this.typeNames = new Symtab<>();
     this.variablesClass = new Symtab<>();
     this.variablesMethod = new Symtab<>();
     this.variablesBlock = new Symtab<>();
-    this.blocks = new ArrayList<>();
+    this.blocksLevel = 0;
   }
 
   /// SCOPES
@@ -58,22 +54,22 @@ public class SymbolTable {
 
   public void openMethodScope(ClassMethodDeclaration method) {
     this.variablesMethod.pushscope(ScopeLevels.METHOD_SCOPE);
-    pushBlock(method.getBlock());
+    blocksLevel += 1;
   }
 
   public void closeMethodScope() {
     this.variablesMethod.popscope();
-    popBlock();
+    blocksLevel -= 1;
   }
 
-  public void openBlockScope(StmtBlock block) {
+  public void openBlockScope() {
     this.variablesBlock.pushscope(ScopeLevels.BLOCK_SCOPE);
-    pushBlock(block);
+    blocksLevel += 1;
   }
 
   public void closeBlockScope() {
     this.variablesBlock.popscope();
-    popBlock();
+    blocksLevel -= 1;
   }
 
   public void dump() {
@@ -153,20 +149,8 @@ public class SymbolTable {
 
   /// BLOCKS stack
 
-  public void pushBlock(StmtBlock e) {
-    this.blocks.add(0, e);
-  }
-
-  public void popBlock() {
-    this.blocks.remove(0);
-  }
-
-  public StmtBlock peekBlock() {
-    return blocks.get(0);
-  }
-
   public int howMuchBlocks() {
-    return blocks.size();
+    return blocksLevel;
   }
 
 }

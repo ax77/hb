@@ -74,7 +74,7 @@ public class ApplyStatement {
 
     StmtFor node = s.getForStmt();
 
-    symtabApplier.openBlockScope(node.getBlock());
+    symtabApplier.openBlockScope();
     applyExpression(object, node.getTest());
     applyExpression(object, node.getStep());
     visitBlock(object, method, node.getBlock());
@@ -98,7 +98,7 @@ public class ApplyStatement {
       return;
     }
 
-    symtabApplier.openBlockScope(block);
+    symtabApplier.openBlockScope();
 
     for (StmtStatement item : block.getBlockItems()) {
       applyStatement(object, method, item);

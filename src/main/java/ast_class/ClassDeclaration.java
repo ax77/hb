@@ -150,7 +150,7 @@ public class ClassDeclaration implements Serializable, Location {
     this.isComplete = isComplete;
   }
 
-  public boolean is_equal_to(ClassDeclaration another) {
+  public boolean isEqualTo(ClassDeclaration another) {
     if (this == another) {
       return true;
     }
