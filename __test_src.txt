@@ -1,90 +1,44 @@
+class ArrayList<T> {
+  private final std.array_declare<T> table;
+
+  void add(T element) {
+    std.array_add<T>(table, element);
+  }
+
+  int size() {
+    return std.array_size < T > (table);
+  }
+
+  T get(int index) {
+    return std.array_get < T > (table, index);
+  }
+
+  T set(int index, T element) {
+    final T old = get(index);
+    std.array_set<T>(table, index, element);
+    return old;
+  }
+}
+
 class str {
-  int value;
-  
+  ArrayList<char> buffer;
   str() {
+    
   }
   
-  str(int value) {
-    this.value = value;
+  char char_at(int pos) {
+    return buffer.get(pos);
   }
-  
-  boolean isEmpty() {
-    return true;
-  }
-  
-  void append(int i) {
-  }
-  
-  int remove() { 
-    return 0; 
-  }
-  
-  int length() {
-    return 0;
-  }
-  
-  int get(int at) {
-    return 0;
-  }
-  
-  deinit {
-    value = -1;
-  }
-}
-
-class node {
-  node prev;
-  node last;
-  int value;
-  node(node prev, node last, int value) {
-    this.prev = prev;
-    this.last = last;
-    this.value = value;
-  }
-  deinit {
-    this.prev = this.last;
-  }
-}
-
-class type {
-  int k;
-  str v;
-  node n;
 }
 
 class main_class {
 
   void main() {
-    str s1 = new str();
-    str s2 = new str(1);
-    if(s1.isEmpty()) {
-      return;
-    }
-    while(!s1.isEmpty()) {
-      s2.append(s1.remove());
-    }
-    for(int i=0; i<s2.length(); i+=1) {
-      s1.append(s2.get(i));
-      if(i == 2) {
-        continue;
-      }
-      if(s1.length() == 2) {
-        break;
-      }
-      str s3 = new str(i);
-      if(s3.isEmpty()) {
-        return;
-      }
-    }
-    for(str s5 = new str(32); !s5.isEmpty(); ) {
-      str s6tmp = new str();
-      s6tmp.append(1);
-    }
-    if(s1.isEmpty()) {
+    ArrayList<int> args = new ArrayList<int>();
+    args.add(1);
     
-    } else {
-      
-    }
+    str s = new str();
+    char c = s.char_at(0);
   }
 }
 
