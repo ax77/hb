@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import _st3_linearize_expr.LinearExpression;
-import _st3_linearize_expr.ir.CopierNamer;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
@@ -26,7 +25,6 @@ import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarBase;
 import errors.AstParseException;
-import hashed.Hash_ident;
 import utils_oth.NullChecker;
 
 public class Deinits {
@@ -167,8 +165,7 @@ public class Deinits {
       args.add(v);
       final ClassDeclaration classType = v.getType().getClassTypeFromRef();
       final ClassMethodDeclaration destructor = classType.getDestructor();
-      FlatCallVoid fc = new FlatCallVoid(destructor, Hash_ident.getHashedIdent(CopierNamer.getMethodName(destructor)),
-          args);
+      FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
       res.add(fc);
     }
     return res;

@@ -46,7 +46,6 @@ import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
-import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -156,57 +155,7 @@ public class RewriterExpr {
       }
 
       else if (item.isAssignVarFlatCallStringCreationTmp()) {
-
-        /// string s = "a.b.c";
-        /// ::
-        /// 1) string s = new string();
-        /// 2) s.appendInternal('a');
-        /// n) --//--
-
-        final AssignVarFlatCallStringCreationTmp node = item.getAssignVarFlatCallStringCreationTmp();
-        final Var lvalueVar = node.getLvalue();
-        AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
-        rv.add(new FlatCodeItem(assignVarAllocObject));
-
-        final List<Var> argsInstance = new ArrayList<>();
-        argsInstance.add(0, lvalueVar);
-
-        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(node.getConstructor(), node.getFunction(),
-            argsInstance, lvalueVar);
-        rv.add(new FlatCodeItem(flatCallConstructor));
-
-        ///2)
-        String sconst = Normalizer.unquote(node.getRvalue());
-        List<FlatCodeItem> charArgs = new ArrayList<>();
-
-        for (int i = 0; i < sconst.length(); i += 1) {
-          char c = sconst.charAt(i);
-          final String value = Character.toString(c);
-          int[] esc = CEscaper.escape(value);
-          if (esc.length != 2) {
-            throw new AstParseException("char constant incorrect: " + sconst);
-          }
-          IntLiteral number = new IntLiteral("'" + value + "'", TypeBindings.make_int(Env.EOF_TOKEN_ENTRY),
-              (long) esc[0]);
-          final Var lhsVar = VarCreator.justNewVar(number.getType());
-          AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
-          final FlatCodeItem item2 = new FlatCodeItem(assignVarNum);
-          charArgs.add(item2);
-        }
-
-        for (FlatCodeItem it : charArgs) {
-          rv.add(it);
-        }
-
-        for (FlatCodeItem it : charArgs) {
-          List<Var> nested = new ArrayList<>();
-          nested.add(node.getLvalue());
-          nested.add(it.getDest());
-          final FlatCallVoid call = new FlatCallVoid(node.getConstructor(),
-              Hash_ident.getHashedIdent(CopierNamer.getMethodName(node.getAppendMethod())), nested);
-          rv.add(new FlatCodeItem(call));
-        }
-
+        rewriteStringCreation(item.getAssignVarFlatCallStringCreationTmp());
       }
 
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
@@ -224,8 +173,8 @@ public class RewriterExpr {
         final PureFunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
-        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getMethod(), rvalue.getFunction(),
-            args, lvalueVar);
+
+        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
 
       }
@@ -299,6 +248,59 @@ public class RewriterExpr {
         throw new AstParseException("unknown item: " + item.toString());
       }
 
+    }
+
+  }
+
+  private void rewriteStringCreation(final AssignVarFlatCallStringCreationTmp node) {
+
+    /// string s = "a.b.c";
+    /// ::
+    /// 1) string s = new string();
+    /// 2) s.appendInternal('a');
+    /// n) --//--
+
+    final Var lvalueVar = node.getLvalue();
+    final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
+    rv.add(new FlatCodeItem(assignVarAllocObject));
+
+    final List<Var> argsInstance = new ArrayList<>();
+    argsInstance.add(0, lvalueVar);
+
+    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(node.getConstructor(), argsInstance,
+        lvalueVar);
+    rv.add(new FlatCodeItem(flatCallConstructor));
+
+    ///2)
+    String sconst = Normalizer.unquote(node.getRvalue());
+    List<FlatCodeItem> charArgs = new ArrayList<>();
+
+    for (int i = 0; i < sconst.length(); i += 1) {
+      char c = sconst.charAt(i);
+      final String value = Character.toString(c);
+      int[] esc = CEscaper.escape(value);
+      if (esc.length != 2) {
+        throw new AstParseException("char constant incorrect: " + sconst);
+      }
+      IntLiteral number = new IntLiteral("'" + value + "'", TypeBindings.make_char(Env.EOF_TOKEN_ENTRY), (long) esc[0]);
+      final Var lhsVar = VarCreator.justNewVar(number.getType());
+      AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
+      final FlatCodeItem item2 = new FlatCodeItem(assignVarNum);
+      charArgs.add(item2);
+    }
+
+    for (FlatCodeItem it : charArgs) {
+      rv.add(it);
+    }
+
+    final String fullname = node.getAppendMethod();
+
+    for (FlatCodeItem it : charArgs) {
+      List<Var> nested = new ArrayList<>();
+      nested.add(node.getLvalue());
+      nested.add(it.getDest());
+      final FlatCallVoid call = new FlatCallVoid(fullname, nested);
+      rv.add(new FlatCodeItem(call));
     }
 
   }
@@ -483,15 +485,13 @@ public class RewriterExpr {
       }
       NullChecker.check(appendMethod);
 
-      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-
       String sconst = e.getBeginPos().getValue();
-
       final Var lvalue = VarCreator.justNewVar(restype);
-      final AssignVarFlatCallStringCreationTmp assignVarFlatCallResult = new AssignVarFlatCallStringCreationTmp(lvalue,
-          sconst, constructor, fn, appendMethod);
 
-      final FlatCodeItem item = new FlatCodeItem(assignVarFlatCallResult);
+      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
+          constructor.signToStringCall(), appendMethod.signToStringCall());
+
+      final FlatCodeItem item = new FlatCodeItem(res);
       genRaw(item);
 
     }
@@ -520,16 +520,16 @@ public class RewriterExpr {
 
       //3
       final ClassMethodDeclaration method = fcall.getMethod();
-      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(method));
 
       if (method.isVoid()) {
-        final FlatCallVoid call = new FlatCallVoid(method, fn, args);
+        final FlatCallVoid call = new FlatCallVoid(method.signToStringCall(), args);
         final FlatCodeItem item = new FlatCodeItem(call);
         genRaw(item);
       }
 
       else {
-        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method, method.getType(), fn, args);
+        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.signToStringCall(),
+            method.getType(), args);
         final Var resultVar = VarCreator.justNewVar(method.getType());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
         genRaw(item);
@@ -570,9 +570,8 @@ public class RewriterExpr {
 
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
-      final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor, constructor.getType(), fn,
-          args);
+      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.signToStringCall(),
+          constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);

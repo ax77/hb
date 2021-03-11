@@ -26,20 +26,27 @@ public abstract class CCArrays {
     return src;
   }
 
-  public static String genArrayAddBlock(String datatype) {
+  public static String genArrayAddBlock(String datatype, boolean terminated) {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("{                                                                                   \n");
-    sb.append("    assert(__this);                                                                 \n");
-    sb.append("    assert(__this->data);                                                           \n");
+    sb.append("{ \n");
+    sb.append("    assert(__this); \n");
+    sb.append("    assert(__this->data); \n");
     //
-    sb.append("    if (__this->size >= __this->alloc) {                                            \n");
-    sb.append("        __this->alloc *= 2;                                                         \n");
+    sb.append("    if (__this->size >= __this->alloc) { \n");
+    if(terminated) {
+      sb.append("        __this->alloc += 1; \n");
+    }
+    sb.append("        __this->alloc *= 2; \n");
     sb.append("        __this->data = hrealloc(__this->data, sizeof(@DATATYPE@) * __this->alloc);  \n");
-    sb.append("    }                                                                               \n");
-    sb.append("    __this->data[__this->size] = e;                                                 \n");
-    sb.append("    __this->size++;                                                                 \n");
-    sb.append("}                                                                                   \n");
+    sb.append("    } \n");
+    sb.append("    __this->data[__this->size++] = e; \n");
+    
+    if(terminated) {
+      sb.append("    __this->data[__this->size] = ((@DATATYPE@) 0); \n");
+    }
+    
+    sb.append("} \n");
     //@formatter:on
 
     String src = sb.toString();

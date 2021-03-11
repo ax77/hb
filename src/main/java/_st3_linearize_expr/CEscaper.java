@@ -1,13 +1,16 @@
 package _st3_linearize_expr;
 
+import static tokenize.Env.hexValue;
+import static tokenize.Env.isHex;
+import static tokenize.Env.isOct;
+import static tokenize.Env.octValue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import errors.AstParseException;
 import tokenize.CBuf;
 import tokenize.Env;
-
-import static tokenize.Env.*;
 
 public abstract class CEscaper {
 

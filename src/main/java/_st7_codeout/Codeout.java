@@ -8,6 +8,7 @@ import java.util.Set;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
+import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
@@ -170,12 +171,14 @@ public class Codeout {
   private String buildArraysImplsMethods(Set<Function> arrayMethods) {
     StringBuilder sb = new StringBuilder();
     for (Function f : arrayMethods) {
-      ClassMethodDeclaration method = f.getMethodSignature();
-      ClassDeclaration clazz = method.getClazz();
-      String datatype = clazz.getTypeParametersT().get(0).toString();
+      final ClassMethodDeclaration method = f.getMethodSignature();
+      final ClassDeclaration clazz = method.getClazz();
+      final Type type = clazz.getTypeParametersT().get(0);
+      final String datatype = type.toString();
+      final boolean terminated = type.isChar();
 
       if (method.getIdentifier().getName().equals("add")) {
-        String block = CCArrays.genArrayAddBlock(datatype);
+        String block = CCArrays.genArrayAddBlock(datatype, terminated);
         sb.append(f.signToString());
         sb.append(block);
       }

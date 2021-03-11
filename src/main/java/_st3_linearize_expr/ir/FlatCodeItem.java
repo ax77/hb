@@ -22,7 +22,6 @@ import _st3_linearize_expr.items.StoreVarFieldAssignOp;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.items.StoreVarVarAssignOp;
 import _st3_linearize_expr.leaves.Var;
-import ast_symtab.BuiltinNames;
 import errors.AstParseException;
 
 public class FlatCodeItem {
@@ -208,7 +207,7 @@ public class FlatCodeItem {
     
     // TODO:strings
     if(isFlatCallVoid()) {
-      if(flatCallVoid.getMethod().getClazz().getIdentifier().equals(BuiltinNames.string_ident)) {
+      if(flatCallVoid.getFullname().startsWith("string_")) {
         return flatCallVoid.getArgs().get(0);
       } else {
         err();

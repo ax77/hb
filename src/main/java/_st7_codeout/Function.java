@@ -1,12 +1,9 @@
 package _st7_codeout;
 
-import java.util.List;
-
 import _st3_linearize_expr.ir.CopierNamer;
 import _st4_linearize_stmt.LinearBlock;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
-import ast_types.Type;
 
 public class Function {
   private final ClassMethodDeclaration methodSignature;

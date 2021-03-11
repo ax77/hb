@@ -1,23 +1,18 @@
 package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
-import ast_method.ClassMethodDeclaration;
-import tokenize.Ident;
 
 public class AssignVarFlatCallStringCreationTmp {
   private final Var lvalue;
   private final String rvalue;
 
-  private final ClassMethodDeclaration constructor;
-  private final ClassMethodDeclaration appendMethod;
-  private final Ident function;
+  private final String constructor;
+  private final String appendMethod;
 
-  public AssignVarFlatCallStringCreationTmp(Var lvalue, String rvalue, ClassMethodDeclaration constructor, Ident function,
-      ClassMethodDeclaration appendMethod) {
+  public AssignVarFlatCallStringCreationTmp(Var lvalue, String rvalue, String constructor, String appendMethod) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
     this.constructor = constructor;
-    this.function = function;
     this.appendMethod = appendMethod;
   }
 
@@ -29,15 +24,11 @@ public class AssignVarFlatCallStringCreationTmp {
     return rvalue;
   }
 
-  public ClassMethodDeclaration getConstructor() {
+  public String getConstructor() {
     return constructor;
   }
 
-  public Ident getFunction() {
-    return function;
-  }
-
-  public ClassMethodDeclaration getAppendMethod() {
+  public String getAppendMethod() {
     return appendMethod;
   }
 
@@ -45,4 +36,5 @@ public class AssignVarFlatCallStringCreationTmp {
   public String toString() {
     return lvalue.typeNameToString() + " = " + rvalue.toString();
   }
+
 }

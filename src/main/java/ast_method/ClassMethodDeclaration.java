@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st1_templates.TypeSetter;
+import _st3_linearize_expr.ir.CopierNamer;
 import ast_class.ClassDeclaration;
 import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
@@ -202,6 +203,10 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
   public boolean isMain() {
     return identifier.getName().equals("main");
+  }
+
+  public String signToStringCall() {
+    return CopierNamer.getMethodName(this) + TypePrinters.typeArgumentsToString(getClazz().getTypeParametersT());
   }
 
 }
