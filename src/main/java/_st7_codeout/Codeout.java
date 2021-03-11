@@ -87,6 +87,8 @@ public class Codeout {
     sb.append("#include <string.h>  \n");
     sb.append("#include \"mem.h\"   \n");
     
+    sb.append("typedef int boolean; \n"); // TODO:
+    
     return sb.toString();
   }
   //@formatter:on

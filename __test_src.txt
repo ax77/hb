@@ -5,6 +5,7 @@ class array<T> {
   native T get(int index);
   native T set(int index, T e);
 }
+
 class vec<T> {
   private array<T> dat;
   public vec() {
@@ -23,10 +24,19 @@ class vec<T> {
     return dat.set(index, element);
   }
 }
-class main_class {
-  int main() {
+
+class opts {
+  vec<int> gen() {
     vec<int> flags = new vec<int>();
     flags.add(32);
-    return flags.size() == 1 && flags.get(0) == 32;
+    flags.add(64);
+    return flags;
+  }
+}
+
+class main_class {
+  int main() {
+    vec<int> flags = new opts().gen();
+    return flags.size() == 2 && (flags.get(0) + flags.get(1) == 96);
   }
 }
