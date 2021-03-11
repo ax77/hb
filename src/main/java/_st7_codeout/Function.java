@@ -25,10 +25,24 @@ public class Function {
   public String signToString() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(methodSignature.getModifiers().toString());
-    sb.append(" ");
+    // sb.append(methodSignature.getModifiers().toString());
+    // sb.append(" ");
     sb.append(methodSignature.getType().toString());
     sb.append(" ");
+
+    sb.append(CopierNamer.getMethodName(methodSignature));
+
+    if (methodSignature.isConstructor()) {
+      sb.append(TypePrinters.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
+    }
+
+    sb.append(methodSignature.parametersToString());
+    return sb.toString();
+  }
+
+  public String signToStringCall() {
+    StringBuilder sb = new StringBuilder();
+
     sb.append(CopierNamer.getMethodName(methodSignature));
 
     if (methodSignature.isConstructor()) {

@@ -449,4 +449,8 @@ public class ClassDeclaration implements Serializable, Location {
     return beginPos;
   }
 
+  public boolean isMainClass() {
+    return identifier.equals("main_class");
+  }
+
 }

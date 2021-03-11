@@ -1,44 +1,15 @@
-class ArrayList<T> {
-  private final std.array_declare<T> table;
-
-  void add(T element) {
-    std.array_add<T>(table, element);
-  }
-
-  int size() {
-    return std.array_size < T > (table);
-  }
-
-  T get(int index) {
-    return std.array_get < T > (table, index);
-  }
-
-  T set(int index, T element) {
-    final T old = get(index);
-    std.array_set<T>(table, index, element);
-    return old;
-  }
+class str {
+  int f;
 }
 
-class str {
-  ArrayList<char> buffer;
-  str() {
-    
-  }
-  
-  char char_at(int pos) {
-    return buffer.get(pos);
-  }
+class tok {
+  str value;
+  int type;
 }
 
 class main_class {
-
   void main() {
-    ArrayList<int> args = new ArrayList<int>();
-    args.add(1);
-    
     str s = new str();
-    char c = s.char_at(0);
   }
 }
 

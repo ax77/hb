@@ -38,8 +38,7 @@ public class TypeBuiltinArray implements Serializable, TypeSetter {
 
   @Override
   public String toString() {
-    return elementType.toString() + "[]";
-    // return "builtin.array_declare(" + elementType.toString() + ")";
+    return "vec_of(" + elementType.toString() + ") * ";
   }
 
   @Override

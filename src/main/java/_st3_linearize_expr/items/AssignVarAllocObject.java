@@ -22,7 +22,7 @@ public class AssignVarAllocObject {
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = new " + typename.getClassTypeFromRef().getIdentifier().toString() + "()";
+    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + typename.getClassTypeFromRef().getIdentifier().toString() + "))";
   }
 
 }

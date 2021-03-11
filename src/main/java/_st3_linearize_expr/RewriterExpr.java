@@ -144,8 +144,6 @@ public class RewriterExpr {
 
       if (item.isAssignVarAllocObject()) {
         rv.add(item);
-      } else if (item.isAssignVarArrayAccess()) {
-        rv.add(item);
       } else if (item.isAssignVarBinop()) {
         rv.add(item);
       } else if (item.isAssignVarFalse()) {
@@ -205,10 +203,6 @@ public class RewriterExpr {
       else if (item.isFlatCallConstructor()) {
         rv.add(item);
       } else if (item.isFlatCallVoid()) {
-        rv.add(item);
-      } else if (item.isStoreArrayVarAssignOp()) {
-        rv.add(item);
-      } else if (item.isStoreArrayVar()) {
         rv.add(item);
       } else if (item.isStoreFieldVarAssignOp()) {
         rv.add(item);

@@ -8,7 +8,7 @@ public class AssignVarNull {
 
   public AssignVarNull(Var lvalue) {
     this.lvalue = lvalue;
-    this.literal = "null";
+    this.literal = "NULL";
   }
 
   public Var getLvalue() {

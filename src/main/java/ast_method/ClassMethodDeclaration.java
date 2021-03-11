@@ -200,4 +200,8 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     return mod;
   }
 
+  public boolean isMain() {
+    return identifier.getName().equals("main");
+  }
+
 }

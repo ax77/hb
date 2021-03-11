@@ -19,7 +19,7 @@ public class FieldAccess {
 
   @Override
   public String toString() {
-    return object.toString() + "." + field.toString();
+    return object.toString() + "->" + field.toString();
   }
 
 }

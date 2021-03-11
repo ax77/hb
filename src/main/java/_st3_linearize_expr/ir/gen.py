@@ -18,7 +18,6 @@ types = 'byte,char,short,int,long,float,double'
 
 opcodes = """
     AssignVarAllocObject               ,
-    AssignVarArrayAccess               ,
     AssignVarBinop                     ,
     AssignVarFalse                     ,
     AssignVarFieldAccess               ,
@@ -33,8 +32,6 @@ opcodes = """
     AssignVarVar                       ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
-    StoreArrayVar                      ,
-    StoreArrayVarAssignOp              ,
     StoreFieldVar                      ,
     StoreFieldVarAssignOp              ,
     StoreVarField                      ,
@@ -79,7 +76,6 @@ assigns_ops = """
   public boolean isOneOfAssigns() {
       return 
          isAssignVarAllocObject()  
-      || isAssignVarArrayAccess()  
       || isAssignVarBinop()  
       || isAssignVarFalse()  
       || isAssignVarFieldAccess()  

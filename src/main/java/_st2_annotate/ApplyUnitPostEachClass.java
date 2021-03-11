@@ -4,6 +4,7 @@ import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.ModifiersChecker;
 import ast_symtab.BuiltinNames;
+import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_unit.InstantiationUnit;
@@ -31,8 +32,18 @@ public class ApplyUnitPostEachClass {
   }
 
   private void addThisParamToEachMethod(ClassDeclaration object) {
+    if (object.isMainClass()) {
+      return;
+    }
     for (ClassMethodDeclaration method : object.getMethods()) {
-      method.pushParameterFront(createThisParameter(object, method));
+      if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
+        continue;
+      }
+      if (method.isMain()) {
+        continue;
+      }
+      final VarDeclarator thisParam = createThisParameter(object, method);
+      method.pushParameterFront(thisParam);
     }
 
     for (ClassMethodDeclaration constructor : object.getConstructors()) {
