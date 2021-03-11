@@ -26,6 +26,15 @@ class vec<T> {
 }
 
 class opts {
+  int field;
+  opts() {
+    field = 128;
+  }
+  
+  opts(int f) {
+    field = f;
+  }
+
   vec<int> gen() {
     vec<int> flags = new vec<int>();
     flags.add(32);
@@ -37,6 +46,29 @@ class opts {
 class main_class {
   int main() {
     vec<int> flags = new opts().gen();
-    return flags.size() == 2 && (flags.get(0) + flags.get(1) == 96);
+    vec<opts> some = new vec<opts>();
+    some.add(new opts());
+    some.add(new opts(1));
+    
+    boolean f1 = flags.size() == 2 && (flags.get(0) + flags.get(1) == 96);
+    boolean f2 = some.size() == 2 && some.get(0).field == 128 && some.get(1).field == 1;
+    
+    return f1 && f2;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

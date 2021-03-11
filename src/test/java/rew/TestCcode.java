@@ -141,6 +141,73 @@ public class TestCcode {
     }
 
     Codeout result = CodeoutBuilder.build(unit);
+    // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+  }
+
+  @Test
+  public void test5() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("class array<T> {                                                                           //001 \n");
+    sb.append("  native array();                                                                          //002 \n");
+    sb.append("  native void add(T e);                                                                    //003 \n");
+    sb.append("  native int size();                                                                       //004 \n");
+    sb.append("  native T get(int index);                                                                 //005 \n");
+    sb.append("  native T set(int index, T e);                                                            //006 \n");
+    sb.append("}                                                                                          //007 \n");
+    sb.append("class vec<T> {                                                                             //008 \n");
+    sb.append("  private array<T> dat;                                                                    //009 \n");
+    sb.append("  public vec() {                                                                           //010 \n");
+    sb.append("    dat = new array<T>();                                                                  //011 \n");
+    sb.append("  }                                                                                        //012 \n");
+    sb.append("  void add(T element) {                                                                    //013 \n");
+    sb.append("    dat.add(element);                                                                      //014 \n");
+    sb.append("  }                                                                                        //015 \n");
+    sb.append("  int size() {                                                                             //016 \n");
+    sb.append("    return dat.size();                                                                     //017 \n");
+    sb.append("  }                                                                                        //018 \n");
+    sb.append("  T get(int index) {                                                                       //019 \n");
+    sb.append("    return dat.get(index);                                                                 //020 \n");
+    sb.append("  }                                                                                        //021 \n");
+    sb.append("  T set(int index, T element) {                                                            //022 \n");
+    sb.append("    return dat.set(index, element);                                                        //023 \n");
+    sb.append("  }                                                                                        //024 \n");
+    sb.append("}                                                                                          //025 \n");
+    sb.append("class opts {                                                                               //026 \n");
+    sb.append("  int field;                                                                               //027 \n");
+    sb.append("  opts() {                                                                                 //028 \n");
+    sb.append("    field = 128;                                                                           //029 \n");
+    sb.append("  }                                                                                        //030 \n");
+    sb.append("  opts(int f) {                                                                            //031 \n");
+    sb.append("    field = f;                                                                             //032 \n");
+    sb.append("  }                                                                                        //033 \n");
+    sb.append("  vec<int> gen() {                                                                         //034 \n");
+    sb.append("    vec<int> flags = new vec<int>();                                                       //035 \n");
+    sb.append("    flags.add(32);                                                                         //036 \n");
+    sb.append("    flags.add(64);                                                                         //037 \n");
+    sb.append("    return flags;                                                                          //038 \n");
+    sb.append("  }                                                                                        //039 \n");
+    sb.append("}                                                                                          //040 \n");
+    sb.append("class main_class {                                                                         //041 \n");
+    sb.append("  int main() {                                                                             //042 \n");
+    sb.append("    vec<int> flags = new opts().gen();                                                     //043 \n");
+    sb.append("    vec<opts> some = new vec<opts>();                                                      //044 \n");
+    sb.append("    some.add(new opts());                                                                  //045 \n");
+    sb.append("    some.add(new opts(1));                                                                 //046 \n");
+    sb.append("    boolean f1 = flags.size() == 2 && (flags.get(0) + flags.get(1) == 96);                 //047 \n");
+    sb.append("    boolean f2 = some.size() == 2 && some.get(0).field == 128 && some.get(1).field == 1;   //048 \n");
+    sb.append("    return f1 && f2;                                                                       //049 \n");
+    sb.append("  }                                                                                        //050 \n");
+    sb.append("}                                                                                          //051 \n");
+    //@formatter:on
+
+    InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
+    for (ClassDeclaration c : unit.getClasses()) {
+      // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+    }
+
+    Codeout result = CodeoutBuilder.build(unit);
     System.out.println(UtilSrcToStringLevel.tos(result.toString()));
   }
 

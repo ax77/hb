@@ -167,7 +167,8 @@ public class Deinits {
       args.add(v);
       final ClassDeclaration classType = v.getType().getClassTypeFromRef();
       final ClassMethodDeclaration destructor = classType.getDestructor();
-      FlatCallVoid fc = new FlatCallVoid(Hash_ident.getHashedIdent(CopierNamer.getMethodName(destructor)), args);
+      FlatCallVoid fc = new FlatCallVoid(destructor, Hash_ident.getHashedIdent(CopierNamer.getMethodName(destructor)),
+          args);
       res.add(fc);
     }
     return res;

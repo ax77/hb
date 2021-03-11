@@ -164,7 +164,8 @@ public class RewriterExpr {
         final PureFunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
-        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFunction(), args, lvalueVar);
+        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getMethod(), rvalue.getFunction(),
+            args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
 
       } else if (item.isAssignVarFlatCallResult()) {
@@ -257,7 +258,7 @@ public class RewriterExpr {
         .getPredefinedMethod(BuiltinNames.opAssign_ident);
 
     Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-    VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), fn, lvalueVar, rvalueVar);
+    VarVarAssignOp aux = new VarVarAssignOp(opAssign, lvalueVar.getType(), fn, lvalueVar, rvalueVar);
     StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
     rv.add(new FlatCodeItem(store));
   }
@@ -433,13 +434,13 @@ public class RewriterExpr {
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(method));
 
       if (method.isVoid()) {
-        final FlatCallVoid call = new FlatCallVoid(fn, args);
+        final FlatCallVoid call = new FlatCallVoid(method, fn, args);
         final FlatCodeItem item = new FlatCodeItem(call);
         genRaw(item);
       }
 
       else {
-        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.getType(), fn, args);
+        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method, method.getType(), fn, args);
         final Var resultVar = VarCreator.justNewVar(method.getType());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
         genRaw(item);
@@ -481,7 +482,8 @@ public class RewriterExpr {
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
       final Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(constructor));
-      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.getType(), fn, args);
+      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor, constructor.getType(), fn,
+          args);
       final Var lvalue = VarCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);
@@ -537,29 +539,32 @@ public class RewriterExpr {
     }
 
     else if (base == ExpressionBase.EBUILTIN_FN) {
-      final ExprBuiltinFn fn = e.getBuiltinFn();
-      final Type ret = fn.getReturnType();
-      final List<Var> args = genArgs(fn.getCallArguments());
 
-      // final Ident function = Hash_ident.getHashedIdent(
-      //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
+      throw new RuntimeException(base.toString() + ": unimplemented");
 
-      final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
-
-      if (ret.isVoid()) {
-        FlatCallVoid fc = new FlatCallVoid(function, args);
-        FlatCodeItem item = new FlatCodeItem(fc);
-        genRaw(item);
-      }
-
-      else {
-
-        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(ret, function, args);
-        final Var lvalue = VarCreator.justNewVar(ret);
-        final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
-        final FlatCodeItem item = new FlatCodeItem(ops);
-        genRaw(item);
-      }
+      //      final ExprBuiltinFn fn = e.getBuiltinFn();
+      //      final Type ret = fn.getReturnType();
+      //      final List<Var> args = genArgs(fn.getCallArguments());
+      //
+      //      // final Ident function = Hash_ident.getHashedIdent(
+      //      //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
+      //
+      //      final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
+      //
+      //      if (ret.isVoid()) {
+      //        FlatCallVoid fc = new FlatCallVoid(null, function, args);
+      //        FlatCodeItem item = new FlatCodeItem(fc);
+      //        genRaw(item);
+      //      }
+      //
+      //      else {
+      //
+      //        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(ret, function, args);
+      //        final Var lvalue = VarCreator.justNewVar(ret);
+      //        final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
+      //        final FlatCodeItem item = new FlatCodeItem(ops);
+      //        genRaw(item);
+      //      }
     }
 
     else {

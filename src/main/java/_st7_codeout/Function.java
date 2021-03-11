@@ -30,6 +30,7 @@ public class Function {
     sb.append(methodSignature.getType().toString());
     sb.append(" ");
     sb.append(CopierNamer.getMethodName(methodSignature));
+    sb.append(TypePrinters.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
     sb.append(methodSignature.parametersToString());
     return sb.toString();
   }
@@ -37,6 +38,7 @@ public class Function {
   public String signToStringCall() {
     StringBuilder sb = new StringBuilder();
     sb.append(CopierNamer.getMethodName(methodSignature));
+    sb.append(TypePrinters.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
     sb.append(methodSignature.parametersToString());
     return sb.toString();
   }
