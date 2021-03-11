@@ -36,10 +36,9 @@ public class UnitImportsSet {
     getImports(givenName);
 
     if (Settings.IMPORT_STD_BY_DEFAULT) {
-      fullyRead.add(dir + "/std/ArrayList.hb");
-      fullyRead.add(dir + "/std/String.hb");
-      fullyRead.add(dir + "/std/StringBuilder.hb");
-      fullyRead.add(dir + "/std/stdio.hb");
+      fullyRead.add(dir + "/std/array.hb");
+      fullyRead.add(dir + "/std/string.hb");
+      //fullyRead.add(dir + "/std/stdio.hb");
     }
   }
 

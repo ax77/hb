@@ -8,8 +8,9 @@ public abstract class BuiltinNames {
   // builtin.something
   public static final Ident std_ident = g("std");
 
-  // strings
-  public static final Ident String_ident = g("String");
+  // predefined classes
+  public static final Ident string_ident = g("string");
+  public static final Ident array_ident = g("array");
 
   // predefined methods
   public static final Ident opAssign_ident = g("opAssign");
@@ -23,7 +24,7 @@ public abstract class BuiltinNames {
   }
 
   public static boolean isCorrectBuiltinIdent(Ident id) {
-    return id.equals(BuiltinNames.String_ident);
+    return id.equals(BuiltinNames.string_ident);
   }
 
 }

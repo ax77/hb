@@ -16,6 +16,8 @@ import parse.Parse;
 import parse.Tokenlist;
 import tokenize.Stream;
 import tokenize.Token;
+import utils_fio.FileReadKind;
+import utils_fio.FileWrapper;
 import utils_oth.NullChecker;
 
 public class ParserMain implements ParserMainApi {
@@ -68,7 +70,14 @@ public class ParserMain implements ParserMainApi {
     /// this is only for unit-testing, because sometimes
     /// it is much easy to test the source from string
     /// instead of the file
-    final Stream s = new Stream("<string-source>", sb.toString());
+    final String dir = System.getProperty("user.dir");
+    final StringBuilder predef = new StringBuilder();
+    predef.append(new FileWrapper(dir + "/std/array.hb").readToString(FileReadKind.APPEND_LF));
+    predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
+    //predef.append(new FileWrapper(dir + "/std/stdio.hb").readToString(FileReadKind.APPEND_LF));
+
+    final String sourceGiven = predef.toString() + "\n" + sb.toString();
+    final Stream s = new Stream("<string-source>", sourceGiven);
     final List<Token> tokenlist = s.getTokenlist();
     final Parse parser = new Parse(new Tokenlist(tokenlist));
 

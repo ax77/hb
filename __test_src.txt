@@ -1,19 +1,7 @@
-class array<T> {
-  native array();
-  native void add(T e);
-  native int size();
-  native T get(int index);
-  native T set(int index, T e);
-}
-
 class main_class {
   int main() {
-    array<char> str = new array<char>();
-    str.add('a');
-    str.add('b');
-    str.add('c');
-    
-    return str.size() == 3 && str.get(1) == 'b';
+    string s = "a.b.c";
+    return s.char_at(1) == '.' && s.char_at(2) == 'b';
   }
 }
 

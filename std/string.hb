@@ -6,8 +6,8 @@ class string {
     this.buffer = new array<char>();
   }
 
-  public string(string buffer) {
-    this.buffer = new array<char>(buffer);
+  public void appendInternal(char c) {
+    buffer.add(c);
   }
 
   char char_at(int index) {

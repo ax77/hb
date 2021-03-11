@@ -10,418 +10,153 @@
 #include <string.h>
 #include "mem.h"
 typedef int boolean;
-int main_class_main_239();
-typedef struct array_int * array_int;
-typedef struct array_opts * array_opts;
-typedef struct vec_opts * vec_opts;
-typedef struct vec_int * vec_int;
-typedef struct opts * opts;
-void vec_init_215opts(vec_opts __this);
-void vec_add_218opts(vec_opts __this, opts element);
-int vec_size_221opts(vec_opts __this);
-opts vec_get_224opts(vec_opts __this, int index);
-opts vec_set_227opts(vec_opts __this, int index, opts element);
-vec_opts vec_opAssign_247opts(vec_opts __this, vec_opts rvalue);
-void vec_deinit_245opts(vec_opts __this);
-void vec_init_215int(vec_int __this);
-void vec_add_218int(vec_int __this, int element);
-int vec_size_221int(vec_int __this);
-int vec_get_224int(vec_int __this, int index);
-int vec_set_227int(vec_int __this, int index, int element);
-vec_int vec_opAssign_255int(vec_int __this, vec_int rvalue);
-void vec_deinit_253int(vec_int __this);
-int main_class_main_239();
-void opts_init_230(opts __this);
-void opts_init_233(opts __this, int f);
-vec_int opts_gen_236(opts __this);
-opts opts_opAssign_265(opts __this, opts rvalue);
-void opts_deinit_263(opts __this);
-struct array_int {
-    int * data;
+int main_class_main_21();
+typedef struct array_char * array_char;
+typedef struct string * string;
+int main_class_main_21();
+void string_init_12(string __this);
+void string_appendInternal_15(string __this, char c);
+char string_char_at_18(string __this, int index);
+string string_opAssign_35(string __this, string rvalue);
+void string_deinit_33(string __this);
+struct array_char {
+    char * data;
     size_t size, alloc;
 };
-struct array_opts {
-    opts * data;
-    size_t size, alloc;
-};
-array_int array_opAssign_251int(array_int __this, array_int rvalue)
+char array_set_9char(array_char __this, int index, char e)
+{
+    assert(__this);
+    assert(__this->data);
+    assert(index < __this->size);
+    char old = __this->data[index];
+    __this->data[index] = e;
+    return old;
+}
+array_char array_opAssign_25char(array_char __this, array_char rvalue)
 {
     return rvalue;
 }
-void array_add_206opts(array_opts __this, opts e)
+void array_init_1char(array_char __this)
+{
+    assert(__this);
+    __this->alloc = 2;
+    __this->size = 0;
+    __this->data = hmalloc(sizeof(char) * __this->alloc);
+    for (size_t i = 0; i < __this->alloc; i++) {
+        __this->data[i] = 0;
+    }
+}
+void array_add_3char(array_char __this, char e)
 {
     assert(__this);
     assert(__this->data);
     if (__this->size >= __this->alloc) {
         __this->alloc *= 2;
-        __this->data = hrealloc(__this->data, sizeof(opts) * __this->alloc);
+        __this->data = hrealloc(__this->data, sizeof(char) * __this->alloc);
     }
     __this->data[__this->size] = e;
     __this->size++;
 }
-opts array_set_212opts(array_opts __this, int index, opts e)
-{
-    assert(__this);
-    assert(__this->data);
-    assert(index < __this->size);
-    opts old = __this->data[index];
-    __this->data[index] = e;
-    return old;
-}
-void array_init_204opts(array_opts __this)
-{
-    assert(__this);
-    __this->alloc = 2;
-    __this->size = 0;
-    __this->data = hmalloc(sizeof(opts) * __this->alloc);
-    for (size_t i = 0; i < __this->alloc; i++) {
-        __this->data[i] = 0;
-    }
-}
-int array_set_212int(array_int __this, int index, int e)
-{
-    assert(__this);
-    assert(__this->data);
-    assert(index < __this->size);
-    int old = __this->data[index];
-    __this->data[index] = e;
-    return old;
-}
-opts array_get_210opts(array_opts __this, int index)
+char array_get_7char(array_char __this, int index)
 {
     assert(__this);
     assert(__this->data);
     assert(index < __this->size);
     return __this->data[index];
 }
-void array_init_204int(array_int __this)
-{
-    assert(__this);
-    __this->alloc = 2;
-    __this->size = 0;
-    __this->data = hmalloc(sizeof(int) * __this->alloc);
-    for (size_t i = 0; i < __this->alloc; i++) {
-        __this->data[i] = 0;
-    }
-}
-array_opts array_opAssign_243opts(array_opts __this, array_opts rvalue)
-{
-    return rvalue;
-}
-void array_deinit_249int(array_int __this)
+void array_deinit_23char(array_char __this)
 {
 }
-int array_get_210int(array_int __this, int index)
-{
-    assert(__this);
-    assert(__this->data);
-    assert(index < __this->size);
-    return __this->data[index];
-}
-int array_size_208opts(array_opts __this)
+int array_size_5char(array_char __this)
 {
     assert(__this);
     return __this->size;
 }
-void array_add_206int(array_int __this, int e)
-{
-    assert(__this);
-    assert(__this->data);
-    if (__this->size >= __this->alloc) {
-        __this->alloc *= 2;
-        __this->data = hrealloc(__this->data, sizeof(int) * __this->alloc);
-    }
-    __this->data[__this->size] = e;
-    __this->size++;
-}
-void array_deinit_241opts(array_opts __this)
-{
-}
-int array_size_208int(array_int __this)
-{
-    assert(__this);
-    return __this->size;
-}
-struct vec_opts {
-    array_opts dat;
+struct string {
+    array_char buffer;
 };
-struct vec_int {
-    array_int dat;
-};
-struct opts {
-    int field;
-};
-void vec_init_215opts(vec_opts __this)
+void string_init_12(string __this)
 {
-    vec_opts t267 = NULL;
-    t267 = vec_opAssign_247opts(t267, __this);
-    array_opts t268 = t267->dat;
-    array_opts t269 = hmalloc(sizeof(struct array_opts));
-    array_init_204opts(t269);
-    t267->dat = t269;
-    array_deinit_241opts(t269);
-    array_deinit_241opts(t268);
-    vec_deinit_245opts(t267);
+    string t55 = NULL;
+    t55 = string_opAssign_35(t55, __this);
+    array_char t56 = t55->buffer;
+    array_char t57 = hmalloc(sizeof(struct array_char));
+    array_init_1char(t57);
+    t55->buffer = t57;
+    array_deinit_23char(t57);
+    array_deinit_23char(t56);
+    string_deinit_33(t55);
 }
-void vec_add_218opts(vec_opts __this, opts element)
+void string_appendInternal_15(string __this, char c)
 {
-    vec_opts t270 = NULL;
-    t270 = vec_opAssign_247opts(t270, __this);
-    array_opts t271 = t270->dat;
-    opts t272 = NULL;
-    t272 = opts_opAssign_265(t272, element);
-    array_add_206opts(t271, t272);
-    opts_deinit_263(t272);
-    array_deinit_241opts(t271);
-    vec_deinit_245opts(t270);
+    string t58 = NULL;
+    t58 = string_opAssign_35(t58, __this);
+    array_char t59 = t58->buffer;
+    char t60 = c;
+    array_add_3char(t59, t60);
+    array_deinit_23char(t59);
+    string_deinit_33(t58);
 }
-int vec_size_221opts(vec_opts __this)
+char string_char_at_18(string __this, int index)
 {
-    vec_opts t273 = NULL;
-    t273 = vec_opAssign_247opts(t273, __this);
-    array_opts t274 = t273->dat;
-    int t275 = array_size_208opts(t274);
-    array_deinit_241opts(t274);
-    vec_deinit_245opts(t273);
-    return t275;
+    string t61 = NULL;
+    t61 = string_opAssign_35(t61, __this);
+    array_char t62 = t61->buffer;
+    int t63 = index;
+    char t64 = array_get_7char(t62, t63);
+    array_deinit_23char(t62);
+    string_deinit_33(t61);
+    return t64;
 }
-opts vec_get_224opts(vec_opts __this, int index)
+string string_opAssign_35(string __this, string rvalue)
 {
-    vec_opts t276 = NULL;
-    t276 = vec_opAssign_247opts(t276, __this);
-    array_opts t277 = t276->dat;
-    int t278 = index;
-    opts t279 = array_get_210opts(t277, t278);
-    array_deinit_241opts(t277);
-    vec_deinit_245opts(t276);
-    return t279;
+    string t65 = rvalue;
+    return t65;
 }
-opts vec_set_227opts(vec_opts __this, int index, opts element)
+void string_deinit_33(string __this)
 {
-    vec_opts t280 = NULL;
-    t280 = vec_opAssign_247opts(t280, __this);
-    array_opts t281 = t280->dat;
-    int t282 = index;
-    opts t283 = NULL;
-    t283 = opts_opAssign_265(t283, element);
-    opts t284 = array_set_212opts(t281, t282, t283);
-    opts_deinit_263(t283);
-    array_deinit_241opts(t281);
-    vec_deinit_245opts(t280);
-    return t284;
+    string t66 = __this;
+    array_char t67 = t66->buffer;
+    array_deinit_23char(t67);
 }
-vec_opts vec_opAssign_247opts(vec_opts __this, vec_opts rvalue)
+int main_class_main_21()
 {
-    vec_opts t285 = rvalue;
-    return t285;
-}
-void vec_deinit_245opts(vec_opts __this)
-{
-    vec_opts t286 = __this;
-    array_opts t287 = t286->dat;
-    array_deinit_241opts(t287);
-}
-void vec_init_215int(vec_int __this)
-{
-    vec_int t289 = NULL;
-    t289 = vec_opAssign_255int(t289, __this);
-    array_int t290 = t289->dat;
-    array_int t291 = hmalloc(sizeof(struct array_int));
-    array_init_204int(t291);
-    t289->dat = t291;
-    array_deinit_249int(t291);
-    array_deinit_249int(t290);
-    vec_deinit_253int(t289);
-}
-void vec_add_218int(vec_int __this, int element)
-{
-    vec_int t292 = NULL;
-    t292 = vec_opAssign_255int(t292, __this);
-    array_int t293 = t292->dat;
-    int t294 = element;
-    array_add_206int(t293, t294);
-    array_deinit_249int(t293);
-    vec_deinit_253int(t292);
-}
-int vec_size_221int(vec_int __this)
-{
-    vec_int t295 = NULL;
-    t295 = vec_opAssign_255int(t295, __this);
-    array_int t296 = t295->dat;
-    int t297 = array_size_208int(t296);
-    array_deinit_249int(t296);
-    vec_deinit_253int(t295);
-    return t297;
-}
-int vec_get_224int(vec_int __this, int index)
-{
-    vec_int t298 = NULL;
-    t298 = vec_opAssign_255int(t298, __this);
-    array_int t299 = t298->dat;
-    int t300 = index;
-    int t301 = array_get_210int(t299, t300);
-    array_deinit_249int(t299);
-    vec_deinit_253int(t298);
-    return t301;
-}
-int vec_set_227int(vec_int __this, int index, int element)
-{
-    vec_int t302 = NULL;
-    t302 = vec_opAssign_255int(t302, __this);
-    array_int t303 = t302->dat;
-    int t304 = index;
-    int t305 = element;
-    int t306 = array_set_212int(t303, t304, t305);
-    array_deinit_249int(t303);
-    vec_deinit_253int(t302);
-    return t306;
-}
-vec_int vec_opAssign_255int(vec_int __this, vec_int rvalue)
-{
-    vec_int t307 = rvalue;
-    return t307;
-}
-void vec_deinit_253int(vec_int __this)
-{
-    vec_int t308 = __this;
-    array_int t309 = t308->dat;
-    array_deinit_249int(t309);
-}
-void opts_init_230(opts __this)
-{
-    opts t354 = NULL;
-    t354 = opts_opAssign_265(t354, __this);
-    int t355 = t354->field;
-    int t356 = 128;
-    t354->field = t356;
-    opts_deinit_263(t354);
-}
-void opts_init_233(opts __this, int f)
-{
-    opts t357 = NULL;
-    t357 = opts_opAssign_265(t357, __this);
-    int t358 = t357->field;
-    int t359 = f;
-    t357->field = t359;
-    opts_deinit_263(t357);
-}
-vec_int opts_gen_236(opts __this)
-{
-    vec_int t360 = hmalloc(sizeof(struct vec_int));
-    vec_init_215int(t360);
-    vec_int flags = NULL;
-    flags = vec_opAssign_255int(flags, t360);
-    vec_int t361 = NULL;
-    t361 = vec_opAssign_255int(t361, flags);
-    int t362 = 32;
-    vec_add_218int(t361, t362);
-    vec_int t363 = NULL;
-    t363 = vec_opAssign_255int(t363, flags);
-    int t364 = 64;
-    vec_add_218int(t363, t364);
-    vec_int t365 = NULL;
-    t365 = vec_opAssign_255int(t365, flags);
-    vec_deinit_253int(t363);
-    vec_deinit_253int(t361);
-    vec_deinit_253int(flags);
-    vec_deinit_253int(t360);
-    return t365;
-}
-opts opts_opAssign_265(opts __this, opts rvalue)
-{
-    opts t366 = rvalue;
-    return t366;
-}
-void opts_deinit_263(opts __this)
-{
-}
-int main_class_main_239()
-{
-    opts t310 = hmalloc(sizeof(struct opts));
-    opts_init_230(t310);
-    vec_int t311 = opts_gen_236(t310);
-    vec_int flags = NULL;
-    flags = vec_opAssign_255int(flags, t311);
-    vec_opts t312 = hmalloc(sizeof(struct vec_opts));
-    vec_init_215opts(t312);
-    vec_opts some = NULL;
-    some = vec_opAssign_247opts(some, t312);
-    vec_opts t313 = NULL;
-    t313 = vec_opAssign_247opts(t313, some);
-    opts t314 = hmalloc(sizeof(struct opts));
-    opts_init_230(t314);
-    vec_add_218opts(t313, t314);
-    vec_opts t315 = NULL;
-    t315 = vec_opAssign_247opts(t315, some);
-    int t316 = 1;
-    opts t317 = hmalloc(sizeof(struct opts));
-    opts_init_233(t317, t316);
-    vec_add_218opts(t315, t317);
-    vec_int t318 = NULL;
-    t318 = vec_opAssign_255int(t318, flags);
-    int t319 = vec_size_221int(t318);
-    int t320 = 2;
-    boolean t321 = t319 == t320;
-    vec_int t322 = NULL;
-    t322 = vec_opAssign_255int(t322, flags);
-    int t323 = 0;
-    int t324 = vec_get_224int(t322, t323);
-    vec_int t325 = NULL;
-    t325 = vec_opAssign_255int(t325, flags);
-    int t326 = 1;
-    int t327 = vec_get_224int(t325, t326);
-    int t328 = t324 + t327;
-    int t329 = 96;
-    boolean t330 = t328 == t329;
-    boolean t331 = t321 && t330;
-    boolean f1 = t331;
-    vec_opts t332 = NULL;
-    t332 = vec_opAssign_247opts(t332, some);
-    int t333 = vec_size_221opts(t332);
-    int t334 = 2;
-    boolean t335 = t333 == t334;
-    vec_opts t336 = NULL;
-    t336 = vec_opAssign_247opts(t336, some);
-    int t337 = 0;
-    opts t338 = vec_get_224opts(t336, t337);
-    int t339 = t338->field;
-    int t340 = 128;
-    boolean t341 = t339 == t340;
-    boolean t342 = t335 && t341;
-    vec_opts t343 = NULL;
-    t343 = vec_opAssign_247opts(t343, some);
-    int t344 = 1;
-    opts t345 = vec_get_224opts(t343, t344);
-    int t346 = t345->field;
-    int t347 = 1;
-    boolean t348 = t346 == t347;
-    boolean t349 = t342 && t348;
-    boolean f2 = t349;
-    boolean t350 = f1;
-    boolean t351 = f2;
-    boolean t352 = t350 && t351;
-    opts_deinit_263(t345);
-    vec_deinit_245opts(t343);
-    opts_deinit_263(t338);
-    vec_deinit_245opts(t336);
-    vec_deinit_245opts(t332);
-    vec_deinit_253int(t325);
-    vec_deinit_253int(t322);
-    vec_deinit_253int(t318);
-    opts_deinit_263(t317);
-    vec_deinit_245opts(t315);
-    opts_deinit_263(t314);
-    vec_deinit_245opts(t313);
-    vec_deinit_245opts(some);
-    vec_deinit_245opts(t312);
-    vec_deinit_253int(flags);
-    vec_deinit_253int(t311);
-    opts_deinit_263(t310);
-    return t352;
+    string t37 = hmalloc(sizeof(struct string));
+    string_init_12(t37);
+    int t38 = 'a';
+    int t39 = '.';
+    int t40 = 'b';
+    int t41 = '.';
+    int t42 = 'c';
+    string_appendInternal_15(t37, t38);
+    string_appendInternal_15(t37, t39);
+    string_appendInternal_15(t37, t40);
+    string_appendInternal_15(t37, t41);
+    string_appendInternal_15(t37, t42);
+    string s = NULL;
+    s = string_opAssign_35(s, t37);
+    string t43 = NULL;
+    t43 = string_opAssign_35(t43, s);
+    int t44 = 1;
+    char t45 = string_char_at_18(t43, t44);
+    int t46 = '.';
+    boolean t47 = t45 == t46;
+    string t48 = NULL;
+    t48 = string_opAssign_35(t48, s);
+    int t49 = 2;
+    char t50 = string_char_at_18(t48, t49);
+    int t51 = 'b';
+    boolean t52 = t50 == t51;
+    boolean t53 = t47 && t52;
+    string_deinit_33(t48);
+    string_deinit_33(t43);
+    string_deinit_33(s);
+    string_deinit_33(t37);
+    return t53;
 }
 int main(int args, char** argv)
 {
-    int result = main_class_main_239();
+    int result = main_class_main_21();
     printf("%d\n", result);
     return result;
 }

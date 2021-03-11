@@ -590,19 +590,21 @@ public class ParseExpression {
 
     Token saved = parser.moveget();
 
-    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.String_ident);
+    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.string_ident);
     if (!stringClass.isComplete()) {
       // parser.perror("string-class is incomplete");
     }
 
-    final List<ExprExpression> argums = new ArrayList<>();
-    argums.add(new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved));
-
     final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
-    final ExprClassCreation classCreation = new ExprClassCreation(new Type(ref, saved), argums);
+    final Type classtype = new Type(ref, saved);
 
-    return new ExprExpression(classCreation, saved);
+    final List<ExprExpression> argums = new ArrayList<>();
+    final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);
+    arg.setResultType(classtype);
+    argums.add(arg);
+
+    return arg;
   }
 
   private ExprExpression parseNewExpression() {

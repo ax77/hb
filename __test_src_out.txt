@@ -1,19 +1,9 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class array<T> {                                     //001 \n");
-    sb.append("  native array();                                    //002 \n");
-    sb.append("  native void add(T e);                              //003 \n");
-    sb.append("  native int size();                                 //004 \n");
-    sb.append("  native T get(int index);                           //005 \n");
-    sb.append("  native T set(int index, T e);                      //006 \n");
-    sb.append("}                                                    //007 \n");
-    sb.append("class main_class {                                   //008 \n");
-    sb.append("  int main() {                                       //009 \n");
-    sb.append("    array<char> str = new array<char>();             //010 \n");
-    sb.append("    str.add(\'a\');                                  //011 \n");
-    sb.append("    str.add(\'b\');                                  //012 \n");
-    sb.append("    str.add(\'c\');                                  //013 \n");
-    sb.append("    return str.size() == 3 && str.get(1) == \'b\';   //014 \n");
-    sb.append("  }                                                  //015 \n");
-    sb.append("}                                                    //016 \n");
+    sb.append("class main_class {                                           //001 \n");
+    sb.append("  int main() {                                               //002 \n");
+    sb.append("    string s = \"a.b.c\";                                    //003 \n");
+    sb.append("    return s.char_at(1) == \'.\' && s.char_at(2) == \'b\';   //004 \n");
+    sb.append("  }                                                          //005 \n");
+    sb.append("}                                                            //006 \n");
     //@formatter:on

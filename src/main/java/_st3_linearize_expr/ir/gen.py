@@ -22,10 +22,10 @@ opcodes = """
     AssignVarFalse                     ,
     AssignVarFieldAccess               ,
     AssignVarFlatCallClassCreationTmp  ,
+    AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
     AssignVarNull                      ,
     AssignVarNum                       ,
-    AssignVarString                    ,
     AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
     AssignVarUnop                      ,
@@ -80,10 +80,10 @@ assigns_ops = """
       || isAssignVarFalse()  
       || isAssignVarFieldAccess()  
       || isAssignVarFlatCallClassCreationTmp()
+      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
       || isAssignVarNull()   
       || isAssignVarNum()   
-      || isAssignVarString()  
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
