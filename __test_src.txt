@@ -6,54 +6,14 @@ class array<T> {
   native T set(int index, T e);
 }
 
-class vec<T> {
-  private array<T> dat;
-  public vec() {
-    dat = new array<T>();
-  }
-  void add(T element) {
-    dat.add(element);
-  }
-  int size() {
-    return dat.size();
-  }
-  T get(int index) {
-    return dat.get(index);
-  }
-  T set(int index, T element) {
-    return dat.set(index, element);
-  }
-}
-
-class opts {
-  int field;
-  opts() {
-    field = 128;
-  }
-  
-  opts(int f) {
-    field = f;
-  }
-
-  vec<int> gen() {
-    vec<int> flags = new vec<int>();
-    flags.add(32);
-    flags.add(64);
-    return flags;
-  }
-}
-
 class main_class {
   int main() {
-    vec<int> flags = new opts().gen();
-    vec<opts> some = new vec<opts>();
-    some.add(new opts());
-    some.add(new opts(1));
+    array<char> str = new array<char>();
+    str.add('a');
+    str.add('b');
+    str.add('c');
     
-    boolean f1 = flags.size() == 2 && (flags.get(0) + flags.get(1) == 96);
-    boolean f2 = some.size() == 2 && some.get(0).field == 128 && some.get(1).field == 1;
-    
-    return f1 && f2;
+    return str.size() == 3 && str.get(1) == 'b';
   }
 }
 

@@ -208,6 +208,38 @@ public class TestCcode {
     }
 
     Codeout result = CodeoutBuilder.build(unit);
+    // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+  }
+
+  @Test
+  public void test7() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("class array<T> {                                     //001 \n");
+    sb.append("  native array();                                    //002 \n");
+    sb.append("  native void add(T e);                              //003 \n");
+    sb.append("  native int size();                                 //004 \n");
+    sb.append("  native T get(int index);                           //005 \n");
+    sb.append("  native T set(int index, T e);                      //006 \n");
+    sb.append("}                                                    //007 \n");
+    sb.append("class main_class {                                   //008 \n");
+    sb.append("  int main() {                                       //009 \n");
+    sb.append("    array<char> str = new array<char>();             //010 \n");
+    sb.append("    str.add(\'a\');                                  //011 \n");
+    sb.append("    str.add(\'b\');                                  //012 \n");
+    sb.append("    str.add(\'c\');                                  //013 \n");
+    sb.append("    return str.size() == 3 && str.get(1) == \'b\';   //014 \n");
+    sb.append("  }                                                  //015 \n");
+    sb.append("}                                                    //016 \n");
+    //@formatter:on
+
+    InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
+    for (ClassDeclaration c : unit.getClasses()) {
+      // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+    }
+
+    Codeout result = CodeoutBuilder.build(unit);
     System.out.println(UtilSrcToStringLevel.tos(result.toString()));
   }
 

@@ -58,6 +58,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
+import ast_types.TypeBindings;
 import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -542,29 +543,45 @@ public class RewriterExpr {
 
       throw new RuntimeException(base.toString() + ": unimplemented");
 
-      //      final ExprBuiltinFn fn = e.getBuiltinFn();
-      //      final Type ret = fn.getReturnType();
-      //      final List<Var> args = genArgs(fn.getCallArguments());
+      // final ExprBuiltinFn fn = e.getBuiltinFn();
+      // final Type ret = fn.getReturnType();
+      // final List<Var> args = genArgs(fn.getCallArguments());
       //
-      //      // final Ident function = Hash_ident.getHashedIdent(
-      //      //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
+      // // final Ident function = Hash_ident.getHashedIdent(
+      // //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
       //
-      //      final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
+      // final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
       //
-      //      if (ret.isVoid()) {
-      //        FlatCallVoid fc = new FlatCallVoid(null, function, args);
-      //        FlatCodeItem item = new FlatCodeItem(fc);
-      //        genRaw(item);
-      //      }
+      // if (ret.isVoid()) {
+      //   FlatCallVoid fc = new FlatCallVoid(null, function, args);
+      //   FlatCodeItem item = new FlatCodeItem(fc);
+      //   genRaw(item);
+      // }
       //
-      //      else {
+      // else {
       //
-      //        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(ret, function, args);
-      //        final Var lvalue = VarCreator.justNewVar(ret);
-      //        final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
-      //        final FlatCodeItem item = new FlatCodeItem(ops);
-      //        genRaw(item);
-      //      }
+      //   final PureFunctionCallWithResult call = new PureFunctionCallWithResult(ret, function, args);
+      //   final Var lvalue = VarCreator.justNewVar(ret);
+      //   final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
+      //   final FlatCodeItem item = new FlatCodeItem(ops);
+      //   genRaw(item);
+      // }
+    }
+
+    else if (base == ExpressionBase.EPRIMARY_CHAR) {
+      Token holder = e.getBeginPos();
+      String value = holder.getValue();
+      int[] esc = CEscaper.escape(value);
+
+      if (esc.length != 2) {
+        ErrorLocation.errorExpression("char constant incorrect: " + value, e);
+      }
+
+      IntLiteral number = new IntLiteral(value, TypeBindings.make_int(holder), (long) esc[0]);
+
+      final Var lhsVar = VarCreator.justNewVar(number.getType());
+      AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
+      genRaw(new FlatCodeItem(assignVarNum));
     }
 
     else {
