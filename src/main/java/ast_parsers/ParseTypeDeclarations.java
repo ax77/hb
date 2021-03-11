@@ -233,21 +233,25 @@ public class ParseTypeDeclarations {
 
   }
 
-  private void putMethod(ClassDeclaration clazz, Modifiers mod, Type type, Ident name, Token beginPos,
+  private void putMethod(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident name, Token beginPos,
       boolean isInterfaceMethod) {
 
-    if (!ModifiersChecker.isCorrectMethodMods(mod)) {
-      parser.perror("method modifiers are incorrect: " + mod.toString());
+    if (!ModifiersChecker.isCorrectMethodMods(modifiers)) {
+      parser.perror("method modifiers are incorrect: " + modifiers.toString());
     }
 
     final List<VarDeclarator> parameters = parseMethodParameters();
 
     StmtBlock block = new StmtBlock();
     if (!isInterfaceMethod) {
-      block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+      if (!modifiers.isNativeOnly()) {
+        block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+      } else {
+        parser.semicolon();
+      }
     }
 
-    final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, mod, clazz, name,
+    final ClassMethodDeclaration method = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, modifiers, clazz, name,
         parameters, type, block, beginPos);
 
     checkMethodRedefinition(clazz, method);
@@ -260,7 +264,14 @@ public class ParseTypeDeclarations {
     }
 
     final Token beginPos = parser.checkedMove(Keywords.deinit_ident);
-    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+
+    StmtBlock block = new StmtBlock();
+    if (!modifiers.isNativeOnly()) {
+      block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    } else {
+      parser.semicolon();
+    }
+
     final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, beginPos);
 
     checkDestructorRedefinition(clazz);
@@ -275,7 +286,14 @@ public class ParseTypeDeclarations {
 
     final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
     final List<VarDeclarator> parameters = parseMethodParameters();
-    final StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+
+    StmtBlock block = new StmtBlock();
+    if (!modifiers.isNativeOnly()) {
+      block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    } else {
+      parser.semicolon();
+    }
+
     final Type returnType = new Type(beginPos); // the return type of constructor is 'void'
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, modifiers,
         clazz, clazz.getIdentifier(), parameters, returnType, block, beginPos);

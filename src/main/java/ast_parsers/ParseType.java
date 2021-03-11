@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
-import ast_types.TypeBuiltinArray;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -22,7 +20,6 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isBuiltinArray;
 
   public ParseType(Parse parser) {
 
@@ -61,32 +58,12 @@ public class ParseType {
       }
     }
 
-    if (!typeWasFound) {
-      final ArrayList<Token> peekToks = parser.peekCnt(2);
-      final Token tok1 = peekToks.get(0);
-      final Token tok2 = peekToks.get(1);
-
-      // builtin . array_declare
-
-      typeWasFound = parser.is(BuiltinNames.std_ident) && tok1.ofType(T.T_DOT)
-          && tok2.isIdent(BuiltinNames.array_declare_ident);
-
-      if (typeWasFound) {
-        this.isBuiltinArray = true;
-      }
-    }
-
   }
 
   public Type getType() {
 
     if (!isType()) {
       parser.perror("type is not recognized");
-    }
-
-    // 0
-    if (isBuiltinArray()) {
-      return builtinArray();
     }
 
     // 1)
@@ -106,33 +83,6 @@ public class ParseType {
     }
 
     return referenceType;
-  }
-
-  private Type builtinArray() {
-
-    // array<T> class
-    final ClassDeclaration currentc = parser.getCurrentClass(true);
-    final boolean isOk = currentc.getIdentifier().equals(BuiltinNames.ArrayList_ident)
-        || currentc.getIdentifier().equals(BuiltinNames.String_ident);
-    if (!isOk) {
-      parser.perror(
-          "you cannot use builtin.array, this type is predefined only for array<T> class, and string-bootstrap class");
-    }
-
-    final Token beginPos = parser.checkedMove(BuiltinNames.std_ident);
-
-    parser.checkedMove(T.T_DOT);
-    parser.checkedMove(BuiltinNames.array_declare_ident);
-
-    final List<Type> arguments = getTypeArguments();
-    if (arguments.size() != 1) {
-      parser.perror("expect type argument for array.");
-    }
-
-    final TypeBuiltinArray builtinArrayType = new TypeBuiltinArray(arguments.get(0));
-    parser.getCurrentClass(true).registerTypeSetter(builtinArrayType);
-
-    return new Type(builtinArrayType, beginPos);
   }
 
   private boolean isRefTypenameT(Ident typeName) {
@@ -197,7 +147,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isBuiltinArray;
+    return isPrimitive || isReference || isTypeParameter;
   }
 
   public boolean isPrimitive() {
@@ -210,10 +160,6 @@ public class ParseType {
 
   public boolean isTypeParameter() {
     return isTypeParameter;
-  }
-
-  public boolean isBuiltinArray() {
-    return isBuiltinArray;
   }
 
   //@formatter:off

@@ -44,15 +44,6 @@ public class Type implements Serializable, TypeApi, Location {
   ///
   private Ident typenameId;
 
-  /// only for 'array<T>' and 'string' classes from 'std-package'
-  /// it is more clean by design to bootstrap the array only in this
-  /// class, with template type-parameters, and
-  /// in the future we can easily replace each declaration like 
-  /// let arr: [i32] to 'let arr: array<T>'
-  /// but this is later: it is syntax sugar only, and means nothing.
-  ///
-  private TypeBuiltinArray builtinArrayType;
-
   public void fillPropValues(Type another) {
     NullChecker.check(another);
 
@@ -62,14 +53,6 @@ public class Type implements Serializable, TypeApi, Location {
     this.base = another.base;
     this.classTypeRef = another.classTypeRef;
     this.typenameId = another.typenameId;
-    this.builtinArrayType = another.builtinArrayType;
-  }
-
-  public Type(TypeBuiltinArray builtinArrayType, Token beginPos) {
-    this.base = TypeBase.TP_BUILTIN_ARRAY;
-    this.beginPos = beginPos;
-
-    this.builtinArrayType = builtinArrayType;
   }
 
   public Type(Token beginPos) {
@@ -108,10 +91,6 @@ public class Type implements Serializable, TypeApi, Location {
     this.base = TP_TYPENAME_ID;
     this.beginPos = beginPos;
     this.typenameId = typenameId;
-  }
-
-  public TypeBuiltinArray getBuiltinArrayType() {
-    return builtinArrayType;
   }
 
   public ClassTypeRef getClassTypeRef() {
@@ -213,14 +192,6 @@ public class Type implements Serializable, TypeApi, Location {
       if (!classTypeRef.isEqualTo(another.getClassTypeRef())) {
         return false;
       }
-    } else if (is(TypeBase.TP_BUILTIN_ARRAY)) {
-      if (!another.is(TypeBase.TP_BUILTIN_ARRAY)) {
-        return false;
-      }
-      final TypeBuiltinArray anotherArr = another.getBuiltinArrayType();
-      if (!builtinArrayType.getType().isEqualTo(anotherArr.getType())) {
-        return false;
-      }
     } else {
       ErrorLocation.errorType("unimplemented comparison for base: " + base.toString(), this);
     }
@@ -242,9 +213,6 @@ public class Type implements Serializable, TypeApi, Location {
     }
     if (isClass()) {
       return classTypeRef.toString();
-    }
-    if (isBuiltinArray()) {
-      return builtinArrayType.toString();
     }
     return base.toString();
   }
@@ -306,11 +274,6 @@ public class Type implements Serializable, TypeApi, Location {
   @Override
   public boolean isClass() {
     return is(TP_CLASS);
-  }
-
-  @Override
-  public boolean isBuiltinArray() {
-    return is(TypeBase.TP_BUILTIN_ARRAY);
   }
 
   @Override

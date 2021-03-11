@@ -30,9 +30,11 @@ public abstract class BuildOpAssignMethod {
     final Token beginPos = object.getBeginPos();
     final Type typename = new Type(new ClassTypeRef(object, object.getTypeParametersT()), beginPos);
 
+    /// we will add only 'rvalue' parameter, because we also will
+    /// push '__this' parameter in each parameter-list, and 
+    /// this '__this' is our 'lvalue'
+
     final List<VarDeclarator> params = new ArrayList<>();
-    params.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), typename,
-        Hash_ident.getHashedIdent("lvalue"), beginPos));
     params.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), typename,
         Hash_ident.getHashedIdent("rvalue"), beginPos));
 

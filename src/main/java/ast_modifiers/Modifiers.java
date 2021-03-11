@@ -97,4 +97,8 @@ public class Modifiers implements Serializable {
     return modifiers.size() == 1 && modifiers.contains(Keywords.abstract_ident);
   }
 
+  public boolean isNativeOnly() {
+    return modifiers.size() == 1 && modifiers.contains(Keywords.native_ident);
+  }
+
 }

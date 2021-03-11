@@ -22,9 +22,7 @@ import ast_printers.GenericListPrinter;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
-import ast_types.TypeBase;
 import ast_types.TypeBindings;
-import ast_types.TypeBuiltinArray;
 import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
 import tokenize.Ident;
@@ -130,8 +128,7 @@ public class ApplyExpression {
   }
 
   private void applyStringLiteral(final ExprExpression e) {
-    final Type tp = new Type(new TypeBuiltinArray(new Type(TypeBase.TP_char, e.getBeginPos())), e.getBeginPos());
-    e.setResultType(tp);
+    ErrorLocation.errorExpression("strings are unimpl.", e);
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {

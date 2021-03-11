@@ -4,7 +4,6 @@ import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.ModifiersChecker;
 import ast_symtab.BuiltinNames;
-import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_unit.InstantiationUnit;
@@ -13,11 +12,9 @@ import ast_vars.VarDeclarator;
 
 public class ApplyUnitPostEachClass {
 
-  private final SymbolTable symtabApplier;
   private final InstantiationUnit instantiationUnit;
 
-  public ApplyUnitPostEachClass(SymbolTable symtabApplier, InstantiationUnit instantiationUnit) {
-    this.symtabApplier = symtabApplier;
+  public ApplyUnitPostEachClass(InstantiationUnit instantiationUnit) {
     this.instantiationUnit = instantiationUnit;
   }
 
@@ -36,9 +33,6 @@ public class ApplyUnitPostEachClass {
       return;
     }
     for (ClassMethodDeclaration method : object.getMethods()) {
-      if (method.getIdentifier().equals(BuiltinNames.opAssign_ident)) {
-        continue;
-      }
       if (method.isMain()) {
         continue;
       }

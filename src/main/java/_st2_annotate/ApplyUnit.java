@@ -38,7 +38,7 @@ public class ApplyUnit {
   }
 
   private void postEachClass() {
-    ApplyUnitPostEachClass applier = new ApplyUnitPostEachClass(symtabApplier, instantiationUnit);
+    ApplyUnitPostEachClass applier = new ApplyUnitPostEachClass(instantiationUnit);
     applier.postEachClass();
   }
 
@@ -48,7 +48,7 @@ public class ApplyUnit {
 
     //fields
     for (VarDeclarator field : object.getFields()) {
-      symtabApplier.defineClassField(object, field); // check redefinition
+      symtabApplier.defineClassField(object, field);
     }
 
     //methods

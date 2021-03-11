@@ -55,7 +55,6 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.TypePrinters;
 import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -542,8 +541,10 @@ public class RewriterExpr {
       final Type ret = fn.getReturnType();
       final List<Var> args = genArgs(fn.getCallArguments());
 
-      final Ident function = Hash_ident.getHashedIdent(
-          "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
+      // final Ident function = Hash_ident.getHashedIdent(
+      //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
+
+      final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
 
       if (ret.isVoid()) {
         FlatCallVoid fc = new FlatCallVoid(function, args);

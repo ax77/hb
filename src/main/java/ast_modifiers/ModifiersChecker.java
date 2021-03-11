@@ -61,7 +61,8 @@ public abstract class ModifiersChecker {
   private static boolean isConstructorModifierId(Ident what) {
     return 
         what.equals(Keywords.private_ident) 
-     || what.equals(Keywords.public_ident);
+     || what.equals(Keywords.public_ident)
+     || what.equals(Keywords.native_ident);
   }
 
   public static boolean isCorrectMethodMods(Modifiers mods) {
