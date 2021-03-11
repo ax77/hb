@@ -1,9 +1,12 @@
 package _st7_codeout;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -82,26 +85,8 @@ public class Codeout {
     sb.append("#include <stdio.h>   \n");
     sb.append("#include <stdlib.h>  \n");
     sb.append("#include <string.h>  \n");
+    sb.append("#include \"mem.h\"   \n");
     
-    sb.append("void* hmalloc(size_t size)       \n");
-    sb.append("{                                \n");
-    sb.append("    if (size == 0) {             \n");
-    sb.append("        size = 1;                \n");
-    sb.append("    }                            \n");
-    sb.append("    assert(size < INT_MAX);      \n");
-    sb.append("                                 \n");
-    sb.append("    void *ptr = NULL;            \n");
-    sb.append("    ptr = malloc(size);          \n");
-    sb.append("    if (ptr == NULL) {           \n");
-    sb.append("        ptr = malloc(size);      \n");
-    sb.append("        if (ptr == NULL) {       \n");
-    sb.append("            ptr = malloc(size);  \n");
-    sb.append("        }                        \n");
-    sb.append("    }                            \n");
-    sb.append("    assert(ptr);                 \n");
-    sb.append("    return ptr;                  \n");
-    sb.append("}                                \n");
-
     return sb.toString();
   }
   //@formatter:on
@@ -110,65 +95,206 @@ public class Codeout {
     return f.signToString();
   }
 
-  private boolean isMainClass(ClassDeclaration c) {
-    return (c.getIdentifier().getName().equals("main_class"));
-  }
-
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(headers());
 
-    String mainMethod = "";
-    String mainMethodCall = "";
+    Set<ClassDeclaration> arrays = new HashSet<>();
+    Set<Function> arrayMethods = new HashSet<>();
+    List<Function> mainMethodOut = new ArrayList<>();
 
-    for (ClassDeclaration c : pods) {
-      if (isMainClass(c)) {
-        continue;
-      }
-      sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
-    }
+    String tpdef = genStructsTypedefs();
 
-    for (Function f : functions) {
-      if (isMainClass(f.getMethodSignature().getClazz())) {
-        if (!f.getMethodSignature().isMain()) {
-          continue;
-        }
-      }
-      sb.append(proto(f) + ";\n");
-    }
+    String protos = genFuncProtos();
 
-    for (ClassDeclaration c : pods) {
-      if (isMainClass(c)) {
-        continue;
-      }
-      sb.append(classToString(c));
-    }
+    String structs = genStructs(arrays);
 
-    for (Function f : functions) {
-      if (isMainClass(f.getMethodSignature().getClazz())) {
-        if (!f.getMethodSignature().isMain()) {
-          continue;
-        }
-      }
-      if (f.getMethodSignature().isMain()) {
-        mainMethod = f.toString();
-        mainMethodCall = f.signToStringCall();
-        continue;
-      }
-      sb.append(f.toString());
-    }
+    String funcs = genFunctions(arrayMethods, mainMethodOut);
 
-    if (mainMethod.isEmpty() || mainMethodCall.isEmpty()) {
+    if (mainMethodOut.size() != 1) {
       throw new AstParseException("there is no main...");
     }
 
-    sb.append(mainMethod);
+    final Function mainFn = mainMethodOut.get(0);
+    String mainMethodSign = mainFn.signToString();
+    String mainMethodImpl = mainFn.toString();
+    String mainMethodCall = mainFn.signToStringCall();
+
+    StringBuilder sb = new StringBuilder();
+
+    // protos
+    sb.append(headers());
+    sb.append(mainMethodSign + ";\n");
+    sb.append(buildArraysProtos(arrays));
+    sb.append(tpdef);
+    sb.append(protos);
+
+    // impls
+    sb.append(buildArraysImplsStructs(arrays));
+    sb.append(buildArraysImplsMethods(arrayMethods));
+    sb.append(structs);
+    sb.append(funcs);
+
+    // main
+    sb.append(mainMethodImpl);
     sb.append("int main(int args, char** argv) \n{\n");
     sb.append("    int result = " + mainMethodCall + ";\n");
     sb.append("    printf(\"%d\\n\", result);\n");
     sb.append("    return result;\n");
     sb.append("\n}\n");
+
+    return sb.toString();
+  }
+
+  private String buildArraysProtos(Set<ClassDeclaration> arrays) {
+    StringBuilder sb = new StringBuilder();
+    for (ClassDeclaration c : arrays) {
+      String datatype = c.getTypeParametersT().get(0).toString();
+      String tpdef = CCArrays.genArrayStructTypedef(datatype);
+      sb.append(tpdef);
+    }
+    return sb.toString();
+  }
+
+  private String buildArraysImplsStructs(Set<ClassDeclaration> arrays) {
+    StringBuilder sb = new StringBuilder();
+    for (ClassDeclaration c : arrays) {
+      String datatype = c.getTypeParametersT().get(0).toString();
+      String tpdef = CCArrays.genArrayStructImpl(datatype);
+      sb.append(tpdef);
+    }
+    return sb.toString();
+  }
+
+  private String buildArraysImplsMethods(Set<Function> arrayMethods) {
+    StringBuilder sb = new StringBuilder();
+    for (Function f : arrayMethods) {
+      ClassMethodDeclaration method = f.getMethodSignature();
+      ClassDeclaration clazz = method.getClazz();
+      String datatype = clazz.getTypeParametersT().get(0).toString();
+
+      if (method.getIdentifier().getName().equals("add")) {
+        String block = CCArrays.genArrayAddBlock(datatype);
+        sb.append(f.signToString());
+        sb.append(block);
+      }
+
+      else if (method.getIdentifier().getName().equals("get")) {
+        String block = CCArrays.genArrayGetBlock(datatype);
+        sb.append(f.signToString());
+        sb.append(block);
+      }
+
+      else if (method.getIdentifier().getName().equals("set")) {
+        String block = CCArrays.genArraySetBlock(datatype);
+        sb.append(f.signToString());
+        sb.append(block);
+      }
+
+      else if (method.getIdentifier().getName().equals("opAssign")) {
+        String block = " \n{\n return rvalue; \n}\n ";
+        sb.append(f.signToString());
+        sb.append(block);
+      }
+
+      else if (method.getIdentifier().getName().equals("size")) {
+        String block = CCArrays.genArraySizeBlock(datatype);
+        sb.append(f.signToString());
+        sb.append(block);
+      }
+
+      else {
+
+        if (method.isConstructor()) {
+          String block = CCArrays.genArrayAllocBlock(datatype);
+          sb.append(f.signToString());
+          sb.append(block);
+        } else if (method.isDestructor()) {
+          String block = " \n{\n  \n}\n ";
+          sb.append(f.signToString());
+          sb.append(block);
+        }
+
+        else {
+          throw new AstParseException("unimpl. array method: " + method.getIdentifier().getName());
+        }
+
+      }
+    }
+    return sb.toString();
+  }
+
+  private String genFunctions(Set<Function> arrayMethods, List<Function> mainMethod) {
+    StringBuilder sb = new StringBuilder();
+
+    for (Function f : functions) {
+      final ClassDeclaration clazz = f.getMethodSignature().getClazz();
+      if (clazz.isMainClass()) {
+        if (!f.getMethodSignature().isMain()) {
+          continue;
+        }
+      }
+      if (f.getMethodSignature().isMain()) {
+        mainMethod.add(f);
+        continue;
+      }
+      if (clazz.isNativeArray()) {
+        arrayMethods.add(f);
+        continue;
+      }
+      sb.append(f.toString());
+    }
+
+    return sb.toString();
+  }
+
+  private String genStructs(Set<ClassDeclaration> arrays) {
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray()) {
+        arrays.add(c);
+        continue;
+      }
+      sb.append(classToString(c));
+    }
+
+    return sb.toString();
+  }
+
+  private String genStructsTypedefs() {
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray()) {
+        continue;
+      }
+      sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
+    }
+
+    return sb.toString();
+  }
+
+  private String genFuncProtos() {
+    StringBuilder sb = new StringBuilder();
+
+    for (Function f : functions) {
+      final ClassDeclaration clazz = f.getMethodSignature().getClazz();
+      if (clazz.isMainClass()) {
+        if (!f.getMethodSignature().isMain()) {
+          continue;
+        }
+      }
+      if (clazz.isNativeArray()) {
+        continue;
+      }
+      sb.append(proto(f) + ";\n");
+    }
 
     return sb.toString();
   }

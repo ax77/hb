@@ -3,58 +3,30 @@ class array<T> {
   native void add(T e);
   native int size();
   native T get(int index);
-  native T set(int index, T element);
+  native T set(int index, T e);
 }
-
 class vec<T> {
   private array<T> dat;
-  
   public vec() {
     dat = new array<T>();
   }
-
   void add(T element) {
     dat.add(element);
   }
-
   int size() {
     return dat.size();
   }
-
   T get(int index) {
     return dat.get(index);
   }
-
   T set(int index, T element) {
     return dat.set(index, element);
   }
-
 }
-
 class main_class {
-  void main() {
+  int main() {
     vec<int> flags = new vec<int>();
-    flags.add(1);
+    flags.add(32);
+    return flags.size() == 1 && flags.get(0) == 32;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

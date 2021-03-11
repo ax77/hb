@@ -1,0 +1,181 @@
+#include <assert.h>
+#include <ctype.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mem.h"
+typedef int boolean;
+int main_class_main_55();
+typedef struct array_int * array_int;
+typedef struct vec_int * vec_int;
+void vec_init_40(vec_int __this);
+void vec_add_43(vec_int __this, int element);
+int vec_size_46(vec_int __this);
+int vec_get_49(vec_int __this, int index);
+int vec_set_52(vec_int __this, int index, int element);
+vec_int vec_opAssign_63(vec_int __this, vec_int rvalue);
+void vec_deinit_61(vec_int __this);
+int main_class_main_55();
+struct array_int {
+    int * data;
+    size_t size, alloc;
+};
+int array_set_37(array_int __this, int index, int e)
+{
+    assert(__this);
+    assert(__this->data);
+    assert(index < __this->size);
+    int old = __this->data[index];
+    __this->data[index] = e;
+    return old;
+}
+array_int array_opAssign_59(array_int __this, array_int rvalue)
+{
+    return rvalue;
+}
+void array_init_29(array_int __this)
+{
+    assert(__this);
+    __this->alloc = 2;
+    __this->size = 0;
+    __this->data = hmalloc(sizeof(int) * __this->alloc);
+    for (size_t i = 0; i < __this->alloc; i++) {
+        __this->data[i] = 0;
+    }
+}
+void array_add_31(array_int __this, int e)
+{
+    assert(__this);
+    assert(__this->data);
+    if (__this->size >= __this->alloc) {
+        __this->alloc *= 2;
+        __this->data = hrealloc(__this->data, sizeof(int) * __this->alloc);
+    }
+    __this->data[__this->size] = e;
+    __this->size++;
+}
+int array_get_35(array_int __this, int index)
+{
+    assert(__this);
+    assert(__this->data);
+    assert(index < __this->size);
+    return __this->data[index];
+}
+int array_size_33(array_int __this)
+{
+    assert(__this);
+    return __this->size;
+}
+void array_deinit_57(array_int __this)
+{
+}
+struct vec_int {
+    array_int dat;
+};
+void vec_init_40(vec_int __this)
+{
+    vec_int t71 = NULL;
+    t71 = vec_opAssign_63(t71, __this);
+    array_int t72 = t71->dat;
+    array_int t73 = hmalloc(sizeof(struct array_int));
+    array_init_29(t73);
+    t71->dat = t73;
+    array_deinit_57(t73);
+    array_deinit_57(t72);
+    vec_deinit_61(t71);
+}
+void vec_add_43(vec_int __this, int element)
+{
+    vec_int t74 = NULL;
+    t74 = vec_opAssign_63(t74, __this);
+    array_int t75 = t74->dat;
+    int t76 = element;
+    array_add_31(t75, t76);
+    array_deinit_57(t75);
+    vec_deinit_61(t74);
+}
+int vec_size_46(vec_int __this)
+{
+    vec_int t77 = NULL;
+    t77 = vec_opAssign_63(t77, __this);
+    array_int t78 = t77->dat;
+    int t79 = array_size_33(t78);
+    array_deinit_57(t78);
+    vec_deinit_61(t77);
+    return t79;
+}
+int vec_get_49(vec_int __this, int index)
+{
+    vec_int t80 = NULL;
+    t80 = vec_opAssign_63(t80, __this);
+    array_int t81 = t80->dat;
+    int t82 = index;
+    int t83 = array_get_35(t81, t82);
+    array_deinit_57(t81);
+    vec_deinit_61(t80);
+    return t83;
+}
+int vec_set_52(vec_int __this, int index, int element)
+{
+    vec_int t84 = NULL;
+    t84 = vec_opAssign_63(t84, __this);
+    array_int t85 = t84->dat;
+    int t86 = index;
+    int t87 = element;
+    int t88 = array_set_37(t85, t86, t87);
+    array_deinit_57(t85);
+    vec_deinit_61(t84);
+    return t88;
+}
+vec_int vec_opAssign_63(vec_int __this, vec_int rvalue)
+{
+    vec_int t89 = rvalue;
+    return t89;
+}
+void vec_deinit_61(vec_int __this)
+{
+    vec_int t90 = __this;
+    array_int t91 = t90->dat;
+    array_deinit_57(t91);
+}
+int main_class_main_55()
+{
+    vec_int t92 = hmalloc(sizeof(struct vec_int));
+    vec_init_40(t92);
+    vec_int flags = NULL;
+    flags = vec_opAssign_63(flags, t92);
+    vec_int t93 = NULL;
+    t93 = vec_opAssign_63(t93, flags);
+    int t94 = 32;
+    vec_add_43(t93, t94);
+    vec_int t95 = NULL;
+    t95 = vec_opAssign_63(t95, flags);
+    int t96 = vec_size_46(t95);
+    int t97 = 1;
+    boolean t98 = t96 == t97;
+    vec_int t99 = NULL;
+    t99 = vec_opAssign_63(t99, flags);
+    int t100 = 0;
+    int t101 = vec_get_49(t99, t100);
+    int t102 = 32;
+    boolean t103 = t101 == t102;
+    boolean t104 = t98 && t103;
+    vec_deinit_61(t99);
+    vec_deinit_61(t95);
+    vec_deinit_61(t93);
+    vec_deinit_61(flags);
+    vec_deinit_61(t92);
+    return t104;
+}
+int main(int args, char** argv)
+{
+    int result = main_class_main_55();
+    printf("%d\n", result);
+    return result;
+}
+
