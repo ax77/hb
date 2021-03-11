@@ -1,12 +1,12 @@
 abstract class stdio {
 
-  native void panic(String because) {}
+  native void panic(string because);
   
-  native String read_file(String absolute_path) {}
+  native string read_file(string absolute_path);
 
-  native boolean write_file(String absolute_path, String content) {}
+  native boolean write_file(string absolute_path, string content);
   
-  native void printf(String fmt, String arg1) {}
+  native void printf(string fmt, string arg1);
   
-  native void printf(String fmt, String arg1, String arg2) {}
+  native void printf(string fmt, string arg1, string arg2);
 }
