@@ -14,6 +14,22 @@ import tokenize.Env;
 
 public abstract class CEscaper {
 
+  public static String unesc(char c) {
+    if (c == '\n') {
+      return "\\n";
+    }
+    if (c == '\r') {
+      return "\\r";
+    }
+    if (c == '\t') {
+      return "\\t";
+    }
+    if (c == '\0') {
+      return "\\0";
+    }
+    return String.format("%c", c);
+  }
+
   public static int[] escape(String s) {
 
     final String threeQuote = "\"\"\"";

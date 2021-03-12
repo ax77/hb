@@ -194,7 +194,7 @@ public class RewriterExpr {
         AssignVarVar node = item.getAssignVarVar();
         final Var lvalueVar = node.getLvalue();
 
-        if (lvalueVar.getType().isClass() && !isOpAssignMethod()) {
+        if (lvalueVar.getType().isClass() && !ignoreThisMethod()) {
           // token __t14 = tok1;
           // ::
           // token __t14 = null
@@ -224,7 +224,7 @@ public class RewriterExpr {
 
         final StoreVarVar node = item.getStoreVarVar();
         final Var lvalueVar = node.getDst();
-        if (lvalueVar.getType().isClass() && !isOpAssignMethod()) {
+        if (lvalueVar.getType().isClass() && !ignoreThisMethod()) {
 
           // tok1 = __t17;
           // ::
@@ -260,54 +260,57 @@ public class RewriterExpr {
     /// n) --//--
 
     final Var lvalueVar = node.getLvalue();
+    final String sconst = node.getRvalue();
+
     final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
     rv.add(new FlatCodeItem(assignVarAllocObject));
 
+    Var fromMap = BuiltinsFnSet.getVar(sconst);
+
     final List<Var> argsInstance = new ArrayList<>();
     argsInstance.add(0, lvalueVar);
+    argsInstance.add(fromMap);
 
-    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(node.getConstructor(), argsInstance,
-        lvalueVar);
+    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor("string_init", argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
-    ///2)
-    String sconst = node.getRvalue();
-    List<FlatCodeItem> charArgs = new ArrayList<>();
-
-    int[] esc = CEscaper.escape(sconst);
-
-    for (int i = 0; i < esc.length; i += 1) {
-      char c = (char) esc[i];
-
-      /// we already have null-terminator in 
-      /// array-buffer
-      if (c == '\0') {
-        break;
-      }
-
-      final Type charType = TypeBindings.make_char();
-      final IntLiteral number = new IntLiteral(String.format("'%c'", c), charType, (long) c);
-
-      final Var lhsVar = VarCreator.justNewVar(charType);
-      final AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
-
-      final FlatCodeItem item = new FlatCodeItem(assignVarNum);
-      charArgs.add(item);
-    }
-
-    for (FlatCodeItem it : charArgs) {
-      rv.add(it);
-    }
-
-    final String fullname = node.getAppendMethod();
-
-    for (FlatCodeItem it : charArgs) {
-      List<Var> nested = new ArrayList<>();
-      nested.add(node.getLvalue());
-      nested.add(it.getDest());
-      final FlatCallVoid call = new FlatCallVoid(fullname, nested);
-      rv.add(new FlatCodeItem(call));
-    }
+    /// ///2)
+    /// 
+    /// List<FlatCodeItem> charArgs = new ArrayList<>();
+    /// int[] esc = CEscaper.escape(sconst);
+    /// 
+    /// for (int i = 0; i < esc.length; i += 1) {
+    ///   char c = (char) esc[i];
+    /// 
+    ///   /// we already have null-terminator in 
+    ///   /// array-buffer
+    ///   if (c == '\0') {
+    ///     break;
+    ///   }
+    /// 
+    ///   final Type charType = TypeBindings.make_char();
+    ///   final IntLiteral number = new IntLiteral(String.format("'%c'", c), charType, (long) c);
+    /// 
+    ///   final Var lhsVar = VarCreator.justNewVar(charType);
+    ///   final AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
+    /// 
+    ///   final FlatCodeItem item = new FlatCodeItem(assignVarNum);
+    ///   charArgs.add(item);
+    /// }
+    /// 
+    /// for (FlatCodeItem it : charArgs) {
+    ///   rv.add(it);
+    /// }
+    /// 
+    /// final String fullname = "string_add";
+    /// 
+    /// for (FlatCodeItem it : charArgs) {
+    ///   List<Var> nested = new ArrayList<>();
+    ///   nested.add(node.getLvalue());
+    ///   nested.add(it.getDest());
+    ///   final FlatCallVoid call = new FlatCallVoid(fullname, nested);
+    ///   rv.add(new FlatCodeItem(call));
+    /// }
 
   }
 
@@ -315,7 +318,7 @@ public class RewriterExpr {
 
     /// we cannot generate opAssign call inside the method itself
     /// it will cause a recursive infinite loop.
-    if (isOpAssignMethod()) {
+    if (ignoreThisMethod()) {
       throw new AstParseException("unexpected opAssign method");
     }
 
@@ -326,12 +329,16 @@ public class RewriterExpr {
         .getPredefinedMethod(BuiltinNames.opAssign_ident);
 
     Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
+    if (lvalueVar.getType().getClassTypeFromRef().isNativeString()) {
+      fn = Hash_ident.getHashedIdent("string_opAssign");
+    }
+
     VarVarAssignOp aux = new VarVarAssignOp(opAssign, lvalueVar.getType(), fn, lvalueVar, rvalueVar);
     StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
     rv.add(new FlatCodeItem(store));
   }
 
-  private boolean isOpAssignMethod() {
+  private boolean ignoreThisMethod() {
     return method.getIdentifier().equals(BuiltinNames.opAssign_ident) || method.isDestructor();
   }
 
@@ -479,20 +486,14 @@ public class RewriterExpr {
       /// 2) s.appendInternal('a');
       /// n) --//--
 
-      final Type restype = e.getResultType();
-      final ClassDeclaration str = restype.getClassTypeFromRef();
-      final ClassMethodDeclaration constructor = str.getConstructors().get(0);
-      final ClassMethodDeclaration appendMethod = str.getMethodForSure("add");
-
       final String sconst = e.getBeginPos().getValue();
-      final Var lvalue = VarCreator.justNewVar(restype);
+      final Var lvalue = VarCreator.justNewVar(e.getResultType());
 
-      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
-          constructor.signToStringCall(), appendMethod.signToStringCall());
-
+      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst);
       final FlatCodeItem item = new FlatCodeItem(res);
       genRaw(item);
 
+      BuiltinsFnSet.register(sconst, VarCreator.justNewVar(e.getResultType()));
     }
 
     else if (base == EPRIMARY_NUMBER) {

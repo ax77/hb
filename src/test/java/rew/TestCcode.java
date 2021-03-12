@@ -283,6 +283,9 @@ public class TestCcode {
     sb.append("    std.print(\"%s\\n\", s);     \n");
     sb.append("    std.print(\"%d\\n\", 32);    \n");
     sb.append("    std.print(\"%c\\n\", \'_\'); \n");
+    sb.append("    string x = \"\";             \n");
+    sb.append("    std.print(\"x=[%s]\\n\", x); \n");
+    sb.append("    std.print(\"%s\\n\", x);     \n");
     sb.append("    return 0;                    \n");
     sb.append("  }                              \n");
     sb.append("}                                \n");
@@ -295,6 +298,7 @@ public class TestCcode {
 
     Codeout result = CodeoutBuilder.build(unit);
     System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+
   }
 
 }

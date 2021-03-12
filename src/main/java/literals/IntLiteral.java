@@ -2,6 +2,7 @@ package literals;
 
 import java.io.Serializable;
 
+import _st3_linearize_expr.CEscaper;
 import ast_types.Type;
 import errors.AstParseException;
 import utils_oth.NullChecker;
@@ -63,25 +64,11 @@ public class IntLiteral implements Serializable {
       return String.format("%f", floating);
     }
     if (type.isChar()) {
-      return String.format("'%s'", esc((char) integer));
+      return String.format("'%s'", CEscaper.unesc((char) integer));
     }
     return String.format("%d", integer);
   }
 
-  private String esc(char c) {
-    if (c == '\n') {
-      return "\\n";
-    }
-    if (c == '\r') {
-      return "\\r";
-    }
-    if (c == '\t') {
-      return "\\t";
-    }
-    if (c == '\0') {
-      return "\\0";
-    }
-    return String.format("%c", c);
-  }
+
 
 }

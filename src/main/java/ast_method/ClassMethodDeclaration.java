@@ -16,6 +16,7 @@ import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
+import errors.AstParseException;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -206,6 +207,16 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   }
 
   public String signToStringCall() {
+    // TODO:strings
+    if (clazz.isNativeString()) {
+      if (isDestructor()) {
+        return "string_deinit";
+      } else if (isConstructor()) {
+        return "string_init";
+      } else {
+        throw new AstParseException("str. method: " + identifier.toString());
+      }
+    }
     return CopierNamer.getMethodName(this) + TypePrinters.typeArgumentsToString(getClazz().getTypeParametersT());
   }
 

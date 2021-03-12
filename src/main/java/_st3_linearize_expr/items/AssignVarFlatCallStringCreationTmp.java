@@ -6,14 +6,9 @@ public class AssignVarFlatCallStringCreationTmp {
   private final Var lvalue;
   private final String rvalue;
 
-  private final String constructor;
-  private final String appendMethod;
-
-  public AssignVarFlatCallStringCreationTmp(Var lvalue, String rvalue, String constructor, String appendMethod) {
+  public AssignVarFlatCallStringCreationTmp(Var lvalue, String rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
-    this.constructor = constructor;
-    this.appendMethod = appendMethod;
   }
 
   public Var getLvalue() {
@@ -22,14 +17,6 @@ public class AssignVarFlatCallStringCreationTmp {
 
   public String getRvalue() {
     return rvalue;
-  }
-
-  public String getConstructor() {
-    return constructor;
-  }
-
-  public String getAppendMethod() {
-    return appendMethod;
   }
 
   @Override

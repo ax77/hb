@@ -3,9 +3,12 @@ package _st7_codeout;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import _st3_linearize_expr.BuiltinsFnSet;
+import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
@@ -20,12 +23,17 @@ import tokenize.Ident;
 public class Codeout {
   private final List<ClassDeclaration> pods;
   private final List<Function> functions;
+
+  private final Set<String> printfNames;
   private final StringBuilder builtinsFn;
+  private final StringBuilder stringsLabels;
 
   public Codeout() {
     this.pods = new ArrayList<>();
     this.functions = new ArrayList<>();
+    this.printfNames = new HashSet<>();
     this.builtinsFn = new StringBuilder();
+    this.stringsLabels = new StringBuilder();
   }
 
   public void add(ClassDeclaration e) {
@@ -96,6 +104,7 @@ public class Codeout {
     sb.append("#include \"mem.h\"   \n");
     
     sb.append("typedef int boolean; \n"); // TODO:
+    sb.append("typedef struct string * string; \n"); // TODO:
     
     return sb.toString();
   }
@@ -109,13 +118,17 @@ public class Codeout {
   private void genBuiltins() {
     /// we know these functions AFTER we process the whole unit
     List<FlatCodeItem> builtins = BuiltinsFnSet.getBuiltins();
+    Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
 
     for (FlatCodeItem item : builtins) {
       if (item.isFlatCallVoid()) {
         FlatCallVoid fc = item.getFlatCallVoid();
         String fullname = fc.getFullname();
         if (fullname.startsWith("std_print_")) {
-          genPrintf(fc, fullname);
+          if (!printfNames.contains(fullname)) {
+            genPrintf(fc, fullname);
+            printfNames.add(fullname);
+          }
         }
       }
 
@@ -126,6 +139,21 @@ public class Codeout {
       else {
         throw new AstParseException("unr.");
       }
+    }
+
+    for (Entry<String, Var> ent : strings.entrySet()) {
+      String s = ent.getKey();
+      Var v = ent.getValue();
+      int[] esc = CEscaper.escape(s);
+      StringBuilder content = new StringBuilder();
+      for (int j = 0; j < esc.length; j += 1) {
+        content.append("'" + CEscaper.unesc((char) esc[j]) + "'");
+        if (j + 1 < esc.length) {
+          content.append(", ");
+        }
+      }
+      String initBuffer = content.toString();
+      stringsLabels.append("char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
     }
   }
 
@@ -158,7 +186,7 @@ public class Codeout {
       final Ident name = names.get(i).getName();
 
       if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
-        printfBody.append(name.getName() + "->buffer->data");
+        printfBody.append(name.getName() + "->buffer");
       } else {
         if (!tp.isPrimitive()) {
           throw new AstParseException("unimpl.: print compound type");
@@ -217,10 +245,12 @@ public class Codeout {
 
     // protos
     sb.append(headers());
-    sb.append(mainMethodSign + ";\n");
+    //sb.append(mainMethodSign + ";\n");
     sb.append(buildArraysProtos(arrays));
     sb.append(tpdef);
     sb.append(protos);
+    sb.append(stringsLabels.toString());
+    sb.append(CCString.genString());
 
     // impls
     sb.append(buildArraysImplsStructs(arrays));
@@ -324,8 +354,8 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     for (Function f : functions) {
-      final ClassDeclaration clazz = f.getMethodSignature().getClazz();
-      if (clazz.isMainClass()) {
+      final ClassDeclaration c = f.getMethodSignature().getClazz();
+      if (c.isMainClass()) {
         if (!f.getMethodSignature().isMain()) {
           continue;
         }
@@ -334,8 +364,11 @@ public class Codeout {
         mainMethod.add(f);
         continue;
       }
-      if (clazz.isNativeArray()) {
+      if (c.isNativeArray()) {
         arrayMethods.add(f);
+        continue;
+      }
+      if (c.isNativeString()) {
         continue;
       }
       sb.append(f.toString());
@@ -355,6 +388,9 @@ public class Codeout {
         arrays.add(c);
         continue;
       }
+      if (c.isNativeString()) {
+        continue;
+      }
       sb.append(classToString(c));
     }
 
@@ -368,7 +404,7 @@ public class Codeout {
       if (c.isMainClass()) {
         continue;
       }
-      if (c.isNativeArray()) {
+      if (c.isNativeArray() || c.isNativeString()) {
         continue;
       }
       sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
@@ -387,7 +423,7 @@ public class Codeout {
           continue;
         }
       }
-      if (clazz.isNativeArray()) {
+      if (clazz.isNativeArray() || clazz.isNativeString()) {
         continue;
       }
       sb.append(proto(f) + ";\n");
