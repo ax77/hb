@@ -1,9 +1,14 @@
 
 class main_class {
   int main() {
-    stdio io = new stdio();
-    string s = "a.b.c.d.e";
-    io.printf("%s\n", s.buffer());
+    string s = """
+      a.b.c.d.e
+      a.b.c.d.e.f
+      a.b.c.d.e.f.g 
+    """;
+    std.print("%s\n", s);
+    std.print("%d\n", 32);
+    std.print("%c\n", '_');
     return 0;
   }
 }

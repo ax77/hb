@@ -244,6 +244,7 @@ public class TestCcode {
     // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
   }
 
+  @Ignore
   @Test
   public void test9() throws IOException {
 
@@ -256,6 +257,35 @@ public class TestCcode {
     sb.append("    return 0;                           //006 \n");
     sb.append("  }                                     //007 \n");
     sb.append("}                                       //008 \n");
+    //@formatter:on
+
+    InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
+    for (ClassDeclaration c : unit.getClasses()) {
+      // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+    }
+
+    Codeout result = CodeoutBuilder.build(unit);
+    // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+  }
+
+  @Test
+  public void test10() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("class main_class {               \n");
+    sb.append("  int main() {                   \n");
+    sb.append("    string s = \"\"\"            \n");
+    sb.append("      a.b.c.d.e                  \n");
+    sb.append("      a.b.c.d.e.f                \n");
+    sb.append("      a.b.c.d.e.f.g              \n");
+    sb.append("    \"\"\";                      \n");
+    sb.append("    std.print(\"%s\\n\", s);     \n");
+    sb.append("    std.print(\"%d\\n\", 32);    \n");
+    sb.append("    std.print(\"%c\\n\", \'_\'); \n");
+    sb.append("    return 0;                    \n");
+    sb.append("  }                              \n");
+    sb.append("}                                \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

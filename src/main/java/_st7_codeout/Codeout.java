@@ -160,6 +160,9 @@ public class Codeout {
       if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
         printfBody.append(name.getName() + "->buffer->data");
       } else {
+        if (!tp.isPrimitive()) {
+          throw new AstParseException("unimpl.: print compound type");
+        }
         printfBody.append(name.getName());
       }
 

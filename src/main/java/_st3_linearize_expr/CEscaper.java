@@ -15,18 +15,30 @@ import tokenize.Env;
 public abstract class CEscaper {
 
   public static int[] escape(String s) {
+
+    final String threeQuote = "\"\"\"";
+
     if (s.startsWith("\'")) {
       if (!s.endsWith("\'")) {
         throw new AstParseException("incorrect char constant: " + s);
       }
       s = s.substring(1, s.length() - 1);
     }
-    if (s.startsWith("\"")) {
+
+    else if (s.startsWith(threeQuote)) {
+      if (!s.endsWith(threeQuote)) {
+        throw new AstParseException("incorrect string constant: " + s);
+      }
+      s = s.substring(3, s.length() - 3);
+    }
+
+    else if (s.startsWith("\"")) {
       if (!s.endsWith("\"")) {
         throw new AstParseException("incorrect string constant: " + s);
       }
       s = s.substring(1, s.length() - 1);
     }
+
     return escapeInternal(new CBuf(s));
   }
 
