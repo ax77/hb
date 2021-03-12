@@ -34,7 +34,7 @@ public class AssignVarAllocObject {
 
   @Override
   public String toString() {
-    if (lvalue.getType().isBytes()) {
+    if (lvalue.getType().isString()) {
       Type tp = lvalue.getType();
       int sz = tp.getSize();
       if (sz <= 0) {

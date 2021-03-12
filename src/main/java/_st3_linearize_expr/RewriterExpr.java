@@ -16,7 +16,6 @@ import java.util.List;
 
 import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.assign_ops.VarVarAssignOp;
-import _st3_linearize_expr.ir.CopierNamer;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
@@ -64,9 +63,7 @@ import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
-import hashed.Hash_ident;
 import literals.IntLiteral;
-import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -120,7 +117,7 @@ public class RewriterExpr {
     Var lvaluevar = VarCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
-    if (var.getType().isClass()) {
+    if (var.getType().isClass() || var.getType().isString()) {
       genOpAssign(lvaluevar, rvaluevar);
     }
 
@@ -194,7 +191,7 @@ public class RewriterExpr {
         AssignVarVar node = item.getAssignVarVar();
         final Var lvalueVar = node.getLvalue();
 
-        if (lvalueVar.getType().isClass() && !ignoreThisMethod()) {
+        if ((lvalueVar.getType().isClass() || lvalueVar.getType().isString()) && !ignoreThisMethod()) {
           // token __t14 = tok1;
           // ::
           // token __t14 = null
@@ -224,7 +221,7 @@ public class RewriterExpr {
 
         final StoreVarVar node = item.getStoreVarVar();
         final Var lvalueVar = node.getDst();
-        if (lvalueVar.getType().isClass() && !ignoreThisMethod()) {
+        if ((lvalueVar.getType().isClass() || lvalueVar.getType().isString()) && !ignoreThisMethod()) {
 
           // tok1 = __t17;
           // ::
@@ -274,44 +271,6 @@ public class RewriterExpr {
     final FlatCallConstructor flatCallConstructor = new FlatCallConstructor("string_init", argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
-    /// ///2)
-    /// 
-    /// List<FlatCodeItem> charArgs = new ArrayList<>();
-    /// int[] esc = CEscaper.escape(sconst);
-    /// 
-    /// for (int i = 0; i < esc.length; i += 1) {
-    ///   char c = (char) esc[i];
-    /// 
-    ///   /// we already have null-terminator in 
-    ///   /// array-buffer
-    ///   if (c == '\0') {
-    ///     break;
-    ///   }
-    /// 
-    ///   final Type charType = TypeBindings.make_char();
-    ///   final IntLiteral number = new IntLiteral(String.format("'%c'", c), charType, (long) c);
-    /// 
-    ///   final Var lhsVar = VarCreator.justNewVar(charType);
-    ///   final AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
-    /// 
-    ///   final FlatCodeItem item = new FlatCodeItem(assignVarNum);
-    ///   charArgs.add(item);
-    /// }
-    /// 
-    /// for (FlatCodeItem it : charArgs) {
-    ///   rv.add(it);
-    /// }
-    /// 
-    /// final String fullname = "string_add";
-    /// 
-    /// for (FlatCodeItem it : charArgs) {
-    ///   List<Var> nested = new ArrayList<>();
-    ///   nested.add(node.getLvalue());
-    ///   nested.add(it.getDest());
-    ///   final FlatCallVoid call = new FlatCallVoid(fullname, nested);
-    ///   rv.add(new FlatCodeItem(call));
-    /// }
-
   }
 
   private void genOpAssign(Var lvalueVar, Var rvalueVar) {
@@ -322,17 +281,29 @@ public class RewriterExpr {
       throw new AstParseException("unexpected opAssign method");
     }
 
-    AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
-    rv.add(new FlatCodeItem(assignVarNull));
+    if (lvalueVar.getType().isClass()) {
+      AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
+      rv.add(new FlatCodeItem(assignVarNull));
 
-    ClassMethodDeclaration opAssign = lvalueVar.getType().getClassTypeFromRef()
-        .getPredefinedMethod(BuiltinNames.opAssign_ident);
+      ClassMethodDeclaration opAssign = lvalueVar.getType().getClassTypeFromRef()
+          .getPredefinedMethod(BuiltinNames.opAssign_ident);
 
-    Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
+      VarVarAssignOp aux = new VarVarAssignOp(opAssign.signToStringCall(), lvalueVar.getType(), lvalueVar, rvalueVar);
+      StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
+      rv.add(new FlatCodeItem(store));
 
-    VarVarAssignOp aux = new VarVarAssignOp(opAssign, lvalueVar.getType(), fn, lvalueVar, rvalueVar);
-    StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
-    rv.add(new FlatCodeItem(store));
+    }
+
+    else if (lvalueVar.getType().isString()) {
+
+      AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
+      rv.add(new FlatCodeItem(assignVarNull));
+
+      VarVarAssignOp aux = new VarVarAssignOp("string_opAssign", lvalueVar.getType(), lvalueVar, rvalueVar);
+      StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
+      rv.add(new FlatCodeItem(store));
+
+    }
   }
 
   private boolean ignoreThisMethod() {

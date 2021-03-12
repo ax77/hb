@@ -1,6 +1,5 @@
 package ast_parsers;
 
-import java.awt.RenderingHints.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isBytes;
+  private boolean isString;
 
   public ParseType(Parse parser) {
 
@@ -61,9 +60,9 @@ public class ParseType {
     }
 
     if (!typeWasFound) {
-      typeWasFound = parser.is(Keywords.bytes_ident);
+      typeWasFound = parser.is(Keywords.string_ident);
       if (typeWasFound) {
-        this.isBytes = true;
+        this.isString = true;
       }
     }
 
@@ -76,7 +75,7 @@ public class ParseType {
     }
 
     // 0
-    if (isBytes()) {
+    if (isString()) {
       Token tok = parser.checkedMove(T.TOKEN_IDENT);
       return new Type("");
     }
@@ -162,11 +161,11 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isBytes;
+    return isPrimitive || isReference || isTypeParameter || isString;
   }
 
-  public boolean isBytes() {
-    return isBytes;
+  public boolean isString() {
+    return isString;
   }
 
   public boolean isPrimitive() {

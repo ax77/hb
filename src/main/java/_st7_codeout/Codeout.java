@@ -185,7 +185,7 @@ public class Codeout {
       final Type tp = types.get(i);
       final Ident name = names.get(i).getName();
 
-      if (tp.isBytes()) {
+      if (tp.isString()) {
         printfBody.append(name.getName() + "->buffer");
       } else {
         if (!tp.isPrimitive()) {

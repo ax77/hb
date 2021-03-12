@@ -117,7 +117,7 @@ public class Deinits {
     List<Var> res = new ArrayList<>();
     for (Entry<String, Var> ent : current.getScope().entrySet()) {
       final Var var = ent.getValue();
-      if (!var.getType().isClass()) {
+      if (!var.getType().isClass() && !var.getType().isString()) {
         continue;
       }
       if (var.is(VarBase.METHOD_PARAMETER)) {
@@ -163,10 +163,18 @@ public class Deinits {
     for (Var v : vars) {
       List<Var> args = new ArrayList<>();
       args.add(v);
-      final ClassDeclaration classType = v.getType().getClassTypeFromRef();
-      final ClassMethodDeclaration destructor = classType.getDestructor();
-      FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
-      res.add(fc);
+
+      if (v.getType().isClass()) {
+        final ClassDeclaration classType = v.getType().getClassTypeFromRef();
+        final ClassMethodDeclaration destructor = classType.getDestructor();
+        FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
+        res.add(fc);
+      }
+
+      else if (v.getType().isString()) {
+        FlatCallVoid fc = new FlatCallVoid("string_deinit", args);
+        res.add(fc);
+      }
     }
     return res;
   }

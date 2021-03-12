@@ -69,6 +69,4 @@ public class IntLiteral implements Serializable {
     return String.format("%d", integer);
   }
 
-
-
 }

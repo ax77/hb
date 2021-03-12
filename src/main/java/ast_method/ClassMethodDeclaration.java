@@ -16,7 +16,6 @@ import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
-import errors.AstParseException;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;

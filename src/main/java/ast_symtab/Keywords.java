@@ -48,7 +48,7 @@ public final class Keywords {
   public static final Ident in_ident             = g("in");
   public static final Ident cast_ident           = g("cast");
   public static final Ident mut_ident            = g("mut");
-  public static final Ident bytes_ident          = g("bytes");
+  public static final Ident string_ident         = g("string");
   // types:
   public static final Ident char_ident           = g("char");
   public static final Ident short_ident          = g("short");
