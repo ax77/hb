@@ -5,20 +5,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import _st3_linearize_expr.BuiltinsFnSet;
+import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import tokenize.Ident;
 
 public class Codeout {
   private final List<ClassDeclaration> pods;
   private final List<Function> functions;
+  private final StringBuilder builtinsFn;
 
   public Codeout() {
     this.pods = new ArrayList<>();
     this.functions = new ArrayList<>();
+    this.builtinsFn = new StringBuilder();
   }
 
   public void add(ClassDeclaration e) {
@@ -94,6 +101,74 @@ public class Codeout {
   }
   //@formatter:on
 
+  private void line(String s) {
+    builtinsFn.append(s);
+    builtinsFn.append("\n");
+  }
+
+  private void genBuiltins() {
+    /// we know these functions AFTER we process the whole unit
+    List<FlatCodeItem> builtins = BuiltinsFnSet.getBuiltins();
+
+    for (FlatCodeItem item : builtins) {
+      if (item.isFlatCallVoid()) {
+        FlatCallVoid fc = item.getFlatCallVoid();
+        String fullname = fc.getFullname();
+        if (fullname.startsWith("std_print_")) {
+          genPrintf(fc, fullname);
+        }
+      }
+
+      else if (item.isAssignVarFlatCallResult()) {
+
+      }
+
+      else {
+        throw new AstParseException("unr.");
+      }
+    }
+  }
+
+  private void genPrintf(FlatCallVoid fc, String fullname) {
+    final StringBuilder printfArguments = new StringBuilder();
+    final List<Type> types = new ArrayList<>();
+    final List<Var> names = new ArrayList<>();
+
+    final List<Var> fcArgs = fc.getArgs();
+    for (int i = 0; i < fcArgs.size(); i += 1) {
+      final Var arg = fcArgs.get(i);
+      printfArguments.append(arg.typeNameToString());
+
+      types.add(arg.getType());
+      names.add(arg);
+
+      if (i + 1 < fcArgs.size()) {
+        printfArguments.append(", ");
+      }
+    }
+
+    StringBuilder printfBody = new StringBuilder();
+    for (int i = 0; i < types.size(); i += 1) {
+      final Type tp = types.get(i);
+      final Ident name = names.get(i).getName();
+
+      if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
+        printfBody.append(name.getName() + "->buffer->data");
+      } else {
+        printfBody.append(name.getName());
+      }
+
+      if (i + 1 < types.size()) {
+        printfBody.append(", ");
+      }
+    }
+
+    line("static void " + fullname + "(" + printfArguments.toString() + ")");
+    line("{");
+    line("    printf(" + printfBody.toString() + ");");
+    line("}");
+  }
+
   private String proto(Function f) {
     return f.signToString();
   }
@@ -122,6 +197,8 @@ public class Codeout {
     String mainMethodImpl = mainFn.toString();
     String mainMethodCall = mainFn.signToStringCall();
 
+    genBuiltins();
+
     StringBuilder sb = new StringBuilder();
 
     // protos
@@ -136,6 +213,7 @@ public class Codeout {
     sb.append(buildArraysImplsMethods(arrayMethods));
     sb.append(structs);
     sb.append(funcs);
+    sb.append(builtinsFn.toString());
 
     // main
     sb.append(mainMethodImpl);

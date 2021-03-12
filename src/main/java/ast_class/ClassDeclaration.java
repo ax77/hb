@@ -13,6 +13,7 @@ import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
+import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
@@ -454,7 +455,11 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   public boolean isNativeArray() {
-    return identifier.getName().equals("array");
+    return identifier.equals(BuiltinNames.array_ident);
+  }
+
+  public boolean isNativeString() {
+    return identifier.equals(BuiltinNames.string_ident);
   }
 
 }

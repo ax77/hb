@@ -6,6 +6,7 @@ import java.util.List;
 
 import _st0_resolve.CUnitCompleteChecker;
 import _st1_templates.InstatantiationUnitBuilder;
+import _st3_linearize_expr.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
@@ -45,6 +46,7 @@ public class ParserMain implements ParserMainApi {
   @Override
   public Parse initiateParse() throws IOException {
     initIdents();
+    BuiltinsFnSet.clear();
 
     //// without any imports it is looks like this:
     ////
@@ -74,7 +76,6 @@ public class ParserMain implements ParserMainApi {
     final StringBuilder predef = new StringBuilder();
     predef.append(new FileWrapper(dir + "/std/array.hb").readToString(FileReadKind.APPEND_LF));
     predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
-    //predef.append(new FileWrapper(dir + "/std/stdio.hb").readToString(FileReadKind.APPEND_LF));
 
     final String sourceGiven = predef.toString() + "\n" + sb.toString();
     final Stream s = new Stream("<string-source>", sourceGiven);

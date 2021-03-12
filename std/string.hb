@@ -6,11 +6,16 @@ class string {
     this.buffer = new array<char>();
   }
 
-  public void appendInternal(char c) {
+  /// internal constructor
+  private void add(char c) {
     buffer.add(c);
   }
 
-  char char_at(int index) {
+  char get(int index) {
     return buffer.get(index);
+  }
+  
+  public array<char> buffer() {
+    return buffer;
   }
 }

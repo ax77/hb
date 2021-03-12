@@ -18,13 +18,17 @@ public abstract class BuiltinNames {
   // predefined parameters
   public static final Ident __this_ident = g("__this");
 
+  // IO
+  public static final Ident read_file_ident = g("read_file");
+  public static final Ident print_ident = g("print");
+
   // these names are not keywords.
   private static Ident g(String name) {
     return Hash_ident.getHashedIdent(name, 0);
   }
 
   public static boolean isCorrectBuiltinIdent(Ident id) {
-    return id.equals(BuiltinNames.string_ident);
+    return id.equals(BuiltinNames.read_file_ident) || id.equals(BuiltinNames.print_ident);
   }
 
 }

@@ -1,9 +1,11 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                                           //001 \n");
-    sb.append("  int main() {                                               //002 \n");
-    sb.append("    string s = \"a.b.c\";                                    //003 \n");
-    sb.append("    return s.char_at(1) == \'.\' && s.char_at(2) == \'b\';   //004 \n");
-    sb.append("  }                                                          //005 \n");
-    sb.append("}                                                            //006 \n");
+    sb.append("class main_class {                      //001 \n");
+    sb.append("  int main() {                          //002 \n");
+    sb.append("    stdio io = new stdio();             //003 \n");
+    sb.append("    string s = \"a.b.c.d.e\";           //004 \n");
+    sb.append("    io.printf(\"%s\\n\", s.buffer());   //005 \n");
+    sb.append("    return 0;                           //006 \n");
+    sb.append("  }                                     //007 \n");
+    sb.append("}                                       //008 \n");
     //@formatter:on

@@ -1,7 +1,10 @@
+
 class main_class {
   int main() {
-    string s = "a.b.c";
-    return s.char_at(1) == '.' && s.char_at(2) == 'b';
+    stdio io = new stdio();
+    string s = "a.b.c.d.e";
+    io.printf("%s\n", s.buffer());
+    return 0;
   }
 }
 

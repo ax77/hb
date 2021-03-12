@@ -46,6 +46,7 @@ import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -478,7 +479,7 @@ public class RewriterExpr {
       final ClassMethodDeclaration constructor = str.getConstructors().get(0);
       ClassMethodDeclaration appendMethod = null;
       for (ClassMethodDeclaration m : str.getMethods()) {
-        if (m.getIdentifier().getName().equals("appendInternal")) {
+        if (m.getIdentifier().getName().equals("add")) {
           appendMethod = m;
           break;
         }
@@ -628,31 +629,40 @@ public class RewriterExpr {
 
     else if (base == ExpressionBase.EBUILTIN_FN) {
 
-      throw new RuntimeException(base.toString() + ": unimplemented");
+      final ExprBuiltinFn fn = e.getBuiltinFn();
+      final Type ret = fn.getReturnType();
+      final List<Var> args = genArgs(fn.getCallArguments());
 
-      // final ExprBuiltinFn fn = e.getBuiltinFn();
-      // final Type ret = fn.getReturnType();
-      // final List<Var> args = genArgs(fn.getCallArguments());
-      //
-      // // final Ident function = Hash_ident.getHashedIdent(
-      // //     "std_" + fn.getFunction().getName() + "_" + TypePrinters.typeArgumentsToString(fn.getTypeArguments()));
-      //
-      // final Ident function = Hash_ident.getHashedIdent(fn.getFunction().getName());
-      //
-      // if (ret.isVoid()) {
-      //   FlatCallVoid fc = new FlatCallVoid(null, function, args);
-      //   FlatCodeItem item = new FlatCodeItem(fc);
-      //   genRaw(item);
-      // }
-      //
-      // else {
-      //
-      //   final PureFunctionCallWithResult call = new PureFunctionCallWithResult(ret, function, args);
-      //   final Var lvalue = VarCreator.justNewVar(ret);
-      //   final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
-      //   final FlatCodeItem item = new FlatCodeItem(ops);
-      //   genRaw(item);
-      // }
+      /// variadic length args we will handle here
+      /// that way.
+      final StringBuilder fullname = new StringBuilder();
+      fullname.append("std_");
+      fullname.append(fn.getFunction().getName());
+      fullname.append("_");
+      for (int i = 0; i < args.size(); i += 1) {
+        Var arg = args.get(i);
+        fullname.append(arg.getType().toString());
+        if (i + 1 < args.size()) {
+          fullname.append("_");
+        }
+      }
+
+      if (ret.isVoid()) {
+        FlatCallVoid fc = new FlatCallVoid(fullname.toString(), args);
+        FlatCodeItem item = new FlatCodeItem(fc);
+        genRaw(item);
+        BuiltinsFnSet.register(item);
+      }
+
+      else {
+
+        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(fullname.toString(), ret, args);
+        final Var lvalue = VarCreator.justNewVar(ret);
+        final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
+        final FlatCodeItem item = new FlatCodeItem(ops);
+        genRaw(item);
+        BuiltinsFnSet.register(item);
+      }
     }
 
     else if (base == ExpressionBase.EPRIMARY_CHAR) {

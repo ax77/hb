@@ -221,6 +221,7 @@ public class TestCcode {
     // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
   }
 
+  @Ignore
   @Test
   public void test8() throws IOException {
 
@@ -232,6 +233,29 @@ public class TestCcode {
     sb.append("    return s.char_at(1) == \'.\' && s.char_at(2) == \'b\';   //004 \n");
     sb.append("  }                                                          //005 \n");
     sb.append("}                                                            //006 \n");
+    //@formatter:on
+
+    InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
+    for (ClassDeclaration c : unit.getClasses()) {
+      // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+    }
+
+    Codeout result = CodeoutBuilder.build(unit);
+    // System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+  }
+
+  @Test
+  public void test9() throws IOException {
+
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("class main_class {                      //001 \n");
+    sb.append("  int main() {                          //002 \n");
+    sb.append("    string s = \"a.b.c.d.e\";           //004 \n");
+    sb.append("    std.print(\"%s\\n\", s);            //005 \n");
+    sb.append("    return 0;                           //006 \n");
+    sb.append("  }                                     //007 \n");
+    sb.append("}                                       //008 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

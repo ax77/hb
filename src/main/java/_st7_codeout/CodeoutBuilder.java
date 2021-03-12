@@ -8,11 +8,13 @@ import ast_unit.InstantiationUnit;
 public abstract class CodeoutBuilder {
 
   public static Codeout build(final InstantiationUnit unit) {
+
     Codeout result = new Codeout();
     for (ClassDeclaration c : unit.getClasses()) {
       result.add(c);
       meth(c, result);
     }
+
     return result;
   }
 
