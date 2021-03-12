@@ -19,6 +19,7 @@ import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import hashed.Hash_ident;
 import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
@@ -351,6 +352,14 @@ public class ClassDeclaration implements Serializable, Location {
       }
     }
     throw new AstParseException("class has no method: " + name.toString());
+  }
+
+  public ClassMethodDeclaration getMethodForSure(String name) {
+    ClassMethodDeclaration m = getPredefinedMethod(Hash_ident.getHashedIdent(name));
+    if (m == null) {
+      throw new AstParseException("class has no method: " + name.toString());
+    }
+    return m;
   }
 
   public boolean hasPredefinedMethod(Ident name) {

@@ -48,7 +48,7 @@ public class Symbol {
 
   public Type getType() {
     if (isClazz()) {
-      return new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), clazz.getBeginPos());
+      return new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()));
     }
     if (isVariable()) {
       return variable.getType();

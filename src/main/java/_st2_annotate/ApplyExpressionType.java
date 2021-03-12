@@ -123,7 +123,7 @@ public class ApplyExpressionType {
       // is_boolean|is_boolean
       // is_reference|is_reference
 
-      final Type resultType = TypeBindings.make_boolean(e.getBeginPos());
+      final Type resultType = TypeBindings.make_boolean();
 
       if (lhsType != null && rhsType != null) {
         if (!lhsType.isEqualTo(rhsType)) {
@@ -183,7 +183,7 @@ public class ApplyExpressionType {
       // T_LT,T_LE,T_GT,T_GE->boolean
       // is_numeric|is_numeric
       if (lhsType.isNumeric() && rhsType.isNumeric()) {
-        e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));
+        e.setResultType(TypeBindings.make_boolean());
       }
     }
 

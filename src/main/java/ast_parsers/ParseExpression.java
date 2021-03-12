@@ -597,7 +597,7 @@ public class ParseExpression {
 
     final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
     final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
-    final Type classtype = new Type(ref, saved);
+    final Type classtype = new Type(ref);
 
     final List<ExprExpression> argums = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);

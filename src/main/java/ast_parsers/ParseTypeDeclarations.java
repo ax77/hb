@@ -379,7 +379,7 @@ public class ParseTypeDeclarations {
 
   private Type getOneTypeParameter() {
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    return new Type(tok.getIdent(), tok);
+    return new Type(tok.getIdent());
   }
 
   public List<VarDeclarator> parseMethodParameters() {

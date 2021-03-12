@@ -65,9 +65,9 @@ public class ApplyExpression {
     } else if (e.is(ExpressionBase.EPRIMARY_STRING)) {
       applyStringLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_CHAR)) {
-      e.setResultType(TypeBindings.make_char(e.getBeginPos()));
+      e.setResultType(TypeBindings.make_char());
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
-      e.setResultType(TypeBindings.make_boolean(e.getBeginPos()));
+      e.setResultType(TypeBindings.make_boolean());
     } else if (e.is(ExpressionBase.ECAST)) {
       asslyCast(object, e);
     } else if (e.is(ExpressionBase.EBUILTIN_FN)) {
@@ -124,7 +124,7 @@ public class ApplyExpression {
   private void applySelfLiteral(final ExprExpression e) {
     final ClassDeclaration clazz = e.getSelfExpression();
     final ClassTypeRef ref = new ClassTypeRef(clazz, clazz.getTypeParametersT());
-    e.setResultType(new Type(ref, e.getBeginPos()));
+    e.setResultType(new Type(ref));
   }
 
   private void applyStringLiteral(final ExprExpression e) {

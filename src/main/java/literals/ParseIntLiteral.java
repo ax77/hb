@@ -28,7 +28,7 @@ public class ParseIntLiteral {
 
     // just zero
     if (c == '0' && nextchar == '\0') {
-      return new IntLiteral("0", TypeBindings.make_int(beginPos), 0); //TODO:
+      return new IntLiteral("0", TypeBindings.make_int(), 0); //TODO:
     }
 
     if (c == '0' && nextchar == 'b') {
@@ -105,9 +105,9 @@ public class ParseIntLiteral {
 
   private Type bindSuffixOrI32ByDefault(String suffix) {
     if (suffix.isEmpty()) {
-      return TypeBindings.make_int(beginPos); // TODO:
+      return TypeBindings.make_int(); // TODO:
     }
-    return TypeBindings.getTypeBySuffix(suffix, beginPos);
+    return TypeBindings.getTypeBySuffix(suffix);
   }
 
   private IntLiteral parseByRadix(int r) {

@@ -14,8 +14,6 @@ import java.util.Map;
 import ast_symtab.Keywords;
 import errors.AstParseException;
 import tokenize.Ident;
-import tokenize.T;
-import tokenize.Token;
 
 public abstract class TypeBindings {
 
@@ -30,58 +28,54 @@ public abstract class TypeBindings {
     BIND_PRIMITIVE_TO_STRING.put(TypeBase.TP_boolean, "boolean");
   }
 
-  public static Type make_char(Token beginPos) {
-    return new Type(TP_char, beginPos);
+  public static Type make_char() {
+    return new Type(TP_char);
   }
 
-  public static Type make_short(Token beginPos) {
-    return new Type(TP_short, beginPos);
+  public static Type make_short() {
+    return new Type(TP_short);
   }
 
-  public static Type make_int(Token beginPos) {
-    return new Type(TP_int, beginPos);
+  public static Type make_int() {
+    return new Type(TP_int);
   }
 
-  public static Type make_long(Token beginPos) {
-    return new Type(TP_long, beginPos);
+  public static Type make_long() {
+    return new Type(TP_long);
   }
 
-  public static Type make_float(Token beginPos) {
-    return new Type(TP_float, beginPos);
+  public static Type make_float() {
+    return new Type(TP_float);
   }
 
-  public static Type make_double(Token beginPos) {
-    return new Type(TP_double, beginPos);
+  public static Type make_double() {
+    return new Type(TP_double);
   }
 
-  public static Type make_boolean(Token beginPos) {
-    return new Type(TP_boolean, beginPos);
+  public static Type make_boolean() {
+    return new Type(TP_boolean);
   }
 
-  public static Type getTypeFromIdent(Token tok) {
-    if (!tok.ofType(T.TOKEN_IDENT)) {
-      throw new AstParseException("expected identifier, but was: " + tok.getValue());
-    }
-    Ident ident = tok.getIdent();
+  public static Type getTypeFromIdent(Ident ident) {
     if (ident.equals(Keywords.char_ident)) {
-      return make_char(tok);
+      return make_char();
     } else if (ident.equals(Keywords.short_ident)) {
-      return make_short(tok);
+      return make_short();
     } else if (ident.equals(Keywords.int_ident)) {
-      return make_int(tok);
+      return make_int();
     } else if (ident.equals(Keywords.long_ident)) {
-      return make_long(tok);
+      return make_long();
     } else if (ident.equals(Keywords.float_ident)) {
-      return make_float(tok);
+      return make_float();
     } else if (ident.equals(Keywords.double_ident)) {
-      return make_double(tok);
+      return make_double();
     } else if (ident.equals(Keywords.boolean_ident)) {
-      return make_boolean(tok);
+      return make_boolean();
     }
     throw new AstParseException("type not found for ident: " + ident.getName());
   }
 
-  public static Type getTypeBySuffix(String suff, Token beginPos) {
+  public static Type getTypeBySuffix(String suff) {
     // if (suff.equals("i8")) {
     //   return make_char(beginPos);
     // } else if (suff.equals("i16")) {

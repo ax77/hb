@@ -58,7 +58,7 @@ public class TemplateCodegen {
     ///
     final ClassDeclaration template = copyClazz(from.getClassTypeFromRef());
     final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
-    final Type result = new Type(new ClassTypeRef(template, typeArguments), template.getBeginPos());
+    final Type result = new Type(new ClassTypeRef(template, typeArguments));
     generatedClasses.add(result);
 
     if (typeArguments.size() != template.getTypeParametersT().size()) {

@@ -28,7 +28,7 @@ public abstract class BuildOpAssignMethod {
       throws IOException {
 
     final Token beginPos = object.getBeginPos();
-    final Type typename = new Type(new ClassTypeRef(object, object.getTypeParametersT()), beginPos);
+    final Type typename = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
 
     /// we will add only 'rvalue' parameter, because we also will
     /// push '__this' parameter in each parameter-list, and 

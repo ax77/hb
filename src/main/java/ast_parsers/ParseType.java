@@ -105,7 +105,7 @@ public class ParseType {
 
     final List<Type> typeArguments = getTypeArguments();
     final ClassTypeRef ref = new ClassTypeRef(parser.getClassType(typeName), typeArguments);
-    return new Type(ref, tok);
+    return new Type(ref);
   }
 
   public List<Type> getTypeArguments() {
@@ -139,7 +139,7 @@ public class ParseType {
 
   private Type getPrimitive() {
     final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    final Type tp = TypeBindings.getTypeFromIdent(tok);
+    final Type tp = TypeBindings.getTypeFromIdent(tok.getIdent());
     if (tp == null) {
       parser.perror("type is not recognized");
     }

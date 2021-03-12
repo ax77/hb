@@ -40,7 +40,7 @@ public abstract class ErrorLocation {
     if (type != null) {
       tail = type.toString();
     }
-    throw new AstParseException("\n| " + type.getLocationToString() + "\n| error[" + message + "]\n| " + tail);
+    throw new AstParseException("\n| " + type.toString() + "\n| error[" + message + "]\n| " + tail);
   }
 
 }

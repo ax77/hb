@@ -176,7 +176,7 @@ public class RewriterStmt {
       final Token beginPos = test.getBeginPos();
       final ExprUnary un = new ExprUnary(new Token(beginPos, "!", T.T_EXCLAMATION), test);
       final ExprExpression eNot = new ExprExpression(un, beginPos);
-      eNot.setResultType(TypeBindings.make_boolean(beginPos));
+      eNot.setResultType(TypeBindings.make_boolean());
 
       /// 1) create the first item of the for-block, and append this expression as
       /// an item of a for-loop-block

@@ -50,7 +50,7 @@ public class ApplyUnitPostEachClass {
 
   private VarDeclarator createThisParameter(ClassDeclaration object, ClassMethodDeclaration method) {
     //@formatter:off
-    final Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()), object.getBeginPos());
+    final Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
     final VarDeclarator __thisParam = new VarDeclarator(VarBase.METHOD_PARAMETER
         , ModifiersChecker.letMods()
         , paramType

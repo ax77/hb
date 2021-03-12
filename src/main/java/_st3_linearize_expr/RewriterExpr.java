@@ -66,10 +66,8 @@ import errors.AstParseException;
 import errors.ErrorLocation;
 import hashed.Hash_ident;
 import literals.IntLiteral;
-import tokenize.Env;
 import tokenize.Ident;
 import tokenize.Token;
-import utils_oth.Normalizer;
 import utils_oth.NullChecker;
 
 public class RewriterExpr {
@@ -277,7 +275,6 @@ public class RewriterExpr {
     List<FlatCodeItem> charArgs = new ArrayList<>();
 
     int[] esc = CEscaper.escape(sconst);
-    System.out.println();
 
     for (int i = 0; i < esc.length; i += 1) {
       char c = (char) esc[i];
@@ -288,10 +285,10 @@ public class RewriterExpr {
         break;
       }
 
-      final IntLiteral number = new IntLiteral(String.format("'%c'", c), TypeBindings.make_char(Env.EOF_TOKEN_ENTRY),
-          (long) c);
+      final Type charType = TypeBindings.make_char();
+      final IntLiteral number = new IntLiteral(String.format("'%c'", c), charType, (long) c);
 
-      final Var lhsVar = VarCreator.justNewVar(number.getType());
+      final Var lhsVar = VarCreator.justNewVar(charType);
       final AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
 
       final FlatCodeItem item = new FlatCodeItem(assignVarNum);
@@ -482,19 +479,12 @@ public class RewriterExpr {
       /// 2) s.appendInternal('a');
       /// n) --//--
 
-      Type restype = e.getResultType();
-      ClassDeclaration str = restype.getClassTypeFromRef();
+      final Type restype = e.getResultType();
+      final ClassDeclaration str = restype.getClassTypeFromRef();
       final ClassMethodDeclaration constructor = str.getConstructors().get(0);
-      ClassMethodDeclaration appendMethod = null;
-      for (ClassMethodDeclaration m : str.getMethods()) {
-        if (m.getIdentifier().getName().equals("add")) {
-          appendMethod = m;
-          break;
-        }
-      }
-      NullChecker.check(appendMethod);
+      final ClassMethodDeclaration appendMethod = str.getMethodForSure("add");
 
-      String sconst = e.getBeginPos().getValue();
+      final String sconst = e.getBeginPos().getValue();
       final Var lvalue = VarCreator.justNewVar(restype);
 
       final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
@@ -592,7 +582,7 @@ public class RewriterExpr {
     else if (base == ETHIS) {
 
       final ClassDeclaration clazz = e.getSelfExpression();
-      final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()), e.getBeginPos());
+      final Type classType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()));
 
       // main_class __t2 = _this_
       final Var lhsVar = VarCreator.justNewVar(classType);
@@ -682,7 +672,7 @@ public class RewriterExpr {
         ErrorLocation.errorExpression("char constant incorrect: " + value, e);
       }
 
-      IntLiteral number = new IntLiteral(value, TypeBindings.make_int(holder), (long) esc[0]);
+      IntLiteral number = new IntLiteral(value, TypeBindings.make_char(), (long) esc[0]);
 
       final Var lhsVar = VarCreator.justNewVar(number.getType());
       AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
