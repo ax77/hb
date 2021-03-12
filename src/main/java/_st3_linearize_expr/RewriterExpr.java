@@ -273,21 +273,29 @@ public class RewriterExpr {
     rv.add(new FlatCodeItem(flatCallConstructor));
 
     ///2)
-    String sconst = Normalizer.unquote(node.getRvalue());
+    String sconst = node.getRvalue();
     List<FlatCodeItem> charArgs = new ArrayList<>();
 
-    for (int i = 0; i < sconst.length(); i += 1) {
-      char c = sconst.charAt(i);
-      final String value = Character.toString(c);
-      int[] esc = CEscaper.escape(value);
-      if (esc.length != 2) {
-        throw new AstParseException("char constant incorrect: " + sconst);
+    int[] esc = CEscaper.escape(sconst);
+    System.out.println();
+
+    for (int i = 0; i < esc.length; i += 1) {
+      char c = (char) esc[i];
+
+      /// we already have null-terminator in 
+      /// array-buffer
+      if (c == '\0') {
+        break;
       }
-      IntLiteral number = new IntLiteral("'" + value + "'", TypeBindings.make_char(Env.EOF_TOKEN_ENTRY), (long) esc[0]);
+
+      final IntLiteral number = new IntLiteral(String.format("'%c'", c), TypeBindings.make_char(Env.EOF_TOKEN_ENTRY),
+          (long) c);
+
       final Var lhsVar = VarCreator.justNewVar(number.getType());
-      AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
-      final FlatCodeItem item2 = new FlatCodeItem(assignVarNum);
-      charArgs.add(item2);
+      final AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
+
+      final FlatCodeItem item = new FlatCodeItem(assignVarNum);
+      charArgs.add(item);
     }
 
     for (FlatCodeItem it : charArgs) {

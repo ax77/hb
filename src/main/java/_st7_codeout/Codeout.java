@@ -133,6 +133,7 @@ public class Codeout {
     final StringBuilder printfArguments = new StringBuilder();
     final List<Type> types = new ArrayList<>();
     final List<Var> names = new ArrayList<>();
+    final List<String> toAssert = new ArrayList<>();
 
     final List<Var> fcArgs = fc.getArgs();
     for (int i = 0; i < fcArgs.size(); i += 1) {
@@ -141,6 +142,10 @@ public class Codeout {
 
       types.add(arg.getType());
       names.add(arg);
+
+      if (arg.getType().isClass()) {
+        toAssert.add(arg.getName().getName());
+      }
 
       if (i + 1 < fcArgs.size()) {
         printfArguments.append(", ");
@@ -163,8 +168,14 @@ public class Codeout {
       }
     }
 
+    StringBuilder printfAsserts = new StringBuilder();
+    for (String s : toAssert) {
+      printfAsserts.append("assert(" + s + ");\n");
+    }
+
     line("static void " + fullname + "(" + printfArguments.toString() + ")");
     line("{");
+    line(printfAsserts.toString());
     line("    printf(" + printfBody.toString() + ");");
     line("}");
   }
