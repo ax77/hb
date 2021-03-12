@@ -14,8 +14,7 @@
     sb.append("    std.print(\"x=[%s]\\n\", x);      //012 \n");
     sb.append("    std.print(\"%s\\n\", x);          //013 \n");
     sb.append("    std.print(\"%c\\n\", s.get(7));   //014 \n");
-    sb.append("    std.print(\"%c\\n\", x.get(0));   //015 \n");
-    sb.append("    return 0;                         //016 \n");
-    sb.append("  }                                   //017 \n");
-    sb.append("}                                     //018 \n");
+    sb.append("    return 0;                         //015 \n");
+    sb.append("  }                                   //016 \n");
+    sb.append("}                                     //017 \n");
     //@formatter:on

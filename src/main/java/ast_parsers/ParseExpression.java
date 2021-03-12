@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprCast;
@@ -52,7 +51,6 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
-import ast_types.ClassTypeRef;
 import ast_types.Type;
 import errors.AstParseException;
 import parse.Parse;
@@ -588,20 +586,13 @@ public class ParseExpression {
 
   private ExprExpression parseStringLiteral() {
 
-    Token saved = parser.moveget();
-
-    final ClassDeclaration stringClass = parser.getClassType(BuiltinNames.string_ident);
-    if (!stringClass.isComplete()) {
-      // parser.perror("string-class is incomplete");
-    }
-
-    final ArrayList<Type> emptyTypeArgs = new ArrayList<>();
-    final ClassTypeRef ref = new ClassTypeRef(stringClass, emptyTypeArgs);
-    final Type classtype = new Type(ref);
+    final Token saved = parser.moveget();
+    final Type bytesType = new Type(saved.getValue());
 
     final List<ExprExpression> argums = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);
-    arg.setResultType(classtype);
+
+    arg.setResultType(bytesType);
     argums.add(arg);
 
     return arg;

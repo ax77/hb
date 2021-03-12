@@ -16,7 +16,6 @@ class main_class {
     std.print("%s\n", x);
     
     std.print("%c\n", s.get(7));
-    std.print("%c\n", x.get(0));
     
     return 0;
   }

@@ -273,22 +273,22 @@ public class TestCcode {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {               \n");
-    sb.append("  int main() {                   \n");
-    sb.append("    string s = \"\"\"            \n");
-    sb.append("      a.b.c.d.e                  \n");
-    sb.append("      a.b.c.d.e.f                \n");
-    sb.append("      a.b.c.d.e.f.g              \n");
-    sb.append("    \"\"\";                      \n");
-    sb.append("    std.print(\"%s\\n\", s);     \n");
-    sb.append("    std.print(\"%d\\n\", 32);    \n");
-    sb.append("    std.print(\"%c\\n\", \'_\'); \n");
-    sb.append("    string x = \"\";             \n");
-    sb.append("    std.print(\"x=[%s]\\n\", x); \n");
-    sb.append("    std.print(\"%s\\n\", x);     \n");
-    sb.append("    return 0;                    \n");
-    sb.append("  }                              \n");
-    sb.append("}                                \n");
+    sb.append("class main_class {                  \n");
+    sb.append("  int main() {                      \n");
+    sb.append("    bytes s = \"\"\"                \n");
+    sb.append("      a.b.c.d.e                     \n");
+    sb.append("      a.b.c.d.e.f                   \n");
+    sb.append("      a.b.c.d.e.f.g                 \n");
+    sb.append("    \"\"\";                         \n");
+    sb.append("    std.print(\"%s\\n\", s);        \n");
+    sb.append("    std.print(\"%d\\n\", 32);       \n");
+    sb.append("    std.print(\"%c\\n\", \'_\');    \n");
+    sb.append("    bytes x = \"\";                 \n");
+    sb.append("    std.print(\"x=[%s]\\n\", x);    \n");
+    sb.append("    std.print(\"%s\\n\", x);        \n");
+    sb.append("    return 0;                       \n");
+    sb.append("  }                                 \n");
+    sb.append("}                                   \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

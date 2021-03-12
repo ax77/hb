@@ -329,9 +329,6 @@ public class RewriterExpr {
         .getPredefinedMethod(BuiltinNames.opAssign_ident);
 
     Ident fn = Hash_ident.getHashedIdent(CopierNamer.getMethodName(opAssign));
-    if (lvalueVar.getType().getClassTypeFromRef().isNativeString()) {
-      fn = Hash_ident.getHashedIdent("string_opAssign");
-    }
 
     VarVarAssignOp aux = new VarVarAssignOp(opAssign, lvalueVar.getType(), fn, lvalueVar, rvalueVar);
     StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);

@@ -4,7 +4,6 @@ import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
 import ast_types.Type;
-import tokenize.Ident;
 
 public class AssignVarAllocObject {
   private final Var lvalue;
@@ -35,13 +34,15 @@ public class AssignVarAllocObject {
 
   @Override
   public String toString() {
-    final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    final Ident identifier = clazz.getIdentifier();
-
-    if (clazz.isNativeArray()) {
-      // return lvalue.typeNameToString() + " = vec_new(" + clazz.getTypeParametersT().get(0).toString() + ")";
+    if (lvalue.getType().isBytes()) {
+      Type tp = lvalue.getType();
+      int sz = tp.getSize();
+      if (sz <= 0) {
+        sz = 1;
+      }
+      return lvalue.typeNameToString() + " = hmalloc(sizeof(struct string))";
     }
-
+    final ClassDeclaration clazz = typename.getClassTypeFromRef();
     return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + classHeaderToString(clazz) + "))";
   }
 

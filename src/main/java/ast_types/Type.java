@@ -84,6 +84,12 @@ public class Type implements Serializable, TypeApi {
     this.typenameId = typenameId;
   }
 
+  public Type(String value) {
+    this.base = TypeBase.TP_BYTES;
+    this.size = value.length();
+    this.align = 1;
+  }
+
   public ClassTypeRef getClassTypeRef() {
     return classTypeRef;
   }
@@ -166,6 +172,10 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_void)) {
         return false;
       }
+    } else if (is(TypeBase.TP_BYTES)) {
+      if (!another.is(TypeBase.TP_BYTES)) {
+        return false;
+      }
     } else if (is(TypeBase.TP_TYPENAME_ID)) {
       if (!another.is(TypeBase.TP_TYPENAME_ID)) {
         return false;
@@ -204,6 +214,9 @@ public class Type implements Serializable, TypeApi {
     }
     if (isClass()) {
       return classTypeRef.toString();
+    }
+    if (isBytes()) {
+      return "string";
     }
     return base.toString();
   }
@@ -299,6 +312,11 @@ public class Type implements Serializable, TypeApi {
 
   public void set_size(int i) {
     this.size = i;
+  }
+
+  @Override
+  public boolean isBytes() {
+    return is(TypeBase.TP_BYTES);
   }
 
 }

@@ -9,7 +9,6 @@ public abstract class BuiltinNames {
   public static final Ident std_ident = g("std");
 
   // predefined classes
-  public static final Ident string_ident = g("string");
   public static final Ident array_ident = g("array");
 
   // predefined methods

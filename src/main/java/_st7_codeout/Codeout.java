@@ -185,7 +185,7 @@ public class Codeout {
       final Type tp = types.get(i);
       final Ident name = names.get(i).getName();
 
-      if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
+      if (tp.isBytes()) {
         printfBody.append(name.getName() + "->buffer");
       } else {
         if (!tp.isPrimitive()) {
@@ -368,9 +368,6 @@ public class Codeout {
         arrayMethods.add(f);
         continue;
       }
-      if (c.isNativeString()) {
-        continue;
-      }
       sb.append(f.toString());
     }
 
@@ -388,9 +385,6 @@ public class Codeout {
         arrays.add(c);
         continue;
       }
-      if (c.isNativeString()) {
-        continue;
-      }
       sb.append(classToString(c));
     }
 
@@ -404,7 +398,7 @@ public class Codeout {
       if (c.isMainClass()) {
         continue;
       }
-      if (c.isNativeArray() || c.isNativeString()) {
+      if (c.isNativeArray()) {
         continue;
       }
       sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
@@ -423,7 +417,7 @@ public class Codeout {
           continue;
         }
       }
-      if (clazz.isNativeArray() || clazz.isNativeString()) {
+      if (clazz.isNativeArray()) {
         continue;
       }
       sb.append(proto(f) + ";\n");

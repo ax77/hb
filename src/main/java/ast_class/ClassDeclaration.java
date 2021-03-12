@@ -467,8 +467,4 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.array_ident);
   }
 
-  public boolean isNativeString() {
-    return identifier.equals(BuiltinNames.string_ident);
-  }
-
 }

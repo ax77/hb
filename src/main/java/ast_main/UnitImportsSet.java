@@ -37,7 +37,6 @@ public class UnitImportsSet {
 
     if (Settings.IMPORT_STD_BY_DEFAULT) {
       fullyRead.add(dir + "/std/array.hb");
-      fullyRead.add(dir + "/std/string.hb");
     }
   }
 
