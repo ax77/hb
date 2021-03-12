@@ -9,8 +9,16 @@ public class CCString {
     sb.append("struct string                                         \n");
     sb.append("{                                                     \n");
     sb.append("    char *buffer;                                     \n");
-    sb.append("    size_t len;                                       \n");
+    sb.append("    size_t len, ref_count;                            \n");
     sb.append("};                                                    \n");
+    
+    /// RC:
+    sb.append("void string_init(string __this, char *buf);           \n");
+    sb.append("string string_deinit(string __this);                  \n");
+    sb.append("string string_opAssign(string __this, string rvalue); \n");
+    sb.append("void string_destroy(string __this);                   \n");
+    sb.append("void string_ref(string __this);                       \n");
+
     sb.append("void string_init(string __this, char *buf)            \n");
     sb.append("{                                                     \n");
     sb.append("    assert(__this);                                   \n");
@@ -18,6 +26,7 @@ public class CCString {
     sb.append("    __this->buffer = hstrdup(buf);                    \n");
     sb.append("    __this->len = strlen(buf);                        \n");
     sb.append("    __this->buffer[__this->len] = '\\0';              \n");
+    sb.append("    __this->ref_count = 1;                            \n");
     sb.append("}                                                     \n");
     sb.append("char string_get(string __this, size_t index)          \n");
     sb.append("{                                                     \n");
@@ -25,12 +34,25 @@ public class CCString {
     sb.append("    assert(index < __this->len);                      \n");
     sb.append("    return __this->buffer[index];                     \n");
     sb.append("}                                                     \n");
+    /// RC:
     sb.append("string string_opAssign(string __this, string rvalue)  \n");
     sb.append("{                                                     \n");
     sb.append("    return rvalue;                                    \n");
     sb.append("}                                                     \n");
-    sb.append("void string_deinit(string __this)                     \n");
+    sb.append("void string_ref(string __this)                        \n");
     sb.append("{                                                     \n");
+    sb.append("    assert(__this);                                   \n");
+    sb.append("    __this->ref_count += 1;                           \n");
+    sb.append("}                                                     \n");
+    sb.append("string string_deinit(string __this)                   \n");
+    sb.append("{                                                     \n");
+    sb.append("    UNREF_RETURN(string);                             \n");
+    sb.append("}                                                     \n");
+    sb.append("void string_destroy(string __this)                    \n");
+    sb.append("{                                                     \n");
+    sb.append("    assert(__this);                                   \n");
+    sb.append("    free(__this->buffer);                             \n");
+    sb.append("    free(__this);                                     \n");
     sb.append("}                                                     \n");
     //@formatter:on
 

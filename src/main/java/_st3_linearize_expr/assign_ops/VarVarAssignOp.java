@@ -7,13 +7,11 @@ public class VarVarAssignOp {
 
   // a = opAssign(a, b)
 
-  private final String method;
   private final Type type;
   private final Var lvalueArg;
   private final Var rvalueArg;
 
-  public VarVarAssignOp(String method, Type type, Var lvalueArg, Var rvalueArg) {
-    this.method = method;
+  public VarVarAssignOp(Type type, Var lvalueArg, Var rvalueArg) {
     this.type = type;
     this.lvalueArg = lvalueArg;
     this.rvalueArg = rvalueArg;
@@ -31,13 +29,9 @@ public class VarVarAssignOp {
     return rvalueArg;
   }
 
-  public String getMethod() {
-    return method;
-  }
-
   @Override
   public String toString() {
-    return method + "(" + lvalueArg.toString() + ", " + rvalueArg + ")";
+    return "ASSIGN(" + lvalueArg.toString() + ", " + rvalueArg + ", " + type.toString() + ")";
   }
 
 }

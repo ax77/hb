@@ -1,22 +1,5 @@
-class main_class {
-  int main() {
-  
-    string s = """
-      a.b.c.d.e
-      a.b.c.d.e.f
-      a.b.c.d.e.f.g
-    """;
-    
-    std.print("%s\n", s);
-    std.print("%d\n", 32);
-    std.print("%c\n", '_');
-    
-    string x = "";
-    std.print("x=[%s]\n", x);
-    std.print("%s\n", x);
-    
-    std.print("%c\n", s.get(7));
-    
-    return 0;
-  }
-}
+void string_init(string __this, char *buf);
+string string_deinit(string __this);
+string string_opAssign(string __this, string rvalue);
+void string_destroy(string __this);
+void string_ref(string __this);

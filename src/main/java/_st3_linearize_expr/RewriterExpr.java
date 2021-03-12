@@ -285,10 +285,7 @@ public class RewriterExpr {
       AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
       rv.add(new FlatCodeItem(assignVarNull));
 
-      ClassMethodDeclaration opAssign = lvalueVar.getType().getClassTypeFromRef()
-          .getPredefinedMethod(BuiltinNames.opAssign_ident);
-
-      VarVarAssignOp aux = new VarVarAssignOp(opAssign.signToStringCall(), lvalueVar.getType(), lvalueVar, rvalueVar);
+      VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), lvalueVar, rvalueVar);
       StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
       rv.add(new FlatCodeItem(store));
 
@@ -299,7 +296,7 @@ public class RewriterExpr {
       AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
       rv.add(new FlatCodeItem(assignVarNull));
 
-      VarVarAssignOp aux = new VarVarAssignOp("string_opAssign", lvalueVar.getType(), lvalueVar, rvalueVar);
+      VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), lvalueVar, rvalueVar);
       StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
       rv.add(new FlatCodeItem(store));
 

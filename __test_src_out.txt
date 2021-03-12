@@ -1,20 +1,8 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                    //001 \n");
-    sb.append("  int main() {                        //002 \n");
-    sb.append("    string s = \"\"\"                 //003 \n");
-    sb.append("      a.b.c.d.e                       //004 \n");
-    sb.append("      a.b.c.d.e.f                     //005 \n");
-    sb.append("      a.b.c.d.e.f.g                   //006 \n");
-    sb.append("    \"\"\";                           //007 \n");
-    sb.append("    std.print(\"%s\\n\", s);          //008 \n");
-    sb.append("    std.print(\"%d\\n\", 32);         //009 \n");
-    sb.append("    std.print(\"%c\\n\", \'_\');      //010 \n");
-    sb.append("    string x = \"\";                  //011 \n");
-    sb.append("    std.print(\"x=[%s]\\n\", x);      //012 \n");
-    sb.append("    std.print(\"%s\\n\", x);          //013 \n");
-    sb.append("    std.print(\"%c\\n\", s.get(7));   //014 \n");
-    sb.append("    return 0;                         //015 \n");
-    sb.append("  }                                   //016 \n");
-    sb.append("}                                     //017 \n");
+    sb.append("void string_init(string __this, char *buf);             //001 \n");
+    sb.append("string string_deinit(string __this);                    //002 \n");
+    sb.append("string string_opAssign(string __this, string rvalue);   //003 \n");
+    sb.append("void string_destroy(string __this);                     //004 \n");
+    sb.append("void string_ref(string __this);                         //005 \n");
     //@formatter:on

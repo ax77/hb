@@ -14,6 +14,7 @@ import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
@@ -72,7 +73,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.clazz = clazz;
     this.identifier = Keywords.deinit_ident;
     this.parameters = new ArrayList<>();
-    this.returnType = new Type(beginPos);
+    this.returnType = new Type(new ClassTypeRef(clazz, new ArrayList<>()));
     this.block = block;
     this.beginPos = beginPos;
 

@@ -7,7 +7,9 @@ import java.util.Map.Entry;
 
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
 import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.LinearBlock;
 import _st4_linearize_stmt.items.LinearBreak;
@@ -23,6 +25,7 @@ import ast_stmt.StatementBase;
 import ast_symtab.Scope;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
+import ast_types.Type;
 import ast_vars.VarBase;
 import errors.AstParseException;
 import utils_oth.NullChecker;
@@ -167,13 +170,19 @@ public class Deinits {
       if (v.getType().isClass()) {
         final ClassDeclaration classType = v.getType().getClassTypeFromRef();
         final ClassMethodDeclaration destructor = classType.getDestructor();
-        FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
-        res.add(fc);
+
+        PureFunctionCallWithResult fc = new PureFunctionCallWithResult(destructor.signToStringCall(),
+            destructor.getType(), args);
+
+        AssignVarFlatCallResult asgnd = new AssignVarFlatCallResult(args.get(0), fc);
+        res.add(asgnd);
       }
 
       else if (v.getType().isString()) {
-        FlatCallVoid fc = new FlatCallVoid("string_deinit", args);
-        res.add(fc);
+
+        PureFunctionCallWithResult fc = new PureFunctionCallWithResult("string_deinit", new Type(""), args);
+        AssignVarFlatCallResult asgnd = new AssignVarFlatCallResult(args.get(0), fc);
+        res.add(asgnd);
       }
     }
     return res;
@@ -243,8 +252,8 @@ public class Deinits {
     final LocalDestructors withoutTheVar = new LocalDestructors();
 
     if (linearReturn.hasResult()) {
-      for (FlatCallVoid fc : destructors.getDestructors()) {
-        Var v = fc.getArgs().get(0);
+      for (AssignVarFlatCallResult fc : destructors.getDestructors()) {
+        Var v = fc.getLvalue();
         if (v.equals(linearReturn.getResult())) {
           continue;
         }

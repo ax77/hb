@@ -297,7 +297,7 @@ public class TestCcode {
     }
 
     Codeout result = CodeoutBuilder.build(unit);
-    System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+    System.out.println(result.toString());
 
   }
 

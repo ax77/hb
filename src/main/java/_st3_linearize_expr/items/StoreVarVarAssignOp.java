@@ -22,7 +22,7 @@ public class StoreVarVarAssignOp {
 
   @Override
   public String toString() {
-    return dst.toString() + " = " + opAssign.toString();
+    return opAssign.toString();
   }
 
 }

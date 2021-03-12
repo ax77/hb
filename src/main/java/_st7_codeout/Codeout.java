@@ -101,10 +101,14 @@ public class Codeout {
     sb.append("#include <stdio.h>   \n");
     sb.append("#include <stdlib.h>  \n");
     sb.append("#include <string.h>  \n");
-    sb.append("#include \"mem.h\"   \n");
+    sb.append("#include \"mem.h\"   \n\n");
+    
+    sb.append(CCMacro.genMacro());
+    sb.append("\n");
     
     sb.append("typedef int boolean; \n"); // TODO:
     sb.append("typedef struct string * string; \n"); // TODO:
+    sb.append("\n");
     
     return sb.toString();
   }
@@ -245,12 +249,12 @@ public class Codeout {
 
     // protos
     sb.append(headers());
-    //sb.append(mainMethodSign + ";\n");
     sb.append(buildArraysProtos(arrays));
     sb.append(tpdef);
     sb.append(protos);
     sb.append(stringsLabels.toString());
     sb.append(CCString.genString());
+    sb.append("\n");
 
     // impls
     sb.append(buildArraysImplsStructs(arrays));
@@ -258,6 +262,7 @@ public class Codeout {
     sb.append(structs);
     sb.append(funcs);
     sb.append(builtinsFn.toString());
+    sb.append("\n");
 
     // main
     sb.append(mainMethodImpl);
