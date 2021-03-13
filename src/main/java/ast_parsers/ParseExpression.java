@@ -51,6 +51,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import errors.AstParseException;
 import parse.Parse;
@@ -561,10 +562,6 @@ public class ParseExpression {
       return new ExprExpression(false, saved);
     }
 
-    if (parser.is(Keywords.null_ident)) {
-      parser.perror("`null` is deprecated by design, see docs.");
-    }
-
     // simple name
     if (parser.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
@@ -587,12 +584,14 @@ public class ParseExpression {
   private ExprExpression parseStringLiteral() {
 
     final Token saved = parser.moveget();
-    final Type bytesType = new Type(saved.getValue());
+
+    final Type strTypeBootstr = new Type(
+        new ClassTypeRef(parser.getClassType(BuiltinNames.string_ident), new ArrayList<>()));
 
     final List<ExprExpression> argums = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);
 
-    arg.setResultType(bytesType);
+    arg.setResultType(strTypeBootstr);
     argums.add(arg);
 
     return arg;

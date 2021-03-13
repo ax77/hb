@@ -207,6 +207,9 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   }
 
   public String signToStringCall() {
+    if (isDestructor() && clazz.isNativeString()) {
+      return "string_deinit";
+    }
     return CopierNamer.getMethodName(this) + TypePrinters.typeArgumentsToString(getClazz().getTypeParametersT());
   }
 

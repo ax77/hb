@@ -31,6 +31,11 @@ public class ApplyInitializer {
     final boolean typesAreTheSame = var.getType().isEqualTo(init.getResultType());
     if (!typesAreTheSame) {
       ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
+      //      boolean itIsOk = (var.getType().isClass() && var.getType().getClassTypeFromRef().isNativeString())
+      //          && init.getResultType().isBytes();
+      //      if (!itIsOk) {
+      //        ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
+      //      }
     }
   }
 

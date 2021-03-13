@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
-import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
 import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.LinearBlock;
@@ -25,7 +24,6 @@ import ast_stmt.StatementBase;
 import ast_symtab.Scope;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
-import ast_types.Type;
 import ast_vars.VarBase;
 import errors.AstParseException;
 import utils_oth.NullChecker;
@@ -120,7 +118,7 @@ public class Deinits {
     List<Var> res = new ArrayList<>();
     for (Entry<String, Var> ent : current.getScope().entrySet()) {
       final Var var = ent.getValue();
-      if (!var.getType().isClass() && !var.getType().isString()) {
+      if (!var.getType().isClass()) {
         continue;
       }
       if (var.is(VarBase.METHOD_PARAMETER)) {
@@ -174,13 +172,6 @@ public class Deinits {
         PureFunctionCallWithResult fc = new PureFunctionCallWithResult(destructor.signToStringCall(),
             destructor.getType(), args);
 
-        AssignVarFlatCallResult asgnd = new AssignVarFlatCallResult(args.get(0), fc);
-        res.add(asgnd);
-      }
-
-      else if (v.getType().isString()) {
-
-        PureFunctionCallWithResult fc = new PureFunctionCallWithResult("string_deinit", new Type(""), args);
         AssignVarFlatCallResult asgnd = new AssignVarFlatCallResult(args.get(0), fc);
         res.add(asgnd);
       }

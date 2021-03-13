@@ -117,7 +117,7 @@ public class RewriterExpr {
     Var lvaluevar = VarCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
-    if (var.getType().isClass() || var.getType().isString()) {
+    if (var.getType().isClass()) {
       genOpAssign(lvaluevar, rvaluevar);
     }
 
@@ -152,6 +152,7 @@ public class RewriterExpr {
 
       else if (item.isAssignVarFlatCallStringCreationTmp()) {
         rewriteStringCreation(item.getAssignVarFlatCallStringCreationTmp());
+        //rv.add(item);
       }
 
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
@@ -191,7 +192,7 @@ public class RewriterExpr {
         AssignVarVar node = item.getAssignVarVar();
         final Var lvalueVar = node.getLvalue();
 
-        if ((lvalueVar.getType().isClass() || lvalueVar.getType().isString()) && !ignoreThisMethod()) {
+        if ((lvalueVar.getType().isClass()) && !ignoreThisMethod()) {
           // token __t14 = tok1;
           // ::
           // token __t14 = null
@@ -221,7 +222,7 @@ public class RewriterExpr {
 
         final StoreVarVar node = item.getStoreVarVar();
         final Var lvalueVar = node.getDst();
-        if ((lvalueVar.getType().isClass() || lvalueVar.getType().isString()) && !ignoreThisMethod()) {
+        if ((lvalueVar.getType().isClass()) && !ignoreThisMethod()) {
 
           // tok1 = __t17;
           // ::
@@ -291,16 +292,6 @@ public class RewriterExpr {
 
     }
 
-    else if (lvalueVar.getType().isString()) {
-
-      AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
-      rv.add(new FlatCodeItem(assignVarNull));
-
-      VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), lvalueVar, rvalueVar);
-      StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
-      rv.add(new FlatCodeItem(store));
-
-    }
   }
 
   private boolean ignoreThisMethod() {

@@ -75,13 +75,15 @@ public class ParserMain implements ParserMainApi {
     final String dir = System.getProperty("user.dir");
     final StringBuilder predef = new StringBuilder();
     predef.append(new FileWrapper(dir + "/std/array.hb").readToString(FileReadKind.APPEND_LF));
+    predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
 
     final String sourceGiven = predef.toString() + "\n" + sb.toString();
     final Stream s = new Stream("<string-source>", sourceGiven);
     final List<Token> tokenlist = s.getTokenlist();
     final Parse parser = new Parse(new Tokenlist(tokenlist));
 
-    for (ClassDeclaration c : new TypenamesFinder(tokenlist).getTypenames()) {
+    final List<ClassDeclaration> typenames = new TypenamesFinder(tokenlist).getTypenames();
+    for (ClassDeclaration c : typenames) {
       parser.defineClassName(c);
     }
 

@@ -11,7 +11,7 @@ public abstract class ParsePackageName {
 
   public static String parse(Parse parser, Ident id) {
 
-    boolean isOkStart = id.equals(Keywords.import_ident) || id.equals(Keywords.package_ident);
+    boolean isOkStart = id.equals(Keywords.import_ident);
     if (!isOkStart) {
       throw new AstParseException("unexpected id: " + id.getName());
     }

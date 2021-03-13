@@ -14,6 +14,7 @@ import static ast_types.TypeBase.TP_void;
 import java.io.Serializable;
 import java.util.List;
 
+import _st3_linearize_expr.CEscaper;
 import ast_class.ClassDeclaration;
 import errors.ErrorLocation;
 import tokenize.Ident;
@@ -37,6 +38,8 @@ public class Type implements Serializable, TypeApi {
   /// class list<T> {  } -> here 'T' is a 'typename T'
   ///
   private Ident typenameId;
+
+  /// private String bytesStub;
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
@@ -84,11 +87,13 @@ public class Type implements Serializable, TypeApi {
     this.typenameId = typenameId;
   }
 
-  public Type(String value) {
-    this.base = TypeBase.TP_STRING;
-    this.size = value.length();
-    this.align = 1;
-  }
+  /// public Type(String bytesStub) {
+  ///   int[] esc = CEscaper.escape(bytesStub);
+  ///   this.base = TypeBase.TP_BYTES;
+  ///   this.bytesStub = bytesStub;
+  ///   this.size = esc.length;
+  ///   this.align = 1;
+  /// }
 
   public ClassTypeRef getClassTypeRef() {
     return classTypeRef;
@@ -168,15 +173,21 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_boolean)) {
         return false;
       }
-    } else if (is(TypeBase.TP_void)) {
+    }
+
+    else if (is(TypeBase.TP_void)) {
       if (!another.is(TypeBase.TP_void)) {
         return false;
       }
-    } else if (is(TypeBase.TP_STRING)) {
-      if (!another.is(TypeBase.TP_STRING)) {
-        return false;
-      }
-    } else if (is(TypeBase.TP_TYPENAME_ID)) {
+    }
+
+    /// else if (is(TypeBase.TP_BYTES)) {
+    ///   if (!another.is(TypeBase.TP_BYTES)) {
+    ///     return false;
+    ///   }
+    /// }
+
+    else if (is(TypeBase.TP_TYPENAME_ID)) {
       if (!another.is(TypeBase.TP_TYPENAME_ID)) {
         return false;
       }
@@ -215,9 +226,9 @@ public class Type implements Serializable, TypeApi {
     if (isClass()) {
       return classTypeRef.toString();
     }
-    if (isString()) {
-      return "string";
-    }
+    /// if (isBytes()) {
+    ///   return "char*";
+    /// }
     return base.toString();
   }
 
@@ -314,9 +325,9 @@ public class Type implements Serializable, TypeApi {
     this.size = i;
   }
 
-  @Override
-  public boolean isString() {
-    return is(TypeBase.TP_STRING);
-  }
+  /// @Override
+  /// public boolean isBytes() {
+  ///   return is(TypeBase.TP_BYTES);
+  /// }
 
 }

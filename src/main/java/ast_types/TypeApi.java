@@ -20,5 +20,5 @@ public interface TypeApi {
   public boolean isNumeric();
   public boolean isInteger();
   public boolean isFloating();
-  public boolean isString();
+  /// public boolean isBytes();
 }

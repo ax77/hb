@@ -189,7 +189,7 @@ public class Codeout {
       final Type tp = types.get(i);
       final Ident name = names.get(i).getName();
 
-      if (tp.isString()) {
+      if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
         printfBody.append(name.getName() + "->buffer");
       } else {
         if (!tp.isPrimitive()) {
@@ -223,16 +223,18 @@ public class Codeout {
   public String toString() {
 
     Set<ClassDeclaration> arrays = new HashSet<>();
+    Set<ClassDeclaration> strings = new HashSet<>();
     Set<Function> arrayMethods = new HashSet<>();
+    Set<Function> stringMethods = new HashSet<>();
     List<Function> mainMethodOut = new ArrayList<>();
 
     String tpdef = genStructsTypedefs();
 
     String protos = genFuncProtos();
 
-    String structs = genStructs(arrays);
+    String structs = genStructs(arrays, strings);
 
-    String funcs = genFunctions(arrayMethods, mainMethodOut);
+    String funcs = genFunctions(arrayMethods, stringMethods, mainMethodOut);
 
     if (mainMethodOut.size() != 1) {
       throw new AstParseException("there is no main...");
@@ -355,7 +357,7 @@ public class Codeout {
     return sb.toString();
   }
 
-  private String genFunctions(Set<Function> arrayMethods, List<Function> mainMethod) {
+  private String genFunctions(Set<Function> arrayMethods, Set<Function> stringMethods, List<Function> mainMethod) {
     StringBuilder sb = new StringBuilder();
 
     for (Function f : functions) {
@@ -373,13 +375,17 @@ public class Codeout {
         arrayMethods.add(f);
         continue;
       }
+      if (c.isNativeString()) {
+        stringMethods.add(f);
+        continue;
+      }
       sb.append(f.toString());
     }
 
     return sb.toString();
   }
 
-  private String genStructs(Set<ClassDeclaration> arrays) {
+  private String genStructs(Set<ClassDeclaration> arrays, Set<ClassDeclaration> strings) {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {
@@ -388,6 +394,10 @@ public class Codeout {
       }
       if (c.isNativeArray()) {
         arrays.add(c);
+        continue;
+      }
+      if (c.isNativeString()) {
+        strings.add(c);
         continue;
       }
       sb.append(classToString(c));
@@ -406,6 +416,9 @@ public class Codeout {
       if (c.isNativeArray()) {
         continue;
       }
+      if (c.isNativeString()) {
+        continue;
+      }
       sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
     }
 
@@ -416,13 +429,16 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     for (Function f : functions) {
-      final ClassDeclaration clazz = f.getMethodSignature().getClazz();
-      if (clazz.isMainClass()) {
+      final ClassDeclaration c = f.getMethodSignature().getClazz();
+      if (c.isMainClass()) {
         if (!f.getMethodSignature().isMain()) {
           continue;
         }
       }
-      if (clazz.isNativeArray()) {
+      if (c.isNativeArray()) {
+        continue;
+      }
+      if (c.isNativeString()) {
         continue;
       }
       sb.append(proto(f) + ";\n");

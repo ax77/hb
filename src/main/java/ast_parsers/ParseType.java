@@ -20,7 +20,7 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isString;
+  /// private boolean isBytes;
 
   public ParseType(Parse parser) {
 
@@ -52,19 +52,12 @@ public class ParseType {
       }
     }
 
-    if (!typeWasFound) {
-      typeWasFound = parser.is(T.T_LEFT_BRACKET);
-      if (typeWasFound) {
-        parser.errorArray();
-      }
-    }
-
-    if (!typeWasFound) {
-      typeWasFound = parser.is(Keywords.string_ident);
-      if (typeWasFound) {
-        this.isString = true;
-      }
-    }
+    /// if (!typeWasFound) {
+    ///   typeWasFound = parser.is(Keywords.bytes_ident);
+    ///   if (typeWasFound) {
+    ///     this.isBytes = true;
+    ///   }
+    /// }
 
   }
 
@@ -74,11 +67,11 @@ public class ParseType {
       parser.perror("type is not recognized");
     }
 
-    // 0
-    if (isString()) {
-      Token tok = parser.checkedMove(T.TOKEN_IDENT);
-      return new Type("");
-    }
+    /// // 0)
+    /// if (isBytes()) {
+    ///   parser.checkedMove(Keywords.bytes_ident);
+    ///   return new Type("");
+    /// }
 
     // 1)
     if (isPrimitive()) {
@@ -161,12 +154,12 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isString;
+    return isPrimitive || isReference || isTypeParameter; //isBytes
   }
 
-  public boolean isString() {
-    return isString;
-  }
+  //  public boolean isBytes() {
+  //    return isBytes;
+  //  }
 
   public boolean isPrimitive() {
     return isPrimitive;

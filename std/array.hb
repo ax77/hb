@@ -1,4 +1,5 @@
-class array<T> {
+class array<T> 
+{
   native array();
   native void add(T e);
   native int size();
