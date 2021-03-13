@@ -16,11 +16,8 @@ import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.StoreFieldVar;
-import _st3_linearize_expr.items.StoreFieldVarAssignOp;
 import _st3_linearize_expr.items.StoreVarField;
-import _st3_linearize_expr.items.StoreVarFieldAssignOp;
 import _st3_linearize_expr.items.StoreVarVar;
-import _st3_linearize_expr.items.StoreVarVarAssignOp;
 import _st3_linearize_expr.leaves.Var;
 import errors.AstParseException;
 
@@ -44,11 +41,8 @@ public class FlatCodeItem {
   private FlatCallConstructor flatCallConstructor;
   private FlatCallVoid flatCallVoid;
   private StoreFieldVar storeFieldVar;
-  private StoreFieldVarAssignOp storeFieldVarAssignOp;
   private StoreVarField storeVarField;
-  private StoreVarFieldAssignOp storeVarFieldAssignOp;
   private StoreVarVar storeVarVar;
-  private StoreVarVarAssignOp storeVarVarAssignOp;
 
   public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
   public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
@@ -66,11 +60,8 @@ public class FlatCodeItem {
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
   public FlatCodeItem(StoreFieldVar storeFieldVar) { this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
-  public FlatCodeItem(StoreFieldVarAssignOp storeFieldVarAssignOp) { this.opcode = Opc.StoreFieldVarAssignOp; this.storeFieldVarAssignOp = storeFieldVarAssignOp; }
   public FlatCodeItem(StoreVarField storeVarField) { this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
-  public FlatCodeItem(StoreVarFieldAssignOp storeVarFieldAssignOp) { this.opcode = Opc.StoreVarFieldAssignOp; this.storeVarFieldAssignOp = storeVarFieldAssignOp; }
   public FlatCodeItem(StoreVarVar storeVarVar) { this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
-  public FlatCodeItem(StoreVarVarAssignOp storeVarVarAssignOp) { this.opcode = Opc.StoreVarVarAssignOp; this.storeVarVarAssignOp = storeVarVarAssignOp; }
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
@@ -88,11 +79,8 @@ public class FlatCodeItem {
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
-  public boolean isStoreFieldVarAssignOp() { return this.opcode == Opc.StoreFieldVarAssignOp; }
   public boolean isStoreVarField() { return this.opcode == Opc.StoreVarField; }
-  public boolean isStoreVarFieldAssignOp() { return this.opcode == Opc.StoreVarFieldAssignOp; }
   public boolean isStoreVarVar() { return this.opcode == Opc.StoreVarVar; }
-  public boolean isStoreVarVarAssignOp() { return this.opcode == Opc.StoreVarVarAssignOp; }
 
   @Override
   public String toString() {
@@ -112,11 +100,8 @@ public class FlatCodeItem {
     if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     if(isStoreFieldVar()) { return storeFieldVar.toString(); }
-    if(isStoreFieldVarAssignOp()) { return storeFieldVarAssignOp.toString(); }
     if(isStoreVarField()) { return storeVarField.toString(); }
-    if(isStoreVarFieldAssignOp()) { return storeVarFieldAssignOp.toString(); }
     if(isStoreVarVar()) { return storeVarVar.toString(); }
-    if(isStoreVarVarAssignOp()) { return storeVarVarAssignOp.toString(); }
     return "?UnknownItem"; 
   }
 
@@ -137,11 +122,8 @@ public class FlatCodeItem {
   public FlatCallConstructor getFlatCallConstructor() { return this.flatCallConstructor; }
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
   public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
-  public StoreFieldVarAssignOp getStoreFieldVarAssignOp() { return this.storeFieldVarAssignOp; }
   public StoreVarField getStoreVarField() { return this.storeVarField; }
-  public StoreVarFieldAssignOp getStoreVarFieldAssignOp() { return this.storeVarFieldAssignOp; }
   public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
-  public StoreVarVarAssignOp getStoreVarVarAssignOp() { return this.storeVarVarAssignOp; }
 
 
   public boolean isOneOfAssigns() {
@@ -204,33 +186,17 @@ public class FlatCodeItem {
     if(isFlatCallConstructor()) {
       return flatCallConstructor.getThisVar();
     }
-    
-    // TODO:strings
     if(isFlatCallVoid()) {
-      if(flatCallVoid.getFullname().startsWith("string_")) {
-        return flatCallVoid.getArgs().get(0);
-      } else {
-        err();
-      }
-    }
-    
-    if(isStoreFieldVar()) {
       err();
     }
-    if(isStoreFieldVarAssignOp()) {
+    if(isStoreFieldVar()) {
       err();
     }
     if(isStoreVarField()) {
       err();
     }
-    if(isStoreVarFieldAssignOp()) {
-      err();
-    }
     if(isStoreVarVar()) {
       err();
-    }
-    if(isStoreVarVarAssignOp()) {
-      return storeVarVarAssignOp.getDst();
     }
     throw new AstParseException("unknown item for result: " + toString());
   }

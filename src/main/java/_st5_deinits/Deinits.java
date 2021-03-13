@@ -7,8 +7,7 @@ import java.util.Map.Entry;
 
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.items.AssignVarFlatCallResult;
-import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
+import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.LinearBlock;
 import _st4_linearize_stmt.items.LinearBreak;
@@ -169,11 +168,8 @@ public class Deinits {
         final ClassDeclaration classType = v.getType().getClassTypeFromRef();
         final ClassMethodDeclaration destructor = classType.getDestructor();
 
-        PureFunctionCallWithResult fc = new PureFunctionCallWithResult(destructor.signToStringCall(),
-            destructor.getType(), args);
-
-        AssignVarFlatCallResult asgnd = new AssignVarFlatCallResult(args.get(0), fc);
-        res.add(asgnd);
+        FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
+        res.add(fc);
       }
     }
     return res;
@@ -243,8 +239,8 @@ public class Deinits {
     final LocalDestructors withoutTheVar = new LocalDestructors();
 
     if (linearReturn.hasResult()) {
-      for (AssignVarFlatCallResult fc : destructors.getDestructors()) {
-        Var v = fc.getLvalue();
+      for (FlatCallVoid fc : destructors.getDestructors()) {
+        Var v = fc.getArgs().get(0);
         if (v.equals(linearReturn.getResult())) {
           continue;
         }

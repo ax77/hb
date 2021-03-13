@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st2_annotate.LvalueUtil;
-import _st3_linearize_expr.assign_ops.VarVarAssignOp;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
@@ -25,7 +24,6 @@ import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
-import _st3_linearize_expr.items.AssignVarNull;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
@@ -35,7 +33,6 @@ import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
-import _st3_linearize_expr.items.StoreVarVarAssignOp;
 import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FieldAccess;
 import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
@@ -55,7 +52,6 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -117,14 +113,8 @@ public class RewriterExpr {
     Var lvaluevar = VarCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
-    if (var.getType().isClass()) {
-      genOpAssign(lvaluevar, rvaluevar);
-    }
-
-    else {
-      AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
-      rv.add(new FlatCodeItem(assignVarVar));
-    }
+    AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
+    rv.add(new FlatCodeItem(assignVarVar));
   }
 
   private FlatCodeItem getLast() {
@@ -186,58 +176,17 @@ public class RewriterExpr {
         rv.add(item);
       } else if (item.isAssignVarUnop()) {
         rv.add(item);
-      }
-
-      else if (item.isAssignVarVar()) {
-        AssignVarVar node = item.getAssignVarVar();
-        final Var lvalueVar = node.getLvalue();
-
-        if ((lvalueVar.getType().isClass()) && !ignoreThisMethod()) {
-          // token __t14 = tok1;
-          // ::
-          // token __t14 = null
-          // __t14 = opAssign(__t14, tok1)
-          genOpAssign(lvalueVar, node.getRvalue());
-        }
-
-        else {
-          rv.add(item);
-        }
-
-      }
-
-      else if (item.isFlatCallConstructor()) {
+      } else if (item.isAssignVarVar()) {
+        rv.add(item);
+      } else if (item.isFlatCallConstructor()) {
         rv.add(item);
       } else if (item.isFlatCallVoid()) {
         rv.add(item);
-      } else if (item.isStoreFieldVarAssignOp()) {
-        rv.add(item);
       } else if (item.isStoreFieldVar()) {
         rv.add(item);
-      } else if (item.isStoreVarVarAssignOp()) {
+      } else if (item.isStoreVarVar()) {
         rv.add(item);
-      }
-
-      else if (item.isStoreVarVar()) {
-
-        final StoreVarVar node = item.getStoreVarVar();
-        final Var lvalueVar = node.getDst();
-        if ((lvalueVar.getType().isClass()) && !ignoreThisMethod()) {
-
-          // tok1 = __t17;
-          // ::
-          // tok1 = null;
-          // tok1 = opAssign(tok1, __t17);
-          genOpAssign(lvalueVar, node.getSrc());
-        }
-
-        else {
-          rv.add(item);
-        }
-
-      }
-
-      else if (item.isAssignVarTernaryOp()) {
+      } else if (item.isAssignVarTernaryOp()) {
         rv.add(item);
       }
 
@@ -272,30 +221,6 @@ public class RewriterExpr {
     final FlatCallConstructor flatCallConstructor = new FlatCallConstructor("string_init", argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
-  }
-
-  private void genOpAssign(Var lvalueVar, Var rvalueVar) {
-
-    /// we cannot generate opAssign call inside the method itself
-    /// it will cause a recursive infinite loop.
-    if (ignoreThisMethod()) {
-      throw new AstParseException("unexpected opAssign method");
-    }
-
-    if (lvalueVar.getType().isClass()) {
-      AssignVarNull assignVarNull = new AssignVarNull(lvalueVar);
-      rv.add(new FlatCodeItem(assignVarNull));
-
-      VarVarAssignOp aux = new VarVarAssignOp(lvalueVar.getType(), lvalueVar, rvalueVar);
-      StoreVarVarAssignOp store = new StoreVarVarAssignOp(lvalueVar, aux);
-      rv.add(new FlatCodeItem(store));
-
-    }
-
-  }
-
-  private boolean ignoreThisMethod() {
-    return method.getIdentifier().equals(BuiltinNames.opAssign_ident) || method.isDestructor();
   }
 
   private void genRaw(FlatCodeItem item) {

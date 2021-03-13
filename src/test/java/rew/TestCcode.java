@@ -273,12 +273,31 @@ public class TestCcode {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                  \n");
-    sb.append("  int main() {                      \n");
-    sb.append("    string x = \"a.b.c\";           \n");
-    sb.append("    return 0;                       \n");
-    sb.append("  }                                 \n");
-    sb.append("}                                   \n");
+    sb.append("class token {                          //001 \n");
+    sb.append("  string value;                        //002 \n");
+    sb.append("  int f;                               //003 \n");
+    sb.append("  token() {                            //004 \n");
+    sb.append("    value = \"x\";                     //005 \n");
+    sb.append("    f = 1;                             //006 \n");
+    sb.append("  }                                    //007 \n");
+    sb.append("}                                      //008 \n");
+    sb.append("class type {                           //009 \n");
+    sb.append("  token pos;                           //010 \n");
+    sb.append("  string repr;                         //011 \n");
+    sb.append("  type() {                             //012 \n");
+    sb.append("    pos = new token();                 //013 \n");
+    sb.append("    repr = \"int\";                    //014 \n");
+    sb.append("  }                                    //015 \n");
+    sb.append("}                                      //016 \n");
+    sb.append("class main_class {                     //017 \n");
+    sb.append("  int main() {                         //018 \n");
+    sb.append("    type tp = new type();              //019 \n");
+    sb.append("    token tok = tp.pos;                //020 \n");
+    sb.append("    std.print(\"%s\\n\", tok.value);   //021 \n");
+    sb.append("    std.print(\"%d\\n\", tok.f);       //022 \n");
+    sb.append("    return tok.f;                      //023 \n");
+    sb.append("  }                                    //024 \n");
+    sb.append("}                                      //025 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

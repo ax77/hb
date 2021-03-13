@@ -12,9 +12,6 @@ public abstract class BuiltinNames {
   public static final Ident array_ident = g("array");
   public static final Ident string_ident = g("string");
 
-  // predefined methods
-  public static final Ident opAssign_ident = g("opAssign");
-
   // predefined parameters
   public static final Ident __this_ident = g("__this");
 

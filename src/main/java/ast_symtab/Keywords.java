@@ -41,7 +41,6 @@ public final class Keywords {
   // new syntax:
   public static final Ident deinit_ident         = g("deinit");
   public static final Ident cast_ident           = g("cast");
-  ///public static final Ident bytes_ident          = g("bytes");
   // types:
   public static final Ident char_ident           = g("char");
   public static final Ident short_ident          = g("short");

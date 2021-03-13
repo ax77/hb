@@ -38,11 +38,6 @@ public class ApplyUnitPreEachClass {
       }
     }
 
-    /// Test:ASSIGN_operator
-    if (!object.hasPredefinedMethod(BuiltinNames.opAssign_ident)) {
-      object.addMethod(BuildOpAssignMethod.opAssign(instantiationUnit, object));
-    }
-
   }
 
 }

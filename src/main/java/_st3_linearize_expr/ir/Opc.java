@@ -18,9 +18,6 @@ public enum Opc {
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
   , StoreFieldVar                      // a.b = c
-  , StoreFieldVarAssignOp              // a.b = opAssign(a.b, c)
   , StoreVarField                      // a = b.c
-  , StoreVarFieldAssignOp              // a = opAssign(a, b.c)
   , StoreVarVar                        // a = b
-  , StoreVarVarAssignOp                // a = opAssign(a, b)
 }

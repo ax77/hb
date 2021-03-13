@@ -103,9 +103,6 @@ public class Codeout {
     sb.append("#include <string.h>  \n");
     sb.append("#include \"mem.h\"   \n\n");
     
-    sb.append(CCMacro.genMacro());
-    sb.append("\n");
-    
     sb.append("typedef int boolean; \n"); // TODO:
     sb.append("typedef struct string * string; \n"); // TODO:
     sb.append("\n");

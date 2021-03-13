@@ -12,12 +12,9 @@ public class CCString {
     sb.append("    size_t len, ref_count;                            \n");
     sb.append("};                                                    \n");
     
-    /// RC:
     sb.append("void string_init(string __this, char *buf);           \n");
-    sb.append("string string_deinit(string __this);                  \n");
-    sb.append("string string_opAssign(string __this, string rvalue); \n");
+    sb.append("void string_deinit(string __this);                  \n");
     sb.append("void string_destroy(string __this);                   \n");
-    sb.append("void string_ref(string __this);                       \n");
 
     sb.append("void string_init(string __this, char *buf)            \n");
     sb.append("{                                                     \n");
@@ -34,19 +31,8 @@ public class CCString {
     sb.append("    assert(index < __this->len);                      \n");
     sb.append("    return __this->buffer[index];                     \n");
     sb.append("}                                                     \n");
-    /// RC:
-    sb.append("string string_opAssign(string __this, string rvalue)  \n");
+    sb.append("void string_deinit(string __this)                   \n");
     sb.append("{                                                     \n");
-    sb.append("    return rvalue;                                    \n");
-    sb.append("}                                                     \n");
-    sb.append("void string_ref(string __this)                        \n");
-    sb.append("{                                                     \n");
-    sb.append("    assert(__this);                                   \n");
-    sb.append("    __this->ref_count += 1;                           \n");
-    sb.append("}                                                     \n");
-    sb.append("string string_deinit(string __this)                   \n");
-    sb.append("{                                                     \n");
-    sb.append("    UNREF_RETURN(string);                             \n");
     sb.append("}                                                     \n");
     sb.append("void string_destroy(string __this)                    \n");
     sb.append("{                                                     \n");

@@ -33,11 +33,8 @@ opcodes = """
     FlatCallConstructor                ,
     FlatCallVoid                       ,
     StoreFieldVar                      ,
-    StoreFieldVarAssignOp              ,
     StoreVarField                      ,
-    StoreVarFieldAssignOp              ,
-    StoreVarVar                        ,
-    StoreVarVarAssignOp                
+    StoreVarVar                        
 """
 opcodes_arr = []
 for opc in opcodes.split(','):
