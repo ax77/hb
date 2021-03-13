@@ -159,4 +159,8 @@ public class StmtStatement implements Serializable, Location {
     return base == StatementBase.SEXPR;
   }
 
+  public boolean isVarDecl() {
+    return base == StatementBase.SVAR_DECLARATION;
+  }
+
 }

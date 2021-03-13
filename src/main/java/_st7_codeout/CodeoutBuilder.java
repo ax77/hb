@@ -20,7 +20,7 @@ public abstract class CodeoutBuilder {
 
   private static void meth(ClassDeclaration c, Codeout result) {
     for (ClassMethodDeclaration method : c.getConstructors()) {
-      RewriterStmt rw = new RewriterStmt(method);
+      final RewriterStmt rw = new RewriterStmt(method);
       result.add(new Function(method, rw.getResult()));
     }
     for (ClassMethodDeclaration method : c.getMethods()) {

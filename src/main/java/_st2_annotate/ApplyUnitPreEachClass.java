@@ -5,6 +5,7 @@ import java.io.IOException;
 import ast_class.ClassDeclaration;
 import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
+import errors.AstParseException;
 
 public class ApplyUnitPreEachClass {
 
@@ -25,8 +26,8 @@ public class ApplyUnitPreEachClass {
 
   private void addDefaultMethods(ClassDeclaration object) throws IOException {
 
-    if (object.getConstructors().isEmpty()) {
-      object.addConstructor(BuildDefaultConstructor.build(object));
+    if (!object.isMainClass() && object.getConstructors().isEmpty()) {
+      throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }
 
     if (object.getDestructor() == null) {

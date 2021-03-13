@@ -61,7 +61,7 @@ public class Var implements Comparable<Var> {
   }
 
   public String typeNameToString() {
-    return type.toString() + " " + name.getName();
+    return "const " + type.toString() + " " + name.getName();
   }
 
   public boolean isOriginalNoTempVar() {

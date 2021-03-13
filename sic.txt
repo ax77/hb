@@ -8,8 +8,7 @@
   assert(e)
   int x = e.f
   
-  
 * add special calls: OnFunctionEnter|OnFunctionLeave|BeforeCall|AfterCall|etc...
-
-* init all fields in constructor, before anything else
-
+* check all fields are initialized... 
+* no default constructors
+* 

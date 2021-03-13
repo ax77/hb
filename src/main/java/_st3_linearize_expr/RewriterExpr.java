@@ -137,6 +137,8 @@ public class RewriterExpr {
       } else if (item.isAssignVarFalse()) {
         rv.add(item);
       } else if (item.isAssignVarFieldAccess()) {
+        // a = b.c
+        rv.add(genAssert(item.getAssignVarFieldAccess().getRvalue().getObject()));
         rv.add(item);
       }
 
@@ -183,6 +185,8 @@ public class RewriterExpr {
       } else if (item.isFlatCallVoid()) {
         rv.add(item);
       } else if (item.isStoreFieldVar()) {
+        // a.b = c
+        rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
         rv.add(item);
       } else if (item.isStoreVarVar()) {
         rv.add(item);
@@ -196,6 +200,14 @@ public class RewriterExpr {
 
     }
 
+  }
+
+  private FlatCodeItem genAssert(Var v) {
+    List<Var> args = new ArrayList<>();
+    args.add(v);
+
+    FlatCallVoid fc = new FlatCallVoid("assert", args);
+    return new FlatCodeItem(fc);
   }
 
   private void rewriteStringCreation(final AssignVarFlatCallStringCreationTmp node) {
