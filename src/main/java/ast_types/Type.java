@@ -14,7 +14,6 @@ import static ast_types.TypeBase.TP_void;
 import java.io.Serializable;
 import java.util.List;
 
-import _st3_linearize_expr.CEscaper;
 import ast_class.ClassDeclaration;
 import errors.ErrorLocation;
 import tokenize.Ident;

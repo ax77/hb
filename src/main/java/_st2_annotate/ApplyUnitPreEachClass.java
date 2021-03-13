@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import ast_class.ClassDeclaration;
 import ast_stmt.StmtStatement;
-import ast_symtab.BuiltinNames;
 import ast_unit.InstantiationUnit;
 
 public class ApplyUnitPreEachClass {

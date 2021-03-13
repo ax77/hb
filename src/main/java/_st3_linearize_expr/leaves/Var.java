@@ -14,6 +14,13 @@ public class Var implements Comparable<Var> {
   private final Ident name;
   private final int theOrderOfAppearance;
 
+  /// a bit which indicates that this is
+  /// an original varialbe, i.e. no temporary
+  /// generated, and we can ignore any other
+  /// var when we will generate destructors.
+  /// 
+  private boolean isOriginalNoTempVar;
+
   public Var(VarBase base, Modifiers mods, Type type, Ident name) {
     this.base = base;
     this.mods = mods;
@@ -55,6 +62,14 @@ public class Var implements Comparable<Var> {
 
   public String typeNameToString() {
     return type.toString() + " " + name.getName();
+  }
+
+  public boolean isOriginalNoTempVar() {
+    return isOriginalNoTempVar;
+  }
+
+  public void setOriginalNoTempVar(boolean isOriginalNoTempVar) {
+    this.isOriginalNoTempVar = isOriginalNoTempVar;
   }
 
   @Override

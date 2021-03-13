@@ -14,7 +14,6 @@ import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
-import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;

@@ -165,6 +165,10 @@ public class Deinits {
       args.add(v);
 
       if (v.getType().isClass()) {
+        if (!v.isOriginalNoTempVar()) {
+          continue;
+        }
+
         final ClassDeclaration classType = v.getType().getClassTypeFromRef();
         final ClassMethodDeclaration destructor = classType.getDestructor();
 
