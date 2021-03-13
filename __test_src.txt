@@ -1,5 +1,37 @@
-void string_init(string __this, char *buf);
-string string_deinit(string __this);
-string string_opAssign(string __this, string rvalue);
-void string_destroy(string __this);
-void string_ref(string __this);
+
+class file_reader {
+  void close() {}
+}
+
+class token {
+  string value;
+  int f;
+  token() {
+    value = "x";
+    f = 1;
+  }
+}
+
+class type {
+  token pos;
+  string repr;
+  file_reader fp;
+  type() {
+    pos = new token();
+    repr = "int";
+  }
+  deinit {
+    fp.close();
+  }
+}
+
+class main_class {
+  int main() {
+    type tp = new type();
+    token tok = tp.pos;
+    std.print("%s\n", tok.value);
+    std.print("%d\n", tok.f);
+    return tok.f;
+  }
+}
+
