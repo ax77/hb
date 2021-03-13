@@ -19,16 +19,33 @@ public class ApplyUnitPreEachClass {
 
   public void preEachClass() throws IOException {
     for (ClassDeclaration c : instantiationUnit.getClasses()) {
+      checkClazz(c);
       symtabApplier.defineClazz(c);
       addDefaultMethods(c);
     }
   }
 
-  private void addDefaultMethods(ClassDeclaration object) throws IOException {
+  private void checkClazz(ClassDeclaration object) {
 
-    if (!object.isMainClass() && object.getConstructors().isEmpty()) {
+    if (object.isMainClass()) {
+      return;
+    }
+
+    if (object.isNativeArray() || object.isNativeString()) {
+      return;
+    }
+
+    if (object.getConstructors().isEmpty()) {
       throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }
+
+    if (object.getFields().isEmpty()) {
+      throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
+    }
+
+  }
+
+  private void addDefaultMethods(ClassDeclaration object) throws IOException {
 
     if (object.getDestructor() == null) {
       object.setDestructor(BuildDefaultDestructor.build(object));

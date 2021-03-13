@@ -35,27 +35,29 @@ public class ApplyUnitPostEachClass {
     }
   }
 
-  private void checkAllFieldsAreInitialized(ClassDeclaration c) {
+  private void checkAllFieldsAreInitialized(final ClassDeclaration c) {
     if (c.isMainClass()) {
       return;
     }
 
     /// we 100% know that class has at least one constructor
     for (ClassMethodDeclaration constructor : c.getConstructors()) {
-      List<VarDeclarator> fields = c.getFields();
-      Set<String> initialized = new HashSet<>();
-      StmtBlock block = constructor.getBlock();
+      final List<VarDeclarator> fields = c.getFields();
+      final Set<String> initialized = new HashSet<>();
+      final StmtBlock block = constructor.getBlock();
+
       for (StmtStatement stmt : block.getBlockItems()) {
         if (!stmt.isExprStmt()) {
           continue;
         }
-        ExprExpression expr = stmt.getExprStmt();
-        VarDeclarator dest = getDest(expr);
+        final ExprExpression expr = stmt.getExprStmt();
+        final VarDeclarator dest = getDest(expr);
         if (dest == null) {
           throw new AstParseException("unknown: " + expr.toString());
         }
         initialized.add(dest.getIdentifier().getName());
       }
+
       boolean hasErrors = false;
       for (VarDeclarator var : fields) {
         if (!initialized.contains(var.getIdentifier().getName())) {
@@ -67,23 +69,35 @@ public class ApplyUnitPostEachClass {
       if (hasErrors) {
         throw new AstParseException("you should init all fields");
       }
+
     }
   }
 
-  private VarDeclarator getDest(ExprExpression expr) {
+  private VarDeclarator getDest(final ExprExpression expr) {
     if (expr.is(ExpressionBase.EFIELD_ACCESS)) {
       System.out.println();
-    } else if (expr.is(ExpressionBase.EASSIGN)) {
-      ExprAssign eassign = expr.getAssign();
-      if (eassign.getLvalue().is(ExpressionBase.EPRIMARY_IDENT)) {
-        VarDeclarator varAssigned = eassign.getLvalue().getIdent().getVar();
+    }
+
+    else if (expr.is(ExpressionBase.EASSIGN)) {
+      final ExprAssign eassign = expr.getAssign();
+      final ExprExpression lvalue = eassign.getLvalue();
+
+      if (lvalue.is(ExpressionBase.EPRIMARY_IDENT)) {
+        VarDeclarator varAssigned = lvalue.getIdent().getVar();
         if (varAssigned.is(VarBase.CLASS_FIELD)) {
           return varAssigned;
         }
-      } else {
+      }
+
+      else if (lvalue.is(ExpressionBase.EFIELD_ACCESS)) {
+        return lvalue.getFieldAccess().getField();
+      }
+
+      else {
         throw new AstParseException("unknown: " + expr.toString());
       }
     }
+
     return null;
   }
 

@@ -273,8 +273,8 @@ public class TestCcode {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class file_reader {                    //001 \n");
-    sb.append("  file_reader() {} void close() {}                      //002 \n");
+    sb.append("class file_reader { int fp;                    //001 \n");
+    sb.append("  file_reader() { this.fp=-1; } void close() {}                      //002 \n");
     sb.append("}                                      //003 \n");
     sb.append("class token {                          //004 \n");
     sb.append("  string value;                        //005 \n");
