@@ -3,6 +3,11 @@ if (datatype == TD_MAIN_CLASS)
     struct main_class *e = (struct main_class*) ptr;
     return;
 }
+if (datatype == TD_OPT)
+{
+    struct opt *e = (struct opt*) ptr;
+    return;
+}
 if (datatype == TD_TYPE)
 {
     struct type *e = (struct type*) ptr;

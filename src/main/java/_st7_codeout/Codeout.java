@@ -105,7 +105,7 @@ public class Codeout {
     //sb.append("#include <stdlib.h>  \n");
     //sb.append("#include <string.h>  \n");
     sb.append("#include \"generated_types.h\" \n");
-    sb.append("#include \"hrt/heap.h\"        \n");
+    sb.append("#include \"hrt/heap.h\"        \n\n");
     //sb.append("#include \"hrt/mem.h\"         \n\n");
     
     return sb.toString();
@@ -144,17 +144,17 @@ public class Codeout {
     StringBuilder prebuf = new StringBuilder();
     prebuf.append("#ifndef GENERATED_TYPES_H_                  \n");
     prebuf.append("#define GENERATED_TYPES_H_                  \n");
-    prebuf.append("#include \"hrt/headers.h\"                  \n");
+    prebuf.append("#include \"hrt/headers.h\"                  \n\n");
     prebuf.append("typedef int boolean;                        \n");
-    prebuf.append("typedef struct string * string;             \n");
+    prebuf.append("typedef struct string * string;             \n\n");
     prebuf.append("struct string                               \n");
     prebuf.append("{                                           \n");
     prebuf.append("    char *buffer;                           \n");
     prebuf.append("    size_t len;                             \n");
-    prebuf.append("};                                          \n");
+    prebuf.append("};                                          \n\n");
     prebuf.append("void string_init(string __this, char *buf); \n");
     prebuf.append("void string_deinit(string __this);          \n");
-    prebuf.append("void string_destroy(string __this);         \n");
+    prebuf.append("void string_destroy(string __this);         \n\n");
     prebuf.append("struct type_descr;                          \n");
     prebuf.append("extern struct type_descr *TD_CHAR_PTR;      \n");
     prebuf.append("extern struct type_descr *TD_ARRAY;         \n");
@@ -309,7 +309,7 @@ public class Codeout {
     line("{");
     line(printfAsserts.toString());
     line("    printf(" + printfBody.toString() + ");");
-    line("}");
+    line("}\n");
   }
 
   private String proto(Function f) {
@@ -357,9 +357,13 @@ public class Codeout {
 
     StringBuilder genTypesFile = new StringBuilder();
     genTypesFile.append(typeDescrsExtern);
+    genTypesFile.append("\n");
     genTypesFile.append(tpdef);
+    genTypesFile.append("\n");
     genTypesFile.append(protos);
+    genTypesFile.append("\n");
     genTypesFile.append(structs);
+    genTypesFile.append("\n");
     try {
       genGeneratedTypesFile(genTypesFile.toString());
     } catch (IOException e) {
@@ -386,15 +390,17 @@ public class Codeout {
     //sb.append(tpdef);
     //sb.append(protos);
     sb.append(stringsLabels.toString());
+    sb.append("\n");
     sb.append(CCString.genString());
     sb.append("\n");
 
     // impls
     sb.append(buildArraysImplsStructs(arrays));
     sb.append(buildArraysImplsMethods(arrayMethods));
+    sb.append(builtinsFn.toString());
     //sb.append(structs);
     sb.append(funcs);
-    sb.append(builtinsFn.toString());
+    //sb.append(builtinsFn.toString());
     sb.append("\n");
 
     // main
@@ -435,6 +441,7 @@ public class Codeout {
       sb.append("struct type_descr *" + tdName + " = &(struct type_descr ) { .description = " + cName + ", };\n");
     }
 
+    sb.append("\n");
     return sb.toString();
   }
 
@@ -557,6 +564,7 @@ public class Codeout {
         continue;
       }
       sb.append(f.toString());
+      sb.append("\n");
     }
 
     return sb.toString();
@@ -578,6 +586,7 @@ public class Codeout {
         continue;
       }
       sb.append(classToString(c));
+      sb.append("\n");
     }
 
     return sb.toString();

@@ -1,5 +1,6 @@
 
 class file_reader {
+  int sss;
   void close() {}
 }
 
@@ -19,9 +20,18 @@ class type {
   type() {
     pos = new token();
     repr = "int";
+    fp = new file_reader();
   }
   deinit {
     fp.close();
+  }
+}
+
+class opt {
+  int sss;
+  opt(){}
+  void fn(string s) {
+    std.print("%s\n", s);
   }
 }
 
@@ -31,6 +41,10 @@ class main_class {
     token tok = tp.pos;
     std.print("%s\n", tok.value);
     std.print("%d\n", tok.f);
+    
+    opt ooo= new opt();
+    ooo.fn(tok.value);
+    
     return tok.f;
   }
 }
