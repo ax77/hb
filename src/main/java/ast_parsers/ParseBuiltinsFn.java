@@ -47,7 +47,7 @@ public class ParseBuiltinsFn {
 
     }
 
-    if (funcname.equals(BuiltinNames.print_ident)) {
+    if (funcname.equals(BuiltinNames.print_ident) || funcname.equals(BuiltinNames.assert_true_ident)) {
       final List<Type> typeArguments = new ArrayList<>();
       final List<ExprExpression> fcallArguments = parseArglist();
       final Type restype = new Type(beginPos);

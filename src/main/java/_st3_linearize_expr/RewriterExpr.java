@@ -53,6 +53,7 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -539,14 +540,19 @@ public class RewriterExpr {
       /// variadic length args we will handle here
       /// that way.
       final StringBuilder fullname = new StringBuilder();
-      fullname.append("std_");
+      if (fn.getFunction().equals(BuiltinNames.print_ident)) {
+        fullname.append("std_");
+      }
       fullname.append(fn.getFunction().getName());
-      fullname.append("_");
-      for (int i = 0; i < args.size(); i += 1) {
-        Var arg = args.get(i);
-        fullname.append(arg.getType().toString());
-        if (i + 1 < args.size()) {
-          fullname.append("_");
+
+      if (fn.getFunction().equals(BuiltinNames.print_ident)) {
+        fullname.append("_");
+        for (int i = 0; i < args.size(); i += 1) {
+          Var arg = args.get(i);
+          fullname.append(arg.getType().toString());
+          if (i + 1 < args.size()) {
+            fullname.append("_");
+          }
         }
       }
 

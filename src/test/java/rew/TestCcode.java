@@ -273,19 +273,14 @@ public class TestCcode {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                              //001 \n");
-    sb.append("  int main() {                                  //002 \n");
-    sb.append("    string s = \"abcdef0123456789ABCDEF\";      //003 \n");
-    sb.append("    int cnt = 0;                                //004 \n");
-    sb.append("    for(int i=0; i<s.length(); i+=1) {          //005 \n");
-    sb.append("      string local_check_destroy = \"1.2.3\";   //006 \n");
-    sb.append("      char c = s.get(i);                        //007 \n");
-    sb.append("      std.print(\"%c\\n\", c);                  //008 \n");
-    sb.append("      cnt += 1;                                 //009 \n");
-    sb.append("    }                                           //010 \n");
-    sb.append("    return cnt;                                 //011 \n");
-    sb.append("  }                                             //012 \n");
-    sb.append("}                                               //013 \n");
+    sb.append("class main_class {                                   //001 \n");
+    sb.append("  int main() {                                       //002 \n");
+    sb.append("    string s = \"abcdef0123456789ABCDEF\";           //003 \n");
+    sb.append("    std.assert_true(s.get(0) == \'a\');              //004 \n");
+    sb.append("    std.assert_true(s.get(s.length()-1) == \'F\');   //005 \n");
+    sb.append("    return 0;                                        //006 \n");
+    sb.append("  }                                                  //007 \n");
+    sb.append("}                                                    //008 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

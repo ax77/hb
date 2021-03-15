@@ -18,6 +18,7 @@ public abstract class BuiltinNames {
   // IO
   public static final Ident read_file_ident = g("read_file");
   public static final Ident print_ident = g("print");
+  public static final Ident assert_true_ident = g("assert_true");
 
   // these names are not keywords.
   private static Ident g(String name) {
@@ -25,7 +26,8 @@ public abstract class BuiltinNames {
   }
 
   public static boolean isCorrectBuiltinIdent(Ident id) {
-    return id.equals(BuiltinNames.read_file_ident) || id.equals(BuiltinNames.print_ident);
+    return id.equals(BuiltinNames.read_file_ident) || id.equals(BuiltinNames.print_ident)
+        || id.equals(BuiltinNames.assert_true_ident);
   }
 
 }

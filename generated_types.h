@@ -24,7 +24,7 @@ extern struct type_descr *TD_MAIN_CLASS;
 extern struct type_descr *TD_STRING;
 
 
-int main_class_main_20();
+int main_class_main_18();
 
 
 

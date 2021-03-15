@@ -108,6 +108,9 @@ public class Codeout {
     sb.append("#include \"hrt/heap.h\"        \n\n");
     //sb.append("#include \"hrt/mem.h\"         \n\n");
     
+    sb.append(CCMacro.genMacro());
+    sb.append("\n\n");
+    
     return sb.toString();
   }
   //@formatter:on
