@@ -1,0 +1,20 @@
+if (datatype == TD_MAIN_CLASS)
+{
+    return 1;
+}
+if (datatype == TD_TYPE)
+{
+    return 1;
+}
+if (datatype == TD_TOKEN)
+{
+    return 1;
+}
+if (datatype == TD_FILE_READER)
+{
+    return 1;
+}
+if (datatype == TD_STRING)
+{
+    return 1;
+}

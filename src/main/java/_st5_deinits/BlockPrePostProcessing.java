@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.LinearBlock;
@@ -16,7 +17,8 @@ import _st4_linearize_stmt.items.LinearLoop;
 import _st4_linearize_stmt.items.LinearReturn;
 import _st4_linearize_stmt.items.LinearSelection;
 import _st4_linearize_stmt.items.LinearStatement;
-import _st4_linearize_stmt.items.LocalDestructors;
+import _st7_codeout.AuxNames;
+import _st4_linearize_stmt.items.BlockPrePost;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
@@ -24,25 +26,70 @@ import ast_symtab.Scope;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarBase;
+import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import utils_oth.NullChecker;
 
-public class Deinits {
+public class BlockPrePostProcessing {
 
   private final Symtab<String, Var> variablesBlock;
   private final Symtab<String, Var> variablesLoop;
   private final List<LinearLoop> loops;
   private final ClassMethodDeclaration method;
 
-  public Deinits(ClassMethodDeclaration method) {
+  public BlockPrePostProcessing(ClassMethodDeclaration method) {
     this.variablesBlock = new Symtab<>();
     this.variablesLoop = new Symtab<>();
     this.loops = new ArrayList<>();
     this.method = method;
   }
 
+  private BlockPrePost onEnter() {
+    BlockPrePost rv = new BlockPrePost();
+
+    rv.add(openCloseFrame('o'));
+
+    List<FlatCallVoid> asserts = new ArrayList<>();
+    List<FlatCallVoid> regPtrs = new ArrayList<>();
+
+    for (VarDeclarator var : method.getParameters()) {
+      if (!var.getType().isClass()) {
+        continue;
+      }
+      Var arg = VarCreator.copyVarDecl(var);
+
+      List<Var> args = new ArrayList<>();
+      args.add(arg);
+      asserts.add(new FlatCallVoid(AuxNames.ASSERT, args));
+      regPtrs.add(new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args));
+    }
+
+    for (FlatCallVoid fc : asserts) {
+      rv.add(fc);
+    }
+
+    for (FlatCallVoid fc : regPtrs) {
+      rv.add(fc);
+    }
+
+    return rv;
+  }
+
+  private FlatCallVoid openCloseFrame(char oc) {
+    String s = AuxNames.OPEN_FRAME;
+    if (oc == 'c') {
+      s = AuxNames.CLOSE_FRAME;
+    }
+    return new FlatCallVoid(s, new ArrayList<>());
+  }
+
   public void apply(LinearBlock input) {
+    input.setOnEnter(onEnter());
     visitBlock(input);
+
+    if (!input.theLastItemIsReturn()) {
+      input.getOnExit().add(openCloseFrame('c'));
+    }
   }
 
   private void visitBlock(LinearBlock currentBlockPtr) {
@@ -53,7 +100,7 @@ public class Deinits {
     }
     if (!currentBlockPtr.theLastItemIsReturn()) {
       if (!method.isDestructor()) {
-        currentBlockPtr.setDestructors(genDestructorsForGivenScope(variablesBlock));
+        currentBlockPtr.setOnExit(genDestructorsForGivenScope(variablesBlock));
       }
     }
     closeBlockScope();
@@ -148,18 +195,18 @@ public class Deinits {
     return res;
   }
 
-  private LocalDestructors genDestructorsFromCurrentScopeToTop(Symtab<String, Var> scope) {
+  private BlockPrePost genDestructorsFromCurrentScopeToTop(Symtab<String, Var> scope) {
     List<Var> vars = getAllVarsDefinedAboveToTop(scope);
     return genDestructorsForGivenVars(vars);
   }
 
-  private LocalDestructors genDestructorsForGivenScope(Symtab<String, Var> scope) {
+  private BlockPrePost genDestructorsForGivenScope(Symtab<String, Var> scope) {
     List<Var> vars = getAllVarsDefinedAbove(scope);
     return genDestructorsForGivenVars(vars);
   }
 
-  private LocalDestructors genDestructorsForGivenVars(List<Var> vars) {
-    LocalDestructors res = new LocalDestructors();
+  private BlockPrePost genDestructorsForGivenVars(List<Var> vars) {
+    BlockPrePost res = new BlockPrePost();
     for (Var v : vars) {
       List<Var> args = new ArrayList<>();
       args.add(v);
@@ -239,8 +286,8 @@ public class Deinits {
     LinearReturn linearReturn = s.getLinearReturn();
 
     /// TODO: rewrite this more clean
-    final LocalDestructors destructors = genDestructorsFromCurrentScopeToTop(variablesBlock);
-    final LocalDestructors withoutTheVar = new LocalDestructors();
+    final BlockPrePost destructors = genDestructorsFromCurrentScopeToTop(variablesBlock);
+    final BlockPrePost withoutTheVar = new BlockPrePost();
 
     if (linearReturn.hasResult()) {
       for (FlatCallVoid fc : destructors.getDestructors()) {
@@ -251,10 +298,12 @@ public class Deinits {
         withoutTheVar.add(fc);
       }
 
+      withoutTheVar.add(openCloseFrame('c'));
       linearReturn.setDestructors(withoutTheVar);
     }
 
     else {
+      destructors.add(openCloseFrame('c'));
       linearReturn.setDestructors(destructors);
     }
 
@@ -262,7 +311,7 @@ public class Deinits {
 
   private void rewriteBlock(LinearStatement s) {
     final LinearBlock linearBlock = s.getLinearBlock();
-    linearBlock.setDestructors(genDestructorsForGivenScope(variablesBlock));
+    linearBlock.setOnExit(genDestructorsForGivenScope(variablesBlock));
 
     visitBlock(linearBlock);
   }

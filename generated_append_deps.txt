@@ -1,0 +1,30 @@
+if (datatype == TD_MAIN_CLASS)
+{
+    struct main_class *e = (struct main_class*) ptr;
+    return;
+}
+if (datatype == TD_TYPE)
+{
+    struct type *e = (struct type*) ptr;
+    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->pos));
+    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->repr));
+    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->fp));
+    return;
+}
+if (datatype == TD_TOKEN)
+{
+    struct token *e = (struct token*) ptr;
+    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->value));
+    return;
+}
+if (datatype == TD_FILE_READER)
+{
+    struct file_reader *e = (struct file_reader*) ptr;
+    return;
+}
+if (datatype == TD_STRING)
+{
+    struct string *e = (struct string*) ptr;
+    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));
+    return;
+}

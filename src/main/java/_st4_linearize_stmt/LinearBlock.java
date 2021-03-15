@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st4_linearize_stmt.items.LinearStatement;
-import _st4_linearize_stmt.items.LocalDestructors;
+import _st4_linearize_stmt.items.BlockPrePost;
 import ast_stmt.StatementBase;
 
 public class LinearBlock {
   private final List<LinearStatement> items;
-  private LocalDestructors destructors;
+  private BlockPrePost onEnter;
+  private BlockPrePost onExit;
 
   public LinearBlock() {
     this.items = new ArrayList<>();
-    this.destructors = new LocalDestructors();
+    this.onEnter = new BlockPrePost();
+    this.onExit = new BlockPrePost();
   }
 
   public void pushItemBack(LinearStatement e) {
@@ -24,12 +26,20 @@ public class LinearBlock {
     return items;
   }
 
-  public void setDestructors(LocalDestructors destructors) {
-    this.destructors = destructors;
+  public void setOnExit(BlockPrePost prepost) {
+    this.onExit = prepost;
   }
 
-  public LocalDestructors getDestructors() {
-    return destructors;
+  public BlockPrePost getOnExit() {
+    return onExit;
+  }
+
+  public BlockPrePost getOnEnter() {
+    return onEnter;
+  }
+
+  public void setOnEnter(BlockPrePost onEnter) {
+    this.onEnter = onEnter;
   }
 
   public boolean theLastItemIsReturn() {
@@ -48,17 +58,27 @@ public class LinearBlock {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("\n{\n");
+
+    /// block pre-processing
+    if (onEnter != null && !onEnter.isEmpty()) {
+      sb.append(onEnter.toString());
+    }
+
+    /// block body
     for (LinearStatement s : items) {
       sb.append(s.toString());
       sb.append("\n");
     }
-    if (destructors != null) {
-      if (!destructors.isEmpty()) {
+
+    /// block post-processing
+    if (onExit != null) {
+      if (!onExit.isEmpty()) {
         if (!theLastItemIsReturn()) {
-          sb.append(destructors.toString());
+          sb.append(onExit.toString());
         }
       }
     }
+
     sb.append("\n}\n");
     return sb.toString();
   }

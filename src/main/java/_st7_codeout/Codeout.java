@@ -1,5 +1,7 @@
 package _st7_codeout;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +17,7 @@ import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
+import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -91,21 +94,19 @@ public class Codeout {
   private String headers() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append("#include <assert.h>  \n");
-    sb.append("#include <ctype.h>   \n");
-    sb.append("#include <limits.h>  \n");
-    sb.append("#include <stdarg.h>  \n");
-    sb.append("#include <stdbool.h> \n");
-    sb.append("#include <stddef.h>  \n");
-    sb.append("#include <stdint.h>  \n");
-    sb.append("#include <stdio.h>   \n");
-    sb.append("#include <stdlib.h>  \n");
-    sb.append("#include <string.h>  \n");
-    sb.append("#include \"mem.h\"   \n\n");
-    
-    sb.append("typedef int boolean; \n"); // TODO:
-    sb.append("typedef struct string * string; \n"); // TODO:
-    sb.append("\n");
+    //sb.append("#include <assert.h>  \n");
+    //sb.append("#include <ctype.h>   \n");
+    //sb.append("#include <limits.h>  \n");
+    //sb.append("#include <stdarg.h>  \n");
+    //sb.append("#include <stdbool.h> \n");
+    //sb.append("#include <stddef.h>  \n");
+    //sb.append("#include <stdint.h>  \n");
+    //sb.append("#include <stdio.h>   \n");
+    //sb.append("#include <stdlib.h>  \n");
+    //sb.append("#include <string.h>  \n");
+    sb.append("#include \"generated_types.h\" \n");
+    sb.append("#include \"hrt/heap.h\"        \n");
+    //sb.append("#include \"hrt/mem.h\"         \n\n");
     
     return sb.toString();
   }
@@ -114,6 +115,105 @@ public class Codeout {
   private void line(String s) {
     builtinsFn.append(s);
     builtinsFn.append("\n");
+  }
+
+  private String genFileIsCompound() throws IOException {
+    // if (datatype == TD_STR || datatype == TD_TYPE || datatype == TD_TOKEN || datatype == TD_FILE_READER) {
+    //   return 1;
+    // }
+
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      sb.append("if (datatype == " + tdName + ")\n{\n");
+      sb.append("    return 1;\n}\n");
+    }
+
+    final String fileName = "generated_is_compound.txt";
+    FileWriter fw = new FileWriter(fileName);
+    fw.write(sb.toString());
+    fw.close();
+
+    return sb.toString();
+  }
+
+  private void genGeneratedTypesFile(String src) throws IOException {
+    // generated_types.h
+
+    StringBuilder prebuf = new StringBuilder();
+    prebuf.append("#ifndef GENERATED_TYPES_H_                  \n");
+    prebuf.append("#define GENERATED_TYPES_H_                  \n");
+    prebuf.append("#include \"hrt/headers.h\"                  \n");
+    prebuf.append("typedef int boolean;                        \n");
+    prebuf.append("typedef struct string * string;             \n");
+    prebuf.append("struct string                               \n");
+    prebuf.append("{                                           \n");
+    prebuf.append("    char *buffer;                           \n");
+    prebuf.append("    size_t len;                             \n");
+    prebuf.append("};                                          \n");
+    prebuf.append("void string_init(string __this, char *buf); \n");
+    prebuf.append("void string_deinit(string __this);          \n");
+    prebuf.append("void string_destroy(string __this);         \n");
+    prebuf.append("struct type_descr;                          \n");
+    prebuf.append("extern struct type_descr *TD_CHAR_PTR;      \n");
+    prebuf.append("extern struct type_descr *TD_ARRAY;         \n");
+    prebuf.append("extern struct type_descr *TD_ARRAY_TABLE;   \n\n");
+
+    final String fileName = "generated_types.h";
+    FileWriter fw = new FileWriter(fileName);
+    fw.write(prebuf.toString());
+    fw.write(src);
+    fw.write("\n#endif\n");
+    fw.close();
+  }
+
+  private String genFileAppendDeps() throws IOException {
+
+    /// if (datatype == TD_STR) {
+    ///     struct string *e = (struct string*) ptr;
+    ///     vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));
+    /// 
+    ///     return;
+    /// }
+    /// 
+    /// if (datatype == TD_TOKEN) {
+    ///     struct token *e = (struct token*) ptr;
+    ///     vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->value));
+    /// 
+    ///     return;
+    /// }
+
+    // generated_append_deps.txt
+
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      String cName = c.getIdentifier().toString();
+
+      sb.append("if (datatype == " + tdName + ")\n{\n");
+      sb.append("    struct " + cName + " *e = (struct " + cName + "*) ptr;\n");
+      for (VarDeclarator f : c.getFields()) {
+        if (!f.getType().isClass()) {
+          continue;
+        }
+        String fName = f.getIdentifier().toString();
+        sb.append("    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->" + fName + "));\n");
+      }
+      if (c.getIdentifier().equals(BuiltinNames.string_ident)) {
+        sb.append("    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));\n");
+      }
+      sb.append("    return;\n}\n");
+    }
+
+    final String fileName = "generated_append_deps.txt";
+    FileWriter fw = new FileWriter(fileName);
+    fw.write(sb.toString());
+    fw.close();
+
+    return sb.toString();
+
   }
 
   private void genBuiltins() {
@@ -216,14 +316,36 @@ public class Codeout {
     return f.signToString();
   }
 
+  private void genMainFile(StringBuilder sb) throws IOException {
+    final String fileName = "main.c";
+    FileWriter fw = new FileWriter(fileName);
+    fw.write(sb.toString());
+    fw.close();
+  }
+
   @Override
   public String toString() {
+
+    try {
+      genFileAppendDeps();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    try {
+      genFileIsCompound();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     Set<ClassDeclaration> arrays = new HashSet<>();
     Set<ClassDeclaration> strings = new HashSet<>();
     Set<Function> arrayMethods = new HashSet<>();
     Set<Function> stringMethods = new HashSet<>();
     List<Function> mainMethodOut = new ArrayList<>();
+
+    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
+    String typeDescrsImpl = genTypeDescrsImpl();
+    String typeDescrsExtern = genTypeDescrsExtern();
 
     String tpdef = genStructsTypedefs();
 
@@ -232,6 +354,17 @@ public class Codeout {
     String structs = genStructs(arrays, strings);
 
     String funcs = genFunctions(arrayMethods, stringMethods, mainMethodOut);
+
+    StringBuilder genTypesFile = new StringBuilder();
+    genTypesFile.append(typeDescrsExtern);
+    genTypesFile.append(tpdef);
+    genTypesFile.append(protos);
+    genTypesFile.append(structs);
+    try {
+      genGeneratedTypesFile(genTypesFile.toString());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     if (mainMethodOut.size() != 1) {
       throw new AstParseException("there is no main...");
@@ -248,9 +381,10 @@ public class Codeout {
 
     // protos
     sb.append(headers());
+    sb.append(typeDescrsImpl);
     sb.append(buildArraysProtos(arrays));
-    sb.append(tpdef);
-    sb.append(protos);
+    //sb.append(tpdef);
+    //sb.append(protos);
     sb.append(stringsLabels.toString());
     sb.append(CCString.genString());
     sb.append("\n");
@@ -258,7 +392,7 @@ public class Codeout {
     // impls
     sb.append(buildArraysImplsStructs(arrays));
     sb.append(buildArraysImplsMethods(arrayMethods));
-    sb.append(structs);
+    //sb.append(structs);
     sb.append(funcs);
     sb.append(builtinsFn.toString());
     sb.append("\n");
@@ -266,10 +400,56 @@ public class Codeout {
     // main
     sb.append(mainMethodImpl);
     sb.append("int main(int args, char** argv) \n{\n");
-    sb.append("    int result = " + mainMethodCall + ";\n");
+    sb.append("    initHeap();   \n");
+    sb.append("    init_frames();\n");
+    sb.append("    open_frame(); \n\n");
+    sb.append("    int result = " + mainMethodCall + ";\n\n");
+    sb.append("    dump_heap();   \n");
+    sb.append("    close_frame(); \n");
     sb.append("    printf(\"%d\\n\", result);\n");
     sb.append("    return result;\n");
     sb.append("\n}\n");
+
+    try {
+      genMainFile(sb);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return sb.toString();
+  }
+
+  private String genTypeDescrsImpl() {
+    StringBuilder sb = new StringBuilder();
+
+    // extern struct type_descr *TD_ARRAY_TABLE; 
+    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
+
+    sb.append("struct type_descr *TD_CHAR_PTR = &(struct type_descr ) { .description = \"TD_CHAR_PTR\", };       \n");
+    sb.append("struct type_descr *TD_ARRAY = &(struct type_descr ) { .description = \"TD_ARRAY\", };             \n");
+    sb.append("struct type_descr *TD_ARRAY_TABLE = &(struct type_descr ) { .description = \"TD_ARRAY_TABLE\", }; \n");
+
+    for (ClassDeclaration c : pods) {
+      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      String cName = "\"" + c.getIdentifier().toString() + "\"";
+
+      sb.append("struct type_descr *" + tdName + " = &(struct type_descr ) { .description = " + cName + ", };\n");
+    }
+
+    return sb.toString();
+  }
+
+  private String genTypeDescrsExtern() {
+    StringBuilder sb = new StringBuilder();
+
+    // extern struct type_descr *TD_ARRAY_TABLE; 
+    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
+
+    for (ClassDeclaration c : pods) {
+      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      String cName = "\"" + c.getIdentifier().toString() + "\"";
+
+      sb.append("extern struct type_descr *" + tdName + ";\n");
+    }
 
     return sb.toString();
   }

@@ -34,12 +34,9 @@ public class AssignVarAllocObject {
 
   @Override
   public String toString() {
-    /// if (typename.isBytes()) {
-    ///   int sz = typename.getSize();
-    ///   return lvalue.typeNameToString() + " = hmalloc(sizeof(char) * " + String.format("%d", sz) + "))";
-    /// }
     final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + classHeaderToString(clazz) + "))";
+    return lvalue.typeNameToString() + " = get_memory(sizeof(struct " + classHeaderToString(clazz) + ") , TD_"
+        + clazz.getIdentifier().getName().toUpperCase() + ")";
   }
 
 }

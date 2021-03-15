@@ -5,10 +5,10 @@ import java.util.List;
 
 import _st3_linearize_expr.items.FlatCallVoid;
 
-public class LocalDestructors {
+public class BlockPrePost {
   private final List<FlatCallVoid> destructors;
 
-  public LocalDestructors() {
+  public BlockPrePost() {
     this.destructors = new ArrayList<>();
   }
 

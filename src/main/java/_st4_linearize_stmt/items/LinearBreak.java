@@ -2,17 +2,17 @@ package _st4_linearize_stmt.items;
 
 public class LinearBreak {
   private final LinearLoop loop;
-  private LocalDestructors destructors;
+  private BlockPrePost destructors;
 
   public LinearBreak(LinearLoop loop) {
     this.loop = loop;
   }
 
-  public LocalDestructors getDestructors() {
+  public BlockPrePost getDestructors() {
     return destructors;
   }
 
-  public void setDestructors(LocalDestructors destructors) {
+  public void setDestructors(BlockPrePost destructors) {
     this.destructors = destructors;
   }
 

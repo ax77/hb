@@ -11,7 +11,7 @@ import _st4_linearize_stmt.items.LinearLoop;
 import _st4_linearize_stmt.items.LinearReturn;
 import _st4_linearize_stmt.items.LinearSelection;
 import _st4_linearize_stmt.items.LinearStatement;
-import _st5_deinits.Deinits;
+import _st5_deinits.BlockPrePostProcessing;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
 import ast_method.ClassMethodDeclaration;
@@ -38,7 +38,7 @@ public class RewriterStmt {
     this.loops = new ArrayList<>();
     visitBlock(method.getBlock(), result);
 
-    Deinits applier = new Deinits(method);
+    BlockPrePostProcessing applier = new BlockPrePostProcessing(method);
     applier.apply(result);
   }
 

@@ -39,6 +39,7 @@ import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
 import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
+import _st7_codeout.AuxNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -144,14 +145,14 @@ public class RewriterExpr {
 
       else if (item.isAssignVarFlatCallStringCreationTmp()) {
         rewriteStringCreation(item.getAssignVarFlatCallStringCreationTmp());
-        //rv.add(item);
       }
 
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
 
         // strtemp __t15 = strtemp_init_0(__t14)
         // ::
-        // strtemp __t15 = new strtemp()
+        // strtemp __t15 = get_memory(sizeof(struct string, TD_STRING))
+        // reg_ptr_in_a_frame(__t15)
         // strtemp_init_0(__t15, __t14)
 
         final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
@@ -162,6 +163,9 @@ public class RewriterExpr {
         final PureFunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
+
+        FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
+        rv.add(new FlatCodeItem(regPtr));
 
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
@@ -206,7 +210,7 @@ public class RewriterExpr {
     List<Var> args = new ArrayList<>();
     args.add(v);
 
-    FlatCallVoid fc = new FlatCallVoid("assert", args);
+    FlatCallVoid fc = new FlatCallVoid(AuxNames.ASSERT, args);
     return new FlatCodeItem(fc);
   }
 
@@ -214,9 +218,9 @@ public class RewriterExpr {
 
     /// string s = "a.b.c";
     /// ::
-    /// 1) string s = new string();
-    /// 2) s.appendInternal('a');
-    /// n) --//--
+    /// const string t56 = get_memory(sizeof(struct string, TD_STRING));
+    /// reg_ptr_in_a_frame(t56);
+    /// string_init(t56, t57);
 
     final Var lvalueVar = node.getLvalue();
     final String sconst = node.getRvalue();
@@ -230,7 +234,14 @@ public class RewriterExpr {
     argsInstance.add(0, lvalueVar);
     argsInstance.add(fromMap);
 
-    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor("string_init", argsInstance, lvalueVar);
+    final List<Var> args = new ArrayList<>();
+    args.add(0, lvalueVar);
+
+    FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
+    rv.add(new FlatCodeItem(regPtr));
+
+    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(AuxNames.STRING_INIT, argsInstance,
+        lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
   }
