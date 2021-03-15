@@ -1,6 +1,7 @@
 #include "generated_types.h" 
 #include "hrt/heap.h"        
 
+
 #define assert_true(expr) do {                               \
   if( !(expr) ) {                                            \
     fprintf(stderr, "assert fail: (%s:%s():%d) : [%s]\n"     \
@@ -8,8 +9,6 @@
     exit(128);                                               \
   }                                                          \
 } while(0) 
-
-
 
 struct type_descr *TD_STRING = &(struct type_descr ) { .description = "string", };       
 struct type_descr *TD_CHAR_PTR = &(struct type_descr ) { .description = "TD_CHAR_PTR", };       

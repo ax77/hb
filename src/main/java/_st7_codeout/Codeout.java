@@ -15,9 +15,7 @@ import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
-import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
-import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -90,8 +88,7 @@ public class Codeout {
     return sb.toString();
   }
 
-  //@formatter:off
-  private String headers() {
+  private String includes() {
     StringBuilder sb = new StringBuilder();
 
     //sb.append("#include <assert.h>  \n");
@@ -104,156 +101,17 @@ public class Codeout {
     //sb.append("#include <stdio.h>   \n");
     //sb.append("#include <stdlib.h>  \n");
     //sb.append("#include <string.h>  \n");
+
     sb.append("#include \"generated_types.h\" \n");
-    sb.append("#include \"hrt/heap.h\"        \n\n");
-    //sb.append("#include \"hrt/mem.h\"         \n\n");
-    
-    sb.append(CCMacro.genMacro());
+    sb.append("#include \"hrt/heap.h\"        \n");
     sb.append("\n\n");
-    
+
     return sb.toString();
   }
-  //@formatter:on
 
   private void line(String s) {
     builtinsFn.append(s);
     builtinsFn.append("\n");
-  }
-
-  private String genFileIsCompound() throws IOException {
-    // if (datatype == TD_STR || datatype == TD_TYPE || datatype == TD_TOKEN || datatype == TD_FILE_READER) {
-    //   return 1;
-    // }
-
-    StringBuilder sb = new StringBuilder();
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNativeArray() || c.isNativeString()) {
-        continue;
-      }
-
-      sb.append("if (datatype == " + typedescName(c) + ") \n{\n");
-      sb.append("    return 1;\n");
-      sb.append("\n}\n");
-    }
-
-    final String fileName = "generated_is_compound.txt";
-    FileWriter fw = new FileWriter(fileName);
-    fw.write(sb.toString());
-    fw.close();
-
-    return sb.toString();
-  }
-
-  private void getDeinitsFile() throws IOException {
-    // if (m->datatype == TD_STRING) {
-    //   string e = (string) m->ptr;
-    //   string_deinit(e);
-    // }
-
-    StringBuilder sb = new StringBuilder();
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-
-      String deinitCall = c.getDestructor().signToStringCall();
-      String cName = c.getIdentifier().toString();
-
-      sb.append("if (m->datatype == " + typedescName(c) + ")\n{\n");
-      sb.append("    struct " + cName + " *e = (struct " + cName + "*) m->ptr;\n");
-      sb.append("    " + deinitCall + "(e);\n");
-      sb.append("\n}\n");
-    }
-
-    final String fileName = "generated_deinits.txt";
-    FileWriter fw = new FileWriter(fileName);
-    fw.write(sb.toString());
-    fw.close();
-
-  }
-
-  private void genGeneratedTypesFile(String src) throws IOException {
-    // generated_types.h
-
-    StringBuilder prebuf = new StringBuilder();
-    prebuf.append("#ifndef GENERATED_TYPES_H_                  \n");
-    prebuf.append("#define GENERATED_TYPES_H_                  \n");
-    prebuf.append("#include \"hrt/headers.h\"                  \n\n");
-    prebuf.append("typedef int boolean;                        \n");
-    prebuf.append("typedef struct string * string;             \n\n");
-    prebuf.append("struct string                               \n");
-    prebuf.append("{                                           \n");
-    prebuf.append("    char *buffer;                           \n");
-    prebuf.append("    size_t len;                             \n");
-    prebuf.append("};                                          \n\n");
-    prebuf.append("void string_init(string __this, char *buf); \n");
-    prebuf.append("void string_deinit(string __this);          \n");
-    prebuf.append("void string_destroy(string __this);         \n\n");
-    prebuf.append("struct type_descr;                          \n");
-
-    final String fileName = "generated_types.h";
-    FileWriter fw = new FileWriter(fileName);
-    fw.write(prebuf.toString());
-    fw.write(src);
-    fw.write("\n#endif\n");
-    fw.close();
-  }
-
-  private String genFileAppendDeps() throws IOException {
-
-    /// if (datatype == TD_STR) {
-    ///     struct string *e = (struct string*) ptr;
-    ///     vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));
-    /// 
-    ///     return;
-    /// }
-    /// 
-    /// if (datatype == TD_TOKEN) {
-    ///     struct token *e = (struct token*) ptr;
-    ///     vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->value));
-    /// 
-    ///     return;
-    /// }
-
-    // generated_append_deps.txt
-
-    StringBuilder sb = new StringBuilder();
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNativeArray() || c.isNativeString()) {
-        continue;
-      }
-
-      String cName = c.getIdentifier().toString();
-
-      sb.append("if (datatype == " + typedescName(c) + ")\n{\n");
-      sb.append("    struct " + cName + " *e = (struct " + cName + "*) ptr;\n");
-      for (VarDeclarator f : c.getFields()) {
-        if (!f.getType().isClass()) {
-          continue;
-        }
-        String fName = f.getIdentifier().toString();
-        sb.append("    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->" + fName + "));\n");
-      }
-
-      sb.append("    return;\n}\n");
-    }
-
-    final String fileName = "generated_append_deps.txt";
-    FileWriter fw = new FileWriter(fileName);
-    fw.write(sb.toString());
-    fw.close();
-
-    return sb.toString();
-
   }
 
   private void genBuiltins() {
@@ -352,10 +210,6 @@ public class Codeout {
     line("}\n");
   }
 
-  private String proto(Function f) {
-    return f.signToString();
-  }
-
   private void genMainFile(StringBuilder sb) throws IOException {
     final String fileName = "main.c";
     FileWriter fw = new FileWriter(fileName);
@@ -367,18 +221,18 @@ public class Codeout {
   public String toString() {
 
     try {
-      genFileAppendDeps();
+      GenAppendDepsFile.g(pods);
     } catch (IOException e) {
       e.printStackTrace();
     }
     try {
-      genFileIsCompound();
+      GenIsCompoundFile.g(pods);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     try {
-      getDeinitsFile();
+      GenDeinitsFile.g(pods);
     } catch (IOException e1) {
       e1.printStackTrace();
     }
@@ -389,29 +243,22 @@ public class Codeout {
     Set<Function> stringMethods = new HashSet<>();
     List<Function> mainMethodOut = new ArrayList<>();
 
-    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
-    String typeDescrsImpl = genTypeDescrsImpl();
-    String typeDescrsExtern = genTypeDescrsExtern();
-
-    String tpdef = genStructsTypedefs();
-
-    String protos = genFuncProtos();
-
-    String structs = genStructs(arrays, strings);
-
-    String funcs = genFunctions(arrayMethods, stringMethods, mainMethodOut);
+    String structTypedefs = genStructsTypedefs();
+    String funcProtos = genFuncProtos();
+    String structsImpls = genStructs(arrays, strings);
+    String functions = genFunctions(arrayMethods, stringMethods, mainMethodOut);
 
     StringBuilder genTypesFile = new StringBuilder();
-    genTypesFile.append(typeDescrsExtern);
+    genTypesFile.append(GenTypeDescriptions.genTypeDescrsExtern(pods));
     genTypesFile.append("\n");
-    genTypesFile.append(tpdef);
+    genTypesFile.append(structTypedefs);
     genTypesFile.append("\n");
-    genTypesFile.append(protos);
+    genTypesFile.append(funcProtos);
     genTypesFile.append("\n");
-    genTypesFile.append(structs);
+    genTypesFile.append(structsImpls);
     genTypesFile.append("\n");
     try {
-      genGeneratedTypesFile(genTypesFile.toString());
+      GenGeneratedTypesFile.genGeneratedTypesFile(genTypesFile.toString());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -421,7 +268,6 @@ public class Codeout {
     }
 
     final Function mainFn = mainMethodOut.get(0);
-    String mainMethodSign = mainFn.signToString();
     String mainMethodImpl = mainFn.toString();
     String mainMethodCall = mainFn.signToStringCall();
 
@@ -430,23 +276,20 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     // protos
-    sb.append(headers());
-    sb.append(typeDescrsImpl);
-    sb.append(buildArraysProtos(arrays));
-    //sb.append(tpdef);
-    //sb.append(protos);
+    sb.append(includes());
+    sb.append(CCMacro.genMacro());
+    sb.append(GenTypeDescriptions.genTypeDescrsImpl(pods));
+    sb.append(GenArrays.buildArraysProtos(arrays));
     sb.append(stringsLabels.toString());
     sb.append("\n");
     sb.append(CCString.genString());
     sb.append("\n");
 
     // impls
-    sb.append(buildArraysImplsStructs(arrays));
-    sb.append(buildArraysImplsMethods(arrayMethods));
+    sb.append(GenArrays.buildArraysImplsStructs(arrays));
+    sb.append(GenArrays.buildArraysImplsMethods(arrayMethods));
     sb.append(builtinsFn.toString());
-    //sb.append(structs);
-    sb.append(funcs);
-    //sb.append(builtinsFn.toString());
+    sb.append(functions);
     sb.append("\n");
 
     // main
@@ -466,143 +309,6 @@ public class Codeout {
       genMainFile(sb);
     } catch (IOException e) {
       e.printStackTrace();
-    }
-    return sb.toString();
-  }
-
-  private String genTypeDescrsImpl() {
-    StringBuilder sb = new StringBuilder();
-
-    // extern struct type_descr *TD_ARRAY_TABLE; 
-    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
-
-    sb.append("struct type_descr *TD_STRING = &(struct type_descr ) { .description = \"string\", };       \n");
-    sb.append("struct type_descr *TD_CHAR_PTR = &(struct type_descr ) { .description = \"TD_CHAR_PTR\", };       \n");
-    sb.append("struct type_descr *TD_ARRAY = &(struct type_descr ) { .description = \"TD_ARRAY\", };             \n");
-    sb.append("struct type_descr *TD_ARRAY_TABLE = &(struct type_descr ) { .description = \"TD_ARRAY_TABLE\", }; \n");
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNativeArray() || c.isNativeString()) {
-        continue;
-      }
-
-      String tdName = typedescName(c);
-      String cName = "\"" + c.getIdentifier().toString() + "\"";
-
-      sb.append("struct type_descr *" + tdName + " = &(struct type_descr ) { .description = " + cName + ", };\n");
-    }
-
-    sb.append("\n");
-    return sb.toString();
-  }
-
-  private String typedescName(ClassDeclaration c) {
-    return "TD_" + c.getIdentifier().getName().toUpperCase();
-  }
-
-  private String genTypeDescrsExtern() {
-    StringBuilder sb = new StringBuilder();
-
-    // extern struct type_descr *TD_ARRAY_TABLE; 
-
-    sb.append("extern struct type_descr *TD_STRING;      \n");
-    sb.append("extern struct type_descr *TD_CHAR_PTR;      \n");
-    sb.append("extern struct type_descr *TD_ARRAY;         \n");
-    sb.append("extern struct type_descr *TD_ARRAY_TABLE;   \n\n");
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNativeArray() || c.isNativeString()) {
-        continue;
-      }
-
-      sb.append("extern struct type_descr *" + typedescName(c) + ";\n");
-    }
-
-    return sb.toString();
-  }
-
-  private String buildArraysProtos(Set<ClassDeclaration> arrays) {
-    StringBuilder sb = new StringBuilder();
-    for (ClassDeclaration c : arrays) {
-      String datatype = c.getTypeParametersT().get(0).toString();
-      String tpdef = CCArrays.genArrayStructTypedef(datatype);
-      sb.append(tpdef);
-    }
-    return sb.toString();
-  }
-
-  private String buildArraysImplsStructs(Set<ClassDeclaration> arrays) {
-    StringBuilder sb = new StringBuilder();
-    for (ClassDeclaration c : arrays) {
-      String datatype = c.getTypeParametersT().get(0).toString();
-      String tpdef = CCArrays.genArrayStructImpl(datatype);
-      sb.append(tpdef);
-    }
-    return sb.toString();
-  }
-
-  private String buildArraysImplsMethods(Set<Function> arrayMethods) {
-    StringBuilder sb = new StringBuilder();
-    for (Function f : arrayMethods) {
-      final ClassMethodDeclaration method = f.getMethodSignature();
-      final ClassDeclaration clazz = method.getClazz();
-      final Type type = clazz.getTypeParametersT().get(0);
-      final String datatype = type.toString();
-      final boolean terminated = type.isChar();
-
-      if (method.getIdentifier().getName().equals("add")) {
-        String block = CCArrays.genArrayAddBlock(datatype, terminated);
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
-      else if (method.getIdentifier().getName().equals("get")) {
-        String block = CCArrays.genArrayGetBlock(datatype);
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
-      else if (method.getIdentifier().getName().equals("set")) {
-        String block = CCArrays.genArraySetBlock(datatype);
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
-      else if (method.getIdentifier().getName().equals("opAssign")) {
-        String block = " \n{\n return rvalue; \n}\n ";
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
-      else if (method.getIdentifier().getName().equals("size")) {
-        String block = CCArrays.genArraySizeBlock(datatype);
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
-      else {
-
-        if (method.isConstructor()) {
-          String block = CCArrays.genArrayAllocBlock(datatype);
-          sb.append(f.signToString());
-          sb.append(block);
-        } else if (method.isDestructor()) {
-          String block = " \n{\n  \n}\n ";
-          sb.append(f.signToString());
-          sb.append(block);
-        }
-
-        else {
-          throw new AstParseException("unimpl. array method: " + method.getIdentifier().getName());
-        }
-
-      }
     }
     return sb.toString();
   }
@@ -693,7 +399,7 @@ public class Codeout {
       if (c.isNativeString()) {
         continue;
       }
-      sb.append(proto(f) + ";\n");
+      sb.append(f.signToString() + ";\n");
     }
 
     return sb.toString();
