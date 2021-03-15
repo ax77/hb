@@ -141,6 +141,36 @@ public class Codeout {
     return sb.toString();
   }
 
+  private void getDeinitsFile() throws IOException {
+    // if (m->datatype == TD_STRING) {
+    //   string e = (string) m->ptr;
+    //   string_deinit(e);
+    // }
+
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      if (c.isMainClass()) {
+        continue;
+      }
+
+      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      String deinitCall = c.getDestructor().signToStringCall();
+      String cName = c.getIdentifier().toString();
+
+      sb.append("if (m->datatype == " + tdName + ")\n{\n");
+      sb.append("    struct " + cName + " *e = (struct " + cName + "*) m->ptr;\n");
+      sb.append("    " + deinitCall + "(e);\n");
+      sb.append("\n}\n");
+    }
+
+    final String fileName = "generated_deinits.txt";
+    FileWriter fw = new FileWriter(fileName);
+    fw.write(sb.toString());
+    fw.close();
+
+  }
+
   private void genGeneratedTypesFile(String src) throws IOException {
     // generated_types.h
 
@@ -338,6 +368,12 @@ public class Codeout {
       genFileIsCompound();
     } catch (IOException e) {
       e.printStackTrace();
+    }
+
+    try {
+      getDeinitsFile();
+    } catch (IOException e1) {
+      e1.printStackTrace();
     }
 
     Set<ClassDeclaration> arrays = new HashSet<>();

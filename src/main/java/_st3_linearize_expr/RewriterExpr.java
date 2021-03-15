@@ -165,8 +165,10 @@ public class RewriterExpr {
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
 
-        FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
-        rv.add(new FlatCodeItem(regPtr));
+        if (!method.isDestructor()) {
+          FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
+          rv.add(new FlatCodeItem(regPtr));
+        }
 
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
@@ -238,8 +240,10 @@ public class RewriterExpr {
     final List<Var> args = new ArrayList<>();
     args.add(0, lvalueVar);
 
-    FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
-    rv.add(new FlatCodeItem(regPtr));
+    if (!method.isDestructor()) {
+      FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
+      rv.add(new FlatCodeItem(regPtr));
+    }
 
     final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(AuxNames.STRING_INIT, argsInstance,
         lvalueVar);

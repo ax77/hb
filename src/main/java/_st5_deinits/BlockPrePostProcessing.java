@@ -42,7 +42,9 @@ public class BlockPrePostProcessing {
   private AuxFunctions onEnter() {
     AuxFunctions rv = new AuxFunctions();
 
-    rv.add(openCloseFrame('o'));
+    if (!method.isDestructor()) {
+      rv.add(openCloseFrame('o'));
+    }
 
     List<FlatCallVoid> asserts = new ArrayList<>();
     List<FlatCallVoid> regPtrs = new ArrayList<>();
@@ -56,7 +58,9 @@ public class BlockPrePostProcessing {
       List<Var> args = new ArrayList<>();
       args.add(arg);
       asserts.add(new FlatCallVoid(AuxNames.ASSERT, args));
-      regPtrs.add(new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args));
+      if(!method.isDestructor()) {
+        regPtrs.add(new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args));
+      }
     }
 
     for (FlatCallVoid fc : asserts) {
@@ -90,7 +94,9 @@ public class BlockPrePostProcessing {
     visitBlock(input);
 
     if (!input.theLastItemIsReturn()) {
-      input.getOnExit().add(openCloseFrame('c'));
+      if (!method.isDestructor()) {
+        input.getOnExit().add(openCloseFrame('c'));
+      }
     }
   }
 
@@ -301,12 +307,16 @@ public class BlockPrePostProcessing {
         withoutTheVar.add(fc);
       }
 
-      withoutTheVar.add(openCloseFrame('c'));
+      if (!method.isDestructor()) {
+        withoutTheVar.add(openCloseFrame('c'));
+      }
       linearReturn.setDestructors(withoutTheVar);
     }
 
     else {
-      destructors.add(openCloseFrame('c'));
+      if (!method.isDestructor()) {
+        destructors.add(openCloseFrame('c'));
+      }
       linearReturn.setDestructors(destructors);
     }
 

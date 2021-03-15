@@ -273,14 +273,32 @@ public class TestCcode {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                                   //001 \n");
-    sb.append("  int main() {                                       //002 \n");
-    sb.append("    string s = \"abcdef0123456789ABCDEF\";           //003 \n");
-    sb.append("    std.assert_true(s.get(0) == \'a\');              //004 \n");
-    sb.append("    std.assert_true(s.get(s.length()-1) == \'F\');   //005 \n");
-    sb.append("    return 0;                                        //006 \n");
-    sb.append("  }                                                  //007 \n");
-    sb.append("}                                                    //008 \n");
+    sb.append("class opt {                                                       //001 \n");
+    sb.append("  int flag;                                                       //002 \n");
+    sb.append("  string value;                                                   //003 \n");
+    sb.append("  opt() {                                                         //004 \n");
+    sb.append("    flag = -1;                                                    //005 \n");
+    sb.append("    value = \"-1\";                                               //006 \n");
+    sb.append("  }                                                               //007 \n");
+    sb.append("  void fn() {                                                     //008 \n");
+    sb.append("    std.print(\"[%d]\\n\", flag);                                 //009 \n");
+    sb.append("    std.print(\"[%s]\\n\", value);                                //010 \n");
+    sb.append("  }                                                               //011 \n");
+    sb.append("}                                                                 //012 \n");
+    sb.append("class main_class {                                                //013 \n");
+    sb.append("  int main() {                                                    //014 \n");
+    sb.append("    opt o = new opt();                                            //015 \n");
+    sb.append("    string s = \"1.2.3\";                                         //016 \n");
+    sb.append("    std.print(\"[%s]\\n\", s);                                    //017 \n");
+    sb.append("    int cnt = 0;                                                  //018 \n");
+    sb.append("    for(int i=0; i<8; i+=1) {                                     //019 \n");
+    sb.append("      string in_a_loop = \"in a loop this string was defined\";   //020 \n");
+    sb.append("      cnt += 1;                                                   //021 \n");
+    sb.append("    }                                                             //022 \n");
+    sb.append("    o.fn();                                                       //023 \n");
+    sb.append("    return cnt;                                                   //024 \n");
+    sb.append("  }                                                               //025 \n");
+    sb.append("}                                                                 //026 \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

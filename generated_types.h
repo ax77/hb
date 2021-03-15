@@ -21,10 +21,22 @@ extern struct type_descr *TD_ARRAY;
 extern struct type_descr *TD_ARRAY_TABLE;   
 
 extern struct type_descr *TD_MAIN_CLASS;
+extern struct type_descr *TD_OPT;
 extern struct type_descr *TD_STRING;
 
+typedef struct opt * opt;
 
-int main_class_main_18();
+int main_class_main_26();
+void opt_init_18(opt __this);
+void opt_fn_21(opt __this);
+void opt_deinit_30(opt __this);
+
+struct opt
+{
+int flag; 
+string value; 
+
+};
 
 
 

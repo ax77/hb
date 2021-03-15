@@ -1,7 +1,32 @@
-#define assert_true(expr) do {\
-  if( !(expr) ) {\
-    fprintf(stderr, "assert fail: (%s:%s():%d) : [%s]\n" \
-    , __FILE__, __func__, __LINE__, #expr);\
-    exit(128);\
-  }\
-} while(0)
+class opt {
+  int flag;
+  string value;
+  opt() {
+    flag = -1;
+    value = "-1";
+  }
+  void fn() {
+    std.print("[%d]\n", flag);
+    std.print("[%s]\n", value);
+  }
+}
+
+class main_class {
+  int main() {
+    opt o = new opt();
+  
+    string s = "1.2.3";
+    std.print("[%s]\n", s);
+    
+    int cnt = 0;
+    for(int i=0; i<8; i+=1) {
+      string in_a_loop = "in a loop this string was defined";
+      cnt += 1;
+    }
+        
+    o.fn();
+    return cnt;
+  }
+}
+
+

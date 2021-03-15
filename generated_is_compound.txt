@@ -2,6 +2,10 @@ if (datatype == TD_MAIN_CLASS)
 {
     return 1;
 }
+if (datatype == TD_OPT)
+{
+    return 1;
+}
 if (datatype == TD_STRING)
 {
     return 1;

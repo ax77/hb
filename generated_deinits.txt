@@ -1,0 +1,12 @@
+if (m->datatype == TD_OPT)
+{
+    struct opt *e = (struct opt*) m->ptr;
+    opt_deinit_30(e);
+
+}
+if (m->datatype == TD_STRING)
+{
+    struct string *e = (struct string*) m->ptr;
+    string_deinit(e);
+
+}
