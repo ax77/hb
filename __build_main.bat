@@ -1,1 +1,1 @@
-gcc -std=c99 -Wall main.c hrt/*.c -o main
+gcc -std=c99 -w main.c hrt/*.c -o main

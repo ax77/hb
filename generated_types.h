@@ -16,13 +16,12 @@ void string_deinit(string __this);
 void string_destroy(string __this);         
 
 struct type_descr;                          
+extern struct type_descr *TD_STRING;      
 extern struct type_descr *TD_CHAR_PTR;      
 extern struct type_descr *TD_ARRAY;         
 extern struct type_descr *TD_ARRAY_TABLE;   
 
-extern struct type_descr *TD_MAIN_CLASS;
 extern struct type_descr *TD_OPT;
-extern struct type_descr *TD_STRING;
 
 typedef struct opt * opt;
 

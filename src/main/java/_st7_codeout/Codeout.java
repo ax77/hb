@@ -128,9 +128,16 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {
-      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
-      sb.append("if (datatype == " + tdName + ")\n{\n");
-      sb.append("    return 1;\n}\n");
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray() || c.isNativeString()) {
+        continue;
+      }
+
+      sb.append("if (datatype == " + typedescName(c) + ") \n{\n");
+      sb.append("    return 1;\n");
+      sb.append("\n}\n");
     }
 
     final String fileName = "generated_is_compound.txt";
@@ -154,11 +161,10 @@ public class Codeout {
         continue;
       }
 
-      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
       String deinitCall = c.getDestructor().signToStringCall();
       String cName = c.getIdentifier().toString();
 
-      sb.append("if (m->datatype == " + tdName + ")\n{\n");
+      sb.append("if (m->datatype == " + typedescName(c) + ")\n{\n");
       sb.append("    struct " + cName + " *e = (struct " + cName + "*) m->ptr;\n");
       sb.append("    " + deinitCall + "(e);\n");
       sb.append("\n}\n");
@@ -189,9 +195,6 @@ public class Codeout {
     prebuf.append("void string_deinit(string __this);          \n");
     prebuf.append("void string_destroy(string __this);         \n\n");
     prebuf.append("struct type_descr;                          \n");
-    prebuf.append("extern struct type_descr *TD_CHAR_PTR;      \n");
-    prebuf.append("extern struct type_descr *TD_ARRAY;         \n");
-    prebuf.append("extern struct type_descr *TD_ARRAY_TABLE;   \n\n");
 
     final String fileName = "generated_types.h";
     FileWriter fw = new FileWriter(fileName);
@@ -222,10 +225,16 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {
-      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray() || c.isNativeString()) {
+        continue;
+      }
+
       String cName = c.getIdentifier().toString();
 
-      sb.append("if (datatype == " + tdName + ")\n{\n");
+      sb.append("if (datatype == " + typedescName(c) + ")\n{\n");
       sb.append("    struct " + cName + " *e = (struct " + cName + "*) ptr;\n");
       for (VarDeclarator f : c.getFields()) {
         if (!f.getType().isClass()) {
@@ -234,9 +243,7 @@ public class Codeout {
         String fName = f.getIdentifier().toString();
         sb.append("    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->" + fName + "));\n");
       }
-      if (c.getIdentifier().equals(BuiltinNames.string_ident)) {
-        sb.append("    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));\n");
-      }
+
       sb.append("    return;\n}\n");
     }
 
@@ -469,12 +476,20 @@ public class Codeout {
     // extern struct type_descr *TD_ARRAY_TABLE; 
     // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
 
+    sb.append("struct type_descr *TD_STRING = &(struct type_descr ) { .description = \"string\", };       \n");
     sb.append("struct type_descr *TD_CHAR_PTR = &(struct type_descr ) { .description = \"TD_CHAR_PTR\", };       \n");
     sb.append("struct type_descr *TD_ARRAY = &(struct type_descr ) { .description = \"TD_ARRAY\", };             \n");
     sb.append("struct type_descr *TD_ARRAY_TABLE = &(struct type_descr ) { .description = \"TD_ARRAY_TABLE\", }; \n");
 
     for (ClassDeclaration c : pods) {
-      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray() || c.isNativeString()) {
+        continue;
+      }
+
+      String tdName = typedescName(c);
       String cName = "\"" + c.getIdentifier().toString() + "\"";
 
       sb.append("struct type_descr *" + tdName + " = &(struct type_descr ) { .description = " + cName + ", };\n");
@@ -484,17 +499,29 @@ public class Codeout {
     return sb.toString();
   }
 
+  private String typedescName(ClassDeclaration c) {
+    return "TD_" + c.getIdentifier().getName().toUpperCase();
+  }
+
   private String genTypeDescrsExtern() {
     StringBuilder sb = new StringBuilder();
 
     // extern struct type_descr *TD_ARRAY_TABLE; 
-    // struct type_descr *TD_STR = &(struct type_descr ) { .description = "TD_STR", };
+
+    sb.append("extern struct type_descr *TD_STRING;      \n");
+    sb.append("extern struct type_descr *TD_CHAR_PTR;      \n");
+    sb.append("extern struct type_descr *TD_ARRAY;         \n");
+    sb.append("extern struct type_descr *TD_ARRAY_TABLE;   \n\n");
 
     for (ClassDeclaration c : pods) {
-      String tdName = "TD_" + c.getIdentifier().getName().toUpperCase();
-      String cName = "\"" + c.getIdentifier().toString() + "\"";
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isNativeArray() || c.isNativeString()) {
+        continue;
+      }
 
-      sb.append("extern struct type_descr *" + tdName + ";\n");
+      sb.append("extern struct type_descr *" + typedescName(c) + ";\n");
     }
 
     return sb.toString();

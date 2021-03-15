@@ -1,17 +1,6 @@
-if (datatype == TD_MAIN_CLASS)
-{
-    struct main_class *e = (struct main_class*) ptr;
-    return;
-}
 if (datatype == TD_OPT)
 {
     struct opt *e = (struct opt*) ptr;
     vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->value));
-    return;
-}
-if (datatype == TD_STRING)
-{
-    struct string *e = (struct string*) ptr;
-    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));
     return;
 }

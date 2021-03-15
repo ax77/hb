@@ -11,12 +11,11 @@
 
 
 
+struct type_descr *TD_STRING = &(struct type_descr ) { .description = "string", };       
 struct type_descr *TD_CHAR_PTR = &(struct type_descr ) { .description = "TD_CHAR_PTR", };       
 struct type_descr *TD_ARRAY = &(struct type_descr ) { .description = "TD_ARRAY", };             
 struct type_descr *TD_ARRAY_TABLE = &(struct type_descr ) { .description = "TD_ARRAY_TABLE", }; 
-struct type_descr *TD_MAIN_CLASS = &(struct type_descr ) { .description = "main_class", };
 struct type_descr *TD_OPT = &(struct type_descr ) { .description = "opt", };
-struct type_descr *TD_STRING = &(struct type_descr ) { .description = "string", };
 
 char t50[] = { 'i', 'n', ' ', 'a', ' ', 'l', 'o', 'o', 'p', ' ', 't', 'h', 'i', 's', ' ', 's', 't', 'r', 'i', 'n', 'g', ' ', 'w', 'a', 's', ' ', 'd', 'e', 'f', 'i', 'n', 'e', 'd', '\0'};
 char t66[] = { '[', '%', 'd', ']', '\n', '\0'};
@@ -53,12 +52,12 @@ void string_destroy(string __this)
     free(__this);                             
 }                                             
 
-static void std_print_string_string(const string t36, const string t38)
+static void std_print_string_string(const string t69, const string t72)
 {
-assert(t36);
-assert(t38);
+assert(t69);
+assert(t72);
 
-    printf(t36->buffer, t38->buffer);
+    printf(t69->buffer, t72->buffer);
 }
 
 static void std_print_string_int(const string t65, const int t68)

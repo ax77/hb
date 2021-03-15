@@ -248,6 +248,13 @@ vec_of(struct markable*) *inProcessing)
 
         return;
     }
+    
+    if (datatype == TD_STRING) {
+      struct string *e = (struct string*) ptr;
+      vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->buffer));
+      
+      return;
+    }
 
 #include "../generated_append_deps.txt"
 
@@ -260,6 +267,10 @@ static int type_is_compound(struct type_descr *datatype)
     assert(datatype);
 
     if (datatype == TD_ARRAY) {
+        return 1;
+    }
+    
+    if (datatype == TD_STRING) {
         return 1;
     }
 
