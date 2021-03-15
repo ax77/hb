@@ -30,6 +30,13 @@ public class CCString {
     sb.append("    assert(index < __this->len);              \n");
     sb.append("    return __this->buffer[index];             \n");
     sb.append("}                                             \n");
+    
+    sb.append("size_t string_length(string __this)  \n");
+    sb.append("{                                             \n");
+    sb.append("    assert(__this);                           \n");
+    sb.append("    return __this->len;             \n");
+    sb.append("}                                             \n");
+    
     sb.append("void string_deinit(string __this)             \n");
     sb.append("{                                             \n");
     sb.append("}                                             \n");

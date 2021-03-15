@@ -3,19 +3,19 @@ package _st4_linearize_stmt;
 import java.util.ArrayList;
 import java.util.List;
 
+import _st4_linearize_stmt.items.AuxFunctions;
 import _st4_linearize_stmt.items.LinearStatement;
-import _st4_linearize_stmt.items.BlockPrePost;
 import ast_stmt.StatementBase;
 
 public class LinearBlock {
   private final List<LinearStatement> items;
-  private BlockPrePost onEnter;
-  private BlockPrePost onExit;
+  private final AuxFunctions onEnter;
+  private final AuxFunctions onExit;
 
   public LinearBlock() {
     this.items = new ArrayList<>();
-    this.onEnter = new BlockPrePost();
-    this.onExit = new BlockPrePost();
+    this.onEnter = new AuxFunctions();
+    this.onExit = new AuxFunctions();
   }
 
   public void pushItemBack(LinearStatement e) {
@@ -26,20 +26,12 @@ public class LinearBlock {
     return items;
   }
 
-  public void setOnExit(BlockPrePost prepost) {
-    this.onExit = prepost;
-  }
-
-  public BlockPrePost getOnExit() {
+  public AuxFunctions getOnExit() {
     return onExit;
   }
 
-  public BlockPrePost getOnEnter() {
+  public AuxFunctions getOnEnter() {
     return onEnter;
-  }
-
-  public void setOnEnter(BlockPrePost onEnter) {
-    this.onEnter = onEnter;
   }
 
   public boolean theLastItemIsReturn() {

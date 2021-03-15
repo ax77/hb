@@ -5,32 +5,32 @@ import java.util.List;
 
 import _st3_linearize_expr.items.FlatCallVoid;
 
-public class BlockPrePost {
-  private final List<FlatCallVoid> destructors;
+public class AuxFunctions {
+  private final List<FlatCallVoid> calls;
 
-  public BlockPrePost() {
-    this.destructors = new ArrayList<>();
+  public AuxFunctions() {
+    this.calls = new ArrayList<>();
   }
 
   public void add(FlatCallVoid e) {
-    this.destructors.add(e);
+    this.calls.add(e);
   }
 
-  public List<FlatCallVoid> getDestructors() {
-    return destructors;
+  public List<FlatCallVoid> getCalls() {
+    return calls;
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (FlatCallVoid fc : destructors) {
+    for (FlatCallVoid fc : calls) {
       sb.append(fc.toString() + ";\n");
     }
     return sb.toString();
   }
 
   public boolean isEmpty() {
-    return destructors.isEmpty();
+    return calls.isEmpty();
   }
 
 }

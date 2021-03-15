@@ -1,9 +1,7 @@
 package _st5_deinits;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
@@ -11,6 +9,7 @@ import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.LinearBlock;
+import _st4_linearize_stmt.items.AuxFunctions;
 import _st4_linearize_stmt.items.LinearBreak;
 import _st4_linearize_stmt.items.LinearContinue;
 import _st4_linearize_stmt.items.LinearLoop;
@@ -18,14 +17,10 @@ import _st4_linearize_stmt.items.LinearReturn;
 import _st4_linearize_stmt.items.LinearSelection;
 import _st4_linearize_stmt.items.LinearStatement;
 import _st7_codeout.AuxNames;
-import _st4_linearize_stmt.items.BlockPrePost;
-import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
-import ast_symtab.Scope;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
-import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import utils_oth.NullChecker;
@@ -44,8 +39,8 @@ public class BlockPrePostProcessing {
     this.method = method;
   }
 
-  private BlockPrePost onEnter() {
-    BlockPrePost rv = new BlockPrePost();
+  private AuxFunctions onEnter() {
+    AuxFunctions rv = new AuxFunctions();
 
     rv.add(openCloseFrame('o'));
 
@@ -84,7 +79,14 @@ public class BlockPrePostProcessing {
   }
 
   public void apply(LinearBlock input) {
-    input.setOnEnter(onEnter());
+
+    /// methods onEnter: these include 
+    /// asserts, pushes, etc...
+    final AuxFunctions onEnter = onEnter();
+    for (FlatCallVoid fc : onEnter.getCalls()) {
+      input.getOnEnter().add(fc);
+    }
+
     visitBlock(input);
 
     if (!input.theLastItemIsReturn()) {
@@ -95,12 +97,13 @@ public class BlockPrePostProcessing {
   private void visitBlock(LinearBlock currentBlockPtr) {
     NullChecker.check(currentBlockPtr);
     openBlockScope();
+
     for (final LinearStatement item : currentBlockPtr.getItems()) {
       visitStmt(item);
     }
     if (!currentBlockPtr.theLastItemIsReturn()) {
       if (!method.isDestructor()) {
-        currentBlockPtr.setOnExit(genDestructorsForGivenScope(variablesBlock));
+        // currentBlockPtr.setOnExit(genDestructorsForGivenScope(variablesBlock));
       }
     }
     closeBlockScope();
@@ -160,71 +163,71 @@ public class BlockPrePostProcessing {
     this.variablesLoop.popscope();
   }
 
-  private List<Var> buildVarListFromGivenScope(Scope<String, Var> current) {
-    List<Var> res = new ArrayList<>();
-    for (Entry<String, Var> ent : current.getScope().entrySet()) {
-      final Var var = ent.getValue();
-      if (!var.getType().isClass()) {
-        continue;
-      }
-      if (var.is(VarBase.METHOD_PARAMETER)) {
-        continue;
-      }
-      if (!res.contains(var)) {
-        res.add(var);
-      }
-    }
-    return res;
-  }
-
-  private List<Var> getAllVarsDefinedAbove(Symtab<String, Var> scope) {
-    Scope<String, Var> current = scope.peekScope();
-    List<Var> res = buildVarListFromGivenScope(current);
-
-    Collections.sort(res);
-    return res;
-  }
-
-  private List<Var> getAllVarsDefinedAboveToTop(Symtab<String, Var> scope) {
-    List<Var> res = new ArrayList<>();
-    List<Scope<String, Var>> scopes = scope.getScopes();
-    for (Scope<String, Var> s : scopes) {
-      res.addAll(buildVarListFromGivenScope(s));
-    }
-    Collections.sort(res);
-    return res;
-  }
-
-  private BlockPrePost genDestructorsFromCurrentScopeToTop(Symtab<String, Var> scope) {
-    List<Var> vars = getAllVarsDefinedAboveToTop(scope);
-    return genDestructorsForGivenVars(vars);
-  }
-
-  private BlockPrePost genDestructorsForGivenScope(Symtab<String, Var> scope) {
-    List<Var> vars = getAllVarsDefinedAbove(scope);
-    return genDestructorsForGivenVars(vars);
-  }
-
-  private BlockPrePost genDestructorsForGivenVars(List<Var> vars) {
-    BlockPrePost res = new BlockPrePost();
-    for (Var v : vars) {
-      List<Var> args = new ArrayList<>();
-      args.add(v);
-
-      if (v.getType().isClass()) {
-        if (!v.isOriginalNoTempVar()) {
-          continue;
-        }
-
-        final ClassDeclaration classType = v.getType().getClassTypeFromRef();
-        final ClassMethodDeclaration destructor = classType.getDestructor();
-
-        FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
-        res.add(fc);
-      }
-    }
-    return res;
-  }
+  //  private List<Var> buildVarListFromGivenScope(Scope<String, Var> current) {
+  //    List<Var> res = new ArrayList<>();
+  //    for (Entry<String, Var> ent : current.getScope().entrySet()) {
+  //      final Var var = ent.getValue();
+  //      if (!var.getType().isClass()) {
+  //        continue;
+  //      }
+  //      if (var.is(VarBase.METHOD_PARAMETER)) {
+  //        continue;
+  //      }
+  //      if (!res.contains(var)) {
+  //        res.add(var);
+  //      }
+  //    }
+  //    return res;
+  //  }
+  //
+  //  private List<Var> getAllVarsDefinedAbove(Symtab<String, Var> scope) {
+  //    Scope<String, Var> current = scope.peekScope();
+  //    List<Var> res = buildVarListFromGivenScope(current);
+  //
+  //    Collections.sort(res);
+  //    return res;
+  //  }
+  //
+  //  private List<Var> getAllVarsDefinedAboveToTop(Symtab<String, Var> scope) {
+  //    List<Var> res = new ArrayList<>();
+  //    List<Scope<String, Var>> scopes = scope.getScopes();
+  //    for (Scope<String, Var> s : scopes) {
+  //      res.addAll(buildVarListFromGivenScope(s));
+  //    }
+  //    Collections.sort(res);
+  //    return res;
+  //  }
+  //
+  //  private AuxFunctions genDestructorsFromCurrentScopeToTop(Symtab<String, Var> scope) {
+  //    List<Var> vars = getAllVarsDefinedAboveToTop(scope);
+  //    return genDestructorsForGivenVars(vars);
+  //  }
+  //
+  //  private AuxFunctions genDestructorsForGivenScope(Symtab<String, Var> scope) {
+  //    List<Var> vars = getAllVarsDefinedAbove(scope);
+  //    return genDestructorsForGivenVars(vars);
+  //  }
+  //
+  //  private AuxFunctions genDestructorsForGivenVars(List<Var> vars) {
+  //    AuxFunctions res = new AuxFunctions();
+  //    for (Var v : vars) {
+  //      List<Var> args = new ArrayList<>();
+  //      args.add(v);
+  //
+  //      if (v.getType().isClass()) {
+  //        if (!v.isOriginalNoTempVar()) {
+  //          continue;
+  //        }
+  //
+  //        final ClassDeclaration classType = v.getType().getClassTypeFromRef();
+  //        final ClassMethodDeclaration destructor = classType.getDestructor();
+  //
+  //        FlatCallVoid fc = new FlatCallVoid(destructor.signToStringCall(), args);
+  //        res.add(fc);
+  //      }
+  //    }
+  //    return res;
+  //  }
 
   /// 
 
@@ -262,12 +265,12 @@ public class BlockPrePostProcessing {
     if (loop.hasStep()) {
       defineVars(loop.getStep());
     }
-    linearContinue.setDestructors(genDestructorsForGivenScope(variablesLoop));
+    //linearContinue.setDestructors(genDestructorsForGivenScope(variablesLoop));
   }
 
   private void rewriteBreak(LinearStatement s) {
     LinearBreak brk = s.getLinearBreak();
-    brk.setDestructors(genDestructorsForGivenScope(variablesLoop));
+    //brk.setAuxFunctions(genDestructorsForGivenScope(variablesLoop));
   }
 
   private void rewriteLoop(LinearStatement s) {
@@ -286,11 +289,11 @@ public class BlockPrePostProcessing {
     LinearReturn linearReturn = s.getLinearReturn();
 
     /// TODO: rewrite this more clean
-    final BlockPrePost destructors = genDestructorsFromCurrentScopeToTop(variablesBlock);
-    final BlockPrePost withoutTheVar = new BlockPrePost();
+    final AuxFunctions destructors = new AuxFunctions(); // genDestructorsFromCurrentScopeToTop(variablesBlock);
+    final AuxFunctions withoutTheVar = new AuxFunctions();
 
     if (linearReturn.hasResult()) {
-      for (FlatCallVoid fc : destructors.getDestructors()) {
+      for (FlatCallVoid fc : destructors.getCalls()) {
         Var v = fc.getArgs().get(0);
         if (v.equals(linearReturn.getResult())) {
           continue;
@@ -311,7 +314,7 @@ public class BlockPrePostProcessing {
 
   private void rewriteBlock(LinearStatement s) {
     final LinearBlock linearBlock = s.getLinearBlock();
-    linearBlock.setOnExit(genDestructorsForGivenScope(variablesBlock));
+    //linearBlock.setOnExit(genDestructorsForGivenScope(variablesBlock));
 
     visitBlock(linearBlock);
   }

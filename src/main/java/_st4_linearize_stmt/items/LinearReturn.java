@@ -5,7 +5,7 @@ import _st3_linearize_expr.leaves.Var;
 public class LinearReturn {
 
   private final Var result;
-  private BlockPrePost destructors;
+  private AuxFunctions destructors;
 
   public LinearReturn(Var result) {
     this.result = result;
@@ -15,11 +15,11 @@ public class LinearReturn {
     return result != null;
   }
 
-  public BlockPrePost getDestructors() {
+  public AuxFunctions getDestructors() {
     return destructors;
   }
 
-  public void setDestructors(BlockPrePost destructors) {
+  public void setDestructors(AuxFunctions destructors) {
     this.destructors = destructors;
   }
 

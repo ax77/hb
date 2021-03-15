@@ -2,7 +2,7 @@ package _st4_linearize_stmt.items;
 
 public class LinearContinue {
   private final LinearLoop loop;
-  private BlockPrePost destructors;
+  private AuxFunctions destructors;
 
   public LinearContinue(LinearLoop loop) {
     this.loop = loop;
@@ -12,11 +12,11 @@ public class LinearContinue {
     return loop;
   }
 
-  public BlockPrePost getDestructors() {
+  public AuxFunctions getDestructors() {
     return destructors;
   }
 
-  public void setDestructors(BlockPrePost destructors) {
+  public void setDestructors(AuxFunctions destructors) {
     this.destructors = destructors;
   }
 
