@@ -1,4 +1,11 @@
+package _st7_codeout;
+
+public abstract class GenRT {
+
+  public static String prebuf() {
+   
     //@formatter:off
+    
     StringBuilder sb = new StringBuilder();
     sb.append("#include <assert.h>                            \n");
     sb.append("#include <limits.h>                            \n");
@@ -67,3 +74,8 @@
     sb.append("    return rv;                                 \n");
     sb.append("}                                              \n");
     //@formatter:on
+
+    return sb.toString();
+  }
+
+}

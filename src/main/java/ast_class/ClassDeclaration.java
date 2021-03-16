@@ -38,7 +38,6 @@ public class ClassDeclaration implements Serializable, Location {
   private final List<VarDeclarator> fields;
   private final List<ClassMethodDeclaration> methods;
   private final List<StmtBlock> staticBlocks;
-  private ClassMethodDeclaration destructor;
 
   /// if it is a class it may implements some interfaces
   ///
@@ -133,15 +132,6 @@ public class ClassDeclaration implements Serializable, Location {
   public void setBeginPos(Token beginPos) {
     NullChecker.check(beginPos);
     this.beginPos = beginPos;
-  }
-
-  public ClassMethodDeclaration getDestructor() {
-    return destructor;
-  }
-
-  public void setDestructor(ClassMethodDeclaration destructor) {
-    NullChecker.check(destructor);
-    this.destructor = destructor;
   }
 
   public boolean isComplete() {
@@ -421,10 +411,6 @@ public class ClassDeclaration implements Serializable, Location {
 
     for (ClassMethodDeclaration constructor : constructors) {
       sb.append(constructor.toString() + "\n");
-    }
-
-    if (destructor != null) {
-      sb.append(destructor.toString() + "\n");
     }
 
     for (ClassMethodDeclaration method : methods) {

@@ -1,7 +1,6 @@
 package ast_method;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import _st1_templates.TypeSetter;
@@ -13,7 +12,6 @@ import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
-import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import tokenize.Ident;
@@ -60,23 +58,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
     this.uniqueId = GlobalCounter.next();
 
-  }
-
-  // deinit
-  public ClassMethodDeclaration(ClassDeclaration clazz, StmtBlock block, Token beginPos) {
-
-    NullChecker.check(clazz, block, beginPos);
-
-    this.base = ClassMethodBase.IS_DESTRUCTOR;
-    this.mod = new Modifiers();
-    this.clazz = clazz;
-    this.identifier = Keywords.deinit_ident;
-    this.parameters = new ArrayList<>();
-    this.returnType = new Type(beginPos);
-    this.block = block;
-    this.beginPos = beginPos;
-
-    this.uniqueId = GlobalCounter.next();
   }
 
   @Override
@@ -164,10 +145,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     sb.append(parametersToString());
     sb.append(block.toString());
     return sb.toString();
-  }
-
-  public boolean isDestructor() {
-    return base == ClassMethodBase.IS_DESTRUCTOR;
   }
 
   public boolean isFunction() {

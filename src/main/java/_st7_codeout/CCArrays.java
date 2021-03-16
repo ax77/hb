@@ -6,10 +6,11 @@ public abstract class CCArrays {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("struct array_@DATATYPE@ { \n");
-    sb.append("    @DATATYPE@ * data;    \n");
-    sb.append("    size_t size, alloc;   \n");
-    sb.append("};                        \n");
+    sb.append("struct array_@DATATYPE@ {            \n");
+    sb.append("    @DATATYPE@ * data;               \n");
+    sb.append("    size_t size;                     \n");
+    sb.append("    size_t alloc;                    \n");
+    sb.append("};                                   \n");
     //@formatter:on
 
     String src = sb.toString();
@@ -32,27 +33,21 @@ public abstract class CCArrays {
     //@formatter:off
     StringBuilder sb = new StringBuilder();
     sb.append("{ \n");
-    sb.append("    assert(__this); \n");
-    sb.append("    assert(__this->data); \n");
-    //
-    sb.append("    if (__this->size >= __this->alloc) { \n");
-    if(terminated) {
-      sb.append("        __this->alloc += 1; \n");
-    }
-    sb.append("        __this->alloc *= 2; \n");
-    sb.append("        @DATATYPE@ *ndata = get_memory(__this->data, sizeof(@DATATYPE@) * __this->alloc, TD_ARRAY_TABLE);  \n");
-    sb.append("        for(size_t i=0; i<__this->size; i+=1) \n{\n");
-    sb.append("            ndata[i] = __this->data[i];\n");
-    sb.append("        }\n");
-    sb.append("        __this->data = ndata; \n");
-    sb.append("    } \n");
-    sb.append("    __this->data[__this->size++] = e; \n");
-    
-    if(terminated) {
-      sb.append("    __this->data[__this->size] = ((@DATATYPE@) 0); \n");
-    }
-    
-    sb.append("} \n");
+    sb.append("    assert(__this);                                                       \n");
+    sb.append("    assert(__this->data);                                                 \n");
+    sb.append("    if (__this->size >= __this->alloc) {                                  \n"); if(terminated) {
+    sb.append("        __this->alloc += 1;                                               \n"); }
+    sb.append("        __this->alloc *= 2;                                               \n");
+    sb.append("        @DATATYPE@ *ndata = hmalloc(sizeof(@DATATYPE@) * __this->alloc);  \n");
+    sb.append("        for(size_t i = 0; i < __this->size; i += 1) {                     \n");
+    sb.append("            ndata[i] = __this->data[i];                                   \n");
+    sb.append("        }                                                                 \n");
+    sb.append("        free(__this->data);                                               \n");
+    sb.append("        __this->data = ndata;                                             \n");
+    sb.append("    }                                                                     \n");
+    sb.append("    __this->data[__this->size++] = e;                                     \n"); if(terminated) {
+    sb.append("    __this->data[__this->size] = ((@DATATYPE@) 0);                        \n");}
+    sb.append("}                                                                         \n");
     //@formatter:on
 
     String src = sb.toString();
@@ -121,9 +116,9 @@ public abstract class CCArrays {
     sb.append("    assert(__this);                                                \n");
     sb.append("    __this->alloc = 2;                                             \n");
     sb.append("    __this->size = 0;                                              \n");
-    sb.append("    __this->data = get_memory(sizeof(@DATATYPE@) * __this->alloc, TD_ARRAY_TABLE);    \n");
+    sb.append("    __this->data = hmalloc(sizeof(@DATATYPE@) * __this->alloc);    \n");
     sb.append("    for (size_t i = 0; i < __this->alloc; i++) {                   \n");
-    sb.append("        __this->data[i] = 0;                                       \n");
+    sb.append("        __this->data[i] = ((@DATATYPE@) 0);                        \n");
     sb.append("    }                                                              \n");
     sb.append("}                                                                  \n");
    //@formatter:on

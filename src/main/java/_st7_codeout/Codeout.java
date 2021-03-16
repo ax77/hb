@@ -89,24 +89,7 @@ public class Codeout {
   }
 
   private String includes() {
-    StringBuilder sb = new StringBuilder();
-
-    //sb.append("#include <assert.h>  \n");
-    //sb.append("#include <ctype.h>   \n");
-    //sb.append("#include <limits.h>  \n");
-    //sb.append("#include <stdarg.h>  \n");
-    //sb.append("#include <stdbool.h> \n");
-    //sb.append("#include <stddef.h>  \n");
-    //sb.append("#include <stdint.h>  \n");
-    //sb.append("#include <stdio.h>   \n");
-    //sb.append("#include <stdlib.h>  \n");
-    //sb.append("#include <string.h>  \n");
-
-    sb.append("#include \"generated_types.h\" \n");
-    sb.append("#include \"hrt/heap.h\"        \n");
-    sb.append("\n\n");
-
-    return sb.toString();
+    return GenRT.prebuf();
   }
 
   private void line(String s) {
@@ -220,23 +203,6 @@ public class Codeout {
   @Override
   public String toString() {
 
-    try {
-      GenAppendDepsFile.g(pods);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    try {
-      GenIsCompoundFile.g(pods);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    try {
-      GenDeinitsFile.g(pods);
-    } catch (IOException e1) {
-      e1.printStackTrace();
-    }
-
     Set<ClassDeclaration> arrays = new HashSet<>();
     Set<ClassDeclaration> strings = new HashSet<>();
     Set<Function> arrayMethods = new HashSet<>();
@@ -249,19 +215,20 @@ public class Codeout {
     String functions = genFunctions(arrayMethods, stringMethods, mainMethodOut);
 
     StringBuilder genTypesFile = new StringBuilder();
-    genTypesFile.append(GenTypeDescriptions.genTypeDescrsExtern(pods));
-    genTypesFile.append("\n");
+    genTypesFile.append("typedef int boolean;                        \n");
+    genTypesFile.append("typedef struct string * string;             \n\n");
+    genTypesFile.append("struct string                               \n");
+    genTypesFile.append("{                                           \n");
+    genTypesFile.append("    char *buffer;                           \n");
+    genTypesFile.append("    size_t len;                             \n");
+    genTypesFile.append("};                                          \n\n");
+    genTypesFile.append("void string_init(string __this, char *buf); \n");
     genTypesFile.append(structTypedefs);
     genTypesFile.append("\n");
     genTypesFile.append(funcProtos);
     genTypesFile.append("\n");
     genTypesFile.append(structsImpls);
     genTypesFile.append("\n");
-    try {
-      GenGeneratedTypesFile.genGeneratedTypesFile(genTypesFile.toString());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
 
     if (mainMethodOut.size() != 1) {
       throw new AstParseException("there is no main...");
@@ -277,8 +244,8 @@ public class Codeout {
 
     // protos
     sb.append(includes());
+    sb.append(genTypesFile.toString());
     sb.append(CCMacro.genMacro());
-    sb.append(GenTypeDescriptions.genTypeDescrsImpl(pods));
     sb.append(GenArrays.buildArraysProtos(arrays));
     sb.append(stringsLabels.toString());
     sb.append("\n");
@@ -294,13 +261,8 @@ public class Codeout {
 
     // main
     sb.append(mainMethodImpl);
-    sb.append("int main(int args, char** argv) \n{\n");
-    sb.append("    initHeap();   \n");
-    sb.append("    init_frames();\n");
-    sb.append("    open_frame(); \n\n");
+    sb.append("int main(int argc, char** argv) \n{\n");
     sb.append("    int result = " + mainMethodCall + ";\n\n");
-    sb.append("    dump_heap();   \n");
-    sb.append("    close_frame(); \n");
     sb.append("    printf(\"%d\\n\", result);\n");
     sb.append("    return result;\n");
     sb.append("\n}\n");

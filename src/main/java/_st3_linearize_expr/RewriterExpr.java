@@ -156,6 +156,7 @@ public class RewriterExpr {
         // reg_ptr_in_a_frame(__t15)
         // strtemp_init_0(__t15, __t14)
 
+        // 1
         final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
         final Var lvalueVar = node.getLvalue();
         AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
@@ -165,11 +166,7 @@ public class RewriterExpr {
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
 
-        if (!method.isDestructor()) {
-          FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
-          rv.add(new FlatCodeItem(regPtr));
-        }
-
+        // 3
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
 
@@ -228,6 +225,7 @@ public class RewriterExpr {
     final Var lvalueVar = node.getLvalue();
     final String sconst = node.getRvalue();
 
+    // 1
     final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
     rv.add(new FlatCodeItem(assignVarAllocObject));
 
@@ -240,11 +238,7 @@ public class RewriterExpr {
     final List<Var> args = new ArrayList<>();
     args.add(0, lvalueVar);
 
-    if (!method.isDestructor()) {
-      FlatCallVoid regPtr = new FlatCallVoid(AuxNames.REG_PTR_IN_A_FRAME, args);
-      rv.add(new FlatCodeItem(regPtr));
-    }
-
+    // 3
     final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(AuxNames.STRING_INIT, argsInstance,
         lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
@@ -388,12 +382,6 @@ public class RewriterExpr {
     }
 
     else if (base == ExpressionBase.EPRIMARY_STRING) {
-
-      /// string s = "a.b.c";
-      /// ::
-      /// 1) string s = new string();
-      /// 2) s.appendInternal('a');
-      /// n) --//--
 
       final String sconst = e.getBeginPos().getValue();
       final Var lvalue = VarCreator.justNewVar(e.getResultType());

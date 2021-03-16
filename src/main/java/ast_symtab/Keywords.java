@@ -39,7 +39,6 @@ public final class Keywords {
   public static final Ident false_ident          = g("false");
   public static final Ident this_ident           = g("this");
   // new syntax:
-  public static final Ident deinit_ident         = g("deinit");
   public static final Ident cast_ident           = g("cast");
   // types:
   public static final Ident char_ident           = g("char");

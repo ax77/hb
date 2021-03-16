@@ -1,5 +1,5 @@
 package ast_method;
 
 public enum ClassMethodBase {
-    IS_CONSTRUCTOR, IS_DESTRUCTOR, IS_FUNC,
+    IS_CONSTRUCTOR, IS_FUNC,
 }

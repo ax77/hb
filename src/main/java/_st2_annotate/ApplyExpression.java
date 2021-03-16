@@ -19,7 +19,6 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
-import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -256,12 +255,7 @@ public class ApplyExpression {
     // self.fn(1,2,3)
 
     final ClassDeclaration clazz = getClassFromObject(methodInvocation.getObject(), e);
-    ClassMethodDeclaration method = null;
-    if (methodInvocation.getFuncname().equals(Keywords.deinit_ident)) {
-      method = clazz.getDestructor();
-    } else {
-      method = clazz.getMethod(methodInvocation.getFuncname(), methodInvocation.getArguments());
-    }
+    ClassMethodDeclaration method = clazz.getMethod(methodInvocation.getFuncname(), methodInvocation.getArguments());
 
     if (method == null) {
       ErrorLocation.errorExpression("class has no method: " + methodInvocation.getFuncname().getName(), e);

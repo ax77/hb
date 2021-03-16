@@ -61,11 +61,6 @@ public class ApplyUnit {
       applyMethod(object, constructor);
     }
 
-    //destructor
-    if (object.getDestructor() != null) {
-      applyMethod(object, object.getDestructor());
-    }
-
     symtabApplier.closeClassScope();
   }
 

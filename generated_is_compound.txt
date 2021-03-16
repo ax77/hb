@@ -1,5 +1,0 @@
-if (datatype == TD_OPT) 
-{
-    return 1;
-
-}

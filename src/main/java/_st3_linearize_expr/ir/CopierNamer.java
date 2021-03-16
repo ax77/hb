@@ -22,9 +22,6 @@ public abstract class CopierNamer {
     if (m.isConstructor()) {
       sb.append("init_");
     }
-    if (m.isDestructor()) {
-      sb.append("deinit_");
-    }
     sb.append(m.getUniqueIdToString());
     return sb.toString();
   }

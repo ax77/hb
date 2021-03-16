@@ -56,12 +56,6 @@ public abstract class GenArrays {
         sb.append(block);
       }
 
-      else if (method.getIdentifier().getName().equals("opAssign")) {
-        String block = " \n{\n return rvalue; \n}\n ";
-        sb.append(f.signToString());
-        sb.append(block);
-      }
-
       else if (method.getIdentifier().getName().equals("size")) {
         String block = CCArrays.genArraySizeBlock(datatype);
         sb.append(f.signToString());
@@ -72,10 +66,6 @@ public abstract class GenArrays {
 
         if (method.isConstructor()) {
           String block = CCArrays.genArrayAllocBlock(datatype);
-          sb.append(f.signToString());
-          sb.append(block);
-        } else if (method.isDestructor()) {
-          String block = " \n{\n  \n}\n ";
           sb.append(f.signToString());
           sb.append(block);
         }

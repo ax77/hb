@@ -1,6 +1,0 @@
-if (datatype == TD_OPT)
-{
-    struct opt *e = (struct opt*) ptr;
-    vec_add_unique_ignore_null(inProcessing, try_to_find_markable_by_ptr(e->value));
-    return;
-}

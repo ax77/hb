@@ -1,1 +1,0 @@
-gcc -std=c99 -w main.c hrt/*.c -o main
