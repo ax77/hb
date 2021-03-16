@@ -73,21 +73,6 @@ public class Codeout {
     return sb.toString();
   }
 
-  public String classHeaderToString(ClassDeclaration c, boolean withKw) {
-    StringBuilder sb = new StringBuilder();
-    if (withKw) {
-      sb.append("struct ");
-    }
-    sb.append(c.getIdentifier().getName());
-
-    if (!c.getTypeParametersT().isEmpty()) {
-      sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(c.getTypeParametersT()));
-    }
-
-    return sb.toString();
-  }
-
   private String includes() {
     return GenRT.prebuf();
   }
@@ -339,7 +324,7 @@ public class Codeout {
       if (c.isNativeString()) {
         continue;
       }
-      sb.append("typedef " + classHeaderToString(c, true) + " * " + classHeaderToString(c, false) + ";\n");
+      sb.append("typedef struct " + c.headerToString() + " * " + c.headerToString() + ";\n");
     }
 
     return sb.toString();

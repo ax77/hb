@@ -22,20 +22,10 @@ public class AssignVarAllocObject {
     return typename;
   }
 
-  private String classHeaderToString(ClassDeclaration clazz) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(clazz.getIdentifier().getName());
-    if (!clazz.getTypeParametersT().isEmpty()) {
-      sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(clazz.getTypeParametersT()));
-    }
-    return sb.toString();
-  }
-
   @Override
   public String toString() {
     final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + classHeaderToString(clazz) + "))";
+    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + clazz.headerToString() + "))";
   }
 
 }

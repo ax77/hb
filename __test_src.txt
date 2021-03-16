@@ -1,73 +1,13 @@
-#include <assert.h>
-#include <limits.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-void* hmalloc(size_t size);
-void* hrealloc(void* old, size_t newsize);
-void *hcalloc(size_t count, size_t eltsize);
-char *hstrdup(char *str);
-
-void* hmalloc(size_t size)
-{
-    if (size == 0) {
-        size = 1;
+class main_class {
+  int main() {
+    array<char> str = new array<char>();
+    str.add('a');
+    str.add('b');
+    str.add('c');
+    for(int i = 0; i < str.size(); i += 1) {
+      char c = str.get(i);
+      std.print("%c", c);
     }
-    assert(size < INT_MAX);
-
-    void *ptr = NULL;
-    ptr = malloc(size);
-    if (ptr == NULL) {
-        ptr = malloc(size);
-        if (ptr == NULL) {
-            ptr = malloc(size);
-        }
-    }
-    assert(ptr);
-    return ptr;
-}
-
-void* hrealloc(void* old, size_t newsize)
-{
-    void *ptr = NULL;
-    ptr = realloc(old, newsize);
-    if (ptr == NULL) {
-        ptr = realloc(old, newsize);
-        if (ptr == NULL) {
-            ptr = realloc(old, newsize);
-        }
-    }
-    assert(ptr);
-    return ptr;
-}
-
-void *hcalloc(size_t count, size_t eltsize)
-{
-    assert(count);
-    assert(eltsize);
-
-    void* ptr = NULL;
-    ptr = calloc(count, eltsize);
-    if (ptr == NULL) {
-        ptr = calloc(count, eltsize);
-        if (ptr == NULL) {
-            ptr = calloc(count, eltsize);
-        }
-    }
-    assert(ptr);
-    return ptr;
-}
-
-char *hstrdup(char *str)
-{
-    assert(str);
-    size_t len = strlen(str);
-    char* rv = (char*) hmalloc(len + 1);
-    strcpy(rv, str);
-    rv[len] = '\0';
-    return rv;
+    return str.size();
+  }
 }
