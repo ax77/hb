@@ -244,8 +244,8 @@ public class RewriterExpr {
     args.add(0, lvalueVar);
 
     // 3
-    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(AuxNames.STRING_INIT, argsInstance,
-        lvalueVar);
+    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(node.getConstructor().getFullname(),
+        argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
   }
@@ -391,7 +391,13 @@ public class RewriterExpr {
       final String sconst = e.getBeginPos().getValue();
       final Var lvalue = VarCreator.justNewVar(e.getResultType());
 
-      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst);
+      List<Var> args = new ArrayList<>();
+      args.add(lvalue);
+      PureFunctionCallWithResult callWithResult = new PureFunctionCallWithResult(
+          lvalue.getType().getClassTypeFromRef().getConstructors().get(0).signToStringCall(), lvalue.getType(), args);
+
+      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
+          callWithResult);
       final FlatCodeItem item = new FlatCodeItem(res);
       genRaw(item);
 

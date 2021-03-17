@@ -283,26 +283,15 @@ public class Codeout {
   @Override
   public String toString() {
 
-    Set<ClassDeclaration> arrays = new HashSet<>();
-    Set<ClassDeclaration> strings = new HashSet<>();
-    Set<Function> arrayMethods = new HashSet<>();
-    Set<Function> stringMethods = new HashSet<>();
     List<Function> mainMethodOut = new ArrayList<>();
 
     String structTypedefs = genStructsTypedefs();
     String funcProtos = genFuncProtos();
-    String structsImpls = genStructs(arrays, strings);
-    String functions = genFunctions(arrayMethods, stringMethods, mainMethodOut);
+    String structsImpls = genStructs();
+    String functions = genFunctions(mainMethodOut);
 
     StringBuilder genTypesFile = new StringBuilder();
     genTypesFile.append("typedef int boolean;                        \n");
-    genTypesFile.append("typedef struct string * string;             \n\n");
-    genTypesFile.append("struct string                               \n");
-    genTypesFile.append("{                                           \n");
-    genTypesFile.append("    char *buffer;                           \n");
-    genTypesFile.append("    size_t len;                             \n");
-    genTypesFile.append("};                                          \n\n");
-    genTypesFile.append("void string_init(string __this, char *buf); \n");
     genTypesFile.append(structTypedefs);
     genTypesFile.append("\n");
     genTypesFile.append(funcProtos);
@@ -327,15 +316,11 @@ public class Codeout {
     sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
     sb.append(CCMacro.genMacro());
-    sb.append(GenArrays.buildArraysProtos(arrays));
     sb.append(stringsLabels.toString());
     sb.append("\n");
-    sb.append(CCString.genString());
     sb.append("\n");
 
     // impls
-    sb.append(GenArrays.buildArraysImplsStructs(arrays));
-    sb.append(GenArrays.buildArraysImplsMethods(arrayMethods));
     sb.append(builtinsFn.toString());
     sb.append(functions);
     sb.append("\n");
@@ -356,7 +341,7 @@ public class Codeout {
     return sb.toString();
   }
 
-  private String genFunctions(Set<Function> arrayMethods, Set<Function> stringMethods, List<Function> mainMethod) {
+  private String genFunctions(List<Function> mainMethod) {
     StringBuilder sb = new StringBuilder();
 
     for (Function f : functions) {
@@ -370,14 +355,7 @@ public class Codeout {
         mainMethod.add(f);
         continue;
       }
-      if (c.isNativeArray()) {
-        arrayMethods.add(f);
-        continue;
-      }
-      if (c.isNativeString()) {
-        stringMethods.add(f);
-        continue;
-      }
+
       sb.append(f.toString());
       sb.append("\n");
     }
@@ -385,21 +363,14 @@ public class Codeout {
     return sb.toString();
   }
 
-  private String genStructs(Set<ClassDeclaration> arrays, Set<ClassDeclaration> strings) {
+  private String genStructs() {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {
       if (c.isMainClass()) {
         continue;
       }
-      if (c.isNativeArray()) {
-        arrays.add(c);
-        continue;
-      }
-      if (c.isNativeString()) {
-        strings.add(c);
-        continue;
-      }
+
       sb.append(classToString(c));
       sb.append("\n");
     }
@@ -412,12 +383,6 @@ public class Codeout {
 
     for (ClassDeclaration c : pods) {
       if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNativeArray()) {
-        continue;
-      }
-      if (c.isNativeString()) {
         continue;
       }
       sb.append("typedef struct " + c.headerToString() + " * " + c.headerToString() + ";\n");
@@ -435,12 +400,6 @@ public class Codeout {
         if (!f.getMethodSignature().isMain()) {
           continue;
         }
-      }
-      if (c.isNativeArray()) {
-        continue;
-      }
-      if (c.isNativeString()) {
-        continue;
       }
       sb.append(f.signToString() + ";\n");
     }

@@ -51,6 +51,10 @@ public class ApplyUnitPostEachClass {
           continue;
         }
         final ExprExpression expr = stmt.getExprStmt();
+        if (expr.is(ExpressionBase.EBUILTIN_FN)) {
+          continue; // not a var :)
+        }
+
         final VarDeclarator dest = getDest(expr);
         if (dest == null) {
           throw new AstParseException("unknown: " + expr.toString());
@@ -62,13 +66,11 @@ public class ApplyUnitPostEachClass {
       for (VarDeclarator var : fields) {
         if (!initialized.contains(var.getIdentifier().getName())) {
           hasErrors = true;
-          if (!c.isNativeString()) {
-            System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
-                + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());
-          }
+          System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
+              + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());
         }
       }
-      if (hasErrors && !c.isNativeString()) {
+      if (hasErrors) {
         throw new AstParseException("you should init all fields");
       }
 

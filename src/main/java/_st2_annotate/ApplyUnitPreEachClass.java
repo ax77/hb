@@ -30,10 +30,6 @@ public class ApplyUnitPreEachClass {
       return;
     }
 
-    if (object.isNativeArray() || object.isNativeString()) {
-      return;
-    }
-
     if (object.getConstructors().isEmpty()) {
       throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }

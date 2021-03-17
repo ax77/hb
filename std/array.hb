@@ -30,12 +30,14 @@ class array<T>
   }
   
   T get(int index) {
-    std.assert_true(size < index);
-    return data.get(at);
+    std.assert_true(index >= 0);
+    std.assert_true(index < size);
+    return data.get(index);
   }
   
   T set(int index, T e) {
-    std.assert_true(size < index);
+    std.assert_true(index >= 0);
+    std.assert_true(index < size);
     return data.set(index, e);
   }
 }

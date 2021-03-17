@@ -1,21 +1,18 @@
-class string 
-{
-  ptr<char> buf;  
-  
-  string() {
-    this.buf = new ptr<char>(1);
+class string {
+
+  private ptr<char> buffer;
+
+  string(ptr<char> buffer) {
+    this.buffer = buffer;
   }
-  
-  string(ptr<char> buf) {
-    this.buf = buf;
-  }
-  
+
   int length() {
-    return ptr.size();
+    return buffer.size();
   }
-  
-  char get(int at) {
-    std.assert_true(at < ptr.size());
-    return ptr.offset(at);
+
+  char get(int index) {
+    std.assert_true(index >= 0);
+    std.assert_true(index < buffer.size());
+    return buffer.get(index);
   }
 }

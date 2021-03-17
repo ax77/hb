@@ -13,7 +13,9 @@ class ptr<T> {
   int size;
 
   ptr(int size) {
-    raw_data = std.mem_malloc<T>(raw_data, size);
+    std.assert_true(size > 0);
+    this.raw_data = std.mem_malloc<T>(raw_data, size);
+    this.size = size;
   }
 
   void destroy() {
@@ -30,5 +32,9 @@ class ptr<T> {
     T old = std.mem_get<T>(raw_data, at);
     std.mem_set<T>(raw_data, at, e);
     return old;
+  }
+
+  int size() {
+    return size;
   }
 }
