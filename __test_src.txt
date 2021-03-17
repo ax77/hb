@@ -1,19 +1,105 @@
-@DATATYPE@ @FUNC_NAME_mem_malloc@ (@DATATYPE@ stub__, size_t size)
-{
-  @DATATYPE@ ptr = (@DATATYPE@) hmalloc(size);
-  return ptr;
+
+class ptr<T> {
+  std.pointer<T> raw_data;
+  int size;
+  ptr(int size) {
+    this.raw_data = std.mem_malloc<T>(raw_data, size);
+    this.size = size;
+  }
+  void destroy() {
+    std.mem_free<T>(raw_data);
+  }
+  T get(int at) {
+    std.assert_true(at < size);
+    return std.mem_get<T>(raw_data, at);
+  }
+  T set(int at, T e) {
+    std.assert_true(at < size);
+    T old = std.mem_get<T>(raw_data, at);
+    std.mem_set<T>(raw_data, at, e);
+    return old;
+  }
 }
 
-@DATATYPE@ @FUNC_NAME_mem_get@ (@DATATYPE@ raw_data, size_t index)
+class vec<T>
 {
-  assert(raw_data);
-  return raw_data[index];
+  ptr<T> data;
+  int size;
+  int alloc;
+
+  vec() {
+    this.size = 0;
+    this.alloc = 2;
+    this.data = new ptr<T>(sizeof(T) * this.alloc);
+  }
+
+  void add(T e) {
+    if(size >= alloc) {
+      alloc *= 2;
+
+      ptr<T> ndata = new ptr<T>(sizeof(T) * this.alloc);
+      for(int i = 0; i < size; i += 1) {
+        ndata.set(i, data.get(i));
+      }
+
+      data.destroy();
+      data = ndata;
+    }
+
+    data.set(size, e);
+    size += 1;
+  }
+
+  int size() {
+    return size;
+  }
+
+  T get(int index) {
+    std.assert_true(size < index);
+    return data.get(at);
+  }
+
+  T set(int index, T e) {
+    std.assert_true(size < index);
+    return data.set(index, e);
+  }
 }
 
-@DATATYPE@ @FUNC_NAME_mem_set@ (@DATATYPE@ raw_data, size_t index, @DATATYPE@ e)
+
+class main_class
 {
-  assert(raw_data);
-  @DATATYPE@ old = raw_data[index];
-  raw_data[index] = e;
-  return old;
+  int main()
+  {
+    vec<char> x = new vec<char>();
+    x.add('a');
+    x.add('b');
+    x.add('c');
+    x.add('d');
+    x.add('e');
+    for(int i = 0; i < x.size(); i += 1) {
+      char c = x.get(i);
+      std.print("%c\n", c);
+    }
+    
+    return 0;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

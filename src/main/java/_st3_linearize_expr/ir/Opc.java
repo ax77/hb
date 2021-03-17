@@ -6,6 +6,7 @@ public enum Opc {
   , AssignVarBinop                     // type a = b + c
   , AssignVarFalse                     // type a = false
   , AssignVarFieldAccess               // type a = b.c
+  , AssignVarSizeof                    // size_t a = sizeof(b)
   , AssignVarFlatCallClassCreationTmp  // temporary
   , AssignVarFlatCallStringCreationTmp // temporary
   , AssignVarFlatCallResult            // type a = f(b, c)

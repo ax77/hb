@@ -14,6 +14,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprSizeof;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
@@ -75,10 +76,19 @@ public class ApplyExpression {
       applyBuiltinFn(object, e);
     } else if (e.is(ExpressionBase.ETERNARY_OPERATOR)) {
       appyTernary(object, e);
-    } else {
+    } else if (e.is(ExpressionBase.ESIZEOF)) {
+      applySizeof(object, e);
+    }
+
+    else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applySizeof(ClassDeclaration object, ExprExpression e) {
+    ExprSizeof exprSizeof = e.getExprSizeof();
+    e.setResultType(TypeBindings.make_int()); /// TODO:size
   }
 
   private void appyTernary(ClassDeclaration object, ExprExpression e) {

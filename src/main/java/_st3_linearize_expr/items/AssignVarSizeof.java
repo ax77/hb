@@ -1,15 +1,13 @@
 package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
-import ast_class.ClassDeclaration;
-import ast_printers.TypePrinters;
 import ast_types.Type;
 
-public class AssignVarAllocObject {
+public class AssignVarSizeof {
   private final Var lvalue;
   private final Type typename;
 
-  public AssignVarAllocObject(Var lvalue, Type typename) {
+  public AssignVarSizeof(Var lvalue, Type typename) {
     this.lvalue = lvalue;
     this.typename = typename;
   }
@@ -24,9 +22,7 @@ public class AssignVarAllocObject {
 
   @Override
   public String toString() {
-    final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    
-    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + clazz.headerToString() + "))";
+    return lvalue.typeNameToString() + " = sizeof(" + typename.toString() + ")";
   }
 
 }

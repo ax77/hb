@@ -30,6 +30,7 @@ opcodes = """
     AssignVarTrue                      ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
+    AssignVarSizeof                    ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
     StoreFieldVar                      ,

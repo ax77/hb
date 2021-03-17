@@ -3,7 +3,7 @@ class string
   ptr<char> buf;  
   
   string() {
-    this.buf = new ptr<char>(sizeof(char) * 1);
+    this.buf = new ptr<char>(1);
   }
   
   string(ptr<char> buf) {

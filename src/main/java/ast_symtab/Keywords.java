@@ -32,6 +32,7 @@ public final class Keywords {
   public static final Ident private_ident        = g("private");
   public static final Ident public_ident         = g("public");
   public static final Ident return_ident         = g("return");
+  public static final Ident sizeof_ident         = g("sizeof");
   public static final Ident static_ident         = g("static");
   public static final Ident while_ident          = g("while");
   // literals

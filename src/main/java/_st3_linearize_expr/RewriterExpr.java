@@ -25,6 +25,7 @@ import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
+import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
@@ -49,6 +50,7 @@ import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_expr.ExprSizeof;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
@@ -159,6 +161,7 @@ public class RewriterExpr {
         // 1
         final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
         final Var lvalueVar = node.getLvalue();
+
         AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
         rv.add(new FlatCodeItem(assignVarAllocObject));
 
@@ -195,6 +198,8 @@ public class RewriterExpr {
       } else if (item.isStoreVarVar()) {
         rv.add(item);
       } else if (item.isAssignVarTernaryOp()) {
+        rv.add(item);
+      } else if (item.isAssignVarSizeof()) {
         rv.add(item);
       }
 
@@ -580,6 +585,15 @@ public class RewriterExpr {
       final Var lhsVar = VarCreator.justNewVar(number.getType());
       AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);
       genRaw(new FlatCodeItem(assignVarNum));
+    }
+
+    else if (base == ExpressionBase.ESIZEOF) {
+      ExprSizeof node = e.getExprSizeof();
+
+      final Var lhsVar = VarCreator.justNewVar(e.getResultType());
+      AssignVarSizeof assignVarSizeof = new AssignVarSizeof(lhsVar, node.getType());
+      genRaw(new FlatCodeItem(assignVarSizeof));
+
     }
 
     else {
