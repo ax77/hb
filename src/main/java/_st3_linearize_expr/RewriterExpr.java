@@ -55,6 +55,7 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_printers.TypePrinters;
 import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -552,7 +553,7 @@ public class RewriterExpr {
         fullname.append("_");
         for (int i = 0; i < args.size(); i += 1) {
           Var arg = args.get(i);
-          fullname.append(arg.getType().toString());
+          fullname.append(TypePrinters.genName(arg.getType())); // arg.getType().toString()
           if (i + 1 < args.size()) {
             fullname.append("_");
           }

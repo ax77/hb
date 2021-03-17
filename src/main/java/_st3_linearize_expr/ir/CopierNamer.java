@@ -23,6 +23,7 @@ public abstract class CopierNamer {
       sb.append("init_");
     }
     sb.append(m.getUniqueIdToString());
+    sb.append("_");
     return sb.toString();
   }
 

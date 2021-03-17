@@ -3,7 +3,7 @@ package _st7_codeout;
 public abstract class GenRT {
 
   public static String prebuf() {
-   
+
     //@formatter:off
     
     StringBuilder sb = new StringBuilder();
@@ -14,11 +14,15 @@ public abstract class GenRT {
     sb.append("#include <stdint.h>                            \n");
     sb.append("#include <stdio.h>                             \n");
     sb.append("#include <stdlib.h>                            \n");
-    sb.append("#include <string.h>                            \n");
+    sb.append("#include <string.h>                            \n\n");
+    
+    sb.append("typedef int boolean;                           \n\n");
+    
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");
     sb.append("void *hcalloc(size_t count, size_t eltsize);   \n");
-    sb.append("char *hstrdup(char *str);                      \n");
+    sb.append("char *hstrdup(char *str);                      \n\n");
+    
     sb.append("void* hmalloc(size_t size)                     \n");
     sb.append("{                                              \n");
     sb.append("    if (size == 0) {                           \n");
@@ -35,7 +39,8 @@ public abstract class GenRT {
     sb.append("    }                                          \n");
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n");
+    sb.append("}                                              \n\n");
+    
     sb.append("void* hrealloc(void* old, size_t newsize)      \n");
     sb.append("{                                              \n");
     sb.append("    void *ptr = NULL;                          \n");
@@ -48,7 +53,8 @@ public abstract class GenRT {
     sb.append("    }                                          \n");
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n");
+    sb.append("}                                              \n\n");
+    
     sb.append("void *hcalloc(size_t count, size_t eltsize)    \n");
     sb.append("{                                              \n");
     sb.append("    assert(count);                             \n");
@@ -63,7 +69,8 @@ public abstract class GenRT {
     sb.append("    }                                          \n");
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n");
+    sb.append("}                                              \n\n");
+    
     sb.append("char *hstrdup(char *str)                       \n");
     sb.append("{                                              \n");
     sb.append("    assert(str);                               \n");
@@ -72,7 +79,7 @@ public abstract class GenRT {
     sb.append("    strcpy(rv, str);                           \n");
     sb.append("    rv[len] = \'\\0\';                         \n");
     sb.append("    return rv;                                 \n");
-    sb.append("}                                              \n");
+    sb.append("}                                              \n\n");
     //@formatter:on
 
     return sb.toString();

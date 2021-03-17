@@ -29,7 +29,7 @@ public class StdPointer implements Serializable, TypeSetter {
 
   @Override
   public String toString() {
-    return type.toString() + "_ptr_t";
+    return type.toString() + "*";
   }
 
 }

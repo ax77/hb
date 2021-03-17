@@ -51,11 +51,13 @@ public class ClassTypeRef implements Serializable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    sb.append("struct ");
     sb.append(clazz.getIdentifier().getName());
     if (!typeArguments.isEmpty()) {
       sb.append("_");
       sb.append(TypePrinters.typeArgumentsToString(typeArguments));
     }
+    sb.append("*");
     return sb.toString();
   }
 

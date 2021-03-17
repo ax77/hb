@@ -21,19 +21,4 @@ public class GenericListPrinter {
     return sb.toString();
   }
 
-  public static <E> String commaListNoBraces(List<E> list) {
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < list.size(); i++) {
-      E elem = list.get(i);
-      sb.append(elem.toString());
-
-      if (i + 1 < list.size()) {
-        sb.append(", ");
-      }
-    }
-
-    return sb.toString();
-  }
-
 }

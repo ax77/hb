@@ -212,8 +212,8 @@ public class Codeout {
       throw new AstParseException("expect pointer");
     }
     final Type subtype = restype.getStdPointer().getType();
-    String tpname = subtype.toString() + " * ";
-    builtinsTypedefs.append("typedef " + tpname + subtype.toString() + "_ptr_t;\n");
+    String tpname = subtype.toString()+ " * ";
+    //builtinsTypedefs.append("typedef " + tpname + subtype.toString() + "_ptr_t;\n");
 
     String template = CCPointers.genMemMalloc(tpname, fullname);
     line(template);
@@ -291,7 +291,6 @@ public class Codeout {
     String functions = genFunctions(mainMethodOut);
 
     StringBuilder genTypesFile = new StringBuilder();
-    genTypesFile.append("typedef int boolean;                        \n");
     genTypesFile.append(structTypedefs);
     genTypesFile.append("\n");
     genTypesFile.append(funcProtos);
@@ -385,7 +384,7 @@ public class Codeout {
       if (c.isMainClass()) {
         continue;
       }
-      sb.append("typedef struct " + c.headerToString() + " * " + c.headerToString() + ";\n");
+      sb.append("struct " + c.headerToString() + ";\n");
     }
 
     return sb.toString();
