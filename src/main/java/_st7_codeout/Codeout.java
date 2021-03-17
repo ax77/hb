@@ -12,7 +12,9 @@ import java.util.Set;
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
@@ -26,6 +28,9 @@ public class Codeout {
   private final List<Function> functions;
 
   private final Set<String> printfNames;
+  private final Set<String> mallocNames;
+
+  private final StringBuilder builtinsTypedefs;
   private final StringBuilder builtinsFn;
   private final StringBuilder stringsLabels;
 
@@ -33,8 +38,10 @@ public class Codeout {
     this.pods = new ArrayList<>();
     this.functions = new ArrayList<>();
     this.printfNames = new HashSet<>();
+    this.mallocNames = new HashSet<>();
     this.builtinsFn = new StringBuilder();
     this.stringsLabels = new StringBuilder();
+    this.builtinsTypedefs = new StringBuilder();
   }
 
   public void add(ClassDeclaration e) {
@@ -89,22 +96,75 @@ public class Codeout {
 
     for (FlatCodeItem item : builtins) {
       if (item.isFlatCallVoid()) {
+
         FlatCallVoid fc = item.getFlatCallVoid();
         String fullname = fc.getFullname();
+
         if (fullname.startsWith("std_print_")) {
           if (!printfNames.contains(fullname)) {
             genPrintf(fc, fullname);
             printfNames.add(fullname);
           }
         }
+
+        else if (fullname.startsWith("std_mem_free")) {
+          /// std.mem_free<T>(raw_data);         free(raw_data)
+          if (!mallocNames.contains(fullname)) {
+            mallocNames.add(fullname);
+            line("void " + fullname + "(void *p) { ");
+            line("  free(p);");
+            line("}");
+          }
+        }
+
+        else if (fullname.startsWith("assert_true")) {
+          /// this is a macros, do not need a special handling
+        }
+
+        else {
+          throw new AstParseException("unimpl std.builtin: " + item.toString());
+        }
       }
 
       else if (item.isAssignVarFlatCallResult()) {
+        AssignVarFlatCallResult result = item.getAssignVarFlatCallResult();
+        PureFunctionCallWithResult fcall = result.getRvalue();
+
+        final String fullname = fcall.getFullname();
+
+        /// std.mem_malloc<T>(size);           raw_data = malloc(size)
+        /// std.mem_get<T>(raw_data, at);      return raw_data[at]
+        /// std.mem_set<T>(raw_data, at, e);   raw_data[at] = e
+
+        if (fullname.startsWith("std_mem_malloc")) {
+          if (!mallocNames.contains(fullname)) {
+            genMemMalloc(fcall, fullname);
+            mallocNames.add(fullname);
+          }
+        }
+
+        else if (fullname.startsWith("std_mem_get")) {
+          if (!mallocNames.contains(fullname)) {
+            genMemGet(fcall, fullname);
+            mallocNames.add(fullname);
+          }
+        }
+
+        else if (fullname.startsWith("std_mem_set")) {
+          if (!mallocNames.contains(fullname)) {
+            genMemSet(fcall, fullname);
+            mallocNames.add(fullname);
+          }
+        }
+
+        else {
+          throw new AstParseException("unimpl std.builtin: " + item.toString());
+        }
 
       }
 
       else {
-        throw new AstParseException("unr.");
+        throw new AstParseException("unimpl std.builtin: " + item.toString());
       }
     }
 
@@ -122,6 +182,41 @@ public class Codeout {
       String initBuffer = content.toString();
       stringsLabels.append("char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
     }
+  }
+
+  private void genMemSet(PureFunctionCallWithResult fcall, String fullname) {
+    Type restype = fcall.getArgs().get(0).getType();
+    if (!restype.isStdPointer()) {
+      throw new AstParseException("expect pointer");
+    }
+    final Type subtype = restype.getStdPointer().getType();
+    String tpname = subtype.toString() + " * ";
+    String template = CCPointers.genMemSet(subtype.toString(), fullname, tpname);
+    line(template);
+  }
+
+  private void genMemGet(PureFunctionCallWithResult fcall, String fullname) {
+    Type restype = fcall.getArgs().get(0).getType();
+    if (!restype.isStdPointer()) {
+      throw new AstParseException("expect pointer");
+    }
+    final Type subtype = restype.getStdPointer().getType();
+    String tpname = subtype.toString() + " * ";
+    String template = CCPointers.genMemGet(subtype.toString(), fullname, tpname);
+    line(template);
+  }
+
+  private void genMemMalloc(PureFunctionCallWithResult fcall, String fullname) {
+    Type restype = fcall.getArgs().get(0).getType();
+    if (!restype.isStdPointer()) {
+      throw new AstParseException("expect pointer");
+    }
+    final Type subtype = restype.getStdPointer().getType();
+    String tpname = subtype.toString() + " * ";
+    builtinsTypedefs.append("typedef " + tpname + subtype.toString() + "_ptr_t;\n");
+
+    String template = CCPointers.genMemMalloc(tpname, fullname);
+    line(template);
   }
 
   private void genPrintf(FlatCallVoid fc, String fullname) {
@@ -229,6 +324,7 @@ public class Codeout {
 
     // protos
     sb.append(includes());
+    sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
     sb.append(CCMacro.genMacro());
     sb.append(GenArrays.buildArraysProtos(arrays));

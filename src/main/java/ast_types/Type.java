@@ -38,7 +38,7 @@ public class Type implements Serializable, TypeApi {
   ///
   private Ident typenameId;
 
-  /// private String bytesStub;
+  private StdPointer stdPointer;
 
   public void fillPropValues(Type another) {
     NullChecker.check(another);
@@ -48,6 +48,12 @@ public class Type implements Serializable, TypeApi {
     this.base = another.base;
     this.classTypeRef = another.classTypeRef;
     this.typenameId = another.typenameId;
+    this.stdPointer = another.stdPointer;
+  }
+
+  public Type(StdPointer stdPointer) {
+    this.base = TypeBase.TP_STD_POINTER;
+    this.stdPointer = stdPointer;
   }
 
   public Type(Token beginPos) {
@@ -172,21 +178,18 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_boolean)) {
         return false;
       }
-    }
-
-    else if (is(TypeBase.TP_void)) {
+    } else if (is(TypeBase.TP_void)) {
       if (!another.is(TypeBase.TP_void)) {
         return false;
       }
-    }
-
-    /// else if (is(TypeBase.TP_BYTES)) {
-    ///   if (!another.is(TypeBase.TP_BYTES)) {
-    ///     return false;
-    ///   }
-    /// }
-
-    else if (is(TypeBase.TP_TYPENAME_ID)) {
+    } else if (is(TypeBase.TP_STD_POINTER)) {
+      if (!another.is(TypeBase.TP_STD_POINTER)) {
+        return false;
+      }
+      if (!stdPointer.isEqualTo(another.getStdPointer())) {
+        return false;
+      }
+    } else if (is(TypeBase.TP_TYPENAME_ID)) {
       if (!another.is(TypeBase.TP_TYPENAME_ID)) {
         return false;
       }
@@ -211,6 +214,10 @@ public class Type implements Serializable, TypeApi {
 
   }
 
+  public StdPointer getStdPointer() {
+    return stdPointer;
+  }
+
   @Override
   public String toString() {
     if (isPrimitive()) {
@@ -225,9 +232,9 @@ public class Type implements Serializable, TypeApi {
     if (isClass()) {
       return classTypeRef.toString();
     }
-    /// if (isBytes()) {
-    ///   return "char*";
-    /// }
+    if (isStdPointer()) {
+      return stdPointer.toString();
+    }
     return base.toString();
   }
 
@@ -324,9 +331,9 @@ public class Type implements Serializable, TypeApi {
     this.size = i;
   }
 
-  /// @Override
-  /// public boolean isBytes() {
-  ///   return is(TypeBase.TP_BYTES);
-  /// }
+  @Override
+  public boolean isStdPointer() {
+    return is(TypeBase.TP_STD_POINTER);
+  }
 
 }

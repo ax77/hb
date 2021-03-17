@@ -1,16 +1,20 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class {                             //001 \n");
-    sb.append("  int main() {                                 //002 \n");
-    sb.append("    array<char> str = new array<char>();       //003 \n");
-    sb.append("    str.add(\'a\');                            //004 \n");
-    sb.append("    str.add(\'b\');                            //005 \n");
-    sb.append("    str.add(\'c\');                            //006 \n");
-    sb.append("    for(int i = 0; i < str.size(); i += 1) {   //007 \n");
-    sb.append("      char c = str.get(i);                     //008 \n");
-    sb.append("      std.print(\"%c\", c);                    //009 \n");
-    sb.append("    }                                          //010 \n");
-    sb.append("    return str.size();                         //011 \n");
-    sb.append("  }                                            //012 \n");
-    sb.append("}                                              //013 \n");
+    sb.append("@DATATYPE@ @FUNC_NAME_mem_malloc@ (@DATATYPE@ stub__, size_t size)                 //001 \n");
+    sb.append("{                                                                                  //002 \n");
+    sb.append("  @DATATYPE@ ptr = (@DATATYPE@) hmalloc(size);                                     //003 \n");
+    sb.append("  return ptr;                                                                      //004 \n");
+    sb.append("}                                                                                  //005 \n");
+    sb.append("@DATATYPE@ @FUNC_NAME_mem_get@ (@DATATYPE@ raw_data, size_t index)                 //006 \n");
+    sb.append("{                                                                                  //007 \n");
+    sb.append("  assert(raw_data);                                                                //008 \n");
+    sb.append("  return raw_data[index];                                                          //009 \n");
+    sb.append("}                                                                                  //010 \n");
+    sb.append("@DATATYPE@ @FUNC_NAME_mem_set@ (@DATATYPE@ raw_data, size_t index, @DATATYPE@ e)   //011 \n");
+    sb.append("{                                                                                  //012 \n");
+    sb.append("  assert(raw_data);                                                                //013 \n");
+    sb.append("  @DATATYPE@ old = raw_data[index];                                                //014 \n");
+    sb.append("  raw_data[index] = e;                                                             //015 \n");
+    sb.append("  return old;                                                                      //016 \n");
+    sb.append("}                                                                                  //017 \n");
     //@formatter:on

@@ -1,7 +1,21 @@
 class string 
 {
-  array<char> buf;  
-  native string();
-  native int length();
-  native char get(int at);
+  ptr<char> buf;  
+  
+  string() {
+    this.buf = new ptr<char>(sizeof(char) * 1);
+  }
+  
+  string(ptr<char> buf) {
+    this.buf = buf;
+  }
+  
+  int length() {
+    return ptr.size();
+  }
+  
+  char get(int at) {
+    std.assert_true(at < ptr.size());
+    return ptr.offset(at);
+  }
 }

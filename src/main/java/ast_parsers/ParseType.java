@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
+import ast_types.StdPointer;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import parse.Parse;
@@ -20,7 +22,7 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  /// private boolean isBytes;
+  private boolean isStdPointer;
 
   public ParseType(Parse parser) {
 
@@ -52,12 +54,23 @@ public class ParseType {
       }
     }
 
-    /// if (!typeWasFound) {
-    ///   typeWasFound = parser.is(Keywords.bytes_ident);
-    ///   if (typeWasFound) {
-    ///     this.isBytes = true;
-    ///   }
-    /// }
+    ///TODO:pointers
+    if (!typeWasFound) {
+      if (parser.is(BuiltinNames.std_ident)) {
+        Token tok = parser.peek();
+        if (tok.ofType(T.T_DOT)) {
+          parser.move();
+          parser.move();
+          Token ptr = parser.moveget();
+          if (ptr.getValue().equals("pointer")) {
+            this.isStdPointer = true;
+          } else {
+            typeWasFound = false;
+            // parser.perror("unknown std type");
+          }
+        }
+      }
+    }
 
   }
 
@@ -67,11 +80,15 @@ public class ParseType {
       parser.perror("type is not recognized");
     }
 
-    /// // 0)
-    /// if (isBytes()) {
-    ///   parser.checkedMove(Keywords.bytes_ident);
-    ///   return new Type("");
-    /// }
+    if (isStdPointer()) {
+      List<Type> args = getTypeArguments();
+      if (args.size() != 1) {
+        parser.perror("expect 1 argument for std.pointer type");
+      }
+      StdPointer stdPointer = new StdPointer(args.get(0));
+      parser.getCurrentClass(true).registerTypeSetter(stdPointer);
+      return new Type(stdPointer);
+    }
 
     // 1)
     if (isPrimitive()) {
@@ -154,12 +171,12 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter; //isBytes
+    return isPrimitive || isReference || isTypeParameter || isStdPointer;
   }
 
-  //  public boolean isBytes() {
-  //    return isBytes;
-  //  }
+  public boolean isStdPointer() {
+    return isStdPointer;
+  }
 
   public boolean isPrimitive() {
     return isPrimitive;

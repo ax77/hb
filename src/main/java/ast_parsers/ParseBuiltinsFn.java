@@ -55,6 +55,26 @@ public class ParseBuiltinsFn {
       return new ExprExpression(builtinFn, beginPos);
     }
 
+    if (funcname.equals(BuiltinNames.mem_malloc_ident) || funcname.equals(BuiltinNames.mem_get_ident)
+        || funcname.equals(BuiltinNames.mem_free_ident) || funcname.equals(BuiltinNames.mem_set_ident)) {
+
+      final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
+      if (typeArguments.isEmpty()) {
+        parser.perror("empty type-arguments in std.mem function");
+      }
+
+      final List<ExprExpression> fcallArguments = parseArglist();
+
+      Type restype = typeArguments.get(0); ///TODO:pointers
+      if (funcname.equals(BuiltinNames.mem_free_ident)) {
+        restype = new Type(beginPos);
+      }
+
+      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, fcallArguments, restype);
+      parser.getCurrentClass(true).registerTypeSetter(builtinFn);
+      return new ExprExpression(builtinFn, beginPos);
+    }
+
     parser.perror("unimplemented builtin function: " + funcname.toString());
     return null;
   }

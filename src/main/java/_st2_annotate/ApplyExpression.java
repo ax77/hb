@@ -19,6 +19,8 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
+import ast_symtab.BuiltinNames;
+import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -96,12 +98,16 @@ public class ApplyExpression {
   }
 
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
-    // TODO:
+    ///TODO:pointers
     ExprBuiltinFn builtinFn = e.getBuiltinFn();
     for (ExprExpression arg : builtinFn.getCallArguments()) {
       applyExpression(object, arg);
     }
-    e.setResultType(builtinFn.getReturnType());
+    if (builtinFn.getFunction().equals(BuiltinNames.mem_malloc_ident)) {
+      builtinFn.setType(builtinFn.getCallArguments().get(0).getResultType());
+    }
+
+    e.setResultType(builtinFn.getType());
 
     // TODO: check arguments
   }

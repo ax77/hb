@@ -526,18 +526,18 @@ public class RewriterExpr {
     else if (base == ExpressionBase.EBUILTIN_FN) {
 
       final ExprBuiltinFn fn = e.getBuiltinFn();
-      final Type ret = fn.getReturnType();
+      final Type ret = fn.getType();
       final List<Var> args = genArgs(fn.getCallArguments());
 
       /// variadic length args we will handle here
       /// that way.
       final StringBuilder fullname = new StringBuilder();
-      if (fn.getFunction().equals(BuiltinNames.print_ident)) {
+      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
         fullname.append("std_");
       }
       fullname.append(fn.getFunction().getName());
 
-      if (fn.getFunction().equals(BuiltinNames.print_ident)) {
+      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
         fullname.append("_");
         for (int i = 0; i < args.size(); i += 1) {
           Var arg = args.get(i);

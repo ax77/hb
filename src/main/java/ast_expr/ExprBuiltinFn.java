@@ -3,19 +3,20 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
+import _st1_templates.TypeSetter;
 import ast_printers.GenericListPrinter;
 import ast_printers.TypePrinters;
 import ast_types.Type;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
-public class ExprBuiltinFn implements Serializable {
+public class ExprBuiltinFn implements Serializable, TypeSetter {
   private static final long serialVersionUID = 166218239967767110L;
 
   private final Ident function;
   private final List<ExprExpression> callArguments;
   private final List<Type> typeArguments;
-  private final Type returnType;
+  private Type returnType;
 
   public ExprBuiltinFn(Ident function, List<Type> typeArguments, List<ExprExpression> callArguments, Type returnType) {
     NullChecker.check(function, typeArguments, callArguments, returnType);
@@ -34,8 +35,14 @@ public class ExprBuiltinFn implements Serializable {
     return callArguments;
   }
 
-  public Type getReturnType() {
+  @Override
+  public Type getType() {
     return returnType;
+  }
+
+  @Override
+  public void setType(Type typeToSet) {
+    this.returnType = typeToSet;
   }
 
   public List<Type> getTypeArguments() {

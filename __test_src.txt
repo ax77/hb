@@ -1,13 +1,19 @@
-class main_class {
-  int main() {
-    array<char> str = new array<char>();
-    str.add('a');
-    str.add('b');
-    str.add('c');
-    for(int i = 0; i < str.size(); i += 1) {
-      char c = str.get(i);
-      std.print("%c", c);
-    }
-    return str.size();
-  }
+@DATATYPE@ @FUNC_NAME_mem_malloc@ (@DATATYPE@ stub__, size_t size)
+{
+  @DATATYPE@ ptr = (@DATATYPE@) hmalloc(size);
+  return ptr;
+}
+
+@DATATYPE@ @FUNC_NAME_mem_get@ (@DATATYPE@ raw_data, size_t index)
+{
+  assert(raw_data);
+  return raw_data[index];
+}
+
+@DATATYPE@ @FUNC_NAME_mem_set@ (@DATATYPE@ raw_data, size_t index, @DATATYPE@ e)
+{
+  assert(raw_data);
+  @DATATYPE@ old = raw_data[index];
+  raw_data[index] = e;
+  return old;
 }

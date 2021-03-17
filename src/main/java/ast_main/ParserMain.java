@@ -74,8 +74,11 @@ public class ParserMain implements ParserMainApi {
     /// instead of the file
     final String dir = System.getProperty("user.dir");
     final StringBuilder predef = new StringBuilder();
-    predef.append(new FileWrapper(dir + "/std/array.hb").readToString(FileReadKind.APPEND_LF));
-    predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
+
+    if (Settings.IMPORT_STD_BY_DEFAULT) {
+      predef.append(new FileWrapper(dir + "/std/array.hb").readToString(FileReadKind.APPEND_LF));
+      predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
+    }
 
     final String sourceGiven = predef.toString() + "\n" + sb.toString();
     final Stream s = new Stream("<string-source>", sourceGiven);

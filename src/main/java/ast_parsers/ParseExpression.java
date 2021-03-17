@@ -522,7 +522,8 @@ public class ParseExpression {
     }
 
     if (parser.is(BuiltinNames.std_ident)) {
-      return new ParseBuiltinsFn(parser).parse();
+      final ExprExpression builtinFn = new ParseBuiltinsFn(parser).parse();
+      return builtinFn;
     }
 
     if (parser.is(T.TOKEN_STRING)) {

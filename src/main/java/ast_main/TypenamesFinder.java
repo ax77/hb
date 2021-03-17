@@ -69,7 +69,7 @@ public class TypenamesFinder {
 
       final Token peek = toResolve.peek();
       final boolean isOkRest = peek.ofType(T.T_LEFT_BRACE) || peek.ofType(T.T_LT)
-          || peek.isIdent(Keywords.implements_ident);
+          || peek.isIdent(Keywords.implements_ident); // || peek.ofType(T.TOKEN_COMMENT)
       if (!isOkRest) {
         throw new AstParseException("expect class-name, but was: " + peek.getValue());
       }
