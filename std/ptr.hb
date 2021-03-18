@@ -34,9 +34,9 @@ class ptr<T> {
     return old;
   }
 
-  void cpy(ptr<T> from, int count) {
+  void cpy(std.pointer<T> from, int count) {
     std.assert_true(count <= size);
-    std.mem_cpy<T>(raw_data, from.get_data(), count);
+    std.mem_cpy<T>(raw_data, from, count);
   }
 
   int size() {

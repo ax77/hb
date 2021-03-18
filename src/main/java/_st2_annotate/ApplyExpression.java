@@ -2,6 +2,7 @@ package _st2_annotate;
 
 import static _st2_annotate.SymbolTable.F_ALL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -27,6 +28,7 @@ import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
+import hashed.Hash_ident;
 import tokenize.Ident;
 
 public class ApplyExpression {
@@ -143,7 +145,15 @@ public class ApplyExpression {
   }
 
   private void applyStringLiteral(final ExprExpression e) {
-    ErrorLocation.errorExpression("strings are unimpl.", e);
+
+    /// we should find the 'string' class here,
+    /// and we sure that the generic field 'buffer' is
+    /// fully expanded, and we can use it as the result type
+    ///
+    final ClassDeclaration stringClass = symtabApplier.getTypename(BuiltinNames.string_ident);
+    final VarDeclarator field = stringClass.getField(Hash_ident.getHashedIdent("buffer"));
+
+    e.setResultType(field.getType());
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {

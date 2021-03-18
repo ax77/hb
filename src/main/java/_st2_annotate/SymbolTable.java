@@ -5,6 +5,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_symtab.ScopeLevels;
 import ast_symtab.Symtab;
 import ast_vars.VarDeclarator;
+import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
@@ -151,6 +152,14 @@ public class SymbolTable {
 
   public int howMuchBlocks() {
     return blocksLevel;
+  }
+
+  public ClassDeclaration getTypename(Ident stringIdent) {
+    Symbol sym = typeNames.getsym(stringIdent);
+    if (sym == null) {
+      throw new AstParseException("builtin symbol-class not found: " + stringIdent.toString());
+    }
+    return sym.getClazz();
   }
 
 }

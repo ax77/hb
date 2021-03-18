@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ast_types.Type;
+import ast_types.TypeBase;
 
 public abstract class TypePrinters {
 
@@ -12,6 +13,10 @@ public abstract class TypePrinters {
   private static final Map<String, String> pairs = new HashMap<>();
 
   public static String genName(Type forType) {
+    if (forType.is(TypeBase.TP_TYPENAME_ID)) {
+      System.out.println("type-printer found the typename-id in the type-arguments, the class is not expanded...");
+      return "";
+    }
     if (pairs.containsKey(forType.toString())) {
       return pairs.get(forType.toString());
     }

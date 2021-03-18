@@ -31,11 +31,11 @@ public class TestCcode7 {
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
-      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+      //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
-    //Codeout result = CodeoutBuilder.build(unit);
-    //System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+    Codeout result = CodeoutBuilder.build(unit);
+    System.out.println(UtilSrcToStringLevel.tos(result.toString()));
 
   }
 }
