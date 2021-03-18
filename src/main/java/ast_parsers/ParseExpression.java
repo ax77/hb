@@ -55,7 +55,6 @@ import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import errors.AstParseException;
-import hashed.Hash_ident;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;

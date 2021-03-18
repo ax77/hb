@@ -14,8 +14,6 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.internal.JUnitSystem;
-
 import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;

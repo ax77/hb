@@ -2,7 +2,6 @@ package _st2_annotate;
 
 import static _st2_annotate.SymbolTable.F_ALL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -22,7 +21,6 @@ import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_symtab.BuiltinNames;
-import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -110,13 +108,24 @@ public class ApplyExpression {
   }
 
   private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
-    ///TODO:pointers
+
     ExprBuiltinFn builtinFn = e.getBuiltinFn();
+
     for (ExprExpression arg : builtinFn.getCallArguments()) {
       applyExpression(object, arg);
     }
+
+    final List<ExprExpression> callArguments = builtinFn.getCallArguments();
+
     if (builtinFn.getFunction().equals(BuiltinNames.mem_malloc_ident)) {
-      builtinFn.setType(builtinFn.getCallArguments().get(0).getResultType());
+      builtinFn.setType(callArguments.get(0).getResultType());
+    }
+
+    if (builtinFn.getFunction().equals(BuiltinNames.assert_true_ident)) {
+      if (callArguments.size() != 1) {
+        ErrorLocation.errorExpression("assert_true expects one argument", e);
+      }
+      checkIsBoolean(callArguments.get(0));
     }
 
     e.setResultType(builtinFn.getType());
@@ -299,7 +308,7 @@ public class ApplyExpression {
   }
 
   private void checkIsBoolean(ExprExpression e) {
-    // that's ok - the test expression of the for-loop must ne null
+    // that's ok - the test expression of the for-loop may be null
     // for example.
     if (e == null) {
       return;

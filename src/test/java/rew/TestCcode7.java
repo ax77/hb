@@ -18,15 +18,22 @@ public class TestCcode7 {
 
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class                                           \n");
-    sb.append("{                                                          \n");
-    sb.append("  int main()                                               \n");
-    sb.append("  {                                                        \n");
-    sb.append("    string x = \"_______\";                 \n");
-    sb.append("    std.print(\"%s\", x);                 \n");
-    sb.append("    return 0;                                              \n");
-    sb.append("  }                                                        \n");
-    sb.append("}                                                          \n");
+    sb.append("class main_class                      \n");
+    sb.append("{                                     \n");
+    sb.append("  int main()                          \n");
+    sb.append("  {                                   \n");
+    sb.append("    file fp = new file(\"main.c\");   \n");
+    sb.append("    fp.open();                        \n");
+    sb.append("    int sz = fp.read(1);              \n");
+    sb.append("    while(sz > 0) {                   \n");
+    sb.append("      char c = fp.getc();             \n");
+    sb.append("      std.print(\"%c\", c);           \n");
+    sb.append("      sz = fp.read(1);                \n");
+    sb.append("    }                                 \n");
+    sb.append("    fp.close();                       \n");
+    sb.append("    return 0;                         \n");
+    sb.append("  }                                   \n");
+    sb.append("}                                     \n");
     //@formatter:on
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();

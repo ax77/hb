@@ -3,8 +3,19 @@ class main_class
 {
   int main()
   {
-    ptr<int> x = new ptr<int>(1);
-    return x.size();
+    file fp = new file("main.c");
+    fp.open();
+    
+    int sz = fp.read(1);
+    while(sz > 0) {
+      char c = fp.getc();
+      std.print("%c", c);
+      
+      sz = fp.read(1);
+    }
+    
+    fp.close();
+    return 0;
   }
 }
 

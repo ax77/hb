@@ -1,11 +1,19 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class                    //001 \n");
-    sb.append("{                                   //002 \n");
-    sb.append("  int main()                        //003 \n");
-    sb.append("  {                                 //004 \n");
-    sb.append("    ptr<int> x = new ptr<int>(1);   //005 \n");
-    sb.append("    return x.size();                //006 \n");
-    sb.append("  }                                 //007 \n");
-    sb.append("}                                   //008 \n");
+    sb.append("class main_class                      //001 \n");
+    sb.append("{                                     //002 \n");
+    sb.append("  int main()                          //003 \n");
+    sb.append("  {                                   //004 \n");
+    sb.append("    file fp = new file(\"main.c\");   //005 \n");
+    sb.append("    fp.open();                        //006 \n");
+    sb.append("    int sz = fp.read(1);              //007 \n");
+    sb.append("    while(sz > 0) {                   //008 \n");
+    sb.append("      char c = fp.getc();             //009 \n");
+    sb.append("      std.print(\"%c\", c);           //010 \n");
+    sb.append("      sz = fp.read(1);                //011 \n");
+    sb.append("    }                                 //012 \n");
+    sb.append("    fp.close();                       //013 \n");
+    sb.append("    return 0;                         //014 \n");
+    sb.append("  }                                   //015 \n");
+    sb.append("}                                     //016 \n");
     //@formatter:on

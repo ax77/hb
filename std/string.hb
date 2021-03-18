@@ -15,4 +15,8 @@ class string {
     std.assert_true(index < buffer.size());
     return buffer.get(index);
   }
+  
+  ptr<char> get_buffer() {
+    return buffer;
+  }
 }

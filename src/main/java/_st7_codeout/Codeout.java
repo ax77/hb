@@ -18,6 +18,7 @@ import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
+import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -27,8 +28,7 @@ public class Codeout {
   private final List<ClassDeclaration> pods;
   private final List<Function> functions;
 
-  private final Set<String> printfNames;
-  private final Set<String> mallocNames;
+  private final Set<String> generatedBuiltinNames;
 
   private final StringBuilder builtinsTypedefs;
   private final StringBuilder builtinsFn;
@@ -37,8 +37,7 @@ public class Codeout {
   public Codeout() {
     this.pods = new ArrayList<>();
     this.functions = new ArrayList<>();
-    this.printfNames = new HashSet<>();
-    this.mallocNames = new HashSet<>();
+    this.generatedBuiltinNames = new HashSet<>();
     this.builtinsFn = new StringBuilder();
     this.stringsLabels = new StringBuilder();
     this.builtinsTypedefs = new StringBuilder();
@@ -100,16 +99,16 @@ public class Codeout {
         String fullname = fc.getFullname();
 
         if (fullname.startsWith("std_print_")) {
-          if (!printfNames.contains(fullname)) {
+          if (!generatedBuiltinNames.contains(fullname)) {
             genPrintf(fc, fullname);
-            printfNames.add(fullname);
+            generatedBuiltinNames.add(fullname);
           }
         }
 
         else if (fullname.startsWith("std_mem_free")) {
           /// std.mem_free<T>(raw_data);         free(raw_data)
-          if (!mallocNames.contains(fullname)) {
-            mallocNames.add(fullname);
+          if (!generatedBuiltinNames.contains(fullname)) {
+            generatedBuiltinNames.add(fullname);
             line("void " + fullname + "(void *p) { ");
             line("  free(p);");
             line("}");
@@ -117,8 +116,8 @@ public class Codeout {
         }
 
         else if (fullname.startsWith("std_mem_cpy")) {
-          if (!mallocNames.contains(fullname)) {
-            mallocNames.add(fullname);
+          if (!generatedBuiltinNames.contains(fullname)) {
+            generatedBuiltinNames.add(fullname);
             genMemCpy(fc, fullname);
           }
         }
@@ -143,24 +142,36 @@ public class Codeout {
         /// std.mem_set<T>(raw_data, at, e);   raw_data[at] = e
 
         if (fullname.startsWith("std_mem_malloc")) {
-          if (!mallocNames.contains(fullname)) {
+          if (!generatedBuiltinNames.contains(fullname)) {
             genMemMalloc(fcall, fullname);
-            mallocNames.add(fullname);
+            generatedBuiltinNames.add(fullname);
           }
         }
 
         else if (fullname.startsWith("std_mem_get")) {
-          if (!mallocNames.contains(fullname)) {
+          if (!generatedBuiltinNames.contains(fullname)) {
             genMemGet(fcall, fullname);
-            mallocNames.add(fullname);
+            generatedBuiltinNames.add(fullname);
           }
         }
 
         else if (fullname.startsWith("std_mem_set")) {
-          if (!mallocNames.contains(fullname)) {
+          if (!generatedBuiltinNames.contains(fullname)) {
             genMemSet(fcall, fullname);
-            mallocNames.add(fullname);
+            generatedBuiltinNames.add(fullname);
           }
+        }
+
+        else if (fcall.getOriginalName().equals(BuiltinNames.open_ident)) {
+          //System.out.println("TODO:open");
+        }
+
+        else if (fcall.getOriginalName().equals(BuiltinNames.close_ident)) {
+          //System.out.println("TODO:close");
+        }
+
+        else if (fcall.getOriginalName().equals(BuiltinNames.read_ident)) {
+          //System.out.println("TODO:read");
         }
 
         else {

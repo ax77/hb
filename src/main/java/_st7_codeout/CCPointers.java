@@ -65,7 +65,7 @@ public abstract class CCPointers {
 
     return src;
   }
-  
+
   public static String genMemCpy(String elemtype, String fullname, String pointer) {
 
     //@formatter:off

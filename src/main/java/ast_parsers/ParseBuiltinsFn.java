@@ -7,6 +7,7 @@ import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprExpression;
 import ast_symtab.BuiltinNames;
 import ast_types.Type;
+import ast_types.TypeBindings;
 import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
@@ -28,25 +29,6 @@ public class ParseBuiltinsFn {
     final Ident funcname = parser.getIdent();
     checkIsCorrectBuiltinIdent(funcname);
 
-    if (funcname.equals(BuiltinNames.read_file_ident)) {
-
-      final List<Type> typeArguments = new ArrayList<>();
-
-      final List<ExprExpression> fcallArguments = parseArglist();
-      if (fcallArguments.size() != 1) {
-        parser.unreachable("expect `one` type-argument for std.read_file");
-      }
-
-      Type restype = fcallArguments.get(0).getResultType();
-      if (!restype.isClass()) {
-        // TODO:
-      }
-
-      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, fcallArguments, restype);
-      return new ExprExpression(builtinFn, beginPos);
-
-    }
-
     if (funcname.equals(BuiltinNames.print_ident) || funcname.equals(BuiltinNames.assert_true_ident)) {
       final List<Type> typeArguments = new ArrayList<>();
       final List<ExprExpression> fcallArguments = parseArglist();
@@ -55,9 +37,7 @@ public class ParseBuiltinsFn {
       return new ExprExpression(builtinFn, beginPos);
     }
 
-    if (funcname.equals(BuiltinNames.mem_malloc_ident) || funcname.equals(BuiltinNames.mem_get_ident)
-        || funcname.equals(BuiltinNames.mem_free_ident) || funcname.equals(BuiltinNames.mem_set_ident)
-        || funcname.equals(BuiltinNames.mem_cpy_ident)) {
+    if (BuiltinNames.isBuiltinMemFuncIdent(funcname)) {
 
       final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
       if (typeArguments.isEmpty()) {
@@ -73,6 +53,13 @@ public class ParseBuiltinsFn {
 
       final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, typeArguments, fcallArguments, restype);
       parser.getCurrentClass(true).registerTypeSetter(builtinFn);
+      return new ExprExpression(builtinFn, beginPos);
+    }
+
+    if (BuiltinNames.isFdIdent(funcname)) {
+      Type restype = TypeBindings.make_int();
+      final List<ExprExpression> fcallArguments = parseArglist();
+      final ExprBuiltinFn builtinFn = new ExprBuiltinFn(funcname, new ArrayList<>(), fcallArguments, restype);
       return new ExprExpression(builtinFn, beginPos);
     }
 

@@ -40,6 +40,7 @@ public class UnitImportsSet {
       fullyRead.add(dir + "/std/ptr.hb");
       fullyRead.add(dir + "/std/array.hb");
       fullyRead.add(dir + "/std/string.hb");
+      fullyRead.add(dir + "/std/file.hb");
 
     }
   }

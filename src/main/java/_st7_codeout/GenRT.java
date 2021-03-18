@@ -16,7 +16,14 @@ public abstract class GenRT {
     sb.append("#include <stdlib.h>                            \n");
     sb.append("#include <string.h>                            \n\n");
     
+    sb.append("/// open/close/read/O_RDONLY                   \n");
+    sb.append("#include <unistd.h>                            \n");
+    sb.append("#include <sys/stat.h>                          \n");
+    sb.append("#include <fcntl.h>                             \n\n");
+    
     sb.append("typedef int boolean;                           \n\n");
+    sb.append("#define false 0                                \n\n");
+    sb.append("#define true (!(false))                        \n\n");
     
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");

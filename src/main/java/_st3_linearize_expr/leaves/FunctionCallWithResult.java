@@ -5,7 +5,6 @@ import java.util.List;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import ast_types.Type;
-import tokenize.Ident;
 
 public class FunctionCallWithResult {
   private final ClassMethodDeclaration method;
