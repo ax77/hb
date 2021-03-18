@@ -4,13 +4,16 @@ import java.util.List;
 
 import ast_printers.GenericListPrinter;
 import ast_types.Type;
+import tokenize.Ident;
 
-public class PureFunctionCallWithResult {
+public class FunctionCallWithResultBuiltin {
+  private final Ident originalName;
   private final String fullname;
   private final Type type;
   private final List<Var> args;
 
-  public PureFunctionCallWithResult(String fullname, Type type, List<Var> args) {
+  public FunctionCallWithResultBuiltin(Ident originalName, String fullname, Type type, List<Var> args) {
+    this.originalName = originalName;
     this.fullname = fullname;
     this.type = type;
     this.args = args;
@@ -26,6 +29,10 @@ public class PureFunctionCallWithResult {
 
   public String getFullname() {
     return fullname;
+  }
+
+  public Ident getOriginalName() {
+    return originalName;
   }
 
   @Override

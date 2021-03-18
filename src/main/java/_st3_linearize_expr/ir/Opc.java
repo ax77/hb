@@ -10,6 +10,7 @@ public enum Opc {
   , AssignVarFlatCallClassCreationTmp  // temporary
   , AssignVarFlatCallStringCreationTmp // temporary
   , AssignVarFlatCallResult            // type a = f(b, c)
+  , AssignVarBuiltinFlatCallResult     // type a = std.read_file(b)
   , AssignVarNull                      // type a = null
   , AssignVarNum                       // type a = 1
   , AssignVarTernaryOp                 // type a = ?(varCnd, varTrue, varFalse)
@@ -18,6 +19,7 @@ public enum Opc {
   , AssignVarVar                       // type a = b
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
+  , BuiltinFlatCallVoid                // std.free()
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c
   , StoreVarVar                        // a = b

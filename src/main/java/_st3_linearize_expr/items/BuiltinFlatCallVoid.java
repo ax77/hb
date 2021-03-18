@@ -3,18 +3,17 @@ package _st3_linearize_expr.items;
 import java.util.List;
 
 import _st3_linearize_expr.leaves.Var;
-import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
 import tokenize.Ident;
 
-public class FlatCallVoid {
+public class BuiltinFlatCallVoid {
 
-  private final ClassMethodDeclaration method;
+  private final Ident originalName;
   private final String fullname;
   private final List<Var> args;
 
-  public FlatCallVoid(ClassMethodDeclaration method, String fullname, List<Var> args) {
-    this.method = method;
+  public BuiltinFlatCallVoid(Ident originalName, String fullname, List<Var> args) {
+    this.originalName = originalName;
     this.fullname = fullname;
     this.args = args;
   }
@@ -27,8 +26,8 @@ public class FlatCallVoid {
     return fullname;
   }
 
-  public ClassMethodDeclaration getMethod() {
-    return method;
+  public Ident getOriginalName() {
+    return originalName;
   }
 
   @Override

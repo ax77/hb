@@ -19,6 +19,7 @@ public abstract class BuiltinNames {
   public static final Ident read_file_ident = g("read_file");
   public static final Ident print_ident = g("print");
   public static final Ident assert_true_ident = g("assert_true");
+  public static final Ident assert_ident = g("assert");
 
   /// mem
   ///

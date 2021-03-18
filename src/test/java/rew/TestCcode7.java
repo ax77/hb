@@ -38,7 +38,6 @@ public class TestCcode7 {
     sb.append("}                                                          \n");
     //@formatter:on
 
-
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       //System.out.println(UtilSrcToStringLevel.tos(c.toString()));

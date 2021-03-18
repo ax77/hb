@@ -12,9 +12,9 @@ import java.util.Set;
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.items.AssignVarFlatCallResult;
-import _st3_linearize_expr.items.FlatCallVoid;
-import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
+import _st3_linearize_expr.items.AssignVarBuiltinFlatCallResult;
+import _st3_linearize_expr.items.BuiltinFlatCallVoid;
+import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
@@ -95,9 +95,9 @@ public class Codeout {
     Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
 
     for (FlatCodeItem item : builtins) {
-      if (item.isFlatCallVoid()) {
+      if (item.isBuiltinFlatCallVoid()) {
 
-        FlatCallVoid fc = item.getFlatCallVoid();
+        BuiltinFlatCallVoid fc = item.getBuiltinFlatCallVoid();
         String fullname = fc.getFullname();
 
         if (fullname.startsWith("std_print_")) {
@@ -126,9 +126,9 @@ public class Codeout {
         }
       }
 
-      else if (item.isAssignVarFlatCallResult()) {
-        AssignVarFlatCallResult result = item.getAssignVarFlatCallResult();
-        PureFunctionCallWithResult fcall = result.getRvalue();
+      else if (item.isAssignVarBuiltinFlatCallResult()) {
+        AssignVarBuiltinFlatCallResult result = item.getAssignVarBuiltinFlatCallResult();
+        FunctionCallWithResultBuiltin fcall = result.getRvalue();
 
         final String fullname = fcall.getFullname();
 
@@ -184,42 +184,36 @@ public class Codeout {
     }
   }
 
-  private void genMemSet(PureFunctionCallWithResult fcall, String fullname) {
+  private void genMemSet(FunctionCallWithResultBuiltin fcall, String fullname) {
     Type restype = fcall.getArgs().get(0).getType();
     if (!restype.isStdPointer()) {
       throw new AstParseException("expect pointer");
     }
     final Type subtype = restype.getStdPointer().getType();
-    String tpname = subtype.toString() + " * ";
-    String template = CCPointers.genMemSet(subtype.toString(), fullname, tpname);
+    String template = CCPointers.genMemSet(subtype.toString(), fullname, restype.toString());
     line(template);
   }
 
-  private void genMemGet(PureFunctionCallWithResult fcall, String fullname) {
+  private void genMemGet(FunctionCallWithResultBuiltin fcall, String fullname) {
     Type restype = fcall.getArgs().get(0).getType();
     if (!restype.isStdPointer()) {
       throw new AstParseException("expect pointer");
     }
     final Type subtype = restype.getStdPointer().getType();
-    String tpname = subtype.toString() + " * ";
-    String template = CCPointers.genMemGet(subtype.toString(), fullname, tpname);
+    String template = CCPointers.genMemGet(subtype.toString(), fullname, restype.toString());
     line(template);
   }
 
-  private void genMemMalloc(PureFunctionCallWithResult fcall, String fullname) {
+  private void genMemMalloc(FunctionCallWithResultBuiltin fcall, String fullname) {
     Type restype = fcall.getArgs().get(0).getType();
     if (!restype.isStdPointer()) {
       throw new AstParseException("expect pointer");
     }
-    final Type subtype = restype.getStdPointer().getType();
-    String tpname = subtype.toString()+ " * ";
-    //builtinsTypedefs.append("typedef " + tpname + subtype.toString() + "_ptr_t;\n");
-
-    String template = CCPointers.genMemMalloc(tpname, fullname);
+    String template = CCPointers.genMemMalloc(restype.toString(), fullname);
     line(template);
   }
 
-  private void genPrintf(FlatCallVoid fc, String fullname) {
+  private void genPrintf(BuiltinFlatCallVoid fc, String fullname) {
     final StringBuilder printfArguments = new StringBuilder();
     final List<Type> types = new ArrayList<>();
     final List<Var> names = new ArrayList<>();
@@ -285,7 +279,7 @@ public class Codeout {
 
     List<Function> mainMethodOut = new ArrayList<>();
 
-    String structTypedefs = genStructsTypedefs();
+    String structTypedefs = genStructsForwards();
     String funcProtos = genFuncProtos();
     String structsImpls = genStructs();
     String functions = genFunctions(mainMethodOut);
@@ -377,7 +371,7 @@ public class Codeout {
     return sb.toString();
   }
 
-  private String genStructsTypedefs() {
+  private String genStructsForwards() {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {

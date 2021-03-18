@@ -24,6 +24,7 @@ opcodes = """
     AssignVarFlatCallClassCreationTmp  ,
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
+    AssignVarBuiltinFlatCallResult     ,
     AssignVarNull                      ,
     AssignVarNum                       ,
     AssignVarTernaryOp                 ,
@@ -33,6 +34,7 @@ opcodes = """
     AssignVarSizeof                    ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
+    BuiltinFlatCallVoid                ,
     StoreFieldVar                      ,
     StoreVarField                      ,
     StoreVarVar                        
@@ -80,6 +82,7 @@ assigns_ops = """
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
+      || isAssignVarBuiltinFlatCallResult()
       || isAssignVarNull()   
       || isAssignVarNum()   
       || isAssignVarTernaryOp()  

@@ -1,13 +1,14 @@
 package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
+import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarFlatCallClassCreationTmp {
+public class AssignVarBuiltinFlatCallResult {
   private final Var lvalue;
-  private final FunctionCallWithResult rvalue;
+  private final FunctionCallWithResultBuiltin rvalue;
 
-  public AssignVarFlatCallClassCreationTmp(Var lvalue, FunctionCallWithResult rvalue) {
+  public AssignVarBuiltinFlatCallResult(Var lvalue, FunctionCallWithResultBuiltin rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
   }
@@ -16,7 +17,7 @@ public class AssignVarFlatCallClassCreationTmp {
     return lvalue;
   }
 
-  public FunctionCallWithResult getRvalue() {
+  public FunctionCallWithResultBuiltin getRvalue() {
     return rvalue;
   }
 

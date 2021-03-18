@@ -1,22 +1,27 @@
-package _st3_linearize_expr.items;
+package _st3_linearize_expr.leaves;
 
 import java.util.List;
 
-import _st3_linearize_expr.leaves.Var;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.GenericListPrinter;
+import ast_types.Type;
 import tokenize.Ident;
 
-public class FlatCallVoid {
-
+public class FunctionCallWithResult {
   private final ClassMethodDeclaration method;
   private final String fullname;
+  private final Type type;
   private final List<Var> args;
 
-  public FlatCallVoid(ClassMethodDeclaration method, String fullname, List<Var> args) {
+  public FunctionCallWithResult(ClassMethodDeclaration method, String fullname, Type type, List<Var> args) {
     this.method = method;
     this.fullname = fullname;
+    this.type = type;
     this.args = args;
+  }
+
+  public Type getType() {
+    return type;
   }
 
   public List<Var> getArgs() {

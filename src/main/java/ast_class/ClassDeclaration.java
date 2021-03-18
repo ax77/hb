@@ -453,10 +453,6 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.string_ident);
   }
 
-  public String typedescName() {
-    return "TD_" + getIdentifier().getName().toUpperCase();
-  }
-
   public String headerToString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getIdentifier().getName());

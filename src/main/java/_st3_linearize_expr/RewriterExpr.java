@@ -19,6 +19,7 @@ import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
+import _st3_linearize_expr.items.AssignVarBuiltinFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -30,17 +31,18 @@ import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.BuiltinFlatCallVoid;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FieldAccess;
-import _st3_linearize_expr.leaves.PureFunctionCallWithResult;
+import _st3_linearize_expr.leaves.FunctionCallWithResult;
+import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
 import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
-import _st7_codeout.AuxNames;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -166,7 +168,7 @@ public class RewriterExpr {
         AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
         rv.add(new FlatCodeItem(assignVarAllocObject));
 
-        final PureFunctionCallWithResult rvalue = node.getRvalue();
+        final FunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
 
@@ -204,6 +206,14 @@ public class RewriterExpr {
         rv.add(item);
       }
 
+      else if (item.isAssignVarBuiltinFlatCallResult()) {
+        rv.add(item);
+      }
+
+      else if (item.isBuiltinFlatCallVoid()) {
+        rv.add(item);
+      }
+
       else {
         throw new AstParseException("unknown item: " + item.toString());
       }
@@ -216,7 +226,8 @@ public class RewriterExpr {
     List<Var> args = new ArrayList<>();
     args.add(v);
 
-    FlatCallVoid fc = new FlatCallVoid(AuxNames.ASSERT, args);
+    BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(BuiltinNames.assert_ident, BuiltinNames.assert_ident.toString(),
+        args);
     return new FlatCodeItem(fc);
   }
 
@@ -394,8 +405,11 @@ public class RewriterExpr {
 
       List<Var> args = new ArrayList<>();
       args.add(lvalue);
-      PureFunctionCallWithResult callWithResult = new PureFunctionCallWithResult(
-          lvalue.getType().getClassTypeFromRef().getConstructors().get(0).signToStringCall(), lvalue.getType(), args);
+
+      // TODO:
+      final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(0);
+      FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor, constructor.signToStringCall(),
+          lvalue.getType(), args);
 
       final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
           callWithResult);
@@ -431,13 +445,13 @@ public class RewriterExpr {
       final ClassMethodDeclaration method = fcall.getMethod();
 
       if (method.isVoid()) {
-        final FlatCallVoid call = new FlatCallVoid(method.signToStringCall(), args);
+        final FlatCallVoid call = new FlatCallVoid(method, method.signToStringCall(), args);
         final FlatCodeItem item = new FlatCodeItem(call);
         genRaw(item);
       }
 
       else {
-        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(method.signToStringCall(),
+        final FunctionCallWithResult call = new FunctionCallWithResult(method, method.signToStringCall(),
             method.getType(), args);
         final Var resultVar = VarCreator.justNewVar(method.getType());
         final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
@@ -479,7 +493,7 @@ public class RewriterExpr {
 
       //3
       final ClassMethodDeclaration constructor = fcall.getConstructor();
-      final PureFunctionCallWithResult call = new PureFunctionCallWithResult(constructor.signToStringCall(),
+      final FunctionCallWithResult call = new FunctionCallWithResult(constructor, constructor.signToStringCall(),
           constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
@@ -561,7 +575,7 @@ public class RewriterExpr {
       }
 
       if (ret.isVoid()) {
-        FlatCallVoid fc = new FlatCallVoid(fullname.toString(), args);
+        BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(fn.getFunction(), fullname.toString(), args);
         FlatCodeItem item = new FlatCodeItem(fc);
         genRaw(item);
         BuiltinsFnSet.register(item);
@@ -569,9 +583,10 @@ public class RewriterExpr {
 
       else {
 
-        final PureFunctionCallWithResult call = new PureFunctionCallWithResult(fullname.toString(), ret, args);
+        final FunctionCallWithResultBuiltin call = new FunctionCallWithResultBuiltin(fn.getFunction(),
+            fullname.toString(), ret, args);
         final Var lvalue = VarCreator.justNewVar(ret);
-        final AssignVarFlatCallResult ops = new AssignVarFlatCallResult(lvalue, call);
+        final AssignVarBuiltinFlatCallResult ops = new AssignVarBuiltinFlatCallResult(lvalue, call);
         final FlatCodeItem item = new FlatCodeItem(ops);
         genRaw(item);
         BuiltinsFnSet.register(item);
