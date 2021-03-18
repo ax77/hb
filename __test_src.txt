@@ -1,35 +1,12 @@
+import std.c_file_reader;
 
-class main_class
-{
-  int main()
-  {
-    io tmp = new io();
-    array<char> content = tmp.read_file("main.c");
-    
-    for(int i = 0; i < content.size(); i += 1) {
-      char c = content.get(i);
+class main_class {
+  int main() {
+    c_file_reader reader = new c_file_reader("int ma\\\nin() { return 0; }");
+    while (!reader.isEof()) {
+      char c = reader.nextc();
       std.print("%c", c);
     }
-    
-    return content.size();
+    return 0;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
