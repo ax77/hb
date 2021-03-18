@@ -14,6 +14,8 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.internal.JUnitSystem;
+
 import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
@@ -235,22 +237,39 @@ public class RewriterExpr {
 
     /// string s = "a.b.c";
     /// ::
-    /// const string t56 = get_memory(sizeof(struct string, TD_STRING));
-    /// reg_ptr_in_a_frame(t56);
-    /// string_init(t56, t57);
+    /// struct ptr_1026* t83 = hmalloc(sizeof(struct ptr_1027));
+    /// ptr_init_2_1027(t83, sizeof(t84));
+    /// ptr_memcpy(t83, t84)
+    /// ptr_set(last_idx, '\0')
 
     final Var lvalueVar = node.getLvalue();
+
     final String sconst = node.getRvalue();
+    int[] buffer = CEscaper.escape(sconst);
 
     // 1
-    final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
+    final Type type = lvalueVar.getType();
+    if (!type.isClass()) {
+      throw new AstParseException("expect class-type for a string creation");
+    }
+    ClassDeclaration clazz = type.getClassTypeFromRef();
+    if (!clazz.isNativePtr()) {
+      throw new AstParseException("expect ptr-class-type for a string creation");
+    }
+
+    final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, type);
     rv.add(new FlatCodeItem(assignVarAllocObject));
 
-    Var fromMap = BuiltinsFnSet.getVar(sconst);
+    /// sizeof( char[] )
+    final int slen = buffer.length; /// it includes '\0'
+    final Var strlenVar = VarCreator.justNewVar(TypeBindings.make_int());
+    final AssignVarNum strlenNum = new AssignVarNum(strlenVar,
+        new IntLiteral(String.format("%d", slen), TypeBindings.make_int(), slen));
+    rv.add(new FlatCodeItem(strlenNum));
 
     final List<Var> argsInstance = new ArrayList<>();
     argsInstance.add(0, lvalueVar);
-    argsInstance.add(fromMap);
+    argsInstance.add(strlenVar);
 
     final List<Var> args = new ArrayList<>();
     args.add(0, lvalueVar);
@@ -260,6 +279,18 @@ public class RewriterExpr {
         argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
+    /// ptr_cpy(dst, src, size)
+    final ClassMethodDeclaration cpyMethod = clazz.getMethodForSure("cpy");
+
+    final List<Var> argsCpy = new ArrayList<>();
+    argsCpy.add(lvalueVar);
+    argsCpy.add(BuiltinsFnSet.getVar(sconst));
+    argsCpy.add(strlenVar);
+
+    final FlatCallVoid cpyCall = new FlatCallVoid(cpyMethod, cpyMethod.signToStringCall(), argsCpy);
+    rv.add(new FlatCodeItem(cpyCall));
+
+    /// ptr_set(at, 0)
   }
 
   private void genRaw(FlatCodeItem item) {
@@ -401,6 +432,9 @@ public class RewriterExpr {
     else if (base == ExpressionBase.EPRIMARY_STRING) {
 
       final String sconst = e.getBeginPos().getValue();
+      final String unquoted = CEscaper.unquote(sconst);
+      int[] buffer = CEscaper.escape(sconst);
+
       final Var lvalue = VarCreator.justNewVar(e.getResultType());
 
       List<Var> args = new ArrayList<>();
@@ -416,7 +450,9 @@ public class RewriterExpr {
       final FlatCodeItem item = new FlatCodeItem(res);
       genRaw(item);
 
+      /// label
       BuiltinsFnSet.register(sconst, VarCreator.justNewVar(e.getResultType()));
+
     }
 
     else if (base == EPRIMARY_NUMBER) {
@@ -492,7 +528,14 @@ public class RewriterExpr {
       final List<Var> args = genArgs(fcall.getArguments());
 
       //3
-      final ClassMethodDeclaration constructor = fcall.getConstructor();
+      ClassMethodDeclaration constructor = fcall.getConstructor();
+      if (constructor == null) {
+        if (typename.getClassTypeFromRef().isNativeString()) {
+          constructor = typename.getClassTypeFromRef().getConstructors().get(0);
+        }
+      }
+      NullChecker.check(constructor);
+
       final FunctionCallWithResult call = new FunctionCallWithResult(constructor, constructor.signToStringCall(),
           constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);

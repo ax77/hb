@@ -30,8 +30,7 @@ public abstract class CEscaper {
     return String.format("%c", c);
   }
 
-  public static int[] escape(String s) {
-
+  public static String unquote(String s) {
     final String threeQuote = "\"\"\"";
 
     if (s.startsWith("\'")) {
@@ -55,7 +54,12 @@ public abstract class CEscaper {
       s = s.substring(1, s.length() - 1);
     }
 
-    return escapeInternal(new CBuf(s));
+    return s;
+  }
+
+  public static int[] escape(String s) {
+    String input = unquote(s);
+    return escapeInternal(new CBuf(input));
   }
 
   private static int[] escapeInternal(CBuf buffer) {

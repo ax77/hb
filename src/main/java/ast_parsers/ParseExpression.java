@@ -55,6 +55,7 @@ import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import errors.AstParseException;
+import hashed.Hash_ident;
 import parse.Parse;
 import parse.ParseState;
 import tokenize.Ident;
@@ -607,13 +608,17 @@ public class ParseExpression {
     final Type strTypeBootstr = new Type(
         new ClassTypeRef(parser.getClassType(BuiltinNames.string_ident), new ArrayList<>()));
 
-    final List<ExprExpression> argums = new ArrayList<>();
+    final List<ExprExpression> arguments = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);
+    arg.setResultType(strTypeBootstr.getClassTypeFromRef().getField(Hash_ident.getHashedIdent("buffer")).getType());
+    arguments.add(arg);
 
-    arg.setResultType(strTypeBootstr);
-    argums.add(arg);
+    final ExprClassCreation classInstanceCreation = new ExprClassCreation(strTypeBootstr, arguments);
+    final ExprExpression result = new ExprExpression(classInstanceCreation, saved);
 
-    return arg;
+    result.setResultType(strTypeBootstr);
+    return result;
+
   }
 
   private ExprExpression parseNewExpression() {

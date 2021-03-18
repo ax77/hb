@@ -22,17 +22,8 @@ public class TestCcode7 {
     sb.append("{                                                          \n");
     sb.append("  int main()                                               \n");
     sb.append("  {                                                        \n");
-    sb.append("    array<string> x = new array<string>();                 \n");
-    sb.append("    array<char> y = new array<char>();                 \n");
-    sb.append("    x.add(\"a\");                                          \n");
-    sb.append("    x.add(\"b\");                                          \n");
-    sb.append("    x.add(\"c\");                                          \n");
-    sb.append("    x.add(\"d\");                                          \n");
-    sb.append("    x.add(\"e\");                                          \n");
-    sb.append("    for(int i = 0; i < x.size(); i += 1) {                 \n");
-    sb.append("      string c = x.get(i);                                   \n");
-    sb.append("      std.print(\"%s\\n\", c);                             \n");
-    sb.append("    }                                                      \n");
+    sb.append("    string x = \"_______\";                 \n");
+    sb.append("    std.print(\"%s\", x);                 \n");
     sb.append("    return 0;                                              \n");
     sb.append("  }                                                        \n");
     sb.append("}                                                          \n");
@@ -40,11 +31,11 @@ public class TestCcode7 {
 
     InstantiationUnit unit = new ParserMain(sb).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
-      //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
-    Codeout result = CodeoutBuilder.build(unit);
-    System.out.println(UtilSrcToStringLevel.tos(result.toString()));
+    //Codeout result = CodeoutBuilder.build(unit);
+    //System.out.println(UtilSrcToStringLevel.tos(result.toString()));
 
   }
 }

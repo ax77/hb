@@ -3,7 +3,7 @@ class main_class
 {
   int main()
   {
-    ptr<string> x = new ptr<string>(1);
+    ptr<int> x = new ptr<int>(1);
     return x.size();
   }
 }

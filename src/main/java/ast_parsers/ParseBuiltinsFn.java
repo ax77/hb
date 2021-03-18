@@ -56,7 +56,8 @@ public class ParseBuiltinsFn {
     }
 
     if (funcname.equals(BuiltinNames.mem_malloc_ident) || funcname.equals(BuiltinNames.mem_get_ident)
-        || funcname.equals(BuiltinNames.mem_free_ident) || funcname.equals(BuiltinNames.mem_set_ident)) {
+        || funcname.equals(BuiltinNames.mem_free_ident) || funcname.equals(BuiltinNames.mem_set_ident)
+        || funcname.equals(BuiltinNames.mem_cpy_ident)) {
 
       final List<Type> typeArguments = new ParseType(parser).getTypeArguments();
       if (typeArguments.isEmpty()) {
@@ -66,7 +67,7 @@ public class ParseBuiltinsFn {
       final List<ExprExpression> fcallArguments = parseArglist();
 
       Type restype = typeArguments.get(0); ///TODO:pointers
-      if (funcname.equals(BuiltinNames.mem_free_ident)) {
+      if (funcname.equals(BuiltinNames.mem_free_ident) || funcname.equals(BuiltinNames.mem_cpy_ident)) {
         restype = new Type(beginPos);
       }
 

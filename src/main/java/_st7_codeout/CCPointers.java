@@ -65,5 +65,29 @@ public abstract class CCPointers {
 
     return src;
   }
+  
+  public static String genMemCpy(String elemtype, String fullname, String pointer) {
+
+    //@formatter:off
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("@POINTER@ @FUNC_NAME_mem_cpy@ (@POINTER@ dst, @POINTER@ src, size_t size) \n");
+    sb.append("{                           \n");
+    sb.append("  assert(dst);              \n");
+    sb.append("  assert(src);              \n");
+    sb.append("  assert(size);             \n");
+    sb.append("  memcpy(dst, src, size);   \n");
+    sb.append("  return dst;               \n");
+    sb.append("}                           \n");
+
+    //@formatter:on
+
+    String src = sb.toString();
+    src = src.replace("@DATATYPE@", elemtype);
+    src = src.replace("@FUNC_NAME_mem_cpy@", fullname);
+    src = src.replace("@POINTER@", pointer);
+
+    return src;
+  }
 
 }

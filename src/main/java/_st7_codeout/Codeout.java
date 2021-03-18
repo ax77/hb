@@ -92,7 +92,6 @@ public class Codeout {
   private void genBuiltins() {
     /// we know these functions AFTER we process the whole unit
     List<FlatCodeItem> builtins = BuiltinsFnSet.getBuiltins();
-    Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
 
     for (FlatCodeItem item : builtins) {
       if (item.isBuiltinFlatCallVoid()) {
@@ -114,6 +113,13 @@ public class Codeout {
             line("void " + fullname + "(void *p) { ");
             line("  free(p);");
             line("}");
+          }
+        }
+
+        else if (fullname.startsWith("std_mem_cpy")) {
+          if (!mallocNames.contains(fullname)) {
+            mallocNames.add(fullname);
+            genMemCpy(fc, fullname);
           }
         }
 
@@ -168,6 +174,8 @@ public class Codeout {
       }
     }
 
+    Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
+
     for (Entry<String, Var> ent : strings.entrySet()) {
       String s = ent.getKey();
       Var v = ent.getValue();
@@ -182,6 +190,16 @@ public class Codeout {
       String initBuffer = content.toString();
       stringsLabels.append("char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
     }
+  }
+
+  private void genMemCpy(BuiltinFlatCallVoid fcall, String fullname) {
+    Type restype = fcall.getArgs().get(0).getType();
+    if (!restype.isStdPointer()) {
+      throw new AstParseException("expect pointer");
+    }
+    final Type subtype = restype.getStdPointer().getType();
+    String template = CCPointers.genMemCpy(subtype.toString(), fullname, restype.toString());
+    line(template);
   }
 
   private void genMemSet(FunctionCallWithResultBuiltin fcall, String fullname) {
@@ -242,7 +260,7 @@ public class Codeout {
       final Ident name = names.get(i).getName();
 
       if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
-        printfBody.append(name.getName() + "->buffer");
+        printfBody.append(name.getName() + "->buffer->raw_data");
       } else {
         if (!tp.isPrimitive()) {
           throw new AstParseException("unimpl.: print compound type");

@@ -453,6 +453,10 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.string_ident);
   }
 
+  public boolean isNativePtr() {
+    return identifier.equals(BuiltinNames.ptr_ident);
+  }
+
   public String headerToString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getIdentifier().getName());

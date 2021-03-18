@@ -1,6 +1,6 @@
 package ast_printers;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,35 +8,15 @@ import ast_types.Type;
 
 public abstract class TypePrinters {
 
-  static class TypeNamePair {
-    private final Type tp;
-    private final String name;
-
-    public Type getTp() {
-      return tp;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public TypeNamePair(Type tp, String name) {
-      this.tp = tp;
-      this.name = name;
-    }
-  }
-
   private static int counter = 1024;
-  private static final List<TypeNamePair> pairs = new ArrayList<>();
+  private static final Map<String, String> pairs = new HashMap<>();
 
   public static String genName(Type forType) {
-    for (TypeNamePair pair : pairs) {
-      if (pair.getTp().isEqualTo(forType)) {
-        return pair.getName();
-      }
+    if (pairs.containsKey(forType.toString())) {
+      return pairs.get(forType.toString());
     }
     String newname = String.format("%d", counter++);
-    pairs.add(new TypeNamePair(forType, newname));
+    pairs.put(forType.toString(), newname);
     return newname;
   }
 

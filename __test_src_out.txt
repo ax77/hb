@@ -1,11 +1,11 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("class main_class                          //001 \n");
-    sb.append("{                                         //002 \n");
-    sb.append("  int main()                              //003 \n");
-    sb.append("  {                                       //004 \n");
-    sb.append("    ptr<string> x = new ptr<string>(1);   //005 \n");
-    sb.append("    return x.size();                      //006 \n");
-    sb.append("  }                                       //007 \n");
-    sb.append("}                                         //008 \n");
+    sb.append("class main_class                    //001 \n");
+    sb.append("{                                   //002 \n");
+    sb.append("  int main()                        //003 \n");
+    sb.append("  {                                 //004 \n");
+    sb.append("    ptr<int> x = new ptr<int>(1);   //005 \n");
+    sb.append("    return x.size();                //006 \n");
+    sb.append("  }                                 //007 \n");
+    sb.append("}                                   //008 \n");
     //@formatter:on

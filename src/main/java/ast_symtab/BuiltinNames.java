@@ -11,6 +11,7 @@ public abstract class BuiltinNames {
   // predefined classes
   public static final Ident array_ident = g("array");
   public static final Ident string_ident = g("string");
+  public static final Ident ptr_ident = g("ptr");
 
   // predefined parameters
   public static final Ident __this_ident = g("__this");
@@ -31,6 +32,7 @@ public abstract class BuiltinNames {
   public static final Ident mem_free_ident = g("mem_free");
   public static final Ident mem_get_ident = g("mem_get");
   public static final Ident mem_set_ident = g("mem_set");
+  public static final Ident mem_cpy_ident = g("mem_cpy");
 
   // these names are not keywords.
   private static Ident g(String name) {
@@ -39,7 +41,8 @@ public abstract class BuiltinNames {
 
   public static boolean isBuiltinMemFuncIdent(Ident id) {
     return id.equals(BuiltinNames.mem_malloc_ident) || id.equals(BuiltinNames.mem_get_ident)
-        || id.equals(BuiltinNames.mem_free_ident) || id.equals(BuiltinNames.mem_set_ident);
+        || id.equals(BuiltinNames.mem_free_ident) || id.equals(BuiltinNames.mem_set_ident)
+        || id.equals(BuiltinNames.mem_cpy_ident);
   }
 
   public static boolean isCorrectBuiltinIdent(Ident id) {

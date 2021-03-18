@@ -2,7 +2,6 @@ package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
-import ast_printers.TypePrinters;
 import ast_types.Type;
 
 public class AssignVarAllocObject {
@@ -25,8 +24,9 @@ public class AssignVarAllocObject {
   @Override
   public String toString() {
     final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    
-    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + clazz.headerToString() + "))";
+    final String headerToString = clazz.headerToString();
+
+    return lvalue.typeNameToString() + " = hmalloc(sizeof(struct " + headerToString + "))";
   }
 
 }
