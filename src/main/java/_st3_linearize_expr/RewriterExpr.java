@@ -688,7 +688,7 @@ public class RewriterExpr {
 
       /// variadic length args we will handle here
       /// that way.
-      final StringBuilder fullname = new StringBuilder();
+      StringBuilder fullname = new StringBuilder();
       if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
         fullname.append("std_");
       }
@@ -703,6 +703,12 @@ public class RewriterExpr {
             fullname.append("_");
           }
         }
+      }
+
+      ///TODO:zero
+      if (fn.getFunction().equals(BuiltinNames.zero_ident)) {
+        fullname = new StringBuilder();
+        fullname.append(ret.getClassTypeFromRef().headerToString() + "_zero_fcall");
       }
 
       if (ret.isVoid()) {

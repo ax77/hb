@@ -174,6 +174,21 @@ public class Codeout {
           //System.out.println("TODO:read");
         }
 
+        ///TODO:zero
+        else if (fcall.getOriginalName().equals(BuiltinNames.zero_ident)) {
+          ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
+          String header = clazz.headerToString();
+          final String zeroAddress = header + "_zero";
+          if (!generatedBuiltinNames.contains(zeroAddress)) {
+            generatedBuiltinNames.add(zeroAddress);
+
+            line(fcall.getType().toString() + " " + zeroAddress + "_fcall() {");
+            line("   return &" + zeroAddress + ";");
+            line("}\n");
+          }
+
+        }
+
         else {
           throw new AstParseException("unimpl std.builtin: " + item.toString());
         }
@@ -429,6 +444,19 @@ public class Codeout {
       sb.append(classToString(c));
       sb.append("\n");
     }
+
+    for (ClassDeclaration c : pods) {
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isStaticClass()) {
+        continue;
+      }
+
+      sb.append("struct " + c.headerToString() + " " + c.headerToString() + "_zero;\n");
+    }
+
+    // struct list_iter_1024 list_iter_1024_zero;
 
     return sb.toString();
   }

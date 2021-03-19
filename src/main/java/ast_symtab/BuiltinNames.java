@@ -72,6 +72,10 @@ public abstract class BuiltinNames {
   public static final Ident mem_set_ident = g("mem_set");
   public static final Ident mem_cpy_ident = g("mem_cpy");
 
+  /// means: address of the generated empty const struct
+  /// 
+  public static final Ident zero_ident = g("zero");
+
   // these names are not keywords.
   private static Ident g(String name) {
     return Hash_ident.getHashedIdent(name, 0);
@@ -90,7 +94,7 @@ public abstract class BuiltinNames {
 
   public static boolean isCorrectBuiltinIdent(Ident id) {
     return id.equals(BuiltinNames.print_ident) || id.equals(BuiltinNames.assert_true_ident) || isBuiltinMemFuncIdent(id)
-        || isFdIdent(id);
+        || isFdIdent(id) || id.equals(BuiltinNames.zero_ident);
   }
 
 }

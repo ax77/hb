@@ -1,24 +1,16 @@
-
-static class constants {
-  public static int os_version = 1024;
-
-  public static void write_setting(int f) {
-  }
-
-  public static void message(int a, int b) {
-  }
-}
+import std.list;
 
 class main_class {
   int main() {
-    int f = constants.os_version;
-    constants.write_setting(f);
-    constants.write_setting(32);
-    constants.message(f, 32);
-    array<char> buf = io.read_file("main.c");
-    for(int i=0; i<buf.size(); i+=1) {
-      std.print("%c", buf.get(i));
+    list<string> list = new list<string>();
+    list.push_back("2");
+    list.push_front("1");
+
+    list_iter<string> iter = new list_iter<string>(list);
+    while (iter.has_next()) {
+      string s = iter.get_next();
+      std.print("%s\n", s);
     }
-    return f;
+    return list.size();
   }
 }

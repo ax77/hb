@@ -32,6 +32,15 @@ public class ApplyUnitPreEachClass {
       return;
     }
 
+    if (!object.isStaticClass()) {
+      for (VarDeclarator field : object.getFields()) {
+        if (field.getSimpleInitializer() != null) {
+          throw new AstParseException("field initializer unexpected: " + object.getIdentifier().toString() + "."
+              + field.getIdentifier().toString());
+        }
+      }
+    }
+
     if (object.isStaticClass()) {
       for (VarDeclarator field : object.getFields()) {
         if (!field.getMods().isStatic()) {
