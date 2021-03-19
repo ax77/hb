@@ -1,8 +1,10 @@
+import std.stdio;
+
 class string {
 
-  private ptr<char> buffer;
+  private mem<char> buffer;
 
-  string(ptr<char> buffer) {
+  string(mem<char> buffer) {
     this.buffer = buffer;
   }
 
@@ -11,12 +13,12 @@ class string {
   }
 
   char get(int index) {
-    std.assert_true(index >= 0);
-    std.assert_true(index < buffer.size());
-    return buffer.get(index);
+    stdio.assert_true(index >= 0);
+    stdio.assert_true(index < buffer.size());
+    return buffer.access_at(index);
   }
   
-  ptr<char> get_buffer() {
+  mem<char> get_buffer() {
     return buffer;
   }
 }

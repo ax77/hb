@@ -53,7 +53,7 @@ public class ApplyUnitPreEachClass {
         }
       }
       for (ClassMethodDeclaration method : object.getMethods()) {
-        if (!method.getModifiers().isStatic()) {
+        if (!method.getModifiers().isStatic() && !method.getModifiers().isNative()) {
           throw new AstParseException("method in static class should be static: " + object.getIdentifier().toString()
               + "." + method.getIdentifier().toString());
         }

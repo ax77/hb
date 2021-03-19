@@ -7,7 +7,6 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
-import ast_expr.ExprBuiltinFn;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
@@ -72,8 +71,6 @@ public class ApplyExpression {
       e.setResultType(TypeBindings.make_boolean());
     } else if (e.is(ExpressionBase.ECAST)) {
       asslyCast(object, e);
-    } else if (e.is(ExpressionBase.EBUILTIN_FN)) {
-      applyBuiltinFn(object, e);
     } else if (e.is(ExpressionBase.ETERNARY_OPERATOR)) {
       appyTernary(object, e);
     } else if (e.is(ExpressionBase.ESIZEOF)) {
@@ -107,31 +104,31 @@ public class ApplyExpression {
     e.setResultType(falseType);
   }
 
-  private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
-
-    ExprBuiltinFn builtinFn = e.getBuiltinFn();
-
-    for (ExprExpression arg : builtinFn.getCallArguments()) {
-      applyExpression(object, arg);
-    }
-
-    final List<ExprExpression> callArguments = builtinFn.getCallArguments();
-
-    if (builtinFn.getFunction().equals(BuiltinNames.mem_malloc_ident)) {
-      builtinFn.setType(callArguments.get(0).getResultType());
-    }
-
-    if (builtinFn.getFunction().equals(BuiltinNames.assert_true_ident)) {
-      if (callArguments.size() != 1) {
-        ErrorLocation.errorExpression("assert_true expects one argument", e);
-      }
-      checkIsBoolean(callArguments.get(0));
-    }
-
-    e.setResultType(builtinFn.getType());
-
-    // TODO: check arguments
-  }
+  //  private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
+  //
+  //    ExprBuiltinFn builtinFn = e.getBuiltinFn();
+  //
+  //    for (ExprExpression arg : builtinFn.getCallArguments()) {
+  //      applyExpression(object, arg);
+  //    }
+  //
+  //    final List<ExprExpression> callArguments = builtinFn.getCallArguments();
+  //
+  //    if (builtinFn.getFunction().equals(BuiltinNames.mem_malloc_ident)) {
+  //      builtinFn.setType(callArguments.get(0).getResultType());
+  //    }
+  //
+  //    if (builtinFn.getFunction().equals(BuiltinNames.assert_true_ident)) {
+  //      if (callArguments.size() != 1) {
+  //        ErrorLocation.errorExpression("assert_true expects one argument", e);
+  //      }
+  //      checkIsBoolean(callArguments.get(0));
+  //    }
+  //
+  //    e.setResultType(builtinFn.getType());
+  //
+  //    // TODO: check arguments
+  //  }
 
   private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
     // TODO:

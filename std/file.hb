@@ -1,46 +1,48 @@
+import std.stdio;
+
 class file {
 
   private int fd;
   private boolean is_open;
   private string fullname;
-  private ptr<char> buffer;
+  private mem<char> buffer;
 
   file(string fullname) {
     this.fd = -1;
     this.is_open = false;
     this.fullname = fullname;
     
-    this.buffer = new ptr<char>(2);
+    this.buffer = new mem<char>(2);
     fill_buffer();
   }
 
   private void fill_buffer() {
-    this.buffer.set(0, '\0');
-    this.buffer.set(1, '\0');
+    this.buffer.set_at(0, '\0');
+    this.buffer.set_at(1, '\0');
   }
 
   void open() {
-    std.assert_true(!is_open);
-    fd = std.open(fullname.get_buffer().get_data(), 0);
-    std.assert_true(fd != -1);
+    stdio.assert_true(!is_open);
+    fd = stdio.open(fullname.get_buffer().get_data(), 0);
+    stdio.assert_true(fd != -1);
     is_open = true;
   }
 
   void close() {
-    std.assert_true(is_open);
-    std.close(fd);
+    stdio.assert_true(is_open);
+    stdio.close(fd);
     is_open = false;
   }
   
-  int read(int size) {
-    std.assert_true(is_open);
-    int c = std.read(fd, buffer.get_data(), size);
+  int read() {
+    stdio.assert_true(is_open);
+    int c = stdio.read(fd, buffer.get_data(), 1);
     return c;
   }
   
   char getc() {
-    std.assert_true(is_open);
-    return buffer.get(0);
+    stdio.assert_true(is_open);
+    return buffer.access_at(0);
   }
 
 }

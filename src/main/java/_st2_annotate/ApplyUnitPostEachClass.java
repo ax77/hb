@@ -51,9 +51,6 @@ public class ApplyUnitPostEachClass {
           continue;
         }
         final ExprExpression expr = stmt.getExprStmt();
-        if (expr.is(ExpressionBase.EBUILTIN_FN)) {
-          continue; // not a var :)
-        }
         if (expr.is(ExpressionBase.EMETHOD_INVOCATION)) {
           continue; // not a var :)
         }
@@ -123,6 +120,9 @@ public class ApplyUnitPostEachClass {
     for (ClassMethodDeclaration method : object.getMethods()) {
       if (method.isMain()) {
         continue;
+      }
+      if (method.getModifiers().isNative()) {
+        //continue;
       }
       final VarDeclarator thisParam = createThisParameter(object, method);
       method.pushParameterFront(thisParam);

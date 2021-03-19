@@ -454,7 +454,7 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   public boolean isNativePtr() {
-    return identifier.equals(BuiltinNames.ptr_ident);
+    return identifier.getName().equals("mem");
   }
 
   public String headerToString() {

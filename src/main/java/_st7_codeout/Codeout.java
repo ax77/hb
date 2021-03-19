@@ -12,13 +12,10 @@ import java.util.Set;
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.items.AssignVarBuiltinFlatCallResult;
 import _st3_linearize_expr.items.BuiltinFlatCallVoid;
-import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_printers.TypePrinters;
-import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -131,69 +128,69 @@ public class Codeout {
         }
       }
 
-      else if (item.isAssignVarBuiltinFlatCallResult()) {
-        AssignVarBuiltinFlatCallResult result = item.getAssignVarBuiltinFlatCallResult();
-        FunctionCallWithResultBuiltin fcall = result.getRvalue();
-
-        final String fullname = fcall.getFullname();
-
-        /// std.mem_malloc<T>(size);           raw_data = malloc(size)
-        /// std.mem_get<T>(raw_data, at);      return raw_data[at]
-        /// std.mem_set<T>(raw_data, at, e);   raw_data[at] = e
-
-        if (fullname.startsWith("std_mem_malloc")) {
-          if (!generatedBuiltinNames.contains(fullname)) {
-            genMemMalloc(fcall, fullname);
-            generatedBuiltinNames.add(fullname);
-          }
-        }
-
-        else if (fullname.startsWith("std_mem_get")) {
-          if (!generatedBuiltinNames.contains(fullname)) {
-            genMemGet(fcall, fullname);
-            generatedBuiltinNames.add(fullname);
-          }
-        }
-
-        else if (fullname.startsWith("std_mem_set")) {
-          if (!generatedBuiltinNames.contains(fullname)) {
-            genMemSet(fcall, fullname);
-            generatedBuiltinNames.add(fullname);
-          }
-        }
-
-        else if (fcall.getOriginalName().equals(BuiltinNames.open_ident)) {
-          //System.out.println("TODO:open");
-        }
-
-        else if (fcall.getOriginalName().equals(BuiltinNames.close_ident)) {
-          //System.out.println("TODO:close");
-        }
-
-        else if (fcall.getOriginalName().equals(BuiltinNames.read_ident)) {
-          //System.out.println("TODO:read");
-        }
-
-        ///TODO:zero
-        else if (fcall.getOriginalName().equals(BuiltinNames.zero_ident)) {
-          ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
-          String header = clazz.headerToString();
-          final String zeroAddress = header + "_zero";
-          if (!generatedBuiltinNames.contains(zeroAddress)) {
-            generatedBuiltinNames.add(zeroAddress);
-
-            line(fcall.getType().toString() + " " + zeroAddress + "_fcall() {");
-            line("   return &" + zeroAddress + ";");
-            line("}\n");
-          }
-
-        }
-
-        else {
-          throw new AstParseException("unimpl std.builtin: " + item.toString());
-        }
-
-      }
+      //      else if (item.isAssignVarBuiltinFlatCallResult()) {
+      //        AssignVarBuiltinFlatCallResult result = item.getAssignVarBuiltinFlatCallResult();
+      //        FunctionCallWithResultBuiltin fcall = result.getRvalue();
+      //
+      //        final String fullname = fcall.getFullname();
+      //
+      //        /// std.mem_malloc<T>(size);           raw_data = malloc(size)
+      //        /// std.mem_get<T>(raw_data, at);      return raw_data[at]
+      //        /// std.mem_set<T>(raw_data, at, e);   raw_data[at] = e
+      //
+      //        if (fullname.startsWith("std_mem_malloc")) {
+      //          if (!generatedBuiltinNames.contains(fullname)) {
+      //            genMemMalloc(fcall, fullname);
+      //            generatedBuiltinNames.add(fullname);
+      //          }
+      //        }
+      //
+      //        else if (fullname.startsWith("std_mem_get")) {
+      //          if (!generatedBuiltinNames.contains(fullname)) {
+      //            genMemGet(fcall, fullname);
+      //            generatedBuiltinNames.add(fullname);
+      //          }
+      //        }
+      //
+      //        else if (fullname.startsWith("std_mem_set")) {
+      //          if (!generatedBuiltinNames.contains(fullname)) {
+      //            genMemSet(fcall, fullname);
+      //            generatedBuiltinNames.add(fullname);
+      //          }
+      //        }
+      //
+      //        else if (fcall.getOriginalName().equals(BuiltinNames.open_ident)) {
+      //          //System.out.println("TODO:open");
+      //        }
+      //
+      //        else if (fcall.getOriginalName().equals(BuiltinNames.close_ident)) {
+      //          //System.out.println("TODO:close");
+      //        }
+      //
+      //        else if (fcall.getOriginalName().equals(BuiltinNames.read_ident)) {
+      //          //System.out.println("TODO:read");
+      //        }
+      //
+      //        ///TODO:zero
+      //        else if (fcall.getOriginalName().equals(BuiltinNames.zero_ident)) {
+      //          ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
+      //          String header = clazz.headerToString();
+      //          final String zeroAddress = header + "_zero";
+      //          if (!generatedBuiltinNames.contains(zeroAddress)) {
+      //            generatedBuiltinNames.add(zeroAddress);
+      //
+      //            line(fcall.getType().toString() + " " + zeroAddress + "_fcall() {");
+      //            line("   return &" + zeroAddress + ";");
+      //            line("}\n");
+      //          }
+      //
+      //        }
+      //
+      //        else {
+      //          throw new AstParseException("unimpl std.builtin: " + item.toString());
+      //        }
+      //
+      //      }
 
       else {
         throw new AstParseException("unimpl std.builtin: " + item.toString());
@@ -228,34 +225,34 @@ public class Codeout {
     line(template);
   }
 
-  private void genMemSet(FunctionCallWithResultBuiltin fcall, String fullname) {
-    Type restype = fcall.getArgs().get(0).getType();
-    if (!restype.isStdPointer()) {
-      throw new AstParseException("expect pointer");
-    }
-    final Type subtype = restype.getStdPointer().getType();
-    String template = CCPointers.genMemSet(subtype.toString(), fullname, restype.toString());
-    line(template);
-  }
-
-  private void genMemGet(FunctionCallWithResultBuiltin fcall, String fullname) {
-    Type restype = fcall.getArgs().get(0).getType();
-    if (!restype.isStdPointer()) {
-      throw new AstParseException("expect pointer");
-    }
-    final Type subtype = restype.getStdPointer().getType();
-    String template = CCPointers.genMemGet(subtype.toString(), fullname, restype.toString());
-    line(template);
-  }
-
-  private void genMemMalloc(FunctionCallWithResultBuiltin fcall, String fullname) {
-    Type restype = fcall.getArgs().get(0).getType();
-    if (!restype.isStdPointer()) {
-      throw new AstParseException("expect pointer");
-    }
-    String template = CCPointers.genMemMalloc(restype.toString(), fullname);
-    line(template);
-  }
+  //  private void genMemSet(FunctionCallWithResultBuiltin fcall, String fullname) {
+  //    Type restype = fcall.getArgs().get(0).getType();
+  //    if (!restype.isStdPointer()) {
+  //      throw new AstParseException("expect pointer");
+  //    }
+  //    final Type subtype = restype.getStdPointer().getType();
+  //    String template = CCPointers.genMemSet(subtype.toString(), fullname, restype.toString());
+  //    line(template);
+  //  }
+  //
+  //  private void genMemGet(FunctionCallWithResultBuiltin fcall, String fullname) {
+  //    Type restype = fcall.getArgs().get(0).getType();
+  //    if (!restype.isStdPointer()) {
+  //      throw new AstParseException("expect pointer");
+  //    }
+  //    final Type subtype = restype.getStdPointer().getType();
+  //    String template = CCPointers.genMemGet(subtype.toString(), fullname, restype.toString());
+  //    line(template);
+  //  }
+  //
+  //  private void genMemMalloc(FunctionCallWithResultBuiltin fcall, String fullname) {
+  //    Type restype = fcall.getArgs().get(0).getType();
+  //    if (!restype.isStdPointer()) {
+  //      throw new AstParseException("expect pointer");
+  //    }
+  //    String template = CCPointers.genMemMalloc(restype.toString(), fullname);
+  //    line(template);
+  //  }
 
   private void genPrintf(BuiltinFlatCallVoid fc, String fullname) {
     final StringBuilder printfArguments = new StringBuilder();

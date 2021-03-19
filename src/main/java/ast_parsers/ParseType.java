@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.StdPointer;
@@ -56,19 +55,9 @@ public class ParseType {
 
     ///TODO:pointers
     if (!typeWasFound) {
-      if (parser.is(BuiltinNames.std_ident)) {
-        Token tok = parser.peek();
-        if (tok.ofType(T.T_DOT)) {
-          parser.move();
-          parser.move();
-          Token ptr = parser.moveget();
-          if (ptr.getValue().equals("pointer")) {
-            this.isStdPointer = true;
-          } else {
-            typeWasFound = false;
-            // parser.perror("unknown std type");
-          }
-        }
+      typeWasFound = parser.is(T.T_TIMES);
+      if (typeWasFound) {
+        this.isStdPointer = true;
       }
     }
 
@@ -81,11 +70,9 @@ public class ParseType {
     }
 
     if (isStdPointer()) {
-      List<Type> args = getTypeArguments();
-      if (args.size() != 1) {
-        parser.perror("expect 1 argument for std.pointer type");
-      }
-      StdPointer stdPointer = new StdPointer(args.get(0));
+      parser.checkedMove(T.T_TIMES);
+      Type ptrto = new ParseType(parser).getType();
+      StdPointer stdPointer = new StdPointer(ptrto);
       parser.getCurrentClass(true).registerTypeSetter(stdPointer);
       return new Type(stdPointer);
     }

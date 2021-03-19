@@ -2,7 +2,6 @@ package ast_parsers;
 
 import ast_modifiers.Modifiers;
 import ast_modifiers.ModifiersChecker;
-import ast_symtab.Keywords;
 import parse.Parse;
 import tokenize.T;
 import tokenize.Token;

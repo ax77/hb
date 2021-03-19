@@ -1,6 +1,5 @@
 package _st3_linearize_expr.items;
 
-import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.FunctionCallWithResultStatic;
 import _st3_linearize_expr.leaves.Var;
 

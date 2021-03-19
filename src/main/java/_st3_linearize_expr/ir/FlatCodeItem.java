@@ -2,7 +2,6 @@ package _st3_linearize_expr.ir;
 
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
-import _st3_linearize_expr.items.AssignVarBuiltinFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -33,7 +32,6 @@ public class FlatCodeItem {
   //@formatter:off
   private AssignVarAllocObject assignVarAllocObject;
   private AssignVarBinop assignVarBinop;
-  private AssignVarBuiltinFlatCallResult assignVarBuiltinFlatCallResult;
   private AssignVarFalse assignVarFalse;
   private AssignVarFieldAccess assignVarFieldAccess;
   private AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp;
@@ -58,7 +56,6 @@ public class FlatCodeItem {
 
   public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
   public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
-  public FlatCodeItem(AssignVarBuiltinFlatCallResult assignVarBuiltinFlatCallResult) { this.opcode = Opc.AssignVarBuiltinFlatCallResult; this.assignVarBuiltinFlatCallResult = assignVarBuiltinFlatCallResult; }
   public FlatCodeItem(AssignVarFalse assignVarFalse) { this.opcode = Opc.AssignVarFalse; this.assignVarFalse = assignVarFalse; }
   public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
   public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
@@ -110,7 +107,6 @@ public class FlatCodeItem {
   public String toString() {
     if(isAssignVarAllocObject()) { return assignVarAllocObject.toString(); }
     if(isAssignVarBinop()) { return assignVarBinop.toString(); }
-    if(isAssignVarBuiltinFlatCallResult()) { return assignVarBuiltinFlatCallResult.toString(); }
     if(isAssignVarFalse()) { return assignVarFalse.toString(); }
     if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
     if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
@@ -138,7 +134,6 @@ public class FlatCodeItem {
   public Opc getOpcode() { return this.opcode; }
   public AssignVarAllocObject getAssignVarAllocObject() { return this.assignVarAllocObject; }
   public AssignVarBinop getAssignVarBinop() { return this.assignVarBinop; }
-  public AssignVarBuiltinFlatCallResult getAssignVarBuiltinFlatCallResult() { return this.assignVarBuiltinFlatCallResult; }
   public AssignVarFalse getAssignVarFalse() { return this.assignVarFalse; }
   public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
   public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }
@@ -188,9 +183,6 @@ public class FlatCodeItem {
     }
     if(isAssignVarBinop()) {
       return assignVarBinop.getLvalue();
-    }
-    if(isAssignVarBuiltinFlatCallResult()) {
-      return assignVarBuiltinFlatCallResult.getLvalue();
     }
     if(isAssignVarFalse()) {
       return assignVarFalse.getLvalue();
@@ -259,6 +251,5 @@ public class FlatCodeItem {
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
   //@formatter:on
-
 
 }
