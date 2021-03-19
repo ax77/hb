@@ -237,12 +237,16 @@ public class ApplyExpression {
     if (sym == null) {
       ErrorLocation.errorExpression("symbol was not declared in this scope", e);
     }
-    if (!sym.isVariable()) {
-      ErrorLocation.errorExpression("symbol is not a variable", e);
+    if (sym.isVariable()) {
+      e.setResultType(sym.getType());
+      primaryIdent.setVar(sym.getVariable());
     }
 
-    e.setResultType(sym.getType());
-    primaryIdent.setVar(sym.getVariable());
+    else {
+      final ClassDeclaration clazz = sym.getClazz();
+      e.setResultType(new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT())));
+      primaryIdent.setStaticClass(clazz);
+    }
 
   }
 

@@ -1,12 +1,17 @@
-import std.c_file_reader;
+
+static class constants 
+{
+  public static int os_version = 1024;
+  public static void write_setting(int f) {}
+  public static void message(int a, int b) {}
+}
 
 class main_class {
   int main() {
-    c_file_reader reader = new c_file_reader("int ma\\\nin() { return 0; }");
-    while (!reader.isEof()) {
-      char c = reader.nextc();
-      std.print("%c", c);
-    }
-    return 0;
+    int f = constants.os_version;
+    constants.write_setting(f);
+    constants.write_setting(32);
+    constants.message(f, 32);
+    return f;
   }
 }

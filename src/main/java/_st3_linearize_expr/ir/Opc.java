@@ -6,6 +6,7 @@ public enum Opc {
   , AssignVarBinop                     // type a = b + c
   , AssignVarFalse                     // type a = false
   , AssignVarFieldAccess               // type a = b.c
+  , AssignVarStaticFieldAccess         // type f = constants.flag
   , AssignVarSizeof                    // size_t a = sizeof(b)
   , AssignVarFlatCallClassCreationTmp  // temporary
   , AssignVarFlatCallStringCreationTmp // temporary
@@ -19,6 +20,7 @@ public enum Opc {
   , AssignVarVar                       // type a = b
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
+  , FlatCallVoidStaticClassMethod      // constants.write_settings(32)
   , BuiltinFlatCallVoid                // std.free()
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c

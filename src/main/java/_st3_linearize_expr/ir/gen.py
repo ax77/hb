@@ -21,6 +21,7 @@ opcodes = """
     AssignVarBinop                     ,
     AssignVarFalse                     ,
     AssignVarFieldAccess               ,
+    AssignVarStaticFieldAccess         ,
     AssignVarFlatCallClassCreationTmp  ,
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
@@ -34,6 +35,7 @@ opcodes = """
     AssignVarSizeof                    ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
+    FlatCallVoidStaticClassMethod      ,
     BuiltinFlatCallVoid                ,
     StoreFieldVar                      ,
     StoreVarField                      ,
@@ -78,7 +80,8 @@ assigns_ops = """
          isAssignVarAllocObject()  
       || isAssignVarBinop()  
       || isAssignVarFalse()  
-      || isAssignVarFieldAccess()  
+      || isAssignVarFieldAccess() 
+      || isAssignVarStaticFieldAccess()  
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()

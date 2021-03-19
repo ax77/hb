@@ -3,7 +3,9 @@ package _st2_annotate;
 import java.io.IOException;
 
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodDeclaration;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
 public class ApplyUnitPreEachClass {
@@ -30,11 +32,33 @@ public class ApplyUnitPreEachClass {
       return;
     }
 
-    if (object.getConstructors().isEmpty()) {
+    if (object.isStaticClass()) {
+      for (VarDeclarator field : object.getFields()) {
+        if (!field.getMods().isStatic()) {
+          throw new AstParseException("field in static class should be static: " + object.getIdentifier().toString()
+              + "." + field.getIdentifier().toString());
+        }
+        if (field.getSimpleInitializer() == null) {
+          throw new AstParseException("field in static class is not initialized: " + object.getIdentifier().toString()
+              + "." + field.getIdentifier().toString());
+        }
+      }
+      for (ClassMethodDeclaration method : object.getMethods()) {
+        if (!method.getModifiers().isStatic()) {
+          throw new AstParseException("method in static class should be static: " + object.getIdentifier().toString()
+              + "." + method.getIdentifier().toString());
+        }
+      }
+      if (!object.getConstructors().isEmpty()) {
+        throw new AstParseException("constructor in static class not expected: " + object.getIdentifier().toString());
+      }
+    }
+
+    if (object.getConstructors().isEmpty() && !object.isStaticClass()) {
       throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }
 
-    if (object.getFields().isEmpty()) {
+    if (object.getFields().isEmpty() && !object.isStaticClass()) {
       throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
     }
 

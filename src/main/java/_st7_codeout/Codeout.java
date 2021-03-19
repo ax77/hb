@@ -308,6 +308,7 @@ public class Codeout {
 
     List<Function> mainMethodOut = new ArrayList<>();
 
+    String staticFields = genStaticFields();
     String structTypedefs = genStructsForwards();
     String funcProtos = genFuncProtos();
     String structsImpls = genStructs();
@@ -335,6 +336,7 @@ public class Codeout {
 
     // protos
     sb.append(includes());
+    sb.append(staticFields.toString());
     sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
     sb.append(CCMacro.genMacro());
@@ -360,6 +362,34 @@ public class Codeout {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    return sb.toString();
+  }
+
+  ///TODO:static_semantic
+  private String genStaticFields() {
+    StringBuilder sb = new StringBuilder();
+
+    for (ClassDeclaration c : pods) {
+      if (c.isMainClass()) {
+        continue;
+      }
+      if (!c.isStaticClass()) {
+        continue;
+      }
+      if (c.getFields().isEmpty()) {
+        continue;
+      }
+      for (VarDeclarator field : c.getFields()) {
+        StringBuilder varname = new StringBuilder();
+        varname.append(c.getIdentifier().toString());
+        varname.append("_");
+        varname.append(field.getIdentifier().toString());
+
+        sb.append("static const " + field.getType().toString() + " " + varname + " = "
+            + field.getSimpleInitializer().toString() + ";\n");
+      }
+    }
+
     return sb.toString();
   }
 
@@ -392,6 +422,9 @@ public class Codeout {
       if (c.isMainClass()) {
         continue;
       }
+      if (c.isStaticClass()) {
+        continue;
+      }
 
       sb.append(classToString(c));
       sb.append("\n");
@@ -405,6 +438,9 @@ public class Codeout {
 
     for (ClassDeclaration c : pods) {
       if (c.isMainClass()) {
+        continue;
+      }
+      if (c.isStaticClass()) {
         continue;
       }
       sb.append("struct " + c.headerToString() + ";\n");

@@ -469,4 +469,8 @@ public class ClassDeclaration implements Serializable, Location {
     return sb.toString();
   }
 
+  public boolean isStaticClass() {
+    return modifiers.isStaticOnly();
+  }
+
 }

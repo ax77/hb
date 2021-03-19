@@ -27,6 +27,9 @@ public abstract class CEscaper {
     if (c == '\0') {
       return "\\0";
     }
+    if (c == '\\') {
+      return "\\\\";
+    }
     return String.format("%c", c);
   }
 

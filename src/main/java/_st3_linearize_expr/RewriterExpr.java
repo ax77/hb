@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st2_annotate.LvalueUtil;
+import _st3_linearize_expr.ir.CopierNamer;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
@@ -27,6 +28,7 @@ import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
+import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
 import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
@@ -34,6 +36,7 @@ import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.BuiltinFlatCallVoid;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
@@ -57,6 +60,7 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_printers.TypePrinters;
 import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
@@ -188,9 +192,19 @@ public class RewriterExpr {
         rv.add(item);
       } else if (item.isAssignVarUnop()) {
         rv.add(item);
-      } else if (item.isAssignVarVar()) {
+      }
+
+      else if (item.isAssignVarVar()) {
+        AssignVarVar assign = item.getAssignVarVar();
+        if (assign.getLvalue().getType().isClass()
+            && assign.getLvalue().getType().getClassTypeFromRef().isStaticClass()) {
+          continue;
+        }
+
         rv.add(item);
-      } else if (item.isFlatCallConstructor()) {
+      }
+
+      else if (item.isFlatCallConstructor()) {
         rv.add(item);
       } else if (item.isFlatCallVoid()) {
         rv.add(item);
@@ -211,6 +225,14 @@ public class RewriterExpr {
       }
 
       else if (item.isBuiltinFlatCallVoid()) {
+        rv.add(item);
+      }
+
+      else if (item.isAssignVarStaticFieldAccess()) {
+        rv.add(item);
+      }
+
+      else if (item.isFlatCallVoidStaticClassMethod()) {
         rv.add(item);
       }
 
@@ -404,35 +426,48 @@ public class RewriterExpr {
 
     else if (base == EPRIMARY_IDENT) {
       final ExprIdent exprId = e.getIdent();
-      final VarDeclarator var = exprId.getVar();
 
-      /// rewrite an identifier to [this.field] form
-      /// if it is possible
-      if (var.is(VarBase.CLASS_FIELD)) {
+      if (exprId.isVar()) {
+        final VarDeclarator var = exprId.getVar();
 
-        final ClassDeclaration clazz = var.getClazz();
-        final ExprExpression ethis = new ExprExpression(clazz, clazz.getBeginPos());
-        final ExprFieldAccess eFaccess = new ExprFieldAccess(ethis, var.getIdentifier());
-        eFaccess.setField(var);
+        /// rewrite an identifier to [this.field] form
+        /// if it is possible
+        if (var.is(VarBase.CLASS_FIELD)) {
 
-        final ExprExpression generated = new ExprExpression(eFaccess, clazz.getBeginPos());
-        gen(generated);
+          final ClassDeclaration clazz = var.getClazz();
+          final ExprExpression ethis = new ExprExpression(clazz, clazz.getBeginPos());
+          final ExprFieldAccess eFaccess = new ExprFieldAccess(ethis, var.getIdentifier());
+          eFaccess.setField(var);
 
-        return;
+          final ExprExpression generated = new ExprExpression(eFaccess, clazz.getBeginPos());
+          gen(generated);
+
+          return;
+        }
+
+        final Var lvalueTmp = VarCreator.justNewVar(var.getType());
+        final Var rvalueTmp = VarCreator.copyVarDecl(var);
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
+        genRaw(item);
       }
 
-      final Var lvalueTmp = VarCreator.justNewVar(var.getType());
-      final Var rvalueTmp = VarCreator.copyVarDecl(var);
-      final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
-      genRaw(item);
+      /// int f = constants.os_version;
+      /// constants.write_settings(f);
+      ///
+      if (exprId.isStaticClass()) {
+        final Var lvalueTmp = VarCreator.justNewVar(e.getResultType());
+
+        final ClassDeclaration staticClass = exprId.getStaticClass();
+        final String name = staticClass.getIdentifier().getName();
+        final Var rvalueTmp = BuiltinsFnSet.getNameFromStatics(name, e.getResultType());
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lvalueTmp, rvalueTmp));
+        genRaw(item);
+      }
     }
 
     else if (base == ExpressionBase.EPRIMARY_STRING) {
 
       final String sconst = e.getBeginPos().getValue();
-      final String unquoted = CEscaper.unquote(sconst);
-      int[] buffer = CEscaper.escape(sconst);
-
       final Var lvalue = VarCreator.justNewVar(e.getResultType());
 
       List<Var> args = new ArrayList<>();
@@ -440,8 +475,8 @@ public class RewriterExpr {
 
       // TODO:
       final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(0);
-      FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor, constructor.signToStringCall(),
-          lvalue.getType(), args);
+      final FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor,
+          constructor.signToStringCall(), lvalue.getType(), args);
 
       final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
           callWithResult);
@@ -449,7 +484,7 @@ public class RewriterExpr {
       genRaw(item);
 
       /// label
-      BuiltinsFnSet.register(sconst, VarCreator.justNewVar(e.getResultType()));
+      BuiltinsFnSet.registerStringLabel(sconst, VarCreator.justNewVar(e.getResultType()));
 
     }
 
@@ -466,6 +501,8 @@ public class RewriterExpr {
 
     else if (base == EMETHOD_INVOCATION) {
       final ExprMethodInvocation fcall = e.getMethodInvocation();
+      final ClassMethodDeclaration method = fcall.getMethod();
+      final ClassDeclaration clazz = method.getClazz();
 
       //1
       gen(fcall.getObject());
@@ -475,21 +512,38 @@ public class RewriterExpr {
       final List<Var> args = genArgs(fcall.getArguments());
       args.add(0, obj.getDest());
 
-      //3
-      final ClassMethodDeclaration method = fcall.getMethod();
+      ///TODO:static_semantic
+      if (clazz.isStaticClass()) {
+        if (method.isVoid()) {
+          args.remove(0); // __this
+          final FlatCallVoidStaticClassMethod call = new FlatCallVoidStaticClassMethod(method,
+              method.signToStringCall(), args);
+          final FlatCodeItem item = new FlatCodeItem(call);
+          genRaw(item);
+        }
 
-      if (method.isVoid()) {
-        final FlatCallVoid call = new FlatCallVoid(method, method.signToStringCall(), args);
-        final FlatCodeItem item = new FlatCodeItem(call);
-        genRaw(item);
+        else {
+
+        }
       }
 
+      /// method calls from object which is allocated
       else {
-        final FunctionCallWithResult call = new FunctionCallWithResult(method, method.signToStringCall(),
-            method.getType(), args);
-        final Var resultVar = VarCreator.justNewVar(method.getType());
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
-        genRaw(item);
+
+        if (method.isVoid()) {
+          final FlatCallVoid call = new FlatCallVoid(method, method.signToStringCall(), args);
+          final FlatCodeItem item = new FlatCodeItem(call);
+          genRaw(item);
+        }
+
+        else {
+          final FunctionCallWithResult call = new FunctionCallWithResult(method, method.signToStringCall(),
+              method.getType(), args);
+          final Var resultVar = VarCreator.justNewVar(method.getType());
+          final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
+          genRaw(item);
+        }
+
       }
 
     }
@@ -502,11 +556,30 @@ public class RewriterExpr {
       final FlatCodeItem thisItem = popCode();
       final Var obj = thisItem.getDest();
 
-      final FieldAccess access = new FieldAccess(obj, VarCreator.copyVarDecl(field));
-      final Var lhsvar = VarCreator.justNewVar(field.getType());
+      ///TODO:static_semantic
+      final ClassDeclaration clazz = obj.getType().getClassTypeFromRef();
+      if (clazz.isStaticClass()) {
+        /// int f = constants.os_version;
+        /// ::
+        /// int t8 = constants->os_version;
+        /// int f = t8;
+        ///
+        final Var staticClassName = new Var(VarBase.STATIC_VAR, new Modifiers(), field.getType(),
+            clazz.getIdentifier());
+        final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
+        final Var lhsvar = VarCreator.justNewVar(field.getType());
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarStaticFieldAccess(lhsvar, access));
 
-      final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));
-      genRaw(item);
+        genRaw(item);
+      }
+
+      else {
+        final FieldAccess access = new FieldAccess(obj, VarCreator.copyVarDecl(field));
+        final Var lhsvar = VarCreator.justNewVar(field.getType());
+
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccess(lhsvar, access));
+        genRaw(item);
+      }
 
     }
 
@@ -619,7 +692,7 @@ public class RewriterExpr {
         BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(fn.getFunction(), fullname.toString(), args);
         FlatCodeItem item = new FlatCodeItem(fc);
         genRaw(item);
-        BuiltinsFnSet.register(item);
+        BuiltinsFnSet.registerBuiltinFnCall(item);
       }
 
       else {
@@ -630,7 +703,7 @@ public class RewriterExpr {
         final AssignVarBuiltinFlatCallResult ops = new AssignVarBuiltinFlatCallResult(lvalue, call);
         final FlatCodeItem item = new FlatCodeItem(ops);
         genRaw(item);
-        BuiltinsFnSet.register(item);
+        BuiltinsFnSet.registerBuiltinFnCall(item);
       }
     }
 

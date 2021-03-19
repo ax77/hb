@@ -82,7 +82,6 @@ public class ApplyUnitPostEachClass {
 
   private VarDeclarator getDest(final ExprExpression expr) {
     if (expr.is(ExpressionBase.EFIELD_ACCESS)) {
-      System.out.println();
     }
 
     else if (expr.is(ExpressionBase.EASSIGN)) {
@@ -116,6 +115,11 @@ public class ApplyUnitPostEachClass {
     if (object.isMainClass()) {
       return;
     }
+    ///TODO:static_semantic
+    if (object.isStaticClass()) {
+      return;
+    }
+
     for (ClassMethodDeclaration method : object.getMethods()) {
       if (method.isMain()) {
         continue;
