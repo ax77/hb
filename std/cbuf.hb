@@ -1,4 +1,4 @@
-public class c_file_reader {
+public class cbuf {
 
   private final array<char>buffer;
   private final int size;
@@ -8,7 +8,7 @@ public class c_file_reader {
   private char prevc;
   private int eofs;
 
-  public c_file_reader(final string input) {
+  public cbuf(final string input) {
 
     this.buffer = new array<char>();
     this.size = input.length() + 8;

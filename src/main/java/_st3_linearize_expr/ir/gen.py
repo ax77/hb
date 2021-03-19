@@ -25,6 +25,7 @@ opcodes = """
     AssignVarFlatCallClassCreationTmp  ,
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
+    AssignVarFlatCallResultStatic      ,
     AssignVarBuiltinFlatCallResult     ,
     AssignVarNull                      ,
     AssignVarNum                       ,
@@ -85,6 +86,7 @@ assigns_ops = """
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
+      || isAssignVarFlatCallResultStatic()
       || isAssignVarBuiltinFlatCallResult()
       || isAssignVarNull()   
       || isAssignVarNum()   

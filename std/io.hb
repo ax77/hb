@@ -1,11 +1,6 @@
-class io {
-  int stub;
+static class io {
 
-  io() {
-    stub = 0;
-  }
-
-  array<char> read_file(string fullname) {
+  static array<char> read_file(string fullname) {
     file fp = new file(fullname);
     fp.open();
   

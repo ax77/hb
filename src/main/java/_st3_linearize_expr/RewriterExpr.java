@@ -25,6 +25,7 @@ import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
+import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
@@ -43,6 +44,7 @@ import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FieldAccess;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.FunctionCallWithResultBuiltin;
+import _st3_linearize_expr.leaves.FunctionCallWithResultStatic;
 import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
@@ -220,6 +222,8 @@ public class RewriterExpr {
         rv.add(item);
       }
 
+      /// builtins
+      ///
       else if (item.isAssignVarBuiltinFlatCallResult()) {
         rv.add(item);
       }
@@ -228,11 +232,17 @@ public class RewriterExpr {
         rv.add(item);
       }
 
+      /// statics
+      ///
       else if (item.isAssignVarStaticFieldAccess()) {
         rv.add(item);
       }
 
       else if (item.isFlatCallVoidStaticClassMethod()) {
+        rv.add(item);
+      }
+
+      else if (item.isAssignVarFlatCallResultStatic()) {
         rv.add(item);
       }
 
@@ -514,8 +524,11 @@ public class RewriterExpr {
 
       ///TODO:static_semantic
       if (clazz.isStaticClass()) {
+
+        args.remove(0); // __this
+
         if (method.isVoid()) {
-          args.remove(0); // __this
+
           final FlatCallVoidStaticClassMethod call = new FlatCallVoidStaticClassMethod(method,
               method.signToStringCall(), args);
           final FlatCodeItem item = new FlatCodeItem(call);
@@ -523,7 +536,11 @@ public class RewriterExpr {
         }
 
         else {
-
+          final FunctionCallWithResultStatic call = new FunctionCallWithResultStatic(method, method.signToStringCall(),
+              method.getType(), args);
+          final Var resultVar = VarCreator.justNewVar(method.getType());
+          final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResultStatic(resultVar, call));
+          genRaw(item);
         }
       }
 

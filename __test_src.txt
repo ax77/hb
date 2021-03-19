@@ -1,9 +1,12 @@
 
-static class constants 
-{
+static class constants {
   public static int os_version = 1024;
-  public static void write_setting(int f) {}
-  public static void message(int a, int b) {}
+
+  public static void write_setting(int f) {
+  }
+
+  public static void message(int a, int b) {
+  }
 }
 
 class main_class {
@@ -12,6 +15,10 @@ class main_class {
     constants.write_setting(f);
     constants.write_setting(32);
     constants.message(f, 32);
+    array<char> buf = io.read_file("main.c");
+    for(int i=0; i<buf.size(); i+=1) {
+      std.print("%c", buf.get(i));
+    }
     return f;
   }
 }

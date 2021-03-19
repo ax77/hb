@@ -11,6 +11,7 @@ public enum Opc {
   , AssignVarFlatCallClassCreationTmp  // temporary
   , AssignVarFlatCallStringCreationTmp // temporary
   , AssignVarFlatCallResult            // type a = f(b, c)
+  , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarBuiltinFlatCallResult     // type a = std.read_file(b)
   , AssignVarNull                      // type a = null
   , AssignVarNum                       // type a = 1

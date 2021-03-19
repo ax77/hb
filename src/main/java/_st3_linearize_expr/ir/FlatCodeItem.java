@@ -7,6 +7,7 @@ import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
+import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNull;
 import _st3_linearize_expr.items.AssignVarNum;
@@ -37,6 +38,7 @@ public class FlatCodeItem {
   private AssignVarFieldAccess assignVarFieldAccess;
   private AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp;
   private AssignVarFlatCallResult assignVarFlatCallResult;
+  private AssignVarFlatCallResultStatic assignVarFlatCallResultStatic;
   private AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp;
   private AssignVarNull assignVarNull;
   private AssignVarNum assignVarNum;
@@ -61,6 +63,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
   public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
   public FlatCodeItem(AssignVarFlatCallResult assignVarFlatCallResult) { this.opcode = Opc.AssignVarFlatCallResult; this.assignVarFlatCallResult = assignVarFlatCallResult; }
+  public FlatCodeItem(AssignVarFlatCallResultStatic assignVarFlatCallResultStatic) { this.opcode = Opc.AssignVarFlatCallResultStatic; this.assignVarFlatCallResultStatic = assignVarFlatCallResultStatic; }
   public FlatCodeItem(AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp) { this.opcode = Opc.AssignVarFlatCallStringCreationTmp; this.assignVarFlatCallStringCreationTmp = assignVarFlatCallStringCreationTmp; }
   public FlatCodeItem(AssignVarNull assignVarNull) { this.opcode = Opc.AssignVarNull; this.assignVarNull = assignVarNull; }
   public FlatCodeItem(AssignVarNum assignVarNum) { this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
@@ -85,6 +88,7 @@ public class FlatCodeItem {
   public boolean isAssignVarFieldAccess() { return this.opcode == Opc.AssignVarFieldAccess; }
   public boolean isAssignVarFlatCallClassCreationTmp() { return this.opcode == Opc.AssignVarFlatCallClassCreationTmp; }
   public boolean isAssignVarFlatCallResult() { return this.opcode == Opc.AssignVarFlatCallResult; }
+  public boolean isAssignVarFlatCallResultStatic() { return this.opcode == Opc.AssignVarFlatCallResultStatic; }
   public boolean isAssignVarFlatCallStringCreationTmp() { return this.opcode == Opc.AssignVarFlatCallStringCreationTmp; }
   public boolean isAssignVarNull() { return this.opcode == Opc.AssignVarNull; }
   public boolean isAssignVarNum() { return this.opcode == Opc.AssignVarNum; }
@@ -111,6 +115,7 @@ public class FlatCodeItem {
     if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
     if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
     if(isAssignVarFlatCallResult()) { return assignVarFlatCallResult.toString(); }
+    if(isAssignVarFlatCallResultStatic()) { return assignVarFlatCallResultStatic.toString(); }
     if(isAssignVarFlatCallStringCreationTmp()) { return assignVarFlatCallStringCreationTmp.toString(); }
     if(isAssignVarNull()) { return assignVarNull.toString(); }
     if(isAssignVarNum()) { return assignVarNum.toString(); }
@@ -138,6 +143,7 @@ public class FlatCodeItem {
   public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
   public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }
   public AssignVarFlatCallResult getAssignVarFlatCallResult() { return this.assignVarFlatCallResult; }
+  public AssignVarFlatCallResultStatic getAssignVarFlatCallResultStatic() { return this.assignVarFlatCallResultStatic; }
   public AssignVarFlatCallStringCreationTmp getAssignVarFlatCallStringCreationTmp() { return this.assignVarFlatCallStringCreationTmp; }
   public AssignVarNull getAssignVarNull() { return this.assignVarNull; }
   public AssignVarNum getAssignVarNum() { return this.assignVarNum; }
@@ -166,6 +172,7 @@ public class FlatCodeItem {
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
+      || isAssignVarFlatCallResultStatic()
       || isAssignVarBuiltinFlatCallResult()
       || isAssignVarNull()   
       || isAssignVarNum()   
@@ -196,6 +203,9 @@ public class FlatCodeItem {
     }
     if(isAssignVarFlatCallResult()) {
       return assignVarFlatCallResult.getLvalue();
+    }
+    if(isAssignVarFlatCallResultStatic()) {
+      return assignVarFlatCallResultStatic.getLvalue();
     }
     if(isAssignVarFlatCallStringCreationTmp()) {
       return assignVarFlatCallStringCreationTmp.getLvalue();
@@ -249,5 +259,6 @@ public class FlatCodeItem {
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
   //@formatter:on
+
 
 }
