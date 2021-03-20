@@ -39,8 +39,8 @@ public class UnitImportsSet {
 
       fullyRead.add(dir + "/std/arr.hb");
       fullyRead.add(dir + "/std/string.hb");
+      fullyRead.add(dir + "/std/assert.hb");
       
-      //fullyRead.add(dir + "/std/assert.hb");
       //fullyRead.add(dir + "/std/box.hb");
       //fullyRead.add(dir + "/std/vec.hb");
       //fullyRead.add(dir + "/std/string.hb");

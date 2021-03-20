@@ -275,8 +275,9 @@ public class RewriterExpr {
     /// sizeof( char[] )
     final int slen = buffer.length; /// it includes '\0'
     final Var strlenVar = VarCreator.justNewVar(TypeBindings.make_int());
+    final String strlenIncludeNul = String.format("%d", slen);
     final AssignVarNum strlenNum = new AssignVarNum(strlenVar,
-        new IntLiteral(String.format("%d", slen), TypeBindings.make_int(), slen));
+        new IntLiteral(strlenIncludeNul, TypeBindings.make_int(), slen));
     rv.add(new FlatCodeItem(strlenNum));
 
     final List<Var> argsInstance = new ArrayList<>();
@@ -292,8 +293,9 @@ public class RewriterExpr {
     rv.add(new FlatCodeItem(flatCallConstructor));
 
     Var labelName = BuiltinsFnSet.getVar(sconst);
-    IntrinsicText text = new IntrinsicText(lvalueVar,
-        "strcpy(" + lvalueVar.getName().getName() + "->data, " + labelName.getName().getName() + ")");
+    final String strlenExcludeNul = String.format("%d", slen - 1);
+    IntrinsicText text = new IntrinsicText(lvalueVar, "hstrncpy(" + lvalueVar.getName().getName() + "->data, "
+        + labelName.getName().getName() + ", " + strlenExcludeNul + ")");
     rv.add(new FlatCodeItem(text));
 
   }

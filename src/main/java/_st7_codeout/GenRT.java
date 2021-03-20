@@ -87,6 +87,24 @@ public abstract class GenRT {
     sb.append("    rv[len] = \'\\0\';                         \n");
     sb.append("    return rv;                                 \n");
     sb.append("}                                              \n\n");
+    
+    sb.append("char *hstrncpy(char * const to, const char * const from, const size_t count) \n");
+    sb.append("{                                              \n");
+    sb.append("    assert(to);                                \n");
+    sb.append("    assert(from);                              \n");
+    sb.append("    assert(to[0] == \'\\0\');                  \n");
+    sb.append("    assert(count > 0);                         \n");
+    sb.append("    assert(count <= strlen(from));             \n");
+    sb.append("    for (size_t i = 0; i < count; i += 1) {    \n");
+    sb.append("        const char c = from[i];                \n");
+    sb.append("        if (c == \'\\0\') {                    \n");
+    sb.append("            break;                             \n");
+    sb.append("        }                                      \n");
+    sb.append("        to[i] = c;                             \n");
+    sb.append("    }                                          \n");
+    sb.append("    return to;                                 \n");
+    sb.append("}                                              \n\n");
+
     //@formatter:on
 
     return sb.toString();

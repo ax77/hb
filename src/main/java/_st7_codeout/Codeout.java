@@ -109,7 +109,7 @@ public class Codeout {
         }
       }
       String initBuffer = content.toString();
-      stringsLabels.append("char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
+      stringsLabels.append("static const char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
     }
   }
 
