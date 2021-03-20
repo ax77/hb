@@ -26,7 +26,6 @@ opcodes = """
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
-    AssignVarBuiltinFlatCallResult     ,
     AssignVarNull                      ,
     AssignVarNum                       ,
     AssignVarTernaryOp                 ,
@@ -37,9 +36,9 @@ opcodes = """
     FlatCallConstructor                ,
     FlatCallVoid                       ,
     FlatCallVoidStaticClassMethod      ,
-    BuiltinFlatCallVoid                ,
     StoreFieldVar                      ,
     StoreVarField                      ,
+    IntrinsicText                      ,
     StoreVarVar                        
 """
 opcodes_arr = []
@@ -87,7 +86,6 @@ assigns_ops = """
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
       || isAssignVarFlatCallResultStatic()
-      || isAssignVarBuiltinFlatCallResult()
       || isAssignVarNull()   
       || isAssignVarNum()   
       || isAssignVarTernaryOp()  
@@ -110,8 +108,8 @@ for opc in opcodes_arr:
         get_dest += '      return ' + varname + '.getLvalue();\n'
     elif str(opc) == 'FlatCallConstructor':
          get_dest += '      return ' + varname + '.getThisVar();\n'
-    elif str(opc) == 'StoreVarVarAssignOp':
-         get_dest += '      return ' + varname + '.getDst();\n'
+    elif str(opc) == 'IntrinsicText':
+         get_dest += '      return ' + varname + '.getDest();\n'
     else:
         get_dest += '      err();\n'
         

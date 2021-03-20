@@ -1,25 +1,24 @@
-import std.box;
-import std.assert;
+//import std.assert;
 
 class string {
 
-  private box<char> buffer;
+  private arr<char> buffer;
 
-  string(box<char> buffer) {
+  string(arr<char> buffer) {
     this.buffer = buffer;
   }
 
   int length() {
-    return buffer.num_of_elements();
+    return buffer.size();
   }
 
   char get(int index) {
-    assert.is_true(index >= 0);
-    assert.is_true(index < buffer.num_of_elements());
-    return buffer.access_at(index);
+    //assert.is_true(index >= 0);
+    //assert.is_true(index < buffer.size());
+    return buffer.get(index);
   }
   
-  box<char> get_buffer() {
+  arr<char> bytes() {
     return buffer;
   }
 }

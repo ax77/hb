@@ -36,6 +36,7 @@ import _st3_linearize_expr.items.BuiltinFlatCallVoid;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
+import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
@@ -217,16 +218,6 @@ public class RewriterExpr {
         rv.add(item);
       }
 
-      /// builtins
-      ///
-      else if (item.isAssignVarBuiltinFlatCallResult()) {
-        rv.add(item);
-      }
-
-      else if (item.isBuiltinFlatCallVoid()) {
-        rv.add(item);
-      }
-
       /// statics
       ///
       else if (item.isAssignVarStaticFieldAccess()) {
@@ -250,12 +241,8 @@ public class RewriterExpr {
   }
 
   private FlatCodeItem genAssert(Var v) {
-    List<Var> args = new ArrayList<>();
-    args.add(v);
-
-    BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(BuiltinNames.assert_ident, BuiltinNames.assert_ident.toString(),
-        args);
-    return new FlatCodeItem(fc);
+    IntrinsicText text = new IntrinsicText(v, "assert(" + v.getName().getName() + ")");
+    return new FlatCodeItem(text);
   }
 
   private void rewriteStringCreation(final AssignVarFlatCallStringCreationTmp node) {
@@ -278,7 +265,7 @@ public class RewriterExpr {
       throw new AstParseException("expect class-type for a string creation");
     }
     ClassDeclaration clazz = type.getClassTypeFromRef();
-    if (!clazz.isNativePtr()) {
+    if (!clazz.isNativeArr()) {
       throw new AstParseException("expect ptr-class-type for a string creation");
     }
 
@@ -292,18 +279,8 @@ public class RewriterExpr {
         new IntLiteral(String.format("%d", slen), TypeBindings.make_int(), slen));
     rv.add(new FlatCodeItem(strlenNum));
 
-    /// sizeof(char)
-    /// AssignVarNum assignVarNum = new AssignVarNum(VarCreator.justNewVar(TypeBindings.make_int()),
-    ///     new IntLiteral("1", TypeBindings.make_int(), 1));
-    /// rv.add(new FlatCodeItem(assignVarNum));
-
-    AssignVarSizeof assignVarSizeof = new AssignVarSizeof(VarCreator.justNewVar(TypeBindings.make_int()),
-        TypeBindings.make_char());
-    rv.add(new FlatCodeItem(assignVarSizeof));
-
     final List<Var> argsInstance = new ArrayList<>();
     argsInstance.add(0, lvalueVar);
-    argsInstance.add(assignVarSizeof.getLvalue());
     argsInstance.add(strlenVar);
 
     final List<Var> args = new ArrayList<>();
@@ -314,18 +291,11 @@ public class RewriterExpr {
         argsInstance, lvalueVar);
     rv.add(new FlatCodeItem(flatCallConstructor));
 
-    /// ptr_cpy(dst, src, size)
-    final ClassMethodDeclaration cpyMethod = clazz.getMethodForSure("memcpy");
+    Var labelName = BuiltinsFnSet.getVar(sconst);
+    IntrinsicText text = new IntrinsicText(lvalueVar,
+        "strcpy(" + lvalueVar.getName().getName() + "->data, " + labelName.getName().getName() + ")");
+    rv.add(new FlatCodeItem(text));
 
-    final List<Var> argsCpy = new ArrayList<>();
-    argsCpy.add(lvalueVar);
-    argsCpy.add(BuiltinsFnSet.getVar(sconst));
-    argsCpy.add(strlenVar);
-
-    final FlatCallVoid cpyCall = new FlatCallVoid(cpyMethod, cpyMethod.signToStringCall(), argsCpy);
-    rv.add(new FlatCodeItem(cpyCall));
-
-    /// ptr_set(at, 0)
   }
 
   private void genRaw(FlatCodeItem item) {

@@ -1,5 +1,5 @@
-import std.box;
-import std.vec;
+
+
 import std.string;
 
 static class stdio 
@@ -23,17 +23,7 @@ static class stdio
     fp.close();
     return rv;
   }
-  
-  static void printf(string s, char c) {
-    native_printf(s.get_buffer().raw_data(), c);
-  }
-  
-  static void printf(string s, int c) {
-    native_printf(s.get_buffer().raw_data(), c);
-  }
-  
-  native void native_printf(*char fmt, char c);
-  native void native_printf(*char fmt, int c);
+
 }
 
 

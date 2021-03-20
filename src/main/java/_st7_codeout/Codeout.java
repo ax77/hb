@@ -1,5 +1,6 @@
 package _st7_codeout;
 
+import java.beans.MethodDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
 import ast_symtab.BuiltinNames;
+import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -26,6 +28,7 @@ public class Codeout {
 
   private final Set<String> generatedBuiltinNames;
   private final StringBuilder builtinsFn;
+  private final StringBuilder builtinsArrays;
 
   private final StringBuilder builtinsTypedefs;
   private final StringBuilder stringsLabels;
@@ -35,6 +38,7 @@ public class Codeout {
     this.functions = new ArrayList<>();
     this.generatedBuiltinNames = new HashSet<>();
     this.builtinsFn = new StringBuilder();
+    this.builtinsArrays = new StringBuilder();
     this.stringsLabels = new StringBuilder();
     this.builtinsTypedefs = new StringBuilder();
   }
@@ -82,6 +86,11 @@ public class Codeout {
   private void lineBuiltin(String s) {
     builtinsFn.append(s);
     builtinsFn.append("\n");
+  }
+
+  private void lineBuiltinArr(String s) {
+    builtinsArrays.append(s);
+    builtinsArrays.append("\n");
   }
 
   private void genBuiltins() {
@@ -149,6 +158,7 @@ public class Codeout {
     sb.append(genTypesFile.toString());
     sb.append(CCMacro.genMacro());
     sb.append(stringsLabels.toString());
+    sb.append(builtinsArrays.toString());
     sb.append("\n");
     sb.append("\n");
 
@@ -216,6 +226,11 @@ public class Codeout {
         continue;
       }
 
+      if (f.getMethodSignature().getClazz().isNativeArr()) {
+        genArrayMethod(f);
+        continue;
+      }
+
       if (f.getMethodSignature().getModifiers().isNative()) {
         genNativeMethod(f);
         continue;
@@ -228,6 +243,85 @@ public class Codeout {
     return sb.toString();
   }
 
+  /// arrays
+
+  private void genArrayStruct(ClassDeclaration c) {
+    Type arrayOf = c.getTypeParametersT().get(0);
+
+    lineBuiltinArr("struct " + c.headerToString() + "\n{");
+    lineBuiltinArr("    " + arrayOf.toString() + "* data;");
+    lineBuiltinArr("    size_t size;");
+    lineBuiltinArr("};\n");
+  }
+
+  private void genArrayMethod(Function func) {
+    final ClassMethodDeclaration method = func.getMethodSignature();
+    final Ident name = method.getIdentifier();
+    final List<VarDeclarator> params = method.getParameters();
+    final ClassDeclaration clazz = method.getClazz();
+
+    Type arrayOf = clazz.getTypeParametersT().get(0);
+    String arrayOfToString = arrayOf.toString();
+
+    //
+    final String methodType = method.getType().toString();
+    final String signToStringCall = method.signToStringCall();
+    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+
+    /// native arr(int size);
+    /// native T get(int index);
+    /// native T set(int index, T element);
+    /// native int size();
+
+    if (signToStringCall.startsWith("arr_init_")) {
+      String sizeofElem = "sizeof(" + arrayOfToString + ")";
+      
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(size > 0);");
+      lineBuiltinArr("    __this->size = size;");
+      lineBuiltinArr("    __this->data = (" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * size) );");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("arr_get_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(__this->data);");
+      lineBuiltinArr("    assert(__this->size > 0);");
+      lineBuiltinArr("    assert(index >= 0);");
+      lineBuiltinArr("    assert(index < __this->size);");
+      lineBuiltinArr("    return __this->data[index];");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("arr_set_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(__this->data);");
+      lineBuiltinArr("    assert(index >= 0);");
+      lineBuiltinArr("    assert(index < __this->size);");
+      lineBuiltinArr("    " + arrayOfToString + " old =  __this->data[index];");
+      lineBuiltinArr("    __this->data[index] = element;");
+      lineBuiltinArr("    return old;");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("arr_size_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    return __this->size;");
+      lineBuiltinArr("}\n");
+    }
+
+    else {
+      throw new AstParseException("unimplemented array method: " + method.getIdentifier().toString());
+    }
+
+  }
+
+  /// arrays
+
   private void genNativeMethod(Function func) {
     final ClassMethodDeclaration method = func.getMethodSignature();
     final Ident name = method.getIdentifier();
@@ -236,7 +330,7 @@ public class Codeout {
 
     //
     final String methodType = method.getType().toString();
-    final String methodCallsHeared = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
+    final String methodCallsHeader = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
 
     if (BuiltinNames.isMemClassNativeMethodName(name)) {
       if (!clazz.isNativePtr()) {
@@ -262,34 +356,34 @@ public class Codeout {
     //
 
     if (name.equals(BuiltinNames.native_malloc_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return (" + methodType + ") hmalloc(size);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_calloc_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return (" + methodType + ") hcalloc(count, size);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_free_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    free(ptr);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_ptr_access_at_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return ptr[offset];");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_ptr_set_at_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    " + methodType + " old = ptr[offset];");
       lineBuiltin("    ptr[offset] = value;");
       lineBuiltin("    return old;");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_memcpy_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return (" + methodType + ") memcpy(dst, src, count);");
       lineBuiltin("}");
     }
@@ -307,29 +401,29 @@ public class Codeout {
     /// native int native_read(int fd, *char buffer, int size);
 
     if (name.equals(BuiltinNames.native_panic_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(because);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_assert_true_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert_true(condition);");
       lineBuiltin("}");
     }
 
     ///
     if (name.equals(BuiltinNames.native_open_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return open(filename, O_RDONLY);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_close_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    return close(fd);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_read_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(fd != -1);");
       lineBuiltin("    assert(buffer);");
       lineBuiltin("    assert(size > 0);");
@@ -339,7 +433,7 @@ public class Codeout {
 
     ///
     if (name.equals(BuiltinNames.native_printf_ident)) {
-      lineBuiltin(methodCallsHeared);
+      lineBuiltin(methodCallsHeader);
 
       StringBuilder printfArgNames = new StringBuilder();
       for (int i = 0; i < params.size(); i += 1) {
@@ -366,6 +460,10 @@ public class Codeout {
       if (c.isStaticClass()) {
         continue;
       }
+      if (c.isNativeArr()) {
+        genArrayStruct(c);
+        continue;
+      }
 
       sb.append(classToString(c));
       sb.append("\n");
@@ -376,6 +474,9 @@ public class Codeout {
         continue;
       }
       if (c.isStaticClass()) {
+        continue;
+      }
+      if (c.isNativeArr()) {
         continue;
       }
 
@@ -396,6 +497,9 @@ public class Codeout {
       }
       if (c.isStaticClass()) {
         continue;
+      }
+      if (c.isNativeArr()) {
+        //continue;
       }
       sb.append("struct " + c.headerToString() + ";\n");
     }

@@ -1,30 +1,31 @@
-import std.box;
+
 import std.assert;
 
 class vec<T> 
 {
-  box<T> data;
+  arr<T> data;
   int size;
   int alloc;
   
   vec() {
     this.size = 0;
     this.alloc = 2;
-    this.data = new box<T>(sizeof(T), this.alloc);
+    this.data = new arr<T>(this.alloc);
   }
   
   void add(T e) {
     if(size >= alloc) {
+      alloc += 1;
       alloc *= 2;
       
-      box<T> ndata = new box<T>(sizeof(T), this.alloc);
+      arr<T> ndata = new arr<T>(this.alloc);
       for(int i = 0; i < size; i += 1) {
-        ndata.set_at(i, data.access_at(i));
+        ndata.set(i, data.get(i));
       }
-      data.free();
+      //data.free();
       data = ndata;
     }
-    data.set_at(size, e);
+    data.set(size, e);
     size += 1;
   }
   
@@ -33,18 +34,18 @@ class vec<T>
   }
   
   T get(int index) {
-    assert.is_true(index >= 0);
-    assert.is_true(index < size);
-    return data.access_at(index);
+    //assert.is_true(index >= 0);
+    //assert.is_true(index < size);
+    return data.get(index);
   }
   
   T set(int index, T e) {
-    assert.is_true(index >= 0);
-    assert.is_true(index < size);
-    return data.set_at(index, e);
+    //assert.is_true(index >= 0);
+    //assert.is_true(index < size);
+    return data.set(index, e);
   }
   
-  box<T> get_data() {
+  arr<T> data() {
     return data;
   }
 }

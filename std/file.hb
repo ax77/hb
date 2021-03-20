@@ -1,31 +1,29 @@
-import std.stdio;
 import std.assert;
-import std.vec;
 
 class file {
 
   private int fd;
   private boolean is_open;
   private string fullname;
-  private box<char> buffer;
+  private arr<char> buffer;
 
   file(string fullname) {
     this.fd = -1;
     this.is_open = false;
     this.fullname = fullname;
     
-    this.buffer = new box<char>(sizeof(char), 2);
+    this.buffer = new arr<char>(2);
     fill_buffer();
   }
 
   private void fill_buffer() {
-    buffer.set_at(0, '\0');
-    buffer.set_at(1, '\0');
+    buffer.set(0, '\0');
+    buffer.set(1, '\0');
   }
 
   void open() {
     assert.is_true(!is_open);
-    fd = native_open(fullname.get_buffer().raw_data(), 0);
+    fd = native_open(fullname.bytes(), 0);
     assert.is_true(fd != -1);
     is_open = true;
   }
@@ -38,17 +36,17 @@ class file {
   
   int read() {
     assert.is_true(is_open);
-    int c = native_read(fd, buffer.raw_data(), 1);
+    int c = native_read(fd, buffer, 1);
     return c;
   }
   
   char getc() {
     assert.is_true(is_open);
-    return buffer.access_at(0);
+    return buffer.get(0);
   }
   
-  native int native_open(*char filename, int mode);
+  native int native_open(arr<char> filename, int mode);
   native int native_close(int fd);
-  native int native_read(int fd, *char buffer, int size);
+  native int native_read(int fd, arr<char> buffer, int size);
 
 }

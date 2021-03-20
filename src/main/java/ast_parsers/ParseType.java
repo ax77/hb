@@ -6,7 +6,6 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
-import ast_types.StdPointer;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import parse.Parse;
@@ -21,7 +20,6 @@ public class ParseType {
   private boolean isPrimitive;
   private boolean isReference;
   private boolean isTypeParameter;
-  private boolean isStdPointer;
 
   public ParseType(Parse parser) {
 
@@ -53,28 +51,12 @@ public class ParseType {
       }
     }
 
-    ///TODO:pointers
-    if (!typeWasFound) {
-      typeWasFound = parser.is(T.T_TIMES);
-      if (typeWasFound) {
-        this.isStdPointer = true;
-      }
-    }
-
   }
 
   public Type getType() {
 
     if (!isType()) {
       parser.perror("type is not recognized");
-    }
-
-    if (isStdPointer()) {
-      parser.checkedMove(T.T_TIMES);
-      Type ptrto = new ParseType(parser).getType();
-      StdPointer stdPointer = new StdPointer(ptrto);
-      parser.getCurrentClass(true).registerTypeSetter(stdPointer);
-      return new Type(stdPointer);
     }
 
     // 1)
@@ -158,11 +140,7 @@ public class ParseType {
   }
 
   public boolean isType() {
-    return isPrimitive || isReference || isTypeParameter || isStdPointer;
-  }
-
-  public boolean isStdPointer() {
-    return isStdPointer;
+    return isPrimitive || isReference || isTypeParameter;
   }
 
   public boolean isPrimitive() {

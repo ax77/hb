@@ -63,11 +63,11 @@ public class ApplyUnitPreEachClass {
       }
     }
 
-    if (object.getConstructors().isEmpty() && !object.isStaticClass()) {
+    if (object.getConstructors().isEmpty() && !object.isStaticClass() &&!object.isNativeArr()) {
       throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }
 
-    if (object.getFields().isEmpty() && !object.isStaticClass()) {
+    if (object.getFields().isEmpty() && !object.isStaticClass()&&!object.isNativeArr()) {
       throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
     }
 

@@ -468,6 +468,10 @@ public class ClassDeclaration implements Serializable, Location {
 
     return sb.toString();
   }
+  
+  public boolean isNativeArr() {
+    return identifier.getName().equals("arr");
+  }
 
   public boolean isStaticClass() {
     return modifiers.isStaticOnly();

@@ -12,5 +12,4 @@ public enum TypeBase {
   , TP_void
   , TP_TYPENAME_ID
   , TP_CLASS
-  , TP_STD_POINTER
 }

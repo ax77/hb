@@ -1,12 +1,14 @@
-
 class main_class {
   int main() {
-    vec<char> buf = stdio.read_file("main.c");
-    for(int i=0; i<buf.size(); i+=1) {
-      char c = buf.get(i);
-      stdio.printf("%c", c);
-    }
-    stdio.printf("%d", 32768);
-    return 0;
+    //arr<char> buf = new arr<char>(4);
+    //buf.set(0, 'a');
+    //buf.set(1, 'b');
+    //buf.set(2, 'c');
+    //buf.set(3, '\0');
+    
+    arr<string> buf = new arr<string>(16);
+    
+    string s = "q.b.e";
+    return s.length();
   }
 }
