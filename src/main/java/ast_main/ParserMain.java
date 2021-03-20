@@ -77,7 +77,8 @@ public class ParserMain implements ParserMainApi {
 
     if (Settings.IMPORT_STD_BY_DEFAULT) {
 
-      predef.append(new FileWrapper(dir + "/std/mem.hb").readToString(FileReadKind.APPEND_LF));
+      predef.append(new FileWrapper(dir + "/std/assert.hb").readToString(FileReadKind.APPEND_LF));
+      predef.append(new FileWrapper(dir + "/std/box.hb").readToString(FileReadKind.APPEND_LF));
       predef.append(new FileWrapper(dir + "/std/vec.hb").readToString(FileReadKind.APPEND_LF));
       predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
       predef.append(new FileWrapper(dir + "/std/file.hb").readToString(FileReadKind.APPEND_LF));

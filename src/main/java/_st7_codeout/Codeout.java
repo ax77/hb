@@ -11,12 +11,11 @@ import java.util.Set;
 
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
-import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.items.BuiltinFlatCallVoid;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodDeclaration;
 import ast_printers.TypePrinters;
-import ast_types.Type;
+import ast_symtab.BuiltinNames;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
@@ -26,9 +25,9 @@ public class Codeout {
   private final List<Function> functions;
 
   private final Set<String> generatedBuiltinNames;
+  private final StringBuilder builtinsFn;
 
   private final StringBuilder builtinsTypedefs;
-  private final StringBuilder builtinsFn;
   private final StringBuilder stringsLabels;
 
   public Codeout() {
@@ -80,122 +79,12 @@ public class Codeout {
     return GenRT.prebuf();
   }
 
-  private void line(String s) {
+  private void lineBuiltin(String s) {
     builtinsFn.append(s);
     builtinsFn.append("\n");
   }
 
   private void genBuiltins() {
-    /// we know these functions AFTER we process the whole unit
-    List<FlatCodeItem> builtins = BuiltinsFnSet.getBuiltins();
-
-    for (FlatCodeItem item : builtins) {
-      if (item.isBuiltinFlatCallVoid()) {
-
-        BuiltinFlatCallVoid fc = item.getBuiltinFlatCallVoid();
-        String fullname = fc.getFullname();
-
-        if (fullname.startsWith("std_print_")) {
-          if (!generatedBuiltinNames.contains(fullname)) {
-            genPrintf(fc, fullname);
-            generatedBuiltinNames.add(fullname);
-          }
-        }
-
-        else if (fullname.startsWith("std_mem_free")) {
-          /// std.mem_free<T>(raw_data);         free(raw_data)
-          if (!generatedBuiltinNames.contains(fullname)) {
-            generatedBuiltinNames.add(fullname);
-            line("void " + fullname + "(void *p) { ");
-            line("  free(p);");
-            line("}");
-          }
-        }
-
-        else if (fullname.startsWith("std_mem_cpy")) {
-          if (!generatedBuiltinNames.contains(fullname)) {
-            generatedBuiltinNames.add(fullname);
-            genMemCpy(fc, fullname);
-          }
-        }
-
-        else if (fullname.startsWith("assert_true")) {
-          /// this is a macros, do not need a special handling
-        }
-
-        else {
-          throw new AstParseException("unimpl std.builtin: " + item.toString());
-        }
-      }
-
-      //      else if (item.isAssignVarBuiltinFlatCallResult()) {
-      //        AssignVarBuiltinFlatCallResult result = item.getAssignVarBuiltinFlatCallResult();
-      //        FunctionCallWithResultBuiltin fcall = result.getRvalue();
-      //
-      //        final String fullname = fcall.getFullname();
-      //
-      //        /// std.mem_malloc<T>(size);           raw_data = malloc(size)
-      //        /// std.mem_get<T>(raw_data, at);      return raw_data[at]
-      //        /// std.mem_set<T>(raw_data, at, e);   raw_data[at] = e
-      //
-      //        if (fullname.startsWith("std_mem_malloc")) {
-      //          if (!generatedBuiltinNames.contains(fullname)) {
-      //            genMemMalloc(fcall, fullname);
-      //            generatedBuiltinNames.add(fullname);
-      //          }
-      //        }
-      //
-      //        else if (fullname.startsWith("std_mem_get")) {
-      //          if (!generatedBuiltinNames.contains(fullname)) {
-      //            genMemGet(fcall, fullname);
-      //            generatedBuiltinNames.add(fullname);
-      //          }
-      //        }
-      //
-      //        else if (fullname.startsWith("std_mem_set")) {
-      //          if (!generatedBuiltinNames.contains(fullname)) {
-      //            genMemSet(fcall, fullname);
-      //            generatedBuiltinNames.add(fullname);
-      //          }
-      //        }
-      //
-      //        else if (fcall.getOriginalName().equals(BuiltinNames.open_ident)) {
-      //          //System.out.println("TODO:open");
-      //        }
-      //
-      //        else if (fcall.getOriginalName().equals(BuiltinNames.close_ident)) {
-      //          //System.out.println("TODO:close");
-      //        }
-      //
-      //        else if (fcall.getOriginalName().equals(BuiltinNames.read_ident)) {
-      //          //System.out.println("TODO:read");
-      //        }
-      //
-      //        ///TODO:zero
-      //        else if (fcall.getOriginalName().equals(BuiltinNames.zero_ident)) {
-      //          ClassDeclaration clazz = fcall.getType().getClassTypeFromRef();
-      //          String header = clazz.headerToString();
-      //          final String zeroAddress = header + "_zero";
-      //          if (!generatedBuiltinNames.contains(zeroAddress)) {
-      //            generatedBuiltinNames.add(zeroAddress);
-      //
-      //            line(fcall.getType().toString() + " " + zeroAddress + "_fcall() {");
-      //            line("   return &" + zeroAddress + ";");
-      //            line("}\n");
-      //          }
-      //
-      //        }
-      //
-      //        else {
-      //          throw new AstParseException("unimpl std.builtin: " + item.toString());
-      //        }
-      //
-      //      }
-
-      else {
-        throw new AstParseException("unimpl std.builtin: " + item.toString());
-      }
-    }
 
     Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
 
@@ -213,99 +102,6 @@ public class Codeout {
       String initBuffer = content.toString();
       stringsLabels.append("char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
     }
-  }
-
-  private void genMemCpy(BuiltinFlatCallVoid fcall, String fullname) {
-    Type restype = fcall.getArgs().get(0).getType();
-    if (!restype.isStdPointer()) {
-      throw new AstParseException("expect pointer");
-    }
-    final Type subtype = restype.getStdPointer().getType();
-    String template = CCPointers.genMemCpy(subtype.toString(), fullname, restype.toString());
-    line(template);
-  }
-
-  //  private void genMemSet(FunctionCallWithResultBuiltin fcall, String fullname) {
-  //    Type restype = fcall.getArgs().get(0).getType();
-  //    if (!restype.isStdPointer()) {
-  //      throw new AstParseException("expect pointer");
-  //    }
-  //    final Type subtype = restype.getStdPointer().getType();
-  //    String template = CCPointers.genMemSet(subtype.toString(), fullname, restype.toString());
-  //    line(template);
-  //  }
-  //
-  //  private void genMemGet(FunctionCallWithResultBuiltin fcall, String fullname) {
-  //    Type restype = fcall.getArgs().get(0).getType();
-  //    if (!restype.isStdPointer()) {
-  //      throw new AstParseException("expect pointer");
-  //    }
-  //    final Type subtype = restype.getStdPointer().getType();
-  //    String template = CCPointers.genMemGet(subtype.toString(), fullname, restype.toString());
-  //    line(template);
-  //  }
-  //
-  //  private void genMemMalloc(FunctionCallWithResultBuiltin fcall, String fullname) {
-  //    Type restype = fcall.getArgs().get(0).getType();
-  //    if (!restype.isStdPointer()) {
-  //      throw new AstParseException("expect pointer");
-  //    }
-  //    String template = CCPointers.genMemMalloc(restype.toString(), fullname);
-  //    line(template);
-  //  }
-
-  private void genPrintf(BuiltinFlatCallVoid fc, String fullname) {
-    final StringBuilder printfArguments = new StringBuilder();
-    final List<Type> types = new ArrayList<>();
-    final List<Var> names = new ArrayList<>();
-    final List<String> toAssert = new ArrayList<>();
-
-    final List<Var> fcArgs = fc.getArgs();
-    for (int i = 0; i < fcArgs.size(); i += 1) {
-      final Var arg = fcArgs.get(i);
-      printfArguments.append(arg.typeNameToString());
-
-      types.add(arg.getType());
-      names.add(arg);
-
-      if (arg.getType().isClass()) {
-        toAssert.add(arg.getName().getName());
-      }
-
-      if (i + 1 < fcArgs.size()) {
-        printfArguments.append(", ");
-      }
-    }
-
-    StringBuilder printfBody = new StringBuilder();
-    for (int i = 0; i < types.size(); i += 1) {
-      final Type tp = types.get(i);
-      final Ident name = names.get(i).getName();
-
-      if (tp.isClass() && tp.getClassTypeFromRef().isNativeString()) {
-        printfBody.append(name.getName() + "->buffer->raw_data");
-      } else {
-        if (!tp.isPrimitive()) {
-          throw new AstParseException("unimpl.: print compound type");
-        }
-        printfBody.append(name.getName());
-      }
-
-      if (i + 1 < types.size()) {
-        printfBody.append(", ");
-      }
-    }
-
-    StringBuilder printfAsserts = new StringBuilder();
-    for (String s : toAssert) {
-      printfAsserts.append("assert(" + s + ");\n");
-    }
-
-    line("static void " + fullname + "(" + printfArguments.toString() + ")");
-    line("{");
-    line(printfAsserts.toString());
-    line("    printf(" + printfBody.toString() + ");");
-    line("}\n");
   }
 
   private void genMainFile(StringBuilder sb) throws IOException {
@@ -420,11 +216,144 @@ public class Codeout {
         continue;
       }
 
+      if (f.getMethodSignature().getModifiers().isNative()) {
+        genNativeMethod(f);
+        continue;
+      }
+
       sb.append(f.toString());
       sb.append("\n");
     }
 
     return sb.toString();
+  }
+
+  private void genNativeMethod(Function func) {
+    final ClassMethodDeclaration method = func.getMethodSignature();
+    final Ident name = method.getIdentifier();
+    final List<VarDeclarator> params = method.getParameters();
+    final ClassDeclaration clazz = method.getClazz();
+
+    //
+    final String methodType = method.getType().toString();
+    final String methodCallsHeared = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
+
+    if (BuiltinNames.isMemClassNativeMethodName(name)) {
+      if (!clazz.isNativePtr()) {
+        throw new AstParseException("unexpected uses of native mem.func");
+      }
+    }
+
+    /// native_malloc_ident = g("native_malloc");
+    /// native_calloc_ident = g("native_calloc");
+    /// native_free_ident = g("native_free");
+    /// native_ptr_access_at_ident = g("native_ptr_access_at");
+    /// native_ptr_set_at_ident = g("native_ptr_set_at");
+    /// native_memcpy_ident = g("native_memcpy");
+    ///
+    /// native *T native_malloc(*T ptr, int size);
+    /// native *T native_calloc(*T ptr, int count, int size);
+    /// native void native_free(*T ptr);
+    /// native T native_ptr_access_at(*T ptr, int offset);       // char c = p[i]
+    /// native T native_ptr_set_at(*T ptr, int offset, T value); // p[i] = c
+    /// native *T native_memcpy(*T dst, *T src, int count);
+
+    /// type* malloc(box_str, ptr**, size)
+    //
+
+    if (name.equals(BuiltinNames.native_malloc_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return (" + methodType + ") hmalloc(size);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_calloc_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return (" + methodType + ") hcalloc(count, size);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_free_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    free(ptr);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_ptr_access_at_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return ptr[offset];");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_ptr_set_at_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    " + methodType + " old = ptr[offset];");
+      lineBuiltin("    ptr[offset] = value;");
+      lineBuiltin("    return old;");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_memcpy_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return (" + methodType + ") memcpy(dst, src, count);");
+      lineBuiltin("}");
+    }
+
+    /// native_panic_ident = g("native_panic");
+    /// native_assert_true_ident = g("native_assert_true");
+    /// native_open_ident = g("native_open");
+    /// native_close_ident = g("native_close");
+    /// native_read_ident = g("native_read");
+    /// 
+    /// native void native_panic(*char because);
+    /// native void native_assert_true(boolean condition);
+    /// native int native_open(*char filename, int mode);
+    /// native int native_close(int fd);
+    /// native int native_read(int fd, *char buffer, int size);
+
+    if (name.equals(BuiltinNames.native_panic_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    assert(because);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_assert_true_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    assert_true(condition);");
+      lineBuiltin("}");
+    }
+
+    ///
+    if (name.equals(BuiltinNames.native_open_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return open(filename, O_RDONLY);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_close_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    return close(fd);");
+      lineBuiltin("}");
+    }
+    if (name.equals(BuiltinNames.native_read_ident)) {
+      lineBuiltin(methodCallsHeared);
+      lineBuiltin("    assert(fd != -1);");
+      lineBuiltin("    assert(buffer);");
+      lineBuiltin("    assert(size > 0);");
+      lineBuiltin("    return read(fd, buffer, size);");
+      lineBuiltin("}");
+    }
+
+    ///
+    if (name.equals(BuiltinNames.native_printf_ident)) {
+      lineBuiltin(methodCallsHeared);
+
+      StringBuilder printfArgNames = new StringBuilder();
+      for (int i = 0; i < params.size(); i += 1) {
+        VarDeclarator param = params.get(i);
+        printfArgNames.append(param.getIdentifier().getName());
+        if (i + 1 < params.size()) {
+          printfArgNames.append(", ");
+        }
+      }
+
+      lineBuiltin("    printf(" + printfArgNames.toString() + ");");
+      lineBuiltin("}");
+    }
+
   }
 
   private String genStructs() {

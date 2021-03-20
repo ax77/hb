@@ -292,8 +292,18 @@ public class RewriterExpr {
         new IntLiteral(String.format("%d", slen), TypeBindings.make_int(), slen));
     rv.add(new FlatCodeItem(strlenNum));
 
+    /// sizeof(char)
+    /// AssignVarNum assignVarNum = new AssignVarNum(VarCreator.justNewVar(TypeBindings.make_int()),
+    ///     new IntLiteral("1", TypeBindings.make_int(), 1));
+    /// rv.add(new FlatCodeItem(assignVarNum));
+
+    AssignVarSizeof assignVarSizeof = new AssignVarSizeof(VarCreator.justNewVar(TypeBindings.make_int()),
+        TypeBindings.make_char());
+    rv.add(new FlatCodeItem(assignVarSizeof));
+
     final List<Var> argsInstance = new ArrayList<>();
     argsInstance.add(0, lvalueVar);
+    argsInstance.add(assignVarSizeof.getLvalue());
     argsInstance.add(strlenVar);
 
     final List<Var> args = new ArrayList<>();
@@ -305,7 +315,7 @@ public class RewriterExpr {
     rv.add(new FlatCodeItem(flatCallConstructor));
 
     /// ptr_cpy(dst, src, size)
-    final ClassMethodDeclaration cpyMethod = clazz.getMethodForSure("cpy");
+    final ClassMethodDeclaration cpyMethod = clazz.getMethodForSure("memcpy");
 
     final List<Var> argsCpy = new ArrayList<>();
     argsCpy.add(lvalueVar);
@@ -675,55 +685,55 @@ public class RewriterExpr {
 
     }
 
-//    else if (base == ExpressionBase.EBUILTIN_FN) {
-//
-//      final ExprBuiltinFn fn = e.getBuiltinFn();
-//      final Type ret = fn.getType();
-//      final List<Var> args = genArgs(fn.getCallArguments());
-//
-//      /// variadic length args we will handle here
-//      /// that way.
-//      StringBuilder fullname = new StringBuilder();
-//      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
-//        fullname.append("std_");
-//      }
-//      fullname.append(fn.getFunction().getName());
-//
-//      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
-//        fullname.append("_");
-//        for (int i = 0; i < args.size(); i += 1) {
-//          Var arg = args.get(i);
-//          fullname.append(TypePrinters.genName(arg.getType())); // arg.getType().toString()
-//          if (i + 1 < args.size()) {
-//            fullname.append("_");
-//          }
-//        }
-//      }
-//
-//      ///TODO:zero
-//      if (fn.getFunction().equals(BuiltinNames.zero_ident)) {
-//        fullname = new StringBuilder();
-//        fullname.append(ret.getClassTypeFromRef().headerToString() + "_zero_fcall");
-//      }
-//
-//      if (ret.isVoid()) {
-//        BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(fn.getFunction(), fullname.toString(), args);
-//        FlatCodeItem item = new FlatCodeItem(fc);
-//        genRaw(item);
-//        BuiltinsFnSet.registerBuiltinFnCall(item);
-//      }
-//
-//      else {
-//
-//        final FunctionCallWithResultBuiltin call = new FunctionCallWithResultBuiltin(fn.getFunction(),
-//            fullname.toString(), ret, args);
-//        final Var lvalue = VarCreator.justNewVar(ret);
-//        final AssignVarBuiltinFlatCallResult ops = new AssignVarBuiltinFlatCallResult(lvalue, call);
-//        final FlatCodeItem item = new FlatCodeItem(ops);
-//        genRaw(item);
-//        BuiltinsFnSet.registerBuiltinFnCall(item);
-//      }
-//    }
+    //    else if (base == ExpressionBase.EBUILTIN_FN) {
+    //
+    //      final ExprBuiltinFn fn = e.getBuiltinFn();
+    //      final Type ret = fn.getType();
+    //      final List<Var> args = genArgs(fn.getCallArguments());
+    //
+    //      /// variadic length args we will handle here
+    //      /// that way.
+    //      StringBuilder fullname = new StringBuilder();
+    //      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
+    //        fullname.append("std_");
+    //      }
+    //      fullname.append(fn.getFunction().getName());
+    //
+    //      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
+    //        fullname.append("_");
+    //        for (int i = 0; i < args.size(); i += 1) {
+    //          Var arg = args.get(i);
+    //          fullname.append(TypePrinters.genName(arg.getType())); // arg.getType().toString()
+    //          if (i + 1 < args.size()) {
+    //            fullname.append("_");
+    //          }
+    //        }
+    //      }
+    //
+    //      ///TODO:zero
+    //      if (fn.getFunction().equals(BuiltinNames.zero_ident)) {
+    //        fullname = new StringBuilder();
+    //        fullname.append(ret.getClassTypeFromRef().headerToString() + "_zero_fcall");
+    //      }
+    //
+    //      if (ret.isVoid()) {
+    //        BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(fn.getFunction(), fullname.toString(), args);
+    //        FlatCodeItem item = new FlatCodeItem(fc);
+    //        genRaw(item);
+    //        BuiltinsFnSet.registerBuiltinFnCall(item);
+    //      }
+    //
+    //      else {
+    //
+    //        final FunctionCallWithResultBuiltin call = new FunctionCallWithResultBuiltin(fn.getFunction(),
+    //            fullname.toString(), ret, args);
+    //        final Var lvalue = VarCreator.justNewVar(ret);
+    //        final AssignVarBuiltinFlatCallResult ops = new AssignVarBuiltinFlatCallResult(lvalue, call);
+    //        final FlatCodeItem item = new FlatCodeItem(ops);
+    //        genRaw(item);
+    //        BuiltinsFnSet.registerBuiltinFnCall(item);
+    //      }
+    //    }
 
     else if (base == ExpressionBase.EPRIMARY_CHAR) {
       Token holder = e.getBeginPos();

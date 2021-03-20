@@ -37,7 +37,8 @@ public class UnitImportsSet {
 
     if (Settings.IMPORT_STD_BY_DEFAULT) {
 
-      fullyRead.add(dir + "/std/mem.hb");
+      fullyRead.add(dir + "/std/assert.hb");
+      fullyRead.add(dir + "/std/box.hb");
       fullyRead.add(dir + "/std/vec.hb");
       fullyRead.add(dir + "/std/string.hb");
       fullyRead.add(dir + "/std/file.hb");

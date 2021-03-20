@@ -1,9 +1,12 @@
-import std.mem;
 
 class main_class {
   int main() {
-    mem<char> buffer = new mem<char>(32);
-    buffer.set_at(0, '1');
-    return buffer.access_at(0);
+    vec<char> buf = stdio.read_file("main.c");
+    for(int i=0; i<buf.size(); i+=1) {
+      char c = buf.get(i);
+      stdio.printf("%c", c);
+    }
+    stdio.printf("%d", 32768);
+    return 0;
   }
 }

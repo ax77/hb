@@ -1,4 +1,4 @@
-import std.mem;
+import std.box;
 import std.vec;
 import std.string;
 
@@ -24,10 +24,22 @@ static class stdio
     return rv;
   }
   
-  native int open(*char filename, int mode);
-  native int close(int fd);
-  native int read(int fd, *char buffer, int size);
-  native void panic(*char because);
-  native void assert_true(boolean condition);
+  static void printf(string s, char c) {
+    native_printf(s.get_buffer().raw_data(), c);
+  }
   
+  static void printf(string s, int c) {
+    native_printf(s.get_buffer().raw_data(), c);
+  }
+  
+  native void native_printf(*char fmt, char c);
+  native void native_printf(*char fmt, int c);
 }
+
+
+
+
+
+
+
+
