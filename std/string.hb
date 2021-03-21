@@ -2,9 +2,9 @@ import std.assert;
 
 class string {
 
-  private arr<char> buffer;
+  private array<char> buffer;
 
-  string(arr<char> buffer) {
+  string(array<char> buffer) {
     this.buffer = buffer;
   }
 
@@ -20,7 +20,7 @@ class string {
     return buffer.get(index);
   }
   
-  arr<char> bytes() {
+  array<char> bytes() {
     return buffer;
   }
 }

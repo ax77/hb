@@ -3,14 +3,14 @@ import std.assert;
 
 class vec<T> 
 {
-  arr<T> data;
+  array<T> data;
   int size;
   int alloc;
   
   vec() {
     this.size = 0;
     this.alloc = 2;
-    this.data = new arr<T>(this.alloc);
+    this.data = new array<T>(this.alloc);
   }
   
   void add(T e) {
@@ -18,7 +18,7 @@ class vec<T>
       alloc += 1;
       alloc *= 2;
       
-      arr<T> ndata = new arr<T>(this.alloc);
+      array<T> ndata = new array<T>(this.alloc);
       for(int i = 0; i < size; i += 1) {
         ndata.set(i, data.get(i));
       }
@@ -45,7 +45,7 @@ class vec<T>
     return data.set(index, e);
   }
   
-  arr<T> data() {
+  array<T> data() {
     return data;
   }
 }

@@ -1,14 +1,21 @@
+import std.fmt;
+
 class main_class {
   int main() {
-    //arr<char> buf = new arr<char>(4);
-    //buf.set(0, 'a');
-    //buf.set(1, 'b');
-    //buf.set(2, 'c');
-    //buf.set(3, '\0');
+    array<char> buf = new array<char>(4);
+    buf.set(0, 'a');
+    buf.set(1, 'b');
+    buf.set(2, 'c');
+    buf.set(3, '\0');
     
-    arr<string> buf = new arr<string>(16);
+    fmt.print(buf);
+    fmt.print(32768);
+    fmt.print('_');
     
-    string s = "q.b.e";
-    return s.length();
+    string s = "a.b.c.d.e.f";
+    fmt.print(s);
+    fmt.print("a.b.c.d.e.f");
+    
+    return 32;
   }
 }

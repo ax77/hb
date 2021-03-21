@@ -453,8 +453,8 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.string_ident);
   }
 
-  public boolean isNativePtr() {
-    return identifier.equals(BuiltinNames.box_ident);
+  public boolean isNativeArray() {
+    return identifier.equals(BuiltinNames.array_ident);
   }
 
   public String headerToString() {
@@ -467,10 +467,6 @@ public class ClassDeclaration implements Serializable, Location {
     }
 
     return sb.toString();
-  }
-  
-  public boolean isNativeArr() {
-    return identifier.getName().equals("arr");
   }
 
   public boolean isStaticClass() {

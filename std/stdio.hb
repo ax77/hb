@@ -1,5 +1,3 @@
-
-
 import std.string;
 
 static class stdio 

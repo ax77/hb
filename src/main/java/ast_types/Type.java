@@ -309,4 +309,18 @@ public class Type implements Serializable, TypeApi {
     this.size = i;
   }
 
+  public boolean isCharArray() {
+    if (!isClass()) {
+      return false;
+    }
+    return classTypeRef.getClazz().isNativeArray();
+  }
+
+  public boolean isString() {
+    if (!isClass()) {
+      return false;
+    }
+    return classTypeRef.getClazz().isNativeString();
+  }
+
 }

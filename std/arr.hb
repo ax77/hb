@@ -1,6 +1,6 @@
-class arr<T> 
+class array<T> 
 {
-  native arr(int size);
+  native array(int size);
   native T get(int index);
   native T set(int index, T element);
   native int size();

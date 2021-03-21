@@ -226,7 +226,7 @@ public class Codeout {
         continue;
       }
 
-      if (f.getMethodSignature().getClazz().isNativeArr()) {
+      if (f.getMethodSignature().getClazz().isNativeArray()) {
         genArrayMethod(f);
         continue;
       }
@@ -268,14 +268,14 @@ public class Codeout {
     final String signToStringCall = method.signToStringCall();
     final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
 
-    /// native arr(int size);
+    /// native array(int size);
     /// native T get(int index);
     /// native T set(int index, T element);
     /// native int size();
 
-    if (signToStringCall.startsWith("arr_init_")) {
+    if (signToStringCall.startsWith("array_init_")) {
       String sizeofElem = "sizeof(" + arrayOfToString + ")";
-      
+
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
       lineBuiltinArr("    assert(size > 0);");
@@ -284,7 +284,7 @@ public class Codeout {
       lineBuiltinArr("}\n");
     }
 
-    else if (signToStringCall.startsWith("arr_get_")) {
+    else if (signToStringCall.startsWith("array_get_")) {
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
       lineBuiltinArr("    assert(__this->data);");
@@ -295,7 +295,7 @@ public class Codeout {
       lineBuiltinArr("}\n");
     }
 
-    else if (signToStringCall.startsWith("arr_set_")) {
+    else if (signToStringCall.startsWith("array_set_")) {
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
       lineBuiltinArr("    assert(__this->data);");
@@ -307,7 +307,7 @@ public class Codeout {
       lineBuiltinArr("}\n");
     }
 
-    else if (signToStringCall.startsWith("arr_size_")) {
+    else if (signToStringCall.startsWith("array_size_")) {
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
       lineBuiltinArr("    return __this->size;");
@@ -331,62 +331,6 @@ public class Codeout {
     //
     final String methodType = method.getType().toString();
     final String methodCallsHeader = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
-
-    if (BuiltinNames.isMemClassNativeMethodName(name)) {
-      if (!clazz.isNativePtr()) {
-        throw new AstParseException("unexpected uses of native mem.func");
-      }
-    }
-
-    /// native_malloc_ident = g("native_malloc");
-    /// native_calloc_ident = g("native_calloc");
-    /// native_free_ident = g("native_free");
-    /// native_ptr_access_at_ident = g("native_ptr_access_at");
-    /// native_ptr_set_at_ident = g("native_ptr_set_at");
-    /// native_memcpy_ident = g("native_memcpy");
-    ///
-    /// native *T native_malloc(*T ptr, int size);
-    /// native *T native_calloc(*T ptr, int count, int size);
-    /// native void native_free(*T ptr);
-    /// native T native_ptr_access_at(*T ptr, int offset);       // char c = p[i]
-    /// native T native_ptr_set_at(*T ptr, int offset, T value); // p[i] = c
-    /// native *T native_memcpy(*T dst, *T src, int count);
-
-    /// type* malloc(box_str, ptr**, size)
-    //
-
-    if (name.equals(BuiltinNames.native_malloc_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return (" + methodType + ") hmalloc(size);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_calloc_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return (" + methodType + ") hcalloc(count, size);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_free_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    free(ptr);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_ptr_access_at_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return ptr[offset];");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_ptr_set_at_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    " + methodType + " old = ptr[offset];");
-      lineBuiltin("    ptr[offset] = value;");
-      lineBuiltin("    return old;");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_memcpy_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return (" + methodType + ") memcpy(dst, src, count);");
-      lineBuiltin("}");
-    }
 
     /// native_panic_ident = g("native_panic");
     /// native_assert_true_ident = g("native_assert_true");
@@ -432,22 +376,116 @@ public class Codeout {
     }
 
     ///
-    if (name.equals(BuiltinNames.native_printf_ident)) {
+    if (name.equals(BuiltinNames.print_ident)) {
       lineBuiltin(methodCallsHeader);
 
+      StringBuilder printfFmtNames = new StringBuilder();
       StringBuilder printfArgNames = new StringBuilder();
+      StringBuilder asserts = new StringBuilder();
+
       for (int i = 0; i < params.size(); i += 1) {
         VarDeclarator param = params.get(i);
-        printfArgNames.append(param.getIdentifier().getName());
+
+        PrintfPair printfPair = printfArgExpand(param);
+        printfFmtNames.append(printfPair.getFmt());
+        asserts.append(printfPair.assertsToStr());
+
+        printfArgNames.append(printfPair.getArg());
         if (i + 1 < params.size()) {
           printfArgNames.append(", ");
         }
       }
 
-      lineBuiltin("    printf(" + printfArgNames.toString() + ");");
-      lineBuiltin("}");
+      String quotedFmt = "\"" + printfFmtNames.toString() + "\\n\"";
+
+      if (asserts.length() > 0) {
+        lineBuiltin(asserts.toString());
+      }
+
+      lineBuiltin("    printf(" + quotedFmt + ", " + printfArgNames.toString() + ");");
+      lineBuiltin("}\n");
     }
 
+  }
+
+  static class PrintfPair {
+    private final String fmt;
+    private final String arg;
+    private final List<String> asserts;
+
+    public PrintfPair(String fmt, String arg, List<String> asserts) {
+      this.fmt = fmt;
+      this.arg = arg;
+      this.asserts = asserts;
+    }
+
+    public String getFmt() {
+      return fmt;
+    }
+
+    public String getArg() {
+      return arg;
+    }
+
+    public String assertsToStr() {
+      StringBuilder sb = new StringBuilder();
+
+      for (int i = 0; i < asserts.size(); i += 1) {
+        String param = asserts.get(i);
+        sb.append("    assert(" + param + ");\n");
+      }
+      return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+      return "printf(\"" + fmt + "\", " + arg + ")";
+    }
+
+  }
+
+  private String fmtStr(Type tp) {
+    if (tp.isChar()) {
+      return "%c";
+    }
+    if (tp.isInt() || tp.isShort() || tp.isBoolean() || tp.isLong()) {
+      return "%d";
+    }
+    if (tp.isClass()) {
+      if (tp.isCharArray() || tp.isString()) {
+        return "%s";
+      }
+      return "%p";
+    }
+    if (tp.isFloat() || tp.isDouble()) {
+      return "%f";
+    }
+    throw new AstParseException("unimplemented type to printf: " + tp.toString());
+  }
+
+  private PrintfPair printfArgExpand(VarDeclarator param) {
+    Type tp = param.getType();
+
+    String fmt = fmtStr(tp);
+    String arg = param.getIdentifier().getName();
+    List<String> asserts = new ArrayList<>();
+
+    if (tp.isClass()) {
+      asserts.add(param.getIdentifier().getName());
+
+      if (tp.isCharArray()) {
+        asserts.add(param.getIdentifier().getName() + "->data");
+        arg = param.getIdentifier().getName() + "->data";
+      }
+
+      if (tp.isString()) {
+        asserts.add(param.getIdentifier().getName() + "->buffer");
+        asserts.add(param.getIdentifier().getName() + "->buffer->data");
+        arg = param.getIdentifier().getName() + "->buffer->data";
+      }
+    }
+
+    return new PrintfPair(fmt, arg, asserts);
   }
 
   private String genStructs() {
@@ -460,7 +498,7 @@ public class Codeout {
       if (c.isStaticClass()) {
         continue;
       }
-      if (c.isNativeArr()) {
+      if (c.isNativeArray()) {
         genArrayStruct(c);
         continue;
       }
@@ -476,7 +514,7 @@ public class Codeout {
       if (c.isStaticClass()) {
         continue;
       }
-      if (c.isNativeArr()) {
+      if (c.isNativeArray()) {
         continue;
       }
 
@@ -498,7 +536,7 @@ public class Codeout {
       if (c.isStaticClass()) {
         continue;
       }
-      if (c.isNativeArr()) {
+      if (c.isNativeArray()) {
         //continue;
       }
       sb.append("struct " + c.headerToString() + ";\n");

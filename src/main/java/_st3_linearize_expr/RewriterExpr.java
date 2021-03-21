@@ -265,7 +265,7 @@ public class RewriterExpr {
       throw new AstParseException("expect class-type for a string creation");
     }
     ClassDeclaration clazz = type.getClassTypeFromRef();
-    if (!clazz.isNativeArr()) {
+    if (!clazz.isNativeArray()) {
       throw new AstParseException("expect ptr-class-type for a string creation");
     }
 

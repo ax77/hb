@@ -5,14 +5,14 @@ class file {
   private int fd;
   private boolean is_open;
   private string fullname;
-  private arr<char> buffer;
+  private array<char> buffer;
 
   file(string fullname) {
     this.fd = -1;
     this.is_open = false;
     this.fullname = fullname;
     
-    this.buffer = new arr<char>(2);
+    this.buffer = new array<char>(2);
     fill_buffer();
   }
 
@@ -45,8 +45,8 @@ class file {
     return buffer.get(0);
   }
   
-  native int native_open(arr<char> filename, int mode);
+  native int native_open(array<char> filename, int mode);
   native int native_close(int fd);
-  native int native_read(int fd, arr<char> buffer, int size);
+  native int native_read(int fd, array<char> buffer, int size);
 
 }
