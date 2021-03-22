@@ -1,21 +1,7 @@
-import std.fmt;
 
 class main_class {
   int main() {
-    array<char> buf = new array<char>(4);
-    buf.set(0, 'a');
-    buf.set(1, 'b');
-    buf.set(2, 'c');
-    buf.set(3, '\0');
-    
-    fmt.print(buf);
-    fmt.print(32768);
-    fmt.print('_');
-    
-    string s = "a.b.c.d.e.f";
-    fmt.print(s);
-    fmt.print("a.b.c.d.e.f");
-    
-    return 32;
+    int a = 0;
+    return typeof(a: int);
   }
 }

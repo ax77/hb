@@ -32,7 +32,6 @@ import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
-import _st3_linearize_expr.items.BuiltinFlatCallVoid;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
@@ -56,11 +55,11 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
 import ast_expr.ExprTernaryOperator;
+import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_symtab.BuiltinNames;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -657,56 +656,6 @@ public class RewriterExpr {
 
     }
 
-    //    else if (base == ExpressionBase.EBUILTIN_FN) {
-    //
-    //      final ExprBuiltinFn fn = e.getBuiltinFn();
-    //      final Type ret = fn.getType();
-    //      final List<Var> args = genArgs(fn.getCallArguments());
-    //
-    //      /// variadic length args we will handle here
-    //      /// that way.
-    //      StringBuilder fullname = new StringBuilder();
-    //      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
-    //        fullname.append("std_");
-    //      }
-    //      fullname.append(fn.getFunction().getName());
-    //
-    //      if (fn.getFunction().equals(BuiltinNames.print_ident) || BuiltinNames.isBuiltinMemFuncIdent(fn.getFunction())) {
-    //        fullname.append("_");
-    //        for (int i = 0; i < args.size(); i += 1) {
-    //          Var arg = args.get(i);
-    //          fullname.append(TypePrinters.genName(arg.getType())); // arg.getType().toString()
-    //          if (i + 1 < args.size()) {
-    //            fullname.append("_");
-    //          }
-    //        }
-    //      }
-    //
-    //      ///TODO:zero
-    //      if (fn.getFunction().equals(BuiltinNames.zero_ident)) {
-    //        fullname = new StringBuilder();
-    //        fullname.append(ret.getClassTypeFromRef().headerToString() + "_zero_fcall");
-    //      }
-    //
-    //      if (ret.isVoid()) {
-    //        BuiltinFlatCallVoid fc = new BuiltinFlatCallVoid(fn.getFunction(), fullname.toString(), args);
-    //        FlatCodeItem item = new FlatCodeItem(fc);
-    //        genRaw(item);
-    //        BuiltinsFnSet.registerBuiltinFnCall(item);
-    //      }
-    //
-    //      else {
-    //
-    //        final FunctionCallWithResultBuiltin call = new FunctionCallWithResultBuiltin(fn.getFunction(),
-    //            fullname.toString(), ret, args);
-    //        final Var lvalue = VarCreator.justNewVar(ret);
-    //        final AssignVarBuiltinFlatCallResult ops = new AssignVarBuiltinFlatCallResult(lvalue, call);
-    //        final FlatCodeItem item = new FlatCodeItem(ops);
-    //        genRaw(item);
-    //        BuiltinsFnSet.registerBuiltinFnCall(item);
-    //      }
-    //    }
-
     else if (base == ExpressionBase.EPRIMARY_CHAR) {
       Token holder = e.getBeginPos();
       String value = holder.getValue();
@@ -730,6 +679,21 @@ public class RewriterExpr {
       AssignVarSizeof assignVarSizeof = new AssignVarSizeof(lhsVar, node.getType());
       genRaw(new FlatCodeItem(assignVarSizeof));
 
+    }
+
+    else if (base == ExpressionBase.ETYPEOF) {
+      final ExprTypeof exprTypeof = e.getExprTypeof();
+      final Type resultType = exprTypeof.getExpr().getResultType();
+      final Type expectedType = exprTypeof.getType();
+      if (resultType.isEqualTo(expectedType)) {
+        AssignVarTrue node = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+        FlatCodeItem item = new FlatCodeItem(node);
+        genRaw(item);
+      } else {
+        AssignVarFalse node = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+        FlatCodeItem item = new FlatCodeItem(node);
+        genRaw(item);
+      }
     }
 
     else {

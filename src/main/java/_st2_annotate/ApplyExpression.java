@@ -15,6 +15,7 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
 import ast_expr.ExprTernaryOperator;
+import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
@@ -75,12 +76,20 @@ public class ApplyExpression {
       appyTernary(object, e);
     } else if (e.is(ExpressionBase.ESIZEOF)) {
       applySizeof(object, e);
+    } else if (e.is(ExpressionBase.ETYPEOF)) {
+      applyTypeof(object, e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyTypeof(ClassDeclaration object, ExprExpression e) {
+    ExprTypeof node = e.getExprTypeof();
+    applyExpression(object, node.getExpr());
+    e.setResultType(TypeBindings.make_boolean());
   }
 
   private void applySizeof(ClassDeclaration object, ExprExpression e) {

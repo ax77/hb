@@ -48,6 +48,7 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
 import ast_expr.ExprTernaryOperator;
+import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_symtab.BuiltinNames;
@@ -522,6 +523,10 @@ public class ParseExpression {
       return new ExprExpression(ternaryOperator, beginPos);
     }
 
+    if (parser.is(Keywords.typeof_ident)) {
+      return parseTypeof();
+    }
+
     if (parser.is(T.TOKEN_STRING)) {
       return parseStringLiteral();
     }
@@ -580,6 +585,19 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
+  }
+
+  /// boolean f1 = typeof(a: int);
+  private ExprExpression parseTypeof() {
+    Token beginPos = parser.checkedMove(Keywords.typeof_ident);
+    parser.lparen();
+    ExprExpression e = e_cnd();
+    parser.colon();
+    Type tp = new ParseType(parser).getType();
+    parser.rparen();
+    final ExprTypeof exprTypeof = new ExprTypeof(e, tp);
+    parser.getCurrentClass(true).registerTypeSetter(exprTypeof);
+    return new ExprExpression(exprTypeof, beginPos);
   }
 
   private ExprExpression parseSizeof() {

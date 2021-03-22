@@ -17,4 +17,5 @@ public enum ExpressionBase {
  , EBOOLEAN_LITERAL
  , ETERNARY_OPERATOR
  , ESIZEOF
+ , ETYPEOF
 }
