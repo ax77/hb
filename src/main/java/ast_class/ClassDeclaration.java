@@ -457,6 +457,10 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.array_ident);
   }
 
+  public boolean isNativeOpt() {
+    return identifier.equals(BuiltinNames.opt_ident);
+  }
+
   public String headerToString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getIdentifier().getName());
@@ -471,6 +475,10 @@ public class ClassDeclaration implements Serializable, Location {
 
   public boolean isStaticClass() {
     return modifiers.isStaticOnly();
+  }
+
+  public boolean isNativeClass() {
+    return modifiers.isNativeOnly();
   }
 
 }

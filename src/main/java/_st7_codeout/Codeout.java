@@ -230,6 +230,10 @@ public class Codeout {
         genArrayMethod(f);
         continue;
       }
+      if (f.getMethodSignature().getClazz().isNativeOpt()) {
+        genOptMethod(f);
+        continue;
+      }
 
       if (f.getMethodSignature().getModifiers().isNative()) {
         genNativeMethod(f);
@@ -243,21 +247,22 @@ public class Codeout {
     return sb.toString();
   }
 
-  /// arrays
+  /// opt
 
-  private void genArrayStruct(ClassDeclaration c) {
+  private void genOptStruct(ClassDeclaration c) {
     Type arrayOf = c.getTypeParametersT().get(0);
 
     lineBuiltinArr("struct " + c.headerToString() + "\n{");
-    lineBuiltinArr("    " + arrayOf.toString() + "* data;");
-    lineBuiltinArr("    size_t size;");
+    lineBuiltinArr("    " + arrayOf.toString() + " value;");
     lineBuiltinArr("};\n");
+
   }
 
-  private void genArrayMethod(Function func) {
+  private void genOptMethod(Function func) {
     final ClassMethodDeclaration method = func.getMethodSignature();
     final Ident name = method.getIdentifier();
-    final List<VarDeclarator> params = method.getParameters();
+    final List<VarDeclarator> parameters = method.getParameters();
+    final List<VarDeclarator> params = parameters;
     final ClassDeclaration clazz = method.getClazz();
 
     Type arrayOf = clazz.getTypeParametersT().get(0);
@@ -267,6 +272,98 @@ public class Codeout {
     final String methodType = method.getType().toString();
     final String signToStringCall = method.signToStringCall();
     final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+    final String sizeofElem = "sizeof(" + arrayOfToString + ")";
+    final String sizeofMulAlloc = "(" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * __this->alloc) );";
+    final String castZero = "((" + arrayOfToString + ") 0)";
+
+    /// native opt();
+    /// native opt(T value);
+    /// native boolean is_some();
+    /// native boolean is_none();
+    /// native T get();
+
+    if (signToStringCall.startsWith("opt_init_")) {
+
+      /// empty
+      if (parameters.size() == 1) {
+        lineBuiltinArr(methodCallsHeader);
+        lineBuiltinArr("    assert(__this);");
+        lineBuiltinArr("    __this->value = " + castZero + ";");
+        lineBuiltinArr("}\n");
+      }
+
+      /// fixed
+      else if (parameters.size() == 2) {
+        lineBuiltinArr(methodCallsHeader);
+        lineBuiltinArr("    assert(__this);");
+        lineBuiltinArr("    assert(value);");
+        lineBuiltinArr("    __this->value = value;");
+        lineBuiltinArr("}\n");
+      }
+
+      else {
+        throw new AstParseException("unimplemented opt constructor: " + method.getIdentifier().toString());
+      }
+
+    }
+
+    else if (signToStringCall.startsWith("opt_is_some_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    return __this->value != " + castZero + ";");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("opt_is_none_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    return __this->value == " + castZero + ";");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("opt_get_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(__this->value);");
+      lineBuiltinArr("    return __this->value;");
+      lineBuiltinArr("}\n");
+    }
+
+    else {
+      throw new AstParseException("unimplemented array method: " + method.getIdentifier().toString());
+    }
+
+  }
+
+  /// arrays
+
+  private void genArrayStruct(ClassDeclaration c) {
+    Type arrayOf = c.getTypeParametersT().get(0);
+
+    lineBuiltinArr("struct " + c.headerToString() + "\n{");
+    lineBuiltinArr("    " + arrayOf.toString() + "* data;");
+    lineBuiltinArr("    size_t size;");
+    lineBuiltinArr("    size_t alloc;");
+    lineBuiltinArr("    int is_fixed;");
+    lineBuiltinArr("};\n");
+  }
+
+  private void genArrayMethod(Function func) {
+    final ClassMethodDeclaration method = func.getMethodSignature();
+    final Ident name = method.getIdentifier();
+    final List<VarDeclarator> parameters = method.getParameters();
+    final List<VarDeclarator> params = parameters;
+    final ClassDeclaration clazz = method.getClazz();
+
+    Type arrayOf = clazz.getTypeParametersT().get(0);
+    String arrayOfToString = arrayOf.toString();
+
+    //
+    final String methodType = method.getType().toString();
+    final String signToStringCall = method.signToStringCall();
+    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+    final String sizeofElem = "sizeof(" + arrayOfToString + ")";
+    final String sizeofMulAlloc = "(" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * __this->alloc) );";
 
     /// native array(int size);
     /// native T get(int index);
@@ -274,13 +371,57 @@ public class Codeout {
     /// native int size();
 
     if (signToStringCall.startsWith("array_init_")) {
-      String sizeofElem = "sizeof(" + arrayOfToString + ")";
 
+      /// native array();         /// resizable
+      /// native array(int size); /// fixed
+
+      /// dynamic
+      if (parameters.size() == 1) {
+        lineBuiltinArr(methodCallsHeader);
+        lineBuiltinArr("    assert(__this);");
+        lineBuiltinArr("    __this->size = 0;");
+        lineBuiltinArr("    __this->alloc = 2;");
+        lineBuiltinArr("    __this->is_fixed = 0;");
+        lineBuiltinArr("    __this->data = " + sizeofMulAlloc);
+        lineBuiltinArr("}\n");
+      }
+
+      /// fixed
+      else if (parameters.size() == 2 && parameters.get(1).getType().isInt()) {
+        lineBuiltinArr(methodCallsHeader);
+        lineBuiltinArr("    assert(__this);");
+        lineBuiltinArr("    assert(size > 0);");
+        lineBuiltinArr("    assert(size < INT_MAX);");
+
+        lineBuiltinArr("    __this->size = 0;");
+        lineBuiltinArr("    __this->alloc = size;");
+        lineBuiltinArr("    __this->is_fixed = 1;");
+        lineBuiltinArr("    __this->data = " + sizeofMulAlloc);
+        lineBuiltinArr("}\n");
+      }
+
+      else {
+        throw new AstParseException("unimplemented array constructor: " + method.getIdentifier().toString());
+      }
+
+    }
+
+    else if (signToStringCall.startsWith("array_add_")) {
       lineBuiltinArr(methodCallsHeader);
-      lineBuiltinArr("    assert(__this);");
-      lineBuiltinArr("    assert(size > 0);");
-      lineBuiltinArr("    __this->size = size;");
-      lineBuiltinArr("    __this->data = (" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * size) );");
+
+      lineBuiltinArr("    if(__this->size >= __this->alloc) {                ");
+      lineBuiltinArr("        __this->alloc += 1;                            ");
+      lineBuiltinArr("        __this->alloc *= 2;                            ");
+      lineBuiltinArr("        " + arrayOfToString + "* ndata = " + sizeofMulAlloc);
+      lineBuiltinArr("        for(size_t i = 0; i < __this->size; i += 1) {  ");
+      lineBuiltinArr("          ndata[i] = __this->data[i];                  ");
+      lineBuiltinArr("        }                                              ");
+      lineBuiltinArr("        free(__this->data);                            ");
+      lineBuiltinArr("        __this->data = ndata;                          ");
+      lineBuiltinArr("    }                                                  ");
+      lineBuiltinArr("    __this->data[__this->size] = element;              ");
+      lineBuiltinArr("    __this->size += 1;                                 ");
+
       lineBuiltinArr("}\n");
     }
 
@@ -311,6 +452,20 @@ public class Codeout {
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
       lineBuiltinArr("    return __this->size;");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("array_is_empty_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    return (__this->size == 0);");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("array_is_fixed_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    return (__this->is_fixed);");
       lineBuiltinArr("}\n");
     }
 
@@ -500,6 +655,10 @@ public class Codeout {
       }
       if (c.isNativeArray()) {
         genArrayStruct(c);
+        continue;
+      }
+      if (c.isNativeOpt()) {
+        genOptStruct(c);
         continue;
       }
 

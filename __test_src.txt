@@ -1,7 +1,17 @@
+import std.opt;
+
+class thing {
+  int f;
+
+  thing() {
+    this.f = 0;
+  }
+}
 
 class main_class {
   int main() {
-    int a = 0;
-    return typeof(a: int);
+    opt<thing> args1 = new opt<thing>();
+    opt<thing> args2 = new opt<thing>(new thing());
+    return 0;
   }
 }
