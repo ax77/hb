@@ -74,7 +74,15 @@ public abstract class GnStr {
     }
 
     else {
-      throw new AstParseException("unimplemented string method: " + method.getIdentifier().toString());
+      if (method.isTest()) {
+        line(methodCallsHeader);
+        line(func.getBlock().toString());
+        line("}\n");
+      }
+
+      else {
+        throw new AstParseException("unimplemented string method: " + method.getIdentifier().toString());
+      }
     }
 
     return sb.toString();

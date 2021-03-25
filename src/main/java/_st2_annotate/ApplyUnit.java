@@ -65,6 +65,11 @@ public class ApplyUnit {
     if (object.getDestructor() != null) {
       applyMethod(object, object.getDestructor());
     }
+    
+    //tests 
+    for (ClassMethodDeclaration tst : object.getTests()) {
+      applyMethod(object, tst);
+    }
 
     symtabApplier.closeClassScope();
   }

@@ -40,6 +40,14 @@ public class ApplyUnitPreEachClass {
               + field.getIdentifier().toString());
         }
       }
+
+      if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly()) {
+        throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
+      }
+
+      if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly()) {
+        throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
+      }
     }
 
     if (object.isStaticClass()) {
@@ -60,23 +68,22 @@ public class ApplyUnitPreEachClass {
         }
       }
       if (!object.getConstructors().isEmpty()) {
-        throw new AstParseException("constructor in static class not expected: " + object.getIdentifier().toString());
+        throw new AstParseException("unexpected constructor in static class: " + object.getIdentifier().toString());
       }
-    }
-
-    if (object.getConstructors().isEmpty() && !object.getModifiers().isStaticOnly()
-        && !object.getModifiers().isNativeOnly()) {
-      throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
-    }
-
-    if (object.getFields().isEmpty() && !object.getModifiers().isStaticOnly()
-        && !object.getModifiers().isNativeOnly()) {
-      throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
     }
 
   }
 
   private void addDefaultMethods(ClassDeclaration object) throws IOException {
+
+    //TODO: why does not this work? hmm?
+    if (object.isMainClass()) {
+      //return;
+    }
+    if (object.isStaticClass()) {
+      //return;
+    }
+
     if (object.getDestructor() == null) {
       object.setDestructor(BuildDefaultDestructor.build(object));
     } else {

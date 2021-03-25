@@ -1,11 +1,14 @@
 package ast_expr;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ast_printers.GenericListPrinter;
 import tokenize.Ident;
 
-public class ExprBuiltinFunc {
+public class ExprBuiltinFunc implements Serializable {
+  private static final long serialVersionUID = 6082427317484452898L;
+
   private final Ident name;
   private final List<ExprExpression> args;
 

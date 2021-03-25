@@ -45,6 +45,7 @@ public final class Keywords {
   public static final Ident sizeof_ident         = g("sizeof");
   public static final Ident typeof_ident         = g("typeof");
   public static final Ident deinit_ident         = g("deinit");
+  public static final Ident test_ident           = g("test");
   //public static final Ident is_class_ident       = g("is_class");
   
   // global funcs

@@ -23,12 +23,20 @@ public abstract class CodeoutBuilder {
       final RewriterStmt rw = new RewriterStmt(method);
       result.add(new Function(method, rw.getResult()));
     }
+
     for (ClassMethodDeclaration method : c.getMethods()) {
       RewriterStmt rw = new RewriterStmt(method);
       result.add(new Function(method, rw.getResult()));
     }
+
+    for (ClassMethodDeclaration method : c.getTests()) {
+      RewriterStmt rw = new RewriterStmt(method);
+      result.add(new Function(method, rw.getResult()));
+    }
+
     RewriterStmt rw = new RewriterStmt(c.getDestructor());
     result.add(new Function(c.getDestructor(), rw.getResult()));
+
   }
 
 }

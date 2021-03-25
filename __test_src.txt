@@ -1,14 +1,10 @@
 import std.natives.arr;
 import std.natives.fmt;
 import std.stdio;
+import std.cbuf;
 
 class main_class {
   int main() {
-    array<char> args = stdio.read_file("main.c");
-    for(int i=0; i<args.size(); i+=1) {
-      char c=args.get(i);
-      fmt.print(c);
-    }
     return 0;
   }
 }

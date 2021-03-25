@@ -195,6 +195,11 @@ public class ParseTypeDeclarations {
       return;
     }
 
+    if (parser.is(Keywords.test_ident)) {
+      putTestMethod(clazz, mods);
+      return;
+    }
+
     // field, or method, nothing else.
     // private int a = 0;
     // private int a ;
@@ -216,6 +221,29 @@ public class ParseTypeDeclarations {
 
     parser.perror("class-member is not recognized");
 
+  }
+
+  private void putTestMethod(ClassDeclaration clazz, Modifiers modifiers) {
+    if (!modifiers.isEmpty()) {
+      parser.perror("test-method with modifiers: " + modifiers.toString());
+    }
+
+    final Token beginPos = parser.checkedMove(Keywords.test_ident);
+    final Token testName = parser.checkedMove(T.TOKEN_STRING);
+
+    StmtBlock block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    final ClassMethodDeclaration testMethod = new ClassMethodDeclaration(clazz, testName.getValue(), block, beginPos);
+
+    checkTestMethodRedefinitionByName(testMethod, clazz);
+    clazz.addTestMethod(testMethod);
+  }
+
+  private void checkTestMethodRedefinitionByName(ClassMethodDeclaration testMethod, ClassDeclaration clazz) {
+    for (ClassMethodDeclaration m : clazz.getTests()) {
+      if (m.getTestName().equals(testMethod.getTestName())) {
+        parser.perror("test-method name redefined: " + m.getTestName());
+      }
+    }
   }
 
   private void putDestructor(ClassDeclaration clazz, Modifiers modifiers) {

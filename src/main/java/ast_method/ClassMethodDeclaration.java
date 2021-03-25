@@ -32,6 +32,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private final List<VarDeclarator> parameters;
   private Type returnType;
   private final StmtBlock block;
+  private final String testName;
 
   /// for code-generation only,
   /// because we may have many overload methods
@@ -58,6 +59,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.block = block;
     this.beginPos = beginPos;
 
+    this.testName = "";
     this.uniqueId = GlobalCounter.next();
 
   }
@@ -76,6 +78,24 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.block = block;
     this.beginPos = beginPos;
 
+    this.testName = "";
+    this.uniqueId = GlobalCounter.next();
+  }
+
+  // test "something" {}
+  public ClassMethodDeclaration(ClassDeclaration clazz, String testName, StmtBlock block, Token beginPos) {
+    NullChecker.check(clazz, testName, block, beginPos);
+
+    this.base = ClassMethodBase.IS_TEST;
+    this.mod = new Modifiers();
+    this.clazz = clazz;
+    this.identifier = Keywords.test_ident;
+    this.parameters = new ArrayList<>();
+    this.returnType = new Type(beginPos);
+    this.block = block;
+    this.beginPos = beginPos;
+
+    this.testName = testName;
     this.uniqueId = GlobalCounter.next();
   }
 
@@ -207,6 +227,14 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
   public boolean isDestructor() {
     return base == ClassMethodBase.IS_DESTRUCTOR;
+  }
+
+  public String getTestName() {
+    return testName;
+  }
+
+  public boolean isTest() {
+    return base == ClassMethodBase.IS_TEST;
   }
 
 }

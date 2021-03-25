@@ -146,6 +146,19 @@ public class cbuf {
 
     return '\0';
   }
+  
+  test "backslash-newline handling" {
+    cbuf buf = new cbuf("a\\\nb");
+    assert_true(buf.nextc() == 'a');
+    assert_true(buf.nextc() == 'b');
+  }
+  
+  test "backslash-newline with comments handling" {
+    cbuf buf = new cbuf("/\\\n/a");
+    assert_true(buf.nextc() == '/');
+    assert_true(buf.nextc() == '/');
+    assert_true(buf.nextc() == 'a');
+  }
 
 }
 

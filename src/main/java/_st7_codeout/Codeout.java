@@ -158,6 +158,9 @@ public class Codeout {
     sb.append(functions);
     sb.append("\n");
 
+    // tests
+    sb.append(genTests());
+
     // main
     sb.append(mainMethodImpl);
     sb.append("int main(int argc, char** argv) \n{\n");
@@ -171,6 +174,25 @@ public class Codeout {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    return sb.toString();
+  }
+
+  private String genTests() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("void __run_all_tests__() \n{\n");
+    for (ClassDeclaration c : pods) {
+      for (ClassMethodDeclaration m : c.getTests()) {
+        final String className = m.getClazz().getIdentifier().toString();
+        final String testName = CEscaper.unquote(m.getTestName());
+
+        String name = "\"" + className + " :: " + testName + "\"";
+        String sign = m.signToStringCall();
+
+        sb.append("printf(\"test: %s\\n\", " + name + ");\n");
+        sb.append(sign + "();\n");
+      }
+    }
+    sb.append("\n}\n");
     return sb.toString();
   }
 

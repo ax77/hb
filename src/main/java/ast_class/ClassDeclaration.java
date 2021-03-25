@@ -39,6 +39,7 @@ public class ClassDeclaration implements Serializable, Location {
   private final List<ClassMethodDeclaration> methods;
   private final List<StmtBlock> staticBlocks;
   private ClassMethodDeclaration destructor;
+  private final List<ClassMethodDeclaration> tests;
 
   /// if it is a class it may implements some interfaces
   ///
@@ -98,6 +99,7 @@ public class ClassDeclaration implements Serializable, Location {
     this.staticBlocks = new ArrayList<>();
     this.typeSetters = new ArrayList<>();
     this.interfaces = new ArrayList<>();
+    this.tests = new ArrayList<>();
   }
 
   private void checkTypeParameters(List<Type> typeParametersT) {
@@ -493,6 +495,15 @@ public class ClassDeclaration implements Serializable, Location {
   public void setDestructor(ClassMethodDeclaration destructor) {
     NullChecker.check(destructor);
     this.destructor = destructor;
+  }
+
+  public void addTestMethod(ClassMethodDeclaration testMethod) {
+    NullChecker.check(testMethod);
+    this.tests.add(testMethod);
+  }
+
+  public List<ClassMethodDeclaration> getTests() {
+    return tests;
   }
 
 }
