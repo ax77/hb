@@ -1,17 +1,28 @@
-import std.opt;
 
-class thing {
+class none {
+  int x;
+  
+  none() {
+    x = 32;
+  }
+}
+
+class stub {
   int f;
-
-  thing() {
-    this.f = 0;
+  none n;
+  stub() {
+    this.n = new none();
+    this.f = -1;
   }
 }
 
 class main_class {
   int main() {
-    opt<thing> args1 = new opt<thing>();
-    opt<thing> args2 = new opt<thing>(new thing());
+    stub s1 = new stub();
+    stub s2 = new stub();
+    {
+      stub s3 = new stub();
+    }
     return 0;
   }
 }

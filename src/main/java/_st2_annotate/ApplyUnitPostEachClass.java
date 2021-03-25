@@ -132,6 +132,9 @@ public class ApplyUnitPostEachClass {
       constructor.pushParameterFront(createThisParameter(object, constructor));
     }
 
+    final ClassMethodDeclaration destructor = object.getDestructor();
+    destructor.pushParameterFront(createThisParameter(object, destructor));
+
   }
 
   private VarDeclarator createThisParameter(ClassDeclaration object, ClassMethodDeclaration method) {

@@ -1,14 +1,11 @@
 package _st7_codeout;
 
-import java.beans.MethodDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
@@ -26,7 +23,6 @@ public class Codeout {
   private final List<ClassDeclaration> pods;
   private final List<Function> functions;
 
-  private final Set<String> generatedBuiltinNames;
   private final StringBuilder builtinsFn;
   private final StringBuilder builtinsArrays;
 
@@ -36,7 +32,6 @@ public class Codeout {
   public Codeout() {
     this.pods = new ArrayList<>();
     this.functions = new ArrayList<>();
-    this.generatedBuiltinNames = new HashSet<>();
     this.builtinsFn = new StringBuilder();
     this.builtinsArrays = new StringBuilder();
     this.stringsLabels = new StringBuilder();
@@ -260,20 +255,15 @@ public class Codeout {
 
   private void genOptMethod(Function func) {
     final ClassMethodDeclaration method = func.getMethodSignature();
-    final Ident name = method.getIdentifier();
     final List<VarDeclarator> parameters = method.getParameters();
-    final List<VarDeclarator> params = parameters;
     final ClassDeclaration clazz = method.getClazz();
 
     Type arrayOf = clazz.getTypeParametersT().get(0);
     String arrayOfToString = arrayOf.toString();
 
-    //
     final String methodType = method.getType().toString();
     final String signToStringCall = method.signToStringCall();
     final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
-    final String sizeofElem = "sizeof(" + arrayOfToString + ")";
-    final String sizeofMulAlloc = "(" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * __this->alloc) );";
     final String castZero = "((" + arrayOfToString + ") 0)";
 
     /// native opt();
@@ -350,9 +340,7 @@ public class Codeout {
 
   private void genArrayMethod(Function func) {
     final ClassMethodDeclaration method = func.getMethodSignature();
-    final Ident name = method.getIdentifier();
     final List<VarDeclarator> parameters = method.getParameters();
-    final List<VarDeclarator> params = parameters;
     final ClassDeclaration clazz = method.getClazz();
 
     Type arrayOf = clazz.getTypeParametersT().get(0);
@@ -481,7 +469,6 @@ public class Codeout {
     final ClassMethodDeclaration method = func.getMethodSignature();
     final Ident name = method.getIdentifier();
     final List<VarDeclarator> params = method.getParameters();
-    final ClassDeclaration clazz = method.getClazz();
 
     //
     final String methodType = method.getType().toString();
@@ -665,22 +652,6 @@ public class Codeout {
       sb.append(classToString(c));
       sb.append("\n");
     }
-
-    for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isStaticClass()) {
-        continue;
-      }
-      if (c.isNativeArray()) {
-        continue;
-      }
-
-      sb.append("struct " + c.headerToString() + " " + c.headerToString() + "_zero;\n");
-    }
-
-    // struct list_iter_1024 list_iter_1024_zero;
 
     return sb.toString();
   }

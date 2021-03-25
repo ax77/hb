@@ -190,6 +190,11 @@ public class ParseTypeDeclarations {
       // return;
     }
 
+    if (parser.is(Keywords.deinit_ident)) {
+      putDestructor(clazz, mods);
+      return;
+    }
+
     // field, or method, nothing else.
     // private int a = 0;
     // private int a ;
@@ -211,6 +216,28 @@ public class ParseTypeDeclarations {
 
     parser.perror("class-member is not recognized");
 
+  }
+
+  private void putDestructor(ClassDeclaration clazz, Modifiers modifiers) {
+    if (!modifiers.isEmpty()) {
+      parser.perror("destructor with modifiers: " + modifiers.toString());
+    }
+
+    final Token beginPos = parser.checkedMove(Keywords.deinit_ident);
+
+    StmtBlock block = new StmtBlock();
+    if (!modifiers.isNativeOnly()) {
+      block = new ParseStatement(parser).parseBlock(VarBase.METHOD_VAR);
+    } else {
+      parser.semicolon();
+    }
+
+    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, beginPos);
+
+    if (clazz.getDestructor() != null) {
+      parser.perror("duplicate destructor");
+    }
+    clazz.setDestructor(destructor);
   }
 
   private void putField(ClassDeclaration clazz, Modifiers modifiers, Type type, Ident name, Token beginPos) {

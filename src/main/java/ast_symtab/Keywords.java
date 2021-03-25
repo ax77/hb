@@ -42,7 +42,7 @@ public final class Keywords {
   // new syntax:
   public static final Ident cast_ident           = g("cast");
   public static final Ident typeof_ident         = g("typeof");
-  //public static final Ident static_assert_ident  = g("static_assert");
+  public static final Ident deinit_ident         = g("deinit");
   //public static final Ident is_class_ident       = g("is_class");
   // types:
   public static final Ident char_ident           = g("char");

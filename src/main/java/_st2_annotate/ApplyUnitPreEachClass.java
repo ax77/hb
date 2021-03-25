@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
+import ast_stmt.StmtStatement;
 import ast_unit.InstantiationUnit;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -76,7 +77,13 @@ public class ApplyUnitPreEachClass {
   }
 
   private void addDefaultMethods(ClassDeclaration object) throws IOException {
-
+    if (object.getDestructor() == null) {
+      object.setDestructor(BuildDefaultDestructor.build(object));
+    } else {
+      for (StmtStatement s : BuildDefaultDestructor.deinits(object)) {
+        object.getDestructor().getBlock().pushItemBack(s);
+      }
+    }
   }
 
 }
