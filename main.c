@@ -104,121 +104,269 @@ char *hstrncpy(char * const to, const char * const from, const size_t count)
     return to;                                 
 }                                              
 
-struct stub;
-struct none;
+struct array_1024;
+struct string;
 
-int main_class_main_9_();
-void stub_init_5_(struct stub* __this);
-void stub_deinit_13_(struct stub* __this);
-void none_init_2_(struct none* __this);
-void none_deinit_15_(struct none* __this);
+void array_init_6_1024(struct array_1024* __this);
+void array_init_8_1024(struct array_1024* __this, int size);
+void array_add_10_1024(struct array_1024* __this, char element);
+char array_get_12_1024(struct array_1024* __this, int index);
+char array_set_14_1024(struct array_1024* __this, int index, char element);
+int array_size_16_1024(struct array_1024* __this);
+boolean array_is_empty_18_1024(struct array_1024* __this);
+void array_deinit_32_1024(struct array_1024* __this);
+void string_init_21_(struct string* __this, struct array_1024* buffer);
+int string_length_24_(struct string* __this);
+char string_get_27_(struct string* __this, int index);
+struct array_1024* string_bytes_30_(struct string* __this);
+void string_deinit_34_(struct string* __this);
+int main_class_main_4_();
 
-struct stub
+struct string
 {
-int f; 
-struct none* n; 
+struct array_1024* buffer; 
 
 };
 
-struct none
-{
-int x; 
 
+static const char t91[] = { 't', 'h', 'e', ' ', 'c', 'h', 'a', 'r', ' ', 'i', 's', ':', ' ', '{', '0', '}', '\0'};
+struct array_1024
+{
+    char* data;
+    size_t size;
+    size_t alloc;
 };
 
+void array_init_6_1024(struct array_1024* __this) {
+    assert(__this);
+    __this->size = 0;
+    __this->alloc = 2;
+    __this->data = (char*) hcalloc( 1u, (sizeof(char) * __this->alloc) );
+}
+
+void array_init_8_1024(struct array_1024* __this, int size) {
+    assert(__this);
+    assert(size > 0);
+    assert(size < INT_MAX);
+    __this->size = 0;
+    __this->alloc = size;
+    __this->data = (char*) hcalloc( 1u, (sizeof(char) * __this->alloc) );
+}
+
+void array_add_10_1024(struct array_1024* __this, char element) {
+    if(__this->size >= __this->alloc) {                
+        __this->alloc += 1;                            
+        __this->alloc *= 2;                            
+        char* ndata = (char*) hcalloc( 1u, (sizeof(char) * __this->alloc) );
+        for(size_t i = 0; i < __this->size; i += 1) {  
+          ndata[i] = __this->data[i];                  
+        }                                              
+        free(__this->data);                            
+        __this->data = ndata;                          
+    }                                                  
+    __this->data[__this->size] = element;              
+    __this->size += 1;                                 
+}
+
+char array_get_12_1024(struct array_1024* __this, int index) {
+    assert(__this);
+    assert(__this->data);
+    assert(__this->size > 0);
+    assert(index >= 0);
+    assert(index < __this->size);
+    return __this->data[index];
+}
+
+char array_set_14_1024(struct array_1024* __this, int index, char element) {
+    assert(__this);
+    assert(__this->data);
+    assert(index >= 0);
+    assert(index < __this->size);
+    char old =  __this->data[index];
+    __this->data[index] = element;
+    return old;
+}
+
+int array_size_16_1024(struct array_1024* __this) {
+    assert(__this);
+    return __this->size;
+}
+
+boolean array_is_empty_18_1024(struct array_1024* __this) {
+    assert(__this);
+    return (__this->size == 0);
+}
+
+void array_deinit_32_1024(struct array_1024* __this) {
+    assert(__this);
+}
 
 
 
-void stub_init_5_(struct stub* __this)
+void string_init_21_(struct string* __this, struct array_1024* buffer)
 {
-struct none* t23 = (struct none*) hcalloc( 1u, sizeof(struct none) );
-none_init_2_(t23);
-struct none* tmp = t23;
+struct string* t37 = __this;
+assert(t37);
+struct array_1024* t38 = t37->buffer;
+struct array_1024* t39 = buffer;
+assert(t37);
+t37->buffer = t39;
 
-struct stub* t24 = __this;
-assert(t24);
-struct none* t25 = t24->n;
-struct none* t26 = (struct none*) hcalloc( 1u, sizeof(struct none) );
-none_init_2_(t26);
-assert(t24);
-t24->n = t26;
-
-struct stub* t27 = __this;
-assert(t27);
-int t28 = t27->f;
-int t29 = 1;
-int t30 = -t29;
-assert(t27);
-t27->f = t30;
-
-none_deinit_15_(tmp);
 
 }
 
-void stub_deinit_13_(struct stub* __this)
+int string_length_24_(struct string* __this)
 {
-struct stub* t31 = __this;
-assert(t31);
-struct none* t32 = t31->n;
-none_deinit_15_(t32);
+struct string* t40 = __this;
+assert(t40);
+struct array_1024* t41 = t40->buffer;
+int t42 = array_size_16_1024(t41);
+int t43 = 0;
+boolean t44 = t42 > t43;
+assert_true(t44);
+
+struct string* t45 = __this;
+assert(t45);
+struct array_1024* t46 = t45->buffer;
+int t47 = array_size_16_1024(t46);
+int t48 = 1;
+int t49 = t47 - t48;
+
+
+return t49;
+
+}
+
+char string_get_27_(struct string* __this, int index)
+{
+int t50 = index;
+int t51 = 0;
+boolean t52 = t50 >= t51;
+assert_true(t52);
+
+int t53 = index;
+struct string* t54 = __this;
+assert(t54);
+struct array_1024* t55 = t54->buffer;
+int t56 = array_size_16_1024(t55);
+boolean t57 = t53 < t56;
+assert_true(t57);
+
+struct string* t58 = __this;
+assert(t58);
+struct array_1024* t59 = t58->buffer;
+int t60 = index;
+char t61 = array_get_12_1024(t59, t60);
+
+
+return t61;
+
+}
+
+struct array_1024* string_bytes_30_(struct string* __this)
+{
+struct string* t62 = __this;
+assert(t62);
+struct array_1024* t63 = t62->buffer;
+
+
+return t63;
+
+}
+
+void string_deinit_34_(struct string* __this)
+{
+struct string* t64 = __this;
+assert(t64);
+struct array_1024* t65 = t64->buffer;
+array_deinit_32_1024(t65);
 
 
 }
 
-void none_init_2_(struct none* __this)
+
+int main_class_main_4_()
 {
-struct none* t33 = __this;
-assert(t33);
-int t34 = t33->x;
-int t35 = 32;
-assert(t33);
-t33->x = t35;
+struct array_1024* t66 = (struct array_1024*) hcalloc( 1u, sizeof(struct array_1024) );
+array_init_6_1024(t66);
+struct array_1024* args = t66;
+
+struct array_1024* t67 = args;
+char t68 = 'a';
+array_add_10_1024(t67, t68);
+
+struct array_1024* t69 = args;
+char t70 = 'b';
+array_add_10_1024(t69, t70);
+
+struct array_1024* t71 = args;
+char t72 = 'c';
+array_add_10_1024(t71, t72);
+
+struct array_1024* t73 = args;
+char t74 = 'd';
+array_add_10_1024(t73, t74);
+
+struct array_1024* t75 = args;
+char t76 = 'e';
+array_add_10_1024(t75, t76);
+
+
+{
+int t77 = 0;
+int i = t77;
+
+for(;;)
+{
+int t78 = i;
+struct array_1024* t79 = args;
+int t80 = array_size_16_1024(t79);
+boolean t81 = t78 < t80;
+boolean t82 = !t81;
+
+if(t82)
+{
+
+break;
+
+}
+
+struct array_1024* t87 = args;
+int t88 = i;
+char t89 = array_get_12_1024(t87, t88);
+char c = t89;
+
+struct array_1024* t90 = (struct array_1024*) hcalloc( 1u, sizeof(struct array_1024) );
+int t94 = 17;
+array_init_8_1024(t90, t94);
+hstrncpy(t90->data, t91, 16);
+struct string* t92 = (struct string*) hcalloc( 1u, sizeof(struct string) );
+string_init_21_(t92, t90);
+char t93 = c;
+print(t92, t93);
+
+int t83 = i;
+int t84 = i;
+int t85 = 1;
+int t86 = t84 + t85;
+i = t86;
 
 
 }
 
-void none_deinit_15_(struct none* __this)
-{
 
 }
 
+int t95 = 0;
 
-int main_class_main_9_()
-{
-struct stub* t16 = (struct stub*) hcalloc( 1u, sizeof(struct stub) );
-stub_init_5_(t16);
-struct stub* s1 = t16;
+array_deinit_32_1024(args);
 
-struct stub* t17 = (struct stub*) hcalloc( 1u, sizeof(struct stub) );
-stub_init_5_(t17);
-struct stub* s2 = t17;
-
-
-{
-struct stub* t18 = (struct stub*) hcalloc( 1u, sizeof(struct stub) );
-stub_init_5_(t18);
-struct stub* s3 = t18;
-
-stub_deinit_13_(s3);
-
-}
-
-int t19 = 1;
-int t20 = 1;
-boolean t21 = t19 == t20;
-assert_true(t21);
-
-int t22 = 0;
-
-stub_deinit_13_(s2);
-stub_deinit_13_(s1);
-
-return t22;
+return t95;
 
 }
 int main(int argc, char** argv) 
 {
-    int result = main_class_main_9_();
+    int result = main_class_main_4_();
 
     printf("%d\n", result);
     return result;

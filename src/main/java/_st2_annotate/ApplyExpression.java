@@ -95,8 +95,10 @@ public class ApplyExpression {
   }
 
   private void applyBuiltinFunc(ClassDeclaration object, ExprExpression e) {
-    ExprBuiltinFunc node = e.getExprBuiltinFunc();
-    Ident name = node.getName();
+
+    final ExprBuiltinFunc node = e.getExprBuiltinFunc();
+    final Ident name = node.getName();
+    final Type voidType = new Type(e.getBeginPos());
 
     for (ExprExpression arg : node.getArgs()) {
       applyExpression(object, arg);
@@ -107,7 +109,17 @@ public class ApplyExpression {
         ErrorLocation.errorExpression("assert_true expects one argument", e);
       }
       checkIsBoolean(node.getArgs().get(0));
-      e.setResultType(new Type(e.getBeginPos()));
+      e.setResultType(voidType);
+    }
+
+    else if (name.equals(Keywords.print_ident)) {
+      if (node.getArgs().size() <= 1) {
+        ErrorLocation.errorExpression("print expects the format argument ant the variadic rest", e);
+      }
+      if (!node.getArgs().get(0).getResultType().isString()) {
+        ErrorLocation.errorExpression("print expects string format argument first", e);
+      }
+      e.setResultType(voidType);
     }
 
     else {

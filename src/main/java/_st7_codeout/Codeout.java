@@ -445,6 +445,12 @@ public class Codeout {
       lineBuiltinArr("    return (__this->size == 0);");
       lineBuiltinArr("}\n");
     }
+    
+    else if (signToStringCall.startsWith("array_deinit_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("}\n");
+    }
 
     else {
       throw new AstParseException("unimplemented array method: " + method.getIdentifier().toString());

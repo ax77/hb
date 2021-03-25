@@ -49,6 +49,7 @@ public final class Keywords {
   
   // global funcs
   public static final Ident assert_true_ident    = g("assert_true");
+  public static final Ident print_ident          = g("print");
   
   // types:
   public static final Ident char_ident           = g("char");
