@@ -155,7 +155,11 @@ public class RewriterExpr {
       }
 
       else if (item.isAssignVarFlatCallStringCreationTmp()) {
-        rewriteStringCreation(item.getAssignVarFlatCallStringCreationTmp());
+        //AssignVarFlatCallStringCreationTmp node = item.getAssignVarFlatCallStringCreationTmp();
+        //String sconst = node.getRvalue();
+        //final IntrinsicText intrinsicText = new IntrinsicText(node.getLvalue(),
+        //    "const char * const " + node.getLvalue().getName().toString() + " = " + sconst);
+        //rv.add(new FlatCodeItem(intrinsicText));
       }
 
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
@@ -163,7 +167,6 @@ public class RewriterExpr {
         // strtemp __t15 = strtemp_init_0(__t14)
         // ::
         // strtemp __t15 = get_memory(sizeof(struct string, TD_STRING))
-        // reg_ptr_in_a_frame(__t15)
         // strtemp_init_0(__t15, __t14)
 
         // 1
@@ -252,61 +255,6 @@ public class RewriterExpr {
   private FlatCodeItem genAssert(Var v) {
     IntrinsicText text = new IntrinsicText(v, "assert(" + v.getName().getName() + ")");
     return new FlatCodeItem(text);
-  }
-
-  private void rewriteStringCreation(final AssignVarFlatCallStringCreationTmp node) {
-
-    /// string s = "a.b.c";
-    /// ::
-    /// struct ptr_1026* t83 = hmalloc(sizeof(struct ptr_1027));
-    /// ptr_init_2_1027(t83, sizeof(t84));
-    /// ptr_memcpy(t83, t84)
-    /// ptr_set(last_idx, '\0')
-
-    final Var lvalueVar = node.getLvalue();
-
-    final String sconst = node.getRvalue();
-    int[] buffer = CEscaper.escape(sconst);
-
-    // 1
-    final Type type = lvalueVar.getType();
-    if (!type.isClass()) {
-      throw new AstParseException("expect class-type for a string creation");
-    }
-    ClassDeclaration clazz = type.getClassTypeFromRef();
-    if (!clazz.isNativeArray()) {
-      throw new AstParseException("expect ptr-class-type for a string creation");
-    }
-
-    final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, type);
-    rv.add(new FlatCodeItem(assignVarAllocObject));
-
-    /// sizeof( char[] )
-    final int slen = buffer.length; /// it includes '\0'
-    final Var strlenVar = VarCreator.justNewVar(TypeBindings.make_int());
-    final String strlenIncludeNul = String.format("%d", slen);
-    final AssignVarNum strlenNum = new AssignVarNum(strlenVar,
-        new IntLiteral(strlenIncludeNul, TypeBindings.make_int(), slen));
-    rv.add(new FlatCodeItem(strlenNum));
-
-    final List<Var> argsInstance = new ArrayList<>();
-    argsInstance.add(0, lvalueVar);
-    argsInstance.add(strlenVar);
-
-    final List<Var> args = new ArrayList<>();
-    args.add(0, lvalueVar);
-
-    // 3
-    final FlatCallConstructor flatCallConstructor = new FlatCallConstructor(node.getConstructor().getFullname(),
-        argsInstance, lvalueVar);
-    rv.add(new FlatCodeItem(flatCallConstructor));
-
-    Var labelName = BuiltinsFnSet.getVar(sconst);
-    final String strlenExcludeNul = String.format("%d", slen - 1);
-    IntrinsicText text = new IntrinsicText(lvalueVar, "hstrncpy(" + lvalueVar.getName().getName() + "->data, "
-        + labelName.getName().getName() + ", " + strlenExcludeNul + ")");
-    rv.add(new FlatCodeItem(text));
-
   }
 
   private void genRaw(FlatCodeItem item) {
@@ -464,13 +412,16 @@ public class RewriterExpr {
     else if (base == ExpressionBase.EPRIMARY_STRING) {
 
       final String sconst = e.getBeginPos().getValue();
-      final Var lvalue = VarCreator.justNewVar(e.getResultType());
+      Var lvalue = BuiltinsFnSet.getVar(sconst);
+      if (lvalue == null) {
+        lvalue = VarCreator.justNewVar(e.getResultType());
+      }
 
       List<Var> args = new ArrayList<>();
       args.add(lvalue);
 
       // TODO:
-      final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(1);
+      final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(0);
       final FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor,
           constructor.signToStringCall(), lvalue.getType(), args);
 
@@ -480,7 +431,7 @@ public class RewriterExpr {
       genRaw(item);
 
       /// label
-      BuiltinsFnSet.registerStringLabel(sconst, VarCreator.justNewVar(e.getResultType()));
+      BuiltinsFnSet.registerStringLabel(sconst, lvalue);
 
     }
 

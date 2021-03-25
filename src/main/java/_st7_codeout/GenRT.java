@@ -90,7 +90,7 @@ public abstract class GenRT {
     sb.append("{                                              \n");
     sb.append("    assert(str);                               \n");
     sb.append("    size_t len = strlen(str);                  \n");
-    sb.append("    char* rv = (char*) hmalloc(len + 1);       \n");
+    sb.append("    char* rv = (char*) hcalloc(1u, len + 1);   \n");
     sb.append("    strcpy(rv, str);                           \n");
     sb.append("    rv[len] = \'\\0\';                         \n");
     sb.append("    return rv;                                 \n");

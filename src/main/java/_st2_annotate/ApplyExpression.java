@@ -2,6 +2,7 @@ package _st2_annotate;
 
 import static _st2_annotate.SymbolTable.F_ALL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
@@ -176,14 +177,17 @@ public class ApplyExpression {
 
   private void applyStringLiteral(final ExprExpression e) {
 
-    /// we should find the 'string' class here,
-    /// and we sure that the generic field 'buffer' is
-    /// fully expanded, and we can use it as the result type
-    ///
-    final ClassDeclaration stringClass = symtabApplier.getTypename(BuiltinNames.string_ident);
-    final VarDeclarator field = stringClass.getField(Hash_ident.getHashedIdent("buffer"));
+    ///// we should find the 'string' class here,
+    ///// and we sure that the generic field 'buffer' is
+    ///// fully expanded, and we can use it as the result type
+    /////
+    //final ClassDeclaration stringClass = symtabApplier.getTypename(BuiltinNames.string_ident);
+    //final VarDeclarator field = stringClass.getField(Hash_ident.getHashedIdent("buffer"));
+    //
+    //e.setResultType(field.getType());
 
-    e.setResultType(field.getType());
+    e.setResultType(
+        new Type(new ClassTypeRef(symtabApplier.getTypename(BuiltinNames.string_ident), new ArrayList<>())));
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {

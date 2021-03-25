@@ -12,6 +12,8 @@ class main_class {
       char c = args.get(i);
       print("the char is: {0}", c);
     }
+    string s1 = "a.b.c";
+    string s2 = "a.b.c";
     return 0;
   }
 }

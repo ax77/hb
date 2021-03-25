@@ -81,7 +81,7 @@ char *hstrdup(char *str)
 {                                              
     assert(str);                               
     size_t len = strlen(str);                  
-    char* rv = (char*) hmalloc(len + 1);       
+    char* rv = (char*) hcalloc(1u, len + 1);   
     strcpy(rv, str);                           
     rv[len] = '\0';                         
     return rv;                                 
@@ -114,27 +114,27 @@ char array_get_12_1024(struct array_1024* __this, int index);
 char array_set_14_1024(struct array_1024* __this, int index, char element);
 int array_size_16_1024(struct array_1024* __this);
 boolean array_is_empty_18_1024(struct array_1024* __this);
-void array_deinit_32_1024(struct array_1024* __this);
-void string_init_21_(struct string* __this, struct array_1024* buffer);
-int string_length_24_(struct string* __this);
-char string_get_27_(struct string* __this, int index);
-struct array_1024* string_bytes_30_(struct string* __this);
-void string_deinit_34_(struct string* __this);
+void array_deinit_26_1024(struct array_1024* __this);
+void string_init_20_(struct string* __this, const char * const buffer);
+int string_length_22_(struct string* __this);
+char string_get_24_(struct string* __this, int index);
+void string_deinit_28_(struct string* __this);
 int main_class_main_4_();
 
-struct string
-{
-struct array_1024* buffer; 
 
-};
-
-
-static const char t91[] = { 't', 'h', 'e', ' ', 'c', 'h', 'a', 'r', ' ', 'i', 's', ':', ' ', '{', '0', '}', '\0'};
+static const char t55[] = { 't', 'h', 'e', ' ', 'c', 'h', 'a', 'r', ' ', 'i', 's', ':', ' ', '{', '0', '}', '\0'};
+static const char t58[] = { 'a', '.', 'b', '.', 'c', '\0'};
 struct array_1024
 {
     char* data;
     size_t size;
     size_t alloc;
+};
+
+struct string
+{
+    char * buffer;
+    size_t length;
 };
 
 void array_init_6_1024(struct array_1024* __this) {
@@ -197,159 +197,100 @@ boolean array_is_empty_18_1024(struct array_1024* __this) {
     return (__this->size == 0);
 }
 
-void array_deinit_32_1024(struct array_1024* __this) {
+void array_deinit_26_1024(struct array_1024* __this) {
+    assert(__this);
+}
+
+void string_init_20_(struct string* __this, const char * const buffer) {
+    assert(__this);
+    assert(buffer);
+    __this->buffer = hstrdup(buffer);
+    __this->length = strlen(buffer);
+}
+
+int string_length_22_(struct string* __this) {
+    assert(__this);
+    assert(__this->buffer);
+    return __this->length;
+}
+
+char string_get_24_(struct string* __this, int index) {
+    assert(__this);
+    assert(__this->buffer);
+    assert(__this->length > 0);
+    assert(index >= 0);
+    assert(index < __this->length);
+    return __this->buffer[index];
+}
+
+void string_deinit_28_(struct string* __this) {
     assert(__this);
 }
 
 
 
-void string_init_21_(struct string* __this, struct array_1024* buffer)
-{
-struct string* t37 = __this;
-assert(t37);
-struct array_1024* t38 = t37->buffer;
-struct array_1024* t39 = buffer;
-assert(t37);
-t37->buffer = t39;
-
-
-}
-
-int string_length_24_(struct string* __this)
-{
-struct string* t40 = __this;
-assert(t40);
-struct array_1024* t41 = t40->buffer;
-int t42 = array_size_16_1024(t41);
-int t43 = 0;
-boolean t44 = t42 > t43;
-assert_true(t44);
-
-struct string* t45 = __this;
-assert(t45);
-struct array_1024* t46 = t45->buffer;
-int t47 = array_size_16_1024(t46);
-int t48 = 1;
-int t49 = t47 - t48;
-
-
-return t49;
-
-}
-
-char string_get_27_(struct string* __this, int index)
-{
-int t50 = index;
-int t51 = 0;
-boolean t52 = t50 >= t51;
-assert_true(t52);
-
-int t53 = index;
-struct string* t54 = __this;
-assert(t54);
-struct array_1024* t55 = t54->buffer;
-int t56 = array_size_16_1024(t55);
-boolean t57 = t53 < t56;
-assert_true(t57);
-
-struct string* t58 = __this;
-assert(t58);
-struct array_1024* t59 = t58->buffer;
-int t60 = index;
-char t61 = array_get_12_1024(t59, t60);
-
-
-return t61;
-
-}
-
-struct array_1024* string_bytes_30_(struct string* __this)
-{
-struct string* t62 = __this;
-assert(t62);
-struct array_1024* t63 = t62->buffer;
-
-
-return t63;
-
-}
-
-void string_deinit_34_(struct string* __this)
-{
-struct string* t64 = __this;
-assert(t64);
-struct array_1024* t65 = t64->buffer;
-array_deinit_32_1024(t65);
-
-
-}
-
 
 int main_class_main_4_()
 {
-struct array_1024* t66 = (struct array_1024*) hcalloc( 1u, sizeof(struct array_1024) );
-array_init_6_1024(t66);
-struct array_1024* args = t66;
+struct array_1024* t31 = (struct array_1024*) hcalloc( 1u, sizeof(struct array_1024) );
+array_init_6_1024(t31);
+struct array_1024* args = t31;
 
-struct array_1024* t67 = args;
-char t68 = 'a';
-array_add_10_1024(t67, t68);
+struct array_1024* t32 = args;
+char t33 = 'a';
+array_add_10_1024(t32, t33);
 
-struct array_1024* t69 = args;
-char t70 = 'b';
-array_add_10_1024(t69, t70);
+struct array_1024* t34 = args;
+char t35 = 'b';
+array_add_10_1024(t34, t35);
 
-struct array_1024* t71 = args;
-char t72 = 'c';
-array_add_10_1024(t71, t72);
+struct array_1024* t36 = args;
+char t37 = 'c';
+array_add_10_1024(t36, t37);
 
-struct array_1024* t73 = args;
-char t74 = 'd';
-array_add_10_1024(t73, t74);
+struct array_1024* t38 = args;
+char t39 = 'd';
+array_add_10_1024(t38, t39);
 
-struct array_1024* t75 = args;
-char t76 = 'e';
-array_add_10_1024(t75, t76);
+struct array_1024* t40 = args;
+char t41 = 'e';
+array_add_10_1024(t40, t41);
 
 
 {
-int t77 = 0;
-int i = t77;
+int t42 = 0;
+int i = t42;
 
 for(;;)
 {
-int t78 = i;
-struct array_1024* t79 = args;
-int t80 = array_size_16_1024(t79);
-boolean t81 = t78 < t80;
-boolean t82 = !t81;
+int t43 = i;
+struct array_1024* t44 = args;
+int t45 = array_size_16_1024(t44);
+boolean t46 = t43 < t45;
+boolean t47 = !t46;
 
-if(t82)
+if(t47)
 {
 
 break;
 
 }
 
-struct array_1024* t87 = args;
-int t88 = i;
-char t89 = array_get_12_1024(t87, t88);
-char c = t89;
+struct array_1024* t52 = args;
+int t53 = i;
+char t54 = array_get_12_1024(t52, t53);
+char c = t54;
 
-struct array_1024* t90 = (struct array_1024*) hcalloc( 1u, sizeof(struct array_1024) );
-int t94 = 17;
-array_init_8_1024(t90, t94);
-hstrncpy(t90->data, t91, 16);
-struct string* t92 = (struct string*) hcalloc( 1u, sizeof(struct string) );
-string_init_21_(t92, t90);
-char t93 = c;
-print(t92, t93);
+struct string* t56 = (struct string*) hcalloc( 1u, sizeof(struct string) );
+string_init_20_(t56, t55);
+char t57 = c;
+print(t56, t57);
 
-int t83 = i;
-int t84 = i;
-int t85 = 1;
-int t86 = t84 + t85;
-i = t86;
+int t48 = i;
+int t49 = i;
+int t50 = 1;
+int t51 = t49 + t50;
+i = t51;
 
 
 }
@@ -357,11 +298,21 @@ i = t86;
 
 }
 
-int t95 = 0;
+struct string* t59 = (struct string*) hcalloc( 1u, sizeof(struct string) );
+string_init_20_(t59, t58);
+struct string* s1 = t59;
 
-array_deinit_32_1024(args);
+struct string* t60 = (struct string*) hcalloc( 1u, sizeof(struct string) );
+string_init_20_(t60, t58);
+struct string* s2 = t60;
 
-return t95;
+int t61 = 0;
+
+string_deinit_28_(s2);
+string_deinit_28_(s1);
+array_deinit_26_1024(args);
+
+return t61;
 
 }
 int main(int argc, char** argv) 

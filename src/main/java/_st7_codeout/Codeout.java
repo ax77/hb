@@ -228,6 +228,10 @@ public class Codeout {
         genOptMethod(f);
         continue;
       }
+      if (f.getMethodSignature().getClazz().isNativeString()) {
+        genStringMethod(f);
+        continue;
+      }
 
       if (f.getMethodSignature().getModifiers().isNative()) {
         //genNativeMethod(f);
@@ -320,6 +324,69 @@ public class Codeout {
 
     else {
       throw new AstParseException("unimplemented array method: " + method.getIdentifier().toString());
+    }
+
+  }
+
+  /// string
+  private void genStringStruct(ClassDeclaration c) {
+
+    lineBuiltinArr("struct " + c.headerToString() + "\n{");
+    lineBuiltinArr("    char * buffer;");
+    lineBuiltinArr("    size_t length;");
+    lineBuiltinArr("};\n");
+
+  }
+
+  private void genStringMethod(Function func) {
+    final ClassMethodDeclaration method = func.getMethodSignature();
+
+    final String methodType = method.getType().toString();
+    final String signToStringCall = method.signToStringCall();
+    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+
+    /// native string(string buffer);
+    /// native int length();
+    /// native char get(int index);
+
+    if (signToStringCall.startsWith("string_init_")) {
+      // void string_init_20_(struct string* __this, struct string* buffer)
+      // void string_init_20_(struct string* __this, char         * buffer)
+      lineBuiltinArr(methodType + " " + signToStringCall + "(struct string* __this, const char * const buffer)" + " {");
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(buffer);");
+      lineBuiltinArr("    __this->buffer = hstrdup(buffer);");
+      lineBuiltinArr("    __this->length = strlen(buffer);");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("string_length_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(__this->buffer);");
+      lineBuiltinArr("    return __this->length;");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("string_get_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("    assert(__this->buffer);");
+      lineBuiltinArr("    assert(__this->length > 0);");
+      lineBuiltinArr("    assert(index >= 0);");
+      lineBuiltinArr("    assert(index < __this->length);");
+      lineBuiltinArr("    return __this->buffer[index];");
+      lineBuiltinArr("}\n");
+    }
+
+    else if (signToStringCall.startsWith("string_deinit_")) {
+      lineBuiltinArr(methodCallsHeader);
+      lineBuiltinArr("    assert(__this);");
+      lineBuiltinArr("}\n");
+    }
+
+    else {
+      throw new AstParseException("unimplemented string method: " + method.getIdentifier().toString());
     }
 
   }
@@ -445,7 +512,7 @@ public class Codeout {
       lineBuiltinArr("    return (__this->size == 0);");
       lineBuiltinArr("}\n");
     }
-    
+
     else if (signToStringCall.startsWith("array_deinit_")) {
       lineBuiltinArr(methodCallsHeader);
       lineBuiltinArr("    assert(__this);");
@@ -643,6 +710,10 @@ public class Codeout {
         genOptStruct(c);
         continue;
       }
+      if (c.isNativeString()) {
+        genStringStruct(c);
+        continue;
+      }
 
       sb.append(classToString(c));
       sb.append("\n");
@@ -674,11 +745,18 @@ public class Codeout {
     StringBuilder sb = new StringBuilder();
 
     for (Function f : functions) {
+      ClassMethodDeclaration meth = f.getMethodSignature();
       final ClassDeclaration c = f.getMethodSignature().getClazz();
+
       if (c.isMainClass()) {
         if (!f.getMethodSignature().isMain()) {
           continue;
         }
+      }
+      if (c.isNativeString() && meth.isConstructor()) {
+        sb.append(meth.getType().toString() + " " + meth.signToStringCall()
+            + "(struct string* __this, const char * const buffer);\n");
+        continue;
       }
       sb.append(f.signToString() + ";\n");
     }
