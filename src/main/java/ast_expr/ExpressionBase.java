@@ -18,4 +18,5 @@ public enum ExpressionBase {
  , ETERNARY_OPERATOR
  , ESIZEOF
  , ETYPEOF
+ , EBUILTIN_FUNC
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
@@ -68,7 +69,7 @@ public class ApplyExpression {
     } else if (e.is(ExpressionBase.EPRIMARY_STRING)) {
       applyStringLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_CHAR)) {
-      e.setResultType(TypeBindings.make_char());
+      applyPrimaryChar(object, e);
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean());
     } else if (e.is(ExpressionBase.ECAST)) {
@@ -79,12 +80,39 @@ public class ApplyExpression {
       applySizeof(object, e);
     } else if (e.is(ExpressionBase.ETYPEOF)) {
       applyTypeof(object, e);
+    } else if (e.is(ExpressionBase.EBUILTIN_FUNC)) {
+      applyBuiltinFunc(object, e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyPrimaryChar(ClassDeclaration object, final ExprExpression e) {
+    e.setResultType(TypeBindings.make_char());
+  }
+
+  private void applyBuiltinFunc(ClassDeclaration object, ExprExpression e) {
+    ExprBuiltinFunc node = e.getExprBuiltinFunc();
+    Ident name = node.getName();
+
+    for (ExprExpression arg : node.getArgs()) {
+      applyExpression(object, arg);
+    }
+
+    if (name.equals(Keywords.assert_true_ident)) {
+      if (node.getArgs().size() != 1) {
+        ErrorLocation.errorExpression("assert_true expects one argument", e);
+      }
+      checkIsBoolean(node.getArgs().get(0));
+      e.setResultType(new Type(e.getBeginPos()));
+    }
+
+    else {
+      ErrorLocation.errorExpression("unimpl.builtin function:", e);
+    }
   }
 
   private void applyTypeof(ClassDeclaration object, ExprExpression e) {
@@ -113,32 +141,6 @@ public class ApplyExpression {
     }
     e.setResultType(falseType);
   }
-
-  //  private void applyBuiltinFn(ClassDeclaration object, ExprExpression e) {
-  //
-  //    ExprBuiltinFn builtinFn = e.getBuiltinFn();
-  //
-  //    for (ExprExpression arg : builtinFn.getCallArguments()) {
-  //      applyExpression(object, arg);
-  //    }
-  //
-  //    final List<ExprExpression> callArguments = builtinFn.getCallArguments();
-  //
-  //    if (builtinFn.getFunction().equals(BuiltinNames.mem_malloc_ident)) {
-  //      builtinFn.setType(callArguments.get(0).getResultType());
-  //    }
-  //
-  //    if (builtinFn.getFunction().equals(BuiltinNames.assert_true_ident)) {
-  //      if (callArguments.size() != 1) {
-  //        ErrorLocation.errorExpression("assert_true expects one argument", e);
-  //      }
-  //      checkIsBoolean(callArguments.get(0));
-  //    }
-  //
-  //    e.setResultType(builtinFn.getType());
-  //
-  //    // TODO: check arguments
-  //  }
 
   private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
     // TODO:

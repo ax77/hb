@@ -151,7 +151,6 @@ public class Codeout {
     sb.append(staticFields.toString());
     sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
-    sb.append(CCMacro.genMacro());
     sb.append(stringsLabels.toString());
     sb.append(builtinsArrays.toString());
     sb.append("\n");
@@ -231,7 +230,7 @@ public class Codeout {
       }
 
       if (f.getMethodSignature().getModifiers().isNative()) {
-        genNativeMethod(f);
+        //genNativeMethod(f);
         continue;
       }
 
@@ -334,7 +333,6 @@ public class Codeout {
     lineBuiltinArr("    " + arrayOf.toString() + "* data;");
     lineBuiltinArr("    size_t size;");
     lineBuiltinArr("    size_t alloc;");
-    lineBuiltinArr("    int is_fixed;");
     lineBuiltinArr("};\n");
   }
 
@@ -369,7 +367,6 @@ public class Codeout {
         lineBuiltinArr("    assert(__this);");
         lineBuiltinArr("    __this->size = 0;");
         lineBuiltinArr("    __this->alloc = 2;");
-        lineBuiltinArr("    __this->is_fixed = 0;");
         lineBuiltinArr("    __this->data = " + sizeofMulAlloc);
         lineBuiltinArr("}\n");
       }
@@ -383,7 +380,6 @@ public class Codeout {
 
         lineBuiltinArr("    __this->size = 0;");
         lineBuiltinArr("    __this->alloc = size;");
-        lineBuiltinArr("    __this->is_fixed = 1;");
         lineBuiltinArr("    __this->data = " + sizeofMulAlloc);
         lineBuiltinArr("}\n");
       }
@@ -450,13 +446,6 @@ public class Codeout {
       lineBuiltinArr("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_is_fixed_")) {
-      lineBuiltinArr(methodCallsHeader);
-      lineBuiltinArr("    assert(__this);");
-      lineBuiltinArr("    return (__this->is_fixed);");
-      lineBuiltinArr("}\n");
-    }
-
     else {
       throw new AstParseException("unimplemented array method: " + method.getIdentifier().toString());
     }
@@ -465,90 +454,90 @@ public class Codeout {
 
   /// arrays
 
-  private void genNativeMethod(Function func) {
-    final ClassMethodDeclaration method = func.getMethodSignature();
-    final Ident name = method.getIdentifier();
-    final List<VarDeclarator> params = method.getParameters();
-
-    //
-    final String methodType = method.getType().toString();
-    final String methodCallsHeader = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
-
-    /// native_panic_ident = g("native_panic");
-    /// native_assert_true_ident = g("native_assert_true");
-    /// native_open_ident = g("native_open");
-    /// native_close_ident = g("native_close");
-    /// native_read_ident = g("native_read");
-    /// 
-    /// native void native_panic(*char because);
-    /// native void native_assert_true(boolean condition);
-    /// native int native_open(*char filename, int mode);
-    /// native int native_close(int fd);
-    /// native int native_read(int fd, *char buffer, int size);
-
-    if (name.equals(BuiltinNames.native_panic_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    assert(because);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_assert_true_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    assert_true(condition);");
-      lineBuiltin("}");
-    }
-
-    ///
-    if (name.equals(BuiltinNames.native_open_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return open(filename, O_RDONLY);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_close_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return close(fd);");
-      lineBuiltin("}");
-    }
-    if (name.equals(BuiltinNames.native_read_ident)) {
-      lineBuiltin(methodCallsHeader);
-      lineBuiltin("    assert(fd != -1);");
-      lineBuiltin("    assert(buffer);");
-      lineBuiltin("    assert(size > 0);");
-      lineBuiltin("    return read(fd, buffer, size);");
-      lineBuiltin("}");
-    }
-
-    ///
-    if (name.equals(BuiltinNames.print_ident)) {
-      lineBuiltin(methodCallsHeader);
-
-      StringBuilder printfFmtNames = new StringBuilder();
-      StringBuilder printfArgNames = new StringBuilder();
-      StringBuilder asserts = new StringBuilder();
-
-      for (int i = 0; i < params.size(); i += 1) {
-        VarDeclarator param = params.get(i);
-
-        PrintfPair printfPair = printfArgExpand(param);
-        printfFmtNames.append(printfPair.getFmt());
-        asserts.append(printfPair.assertsToStr());
-
-        printfArgNames.append(printfPair.getArg());
-        if (i + 1 < params.size()) {
-          printfArgNames.append(", ");
-        }
-      }
-
-      String quotedFmt = "\"" + printfFmtNames.toString() + "\\n\"";
-
-      if (asserts.length() > 0) {
-        lineBuiltin(asserts.toString());
-      }
-
-      lineBuiltin("    printf(" + quotedFmt + ", " + printfArgNames.toString() + ");");
-      lineBuiltin("}\n");
-    }
-
-  }
+  //  private void genNativeMethod(Function func) {
+  //    final ClassMethodDeclaration method = func.getMethodSignature();
+  //    final Ident name = method.getIdentifier();
+  //    final List<VarDeclarator> params = method.getParameters();
+  //
+  //    //
+  //    final String methodType = method.getType().toString();
+  //    final String methodCallsHeader = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
+  //
+  //    /// native_panic_ident = g("native_panic");
+  //    /// native_assert_true_ident = g("native_assert_true");
+  //    /// native_open_ident = g("native_open");
+  //    /// native_close_ident = g("native_close");
+  //    /// native_read_ident = g("native_read");
+  //    /// 
+  //    /// native void native_panic(*char because);
+  //    /// native void native_assert_true(boolean condition);
+  //    /// native int native_open(*char filename, int mode);
+  //    /// native int native_close(int fd);
+  //    /// native int native_read(int fd, *char buffer, int size);
+  //
+  //    if (name.equals(BuiltinNames.native_panic_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //      lineBuiltin("    assert(because);");
+  //      lineBuiltin("}");
+  //    }
+  //    if (name.equals(BuiltinNames.native_assert_true_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //      lineBuiltin("    assert_true(condition);");
+  //      lineBuiltin("}");
+  //    }
+  //
+  //    ///
+  //    if (name.equals(BuiltinNames.native_open_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //      lineBuiltin("    return open(filename, O_RDONLY);");
+  //      lineBuiltin("}");
+  //    }
+  //    if (name.equals(BuiltinNames.native_close_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //      lineBuiltin("    return close(fd);");
+  //      lineBuiltin("}");
+  //    }
+  //    if (name.equals(BuiltinNames.native_read_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //      lineBuiltin("    assert(fd != -1);");
+  //      lineBuiltin("    assert(buffer);");
+  //      lineBuiltin("    assert(size > 0);");
+  //      lineBuiltin("    return read(fd, buffer, size);");
+  //      lineBuiltin("}");
+  //    }
+  //
+  //    ///
+  //    if (name.equals(BuiltinNames.print_ident)) {
+  //      lineBuiltin(methodCallsHeader);
+  //
+  //      StringBuilder printfFmtNames = new StringBuilder();
+  //      StringBuilder printfArgNames = new StringBuilder();
+  //      StringBuilder asserts = new StringBuilder();
+  //
+  //      for (int i = 0; i < params.size(); i += 1) {
+  //        VarDeclarator param = params.get(i);
+  //
+  //        PrintfPair printfPair = printfArgExpand(param);
+  //        printfFmtNames.append(printfPair.getFmt());
+  //        asserts.append(printfPair.assertsToStr());
+  //
+  //        printfArgNames.append(printfPair.getArg());
+  //        if (i + 1 < params.size()) {
+  //          printfArgNames.append(", ");
+  //        }
+  //      }
+  //
+  //      String quotedFmt = "\"" + printfFmtNames.toString() + "\\n\"";
+  //
+  //      if (asserts.length() > 0) {
+  //        lineBuiltin(asserts.toString());
+  //      }
+  //
+  //      lineBuiltin("    printf(" + quotedFmt + ", " + printfArgNames.toString() + ");");
+  //      lineBuiltin("}\n");
+  //    }
+  //
+  //  }
 
   static class PrintfPair {
     private final String fmt;

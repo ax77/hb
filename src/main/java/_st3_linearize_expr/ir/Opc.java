@@ -20,6 +20,7 @@ public enum Opc {
   , AssignVarVar                       // type a = b
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
+  , FlatCallVoidBuiltin                // assert_true -> void
   , FlatCallVoidStaticClassMethod      // constants.write_settings(32)
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c

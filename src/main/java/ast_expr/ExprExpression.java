@@ -33,6 +33,13 @@ public class ExprExpression implements Serializable, Location {
   private ExprTernaryOperator ternaryOperator;
   private ExprSizeof exprSizeof;
   private ExprTypeof exprTypeof;
+  private ExprBuiltinFunc exprBuiltinFunc;
+
+  public ExprExpression(ExprBuiltinFunc exprBuiltinFunc, Token beginPos) {
+    this.base = ExpressionBase.EBUILTIN_FUNC;
+    this.beginPos = beginPos;
+    this.exprBuiltinFunc = exprBuiltinFunc;
+  }
 
   public ExprExpression(ExprTypeof exprTypeof, Token beginPos) {
     this.base = ExpressionBase.ETYPEOF;
@@ -236,7 +243,14 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.ETYPEOF) {
       return exprTypeof.toString();
     }
+    if (base == ExpressionBase.EBUILTIN_FUNC) {
+      return exprBuiltinFunc.toString();
+    }
     return base.toString();
+  }
+
+  public ExprBuiltinFunc getExprBuiltinFunc() {
+    return exprBuiltinFunc;
   }
 
   public ExprSizeof getExprSizeof() {

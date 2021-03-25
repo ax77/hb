@@ -13,10 +13,16 @@
 #include <fcntl.h>                             
 
 typedef int boolean;                           
-
 #define false 0                                
-
 #define true (!(false))                        
+
+#define assert_true(expr) do {                               \
+  if( !(expr) ) {                                            \
+    fprintf(stderr, "assert fail: (%s:%s():%d) : [%s]\n"     \
+    , __FILE__, __func__, __LINE__, #expr);                  \
+    exit(128);                                               \
+  }                                                          \
+} while(0) 
 
 void* hmalloc(size_t size);                    
 void* hrealloc(void* old, size_t newsize);     
@@ -121,55 +127,52 @@ int x;
 };
 
 
-#define assert_true(expr) do {                               \
-  if( !(expr) ) {                                            \
-    fprintf(stderr, "assert fail: (%s:%s():%d) : [%s]\n"     \
-    , __FILE__, __func__, __LINE__, #expr);                  \
-    exit(128);                                               \
-  }                                                          \
-} while(0) 
-
 
 
 void stub_init_5_(struct stub* __this)
 {
-struct stub* t20 = __this;
-assert(t20);
-struct none* t21 = t20->n;
-struct none* t22 = (struct none*) hcalloc( 1u, sizeof(struct none) );
-none_init_2_(t22);
-assert(t20);
-t20->n = t22;
+struct none* t23 = (struct none*) hcalloc( 1u, sizeof(struct none) );
+none_init_2_(t23);
+struct none* tmp = t23;
 
-struct stub* t23 = __this;
-assert(t23);
-int t24 = t23->f;
-int t25 = 1;
-int t26 = -t25;
-assert(t23);
-t23->f = t26;
+struct stub* t24 = __this;
+assert(t24);
+struct none* t25 = t24->n;
+struct none* t26 = (struct none*) hcalloc( 1u, sizeof(struct none) );
+none_init_2_(t26);
+assert(t24);
+t24->n = t26;
 
+struct stub* t27 = __this;
+assert(t27);
+int t28 = t27->f;
+int t29 = 1;
+int t30 = -t29;
+assert(t27);
+t27->f = t30;
+
+none_deinit_15_(tmp);
 
 }
 
 void stub_deinit_13_(struct stub* __this)
 {
-struct stub* t27 = __this;
-assert(t27);
-struct none* t28 = t27->n;
-none_deinit_15_(t28);
+struct stub* t31 = __this;
+assert(t31);
+struct none* t32 = t31->n;
+none_deinit_15_(t32);
 
 
 }
 
 void none_init_2_(struct none* __this)
 {
-struct none* t29 = __this;
-assert(t29);
-int t30 = t29->x;
-int t31 = 32;
-assert(t29);
-t29->x = t31;
+struct none* t33 = __this;
+assert(t33);
+int t34 = t33->x;
+int t35 = 32;
+assert(t33);
+t33->x = t35;
 
 
 }
@@ -200,12 +203,17 @@ stub_deinit_13_(s3);
 
 }
 
-int t19 = 0;
+int t19 = 1;
+int t20 = 1;
+boolean t21 = t19 == t20;
+assert_true(t21);
+
+int t22 = 0;
 
 stub_deinit_13_(s2);
 stub_deinit_13_(s1);
 
-return t19;
+return t22;
 
 }
 int main(int argc, char** argv) 

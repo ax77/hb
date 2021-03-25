@@ -21,9 +21,17 @@ public abstract class GenRT {
     sb.append("#include <sys/stat.h>                          \n");
     sb.append("#include <fcntl.h>                             \n\n");
     
-    sb.append("typedef int boolean;                           \n\n");
-    sb.append("#define false 0                                \n\n");
+    sb.append("typedef int boolean;                           \n");
+    sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
+    
+    sb.append("#define assert_true(expr) do {                               \\\n");
+    sb.append("  if( !(expr) ) {                                            \\\n");
+    sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
+    sb.append("    , __FILE__, __func__, __LINE__, #expr);                  \\\n");
+    sb.append("    exit(128);                                               \\\n");
+    sb.append("  }                                                          \\\n");
+    sb.append("} while(0) \n\n");
     
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");

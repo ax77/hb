@@ -1,4 +1,3 @@
-import std.assert;
 
 class file {
 
@@ -22,26 +21,26 @@ class file {
   }
 
   void open() {
-    assert.is_true(!is_open);
+    assert_true(!is_open);
     fd = native_open(fullname.bytes(), 0);
-    assert.is_true(fd != -1);
+    assert_true(fd != -1);
     is_open = true;
   }
 
   void close() {
-    assert.is_true(is_open);
+    assert_true(is_open);
     native_close(fd);
     is_open = false;
   }
   
   int read() {
-    assert.is_true(is_open);
+    assert_true(is_open);
     int c = native_read(fd, buffer, 1);
     return c;
   }
   
   char getc() {
-    assert.is_true(is_open);
+    assert_true(is_open);
     return buffer.get(0);
   }
   

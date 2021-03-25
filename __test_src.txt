@@ -11,6 +11,7 @@ class stub {
   int f;
   none n;
   stub() {
+    none tmp = new none();
     this.n = new none();
     this.f = -1;
   }
@@ -23,6 +24,7 @@ class main_class {
     {
       stub s3 = new stub();
     }
+    assert_true(1 == 1);
     return 0;
   }
 }

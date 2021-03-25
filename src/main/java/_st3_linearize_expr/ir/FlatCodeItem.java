@@ -18,6 +18,7 @@ import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.items.FlatCallVoidBuiltin;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.items.StoreFieldVar;
@@ -48,6 +49,7 @@ public class FlatCodeItem {
   private AssignVarVar assignVarVar;
   private FlatCallConstructor flatCallConstructor;
   private FlatCallVoid flatCallVoid;
+  private FlatCallVoidBuiltin flatCallVoidBuiltin;
   private FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod;
   private IntrinsicText intrinsicText;
   private StoreFieldVar storeFieldVar;
@@ -72,6 +74,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
+  public FlatCodeItem(FlatCallVoidBuiltin flatCallVoidBuiltin) { this.opcode = Opc.FlatCallVoidBuiltin; this.flatCallVoidBuiltin = flatCallVoidBuiltin; }
   public FlatCodeItem(FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod) { this.opcode = Opc.FlatCallVoidStaticClassMethod; this.flatCallVoidStaticClassMethod = flatCallVoidStaticClassMethod; }
   public FlatCodeItem(IntrinsicText intrinsicText) { this.opcode = Opc.IntrinsicText; this.intrinsicText = intrinsicText; }
   public FlatCodeItem(StoreFieldVar storeFieldVar) { this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
@@ -96,6 +99,7 @@ public class FlatCodeItem {
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
+  public boolean isFlatCallVoidBuiltin() { return this.opcode == Opc.FlatCallVoidBuiltin; }
   public boolean isFlatCallVoidStaticClassMethod() { return this.opcode == Opc.FlatCallVoidStaticClassMethod; }
   public boolean isIntrinsicText() { return this.opcode == Opc.IntrinsicText; }
   public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
@@ -122,6 +126,7 @@ public class FlatCodeItem {
     if(isAssignVarVar()) { return assignVarVar.toString(); }
     if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
+    if(isFlatCallVoidBuiltin()) { return flatCallVoidBuiltin.toString(); }
     if(isFlatCallVoidStaticClassMethod()) { return flatCallVoidStaticClassMethod.toString(); }
     if(isIntrinsicText()) { return intrinsicText.toString(); }
     if(isStoreFieldVar()) { return storeFieldVar.toString(); }
@@ -149,6 +154,7 @@ public class FlatCodeItem {
   public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
   public FlatCallConstructor getFlatCallConstructor() { return this.flatCallConstructor; }
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
+  public FlatCallVoidBuiltin getFlatCallVoidBuiltin() { return this.flatCallVoidBuiltin; }
   public FlatCallVoidStaticClassMethod getFlatCallVoidStaticClassMethod() { return this.flatCallVoidStaticClassMethod; }
   public IntrinsicText getIntrinsicText() { return this.intrinsicText; }
   public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
@@ -230,6 +236,9 @@ public class FlatCodeItem {
     if(isFlatCallVoid()) {
       err();
     }
+    if(isFlatCallVoidBuiltin()) {
+      err();
+    }
     if(isFlatCallVoidStaticClassMethod()) {
       err();
     }
@@ -249,5 +258,6 @@ public class FlatCodeItem {
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
   //@formatter:on
+
 
 }

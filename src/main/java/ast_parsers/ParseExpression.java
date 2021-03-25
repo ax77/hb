@@ -40,6 +40,7 @@ import java.util.Map;
 
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
@@ -550,6 +551,13 @@ public class ParseExpression {
 
     if (parser.is(Keywords.sizeof_ident)) {
       return parseSizeof();
+    }
+
+    if (parser.is(Keywords.assert_true_ident)) {
+      Token beginPos = parser.moveget();
+      List<ExprExpression> args = parseArglist();
+      ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args);
+      return new ExprExpression(builtinFunc, beginPos);
     }
 
     if (parser.is(Keywords.this_ident)) {

@@ -1,4 +1,3 @@
-import std.assert;
 
 class string {
 
@@ -10,13 +9,13 @@ class string {
 
   int length() {
     /// buffer should be terminated with '\0'
-    assert.is_true(buffer.size() > 0);
+    assert_true(buffer.size() > 0);
     return buffer.size() - 1;
   }
 
   char get(int index) {
-    assert.is_true(index >= 0);
-    assert.is_true(index < buffer.size());
+    assert_true(index >= 0);
+    assert_true(index < buffer.size());
     return buffer.get(index);
   }
   

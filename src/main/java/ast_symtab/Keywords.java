@@ -32,18 +32,24 @@ public final class Keywords {
   public static final Ident private_ident        = g("private");
   public static final Ident public_ident         = g("public");
   public static final Ident return_ident         = g("return");
-  public static final Ident sizeof_ident         = g("sizeof");
   public static final Ident static_ident         = g("static");
   public static final Ident while_ident          = g("while");
+  
   // literals
   public static final Ident true_ident           = g("true");
   public static final Ident false_ident          = g("false");
   public static final Ident this_ident           = g("this");
+  
   // new syntax:
   public static final Ident cast_ident           = g("cast");
+  public static final Ident sizeof_ident         = g("sizeof");
   public static final Ident typeof_ident         = g("typeof");
   public static final Ident deinit_ident         = g("deinit");
   //public static final Ident is_class_ident       = g("is_class");
+  
+  // global funcs
+  public static final Ident assert_true_ident    = g("assert_true");
+  
   // types:
   public static final Ident char_ident           = g("char");
   public static final Ident short_ident          = g("short");

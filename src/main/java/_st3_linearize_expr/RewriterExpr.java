@@ -34,6 +34,7 @@ import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
+import _st3_linearize_expr.items.FlatCallVoidBuiltin;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.items.StoreFieldVar;
@@ -48,6 +49,7 @@ import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -60,6 +62,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
+import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -68,6 +71,7 @@ import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
 import literals.IntLiteral;
+import tokenize.Ident;
 import tokenize.Token;
 import utils_oth.NullChecker;
 
@@ -228,6 +232,12 @@ public class RewriterExpr {
       }
 
       else if (item.isAssignVarFlatCallResultStatic()) {
+        rv.add(item);
+      }
+
+      /// builtins
+      ///
+      else if (item.isFlatCallVoidBuiltin()) {
         rv.add(item);
       }
 
@@ -693,6 +703,21 @@ public class RewriterExpr {
         AssignVarFalse node = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
         FlatCodeItem item = new FlatCodeItem(node);
         genRaw(item);
+      }
+    }
+
+    else if (base == ExpressionBase.EBUILTIN_FUNC) {
+      ExprBuiltinFunc node = e.getExprBuiltinFunc();
+      Ident name = node.getName();
+
+      final List<Var> args = genArgs(node.getArgs());
+
+      if (name.equals(Keywords.assert_true_ident)) {
+        FlatCallVoidBuiltin fc = new FlatCallVoidBuiltin(name, args);
+        FlatCodeItem item = new FlatCodeItem(fc);
+        genRaw(item);
+      } else {
+        ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }
     }
 

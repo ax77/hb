@@ -35,6 +35,7 @@ opcodes = """
     AssignVarSizeof                    ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
+    FlatCallVoidBuiltin                ,
     FlatCallVoidStaticClassMethod      ,
     StoreFieldVar                      ,
     StoreVarField                      ,
