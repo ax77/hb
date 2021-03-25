@@ -1,4 +1,5 @@
 import std.arr;
+import std.fmt;
 
 class main_class {
   int main() {
@@ -10,7 +11,7 @@ class main_class {
     args.add('e');
     for(int i=0; i<args.size(); i+=1) {
       char c = args.get(i);
-      print("the char is: {0}", c);
+      fmt.print(c);
     }
     string s1 = "a.b.c";
     string s2 = "a.b.c";

@@ -29,7 +29,6 @@ import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
-import hashed.Hash_ident;
 import tokenize.Ident;
 
 public class ApplyExpression {
@@ -110,16 +109,6 @@ public class ApplyExpression {
         ErrorLocation.errorExpression("assert_true expects one argument", e);
       }
       checkIsBoolean(node.getArgs().get(0));
-      e.setResultType(voidType);
-    }
-
-    else if (name.equals(Keywords.print_ident)) {
-      if (node.getArgs().size() <= 1) {
-        ErrorLocation.errorExpression("print expects the format argument ant the variadic rest", e);
-      }
-      if (!node.getArgs().get(0).getResultType().isString()) {
-        ErrorLocation.errorExpression("print expects string format argument first", e);
-      }
       e.setResultType(voidType);
     }
 

@@ -669,12 +669,6 @@ public class RewriterExpr {
         genRaw(item);
       }
 
-      else if (name.equals(Keywords.print_ident)) {
-        FlatCallVoidBuiltin fc = new FlatCallVoidBuiltin(name, args);
-        FlatCodeItem item = new FlatCodeItem(fc);
-        genRaw(item);
-      }
-
       else {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }

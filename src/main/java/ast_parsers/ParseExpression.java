@@ -553,7 +553,7 @@ public class ParseExpression {
       return parseSizeof();
     }
 
-    if (parser.is(Keywords.assert_true_ident) || parser.is(Keywords.print_ident)) {
+    if (parser.is(Keywords.assert_true_ident)) {
       Token beginPos = parser.moveget();
       List<ExprExpression> args = parseArglist();
       ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args);
