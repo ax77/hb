@@ -37,8 +37,11 @@ public class UnitImportsSet {
 
     if (Settings.IMPORT_STD_BY_DEFAULT) {
 
-      fullyRead.add(dir + "/std/arr.hb");
-      fullyRead.add(dir + "/std/string.hb");
+      fullyRead.add(dir + "/std/natives/arr.hb");
+      fullyRead.add(dir + "/std/natives/fmt.hb");
+      fullyRead.add(dir + "/std/natives/fd.hb");
+      fullyRead.add(dir + "/std/natives/opt.hb");
+      fullyRead.add(dir + "/std/natives/string.hb");
 
     }
   }

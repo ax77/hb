@@ -1,13 +1,15 @@
+import std.natives.fd;
 
 class file {
 
-  private int fd;
+  private int file_descriptor;
   private boolean is_open;
   private string fullname;
+
   private array<char> buffer;
 
   file(string fullname) {
-    this.fd = -1;
+    this.file_descriptor = -1;
     this.is_open = false;
     this.fullname = fullname;
     
@@ -16,36 +18,32 @@ class file {
   }
 
   private void fill_buffer() {
-    buffer.set(0, '\0');
-    buffer.set(1, '\0');
+    this.buffer.add('\0');
+    this.buffer.add('\0');
   }
 
   void open() {
     assert_true(!is_open);
-    fd = native_open(fullname.bytes(), 0);
-    assert_true(fd != -1);
+    file_descriptor = fd.native_open(fullname, 0);
+    assert_true(file_descriptor != -1);
     is_open = true;
   }
 
   void close() {
     assert_true(is_open);
-    native_close(fd);
+    fd.native_close(file_descriptor);
     is_open = false;
   }
-  
+
   int read() {
     assert_true(is_open);
-    int c = native_read(fd, buffer, 1);
+    int c = fd.native_read(file_descriptor, buffer, 1);
     return c;
   }
-  
+
   char getc() {
     assert_true(is_open);
     return buffer.get(0);
   }
-  
-  native int native_open(array<char> filename, int mode);
-  native int native_close(int fd);
-  native int native_read(int fd, array<char> buffer, int size);
 
 }

@@ -40,7 +40,9 @@ public abstract class GnNative {
 
     if (name.equals(BuiltinNames.native_open_ident)) {
       lineBuiltin(methodCallsHeader);
-      lineBuiltin("    return open(filename, O_RDONLY);");
+      lineBuiltin("    assert(filename);");
+      lineBuiltin("    assert(filename->buffer);");
+      lineBuiltin("    return open(filename->buffer, O_RDONLY);");
       lineBuiltin("}");
     }
     if (name.equals(BuiltinNames.native_close_ident)) {
@@ -52,8 +54,9 @@ public abstract class GnNative {
       lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(fd != -1);");
       lineBuiltin("    assert(buffer);");
+      lineBuiltin("    assert(buffer->data);");
       lineBuiltin("    assert(size > 0);");
-      lineBuiltin("    return read(fd, buffer, size);");
+      lineBuiltin("    return read(fd, buffer->data, size);");
       lineBuiltin("}");
     }
 

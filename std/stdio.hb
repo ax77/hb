@@ -1,14 +1,16 @@
-import std.string;
+import std.natives.string;
+import std.natives.arr;
+import std.file;
 
 static class stdio 
 {
 
-  static vec<char> read_file(string fullname) 
+  static array<char> read_file(string fullname) 
   {
     file fp = new file(fullname);
     fp.open();
   
-    vec<char> rv = new vec<char>();
+    array<char> rv = new array<char>();
     
     int sz = fp.read();
     while(sz > 0) {

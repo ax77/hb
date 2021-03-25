@@ -1,3 +1,6 @@
+import std.natives.arr;
+import std.natives.string;
+
 static class fmt {
   native void print(array<char> arr);
   native void print(char c);

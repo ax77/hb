@@ -1,6 +1,5 @@
 native class array<T> 
 {
-  
   native array();         
   native array(int size); 
   
@@ -10,5 +9,4 @@ native class array<T>
   
   native int size();
   native boolean is_empty();
-  
 }
