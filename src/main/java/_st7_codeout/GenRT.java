@@ -25,13 +25,23 @@ public abstract class GenRT {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
-    sb.append("#define assert_true(expr) do {                               \\\n");
-    sb.append("  if( !(expr) ) {                                            \\\n");
-    sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
-    sb.append("    , __FILE__, __func__, __LINE__, #expr);                  \\\n");
-    sb.append("    exit(128);                                               \\\n");
-    sb.append("  }                                                          \\\n");
-    sb.append("} while(0) \n\n");
+    //sb.append("#define assert_true(expr) do {                               \\\n");
+    //sb.append("  if( !(expr) ) {                                            \\\n");
+    //sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
+    //sb.append("    , __FILE__, __func__, __LINE__, #expr);                  \\\n");
+    //sb.append("    exit(128);                                               \\\n");
+    //sb.append("  }                                                          \\\n");
+    //sb.append("} while(0) \n\n");
+    
+    sb.append("static inline void assert_true(int cnd, const char *file, int line, const char *expr)  \n");
+    sb.append("{                                                                                      \n");
+    sb.append("    assert(file);                                                                      \n");
+    sb.append("    assert(expr);                                                                      \n");
+    sb.append("    if (cnd == 0) {                                                                    \n");
+    sb.append("        fprintf(stderr, \"assertion fail: (%s:%d) : [%s]\\n\", file, line, expr);      \n");
+    sb.append("        exit(7);                                                                       \n");
+    sb.append("    }                                                                                  \n");
+    sb.append("}                                                                                      \n\n");
     
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");

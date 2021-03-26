@@ -259,5 +259,4 @@ public class FlatCodeItem {
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
   //@formatter:on
 
-
 }

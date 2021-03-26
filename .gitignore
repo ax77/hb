@@ -18,7 +18,7 @@
 log/
 target/
 
-# Package Files #
+# Package Files 
 *.jar
 *.war
 *.nar
@@ -26,3 +26,34 @@ target/
 *.zip
 *.tar.gz
 *.rar
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+
+
+
+
+
+
+

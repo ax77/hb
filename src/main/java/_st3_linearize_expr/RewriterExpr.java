@@ -34,7 +34,6 @@ import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
-import _st3_linearize_expr.items.FlatCallVoidBuiltin;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.items.StoreFieldVar;
@@ -241,6 +240,10 @@ public class RewriterExpr {
       /// builtins
       ///
       else if (item.isFlatCallVoidBuiltin()) {
+        rv.add(item);
+      }
+
+      else if (item.isIntrinsicText()) {
         rv.add(item);
       }
 
@@ -664,9 +667,21 @@ public class RewriterExpr {
       final List<Var> args = genArgs(node.getArgs());
 
       if (name.equals(Keywords.assert_true_ident)) {
-        FlatCallVoidBuiltin fc = new FlatCallVoidBuiltin(name, args);
-        FlatCodeItem item = new FlatCodeItem(fc);
-        genRaw(item);
+        /// void assert_true(int cnd, const char *file, int line, const char *expr)
+        /// assert_true(c == 'a', new struct string*(C:/Users/dvv/Desktop/pr/jsparse/hb/std/natives/string.hb), 10, new struct string*(c == 'a'))
+
+        String file = "\"" + CEscaper.toCString(node.getFileToString()) + "\"";
+        String line = node.getLineToString();
+        String expr = "\"" + CEscaper.toCString(node.getExprToString()) + "\"";
+
+        IntrinsicText intrinsicText = new IntrinsicText(args.get(0),
+            "assert_true(" + args.get(0).getName().getName() + ", " + file + ", " + line + ", " + expr + ")");
+
+        genRaw(new FlatCodeItem(intrinsicText));
+
+        //FlatCallVoidBuiltin fc = new FlatCallVoidBuiltin(name, args);
+        //FlatCodeItem item = new FlatCodeItem(fc);
+        //genRaw(item);
       }
 
       else {

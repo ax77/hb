@@ -30,7 +30,22 @@ public abstract class CEscaper {
     if (c == '\\') {
       return "\\\\";
     }
+    if (c == '\'') {
+      return "\\'";
+    }
+    if (c == '\"') {
+      return "\\\"";
+    }
     return String.format("%c", c);
+  }
+
+  public static String toCString(String raw) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < raw.length(); i += 1) {
+      String c = unesc(raw.charAt(i));
+      sb.append(c);
+    }
+    return sb.toString();
   }
 
   public static String unquote(String s) {

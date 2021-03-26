@@ -1,0 +1,12 @@
+    //@formatter:off
+    StringBuilder sb = new StringBuilder();
+    sb.append("static inline void assert_true_(int cnd, const char *file, int line, const char *expr)   //001 \n");
+    sb.append("{                                                                                        //002 \n");
+    sb.append("    assert(file);                                                                        //003 \n");
+    sb.append("    assert(expr);                                                                        //004 \n");
+    sb.append("    if (cnd == 0) {                                                                      //005 \n");
+    sb.append("        fprintf(stderr, \"assertion fail: (%s:%d) : [%s]\\n\", file, line, expr);        //006 \n");
+    sb.append("        exit(7);                                                                         //007 \n");
+    sb.append("    }                                                                                    //008 \n");
+    sb.append("}                                                                                        //009 \n");
+    //@formatter:on

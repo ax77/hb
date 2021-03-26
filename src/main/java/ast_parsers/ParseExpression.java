@@ -63,6 +63,7 @@ import parse.ParseState;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
+import utils_oth.Normalizer;
 
 public class ParseExpression {
   private final Parse parser;
@@ -554,11 +555,9 @@ public class ParseExpression {
       return parseSizeof();
     }
 
+    // assert_true(something)
     if (parser.is(Keywords.assert_true_ident)) {
-      Token beginPos = parser.moveget();
-      List<ExprExpression> args = parseArglist();
-      ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args);
-      return new ExprExpression(builtinFunc, beginPos);
+      return parseAssertTrue();
     }
 
     if (parser.is(Keywords.this_ident)) {
@@ -596,6 +595,24 @@ public class ParseExpression {
 
   }
 
+  /// put the correct location here, and correct
+  /// expression-to-string into the args:
+  /// assert_true(arg == 1, file="C:/prj/main.hb", line=15, expr="arg == 1")
+  /// void assert_true(int cnd, const char *file, int line, const char *expr)
+  ///
+  private ExprExpression parseAssertTrue() {
+    final Token beginPos = parser.moveget();
+    final int line = beginPos.getLocation().getLine();
+    final String lineTos = String.format("%d", line);
+
+    List<ExprExpression> args = parseArglist();
+
+    ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args, beginPos.getLocation().getFilename(),
+        lineTos, args.get(0).toString());
+
+    return new ExprExpression(builtinFunc, beginPos);
+  }
+
   /// boolean f1 = typeof(a: int);
   private ExprExpression parseTypeof() {
     Token beginPos = parser.checkedMove(Keywords.typeof_ident);
@@ -623,9 +640,11 @@ public class ParseExpression {
   }
 
   private ExprExpression parseStringLiteral() {
-
     final Token saved = parser.moveget();
+    return createStringCreationFromGivenTok(saved);
+  }
 
+  private ExprExpression createStringCreationFromGivenTok(final Token saved) {
     final Type strTypeBootstr = new Type(
         new ClassTypeRef(GlobalSymtab.getClassType(parser, BuiltinNames.string_ident), new ArrayList<>()));
 
@@ -635,9 +654,7 @@ public class ParseExpression {
 
     final ExprClassCreation classInstanceCreation = new ExprClassCreation(strTypeBootstr, arguments);
     final ExprExpression result = new ExprExpression(classInstanceCreation, saved);
-
     return result;
-
   }
 
   private ExprExpression parseNewExpression() {

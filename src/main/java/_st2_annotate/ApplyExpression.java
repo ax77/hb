@@ -105,6 +105,7 @@ public class ApplyExpression {
     }
 
     if (name.equals(Keywords.assert_true_ident)) {
+      /// void assert_true(int cnd, const char *file, int line, const char *expr)
       if (node.getArgs().size() != 1) {
         ErrorLocation.errorExpression("assert_true expects one argument", e);
       }
