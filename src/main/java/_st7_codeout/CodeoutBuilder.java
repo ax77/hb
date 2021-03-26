@@ -12,6 +12,9 @@ public abstract class CodeoutBuilder {
     Codeout result = new Codeout();
     for (ClassDeclaration c : unit.getClasses()) {
       result.add(c);
+      if (c.isInterface()) {
+        continue;
+      }
       meth(c, result);
     }
 

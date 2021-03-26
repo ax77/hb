@@ -287,11 +287,29 @@ public class Codeout {
         lineBuiltinArr(GnStr.genStringStruct(c));
         continue;
       }
+      if (c.isInterface()) {
+        sb.append(genInterfaceStruct(c));
+        continue;
+      }
 
       sb.append(classToString(c));
       sb.append("\n");
     }
 
+    return sb.toString();
+  }
+
+  private String genInterfaceStruct(ClassDeclaration c) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("struct " + c.headerToString() + "\n{\n");
+    for (ClassMethodDeclaration m : c.getMethods()) {
+      // void (*name) (args);
+      sb.append("    " + m.getType().toString() + "(*");
+      sb.append(m.getIdentifier().toString() + ")");
+      sb.append(m.parametersToString());
+      sb.append(";\n");
+    }
+    sb.append("\n};\n");
     return sb.toString();
   }
 

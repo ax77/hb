@@ -1,31 +1,57 @@
-import std.natives.string::string;
+interface IEqual<T> {
+  boolean isEqualTo(T another);
+}
 
-class eq_check
-{
-  int f;
-  eq_check(int f) {
-    this.f = f;
+class SomeClass implements IEqual<SomeClass> {
+
+  int i;
+
+  public SomeClass(int i) {
+    this.i = i;
   }
-  
-  boolean equals(eq_check another) {
-    if(this == another) {
-      return true;
-    }
-    return this.f == another.f;
+
+  public boolean isEqualTo(SomeClass another) {
+    return i == another.i;
   }
+
 }
 
 class main_class {
   int main() {
-    string s1 = "1";
-    string s2 = "1";
-    assert_true(s1 == s2);
-    
-    eq_check c1 = new eq_check(32);
-    eq_check c2 = new eq_check(32);
-    eq_check c3 = new eq_check(64);
-    assert_true(c1 != c3);
-    
-    return 0;
+    SomeClass sc1 = new SomeClass(1);
+    return sc1.i;
   }
 }
+
+
+//import std.natives.string::string;
+//
+//class eq_check
+//{
+//  int f;
+//  eq_check(int f) {
+//    this.f = f;
+//  }
+//  
+//  boolean equals(eq_check another) {
+//    if(this == another) {
+//      return true;
+//    }
+//    return this.f == another.f;
+//  }
+//}
+//
+//class main_class {
+//  int main() {
+//    string s1 = "1";
+//    string s2 = "1";
+//    assert_true(s1 == s2);
+//    
+//    eq_check c1 = new eq_check(32);
+//    eq_check c2 = new eq_check(32);
+//    eq_check c3 = new eq_check(64);
+//    assert_true(c1 != c3);
+//    
+//    return 0;
+//  }
+//}

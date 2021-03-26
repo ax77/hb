@@ -170,16 +170,10 @@ public class RewriterExpr {
         /// just ignore the replacement if we inside the method we
         /// want to use as a replacement???
         ///
-        /// TODO: '!='
-        if (assignVarBinop.getRvalue().getOp().equals("==") && !method.getIdentifier().equals(BuiltinNames.equals_ident)
+        final String op = assignVarBinop.getRvalue().getOp();
+        if ((op.equals("==") || op.equals("!=")) && !method.getIdentifier().equals(BuiltinNames.equals_ident)
             && lhsType.isClass()) {
 
-          //rv.add(genAssert(lhs));
-          //rv.add(genAssert(rhs));
-
-          /// boolean t33 = t31 == t32
-          /// ::
-          /// boolean t33 = equals(t31, t32)
           final ClassMethodDeclaration meth = lhsType.getClassTypeFromRef()
               .getPredefinedMethod(BuiltinNames.equals_ident);
           final String sign = meth.signToStringCall();
@@ -189,8 +183,34 @@ public class RewriterExpr {
           args.add(rhs);
 
           final FunctionCallWithResult cmpMeth = new FunctionCallWithResult(meth, sign, meth.getType(), args);
-          final AssignVarFlatCallResult cmpAsgn = new AssignVarFlatCallResult(assignVarBinop.getLvalue(), cmpMeth);
-          rv.add(new FlatCodeItem(cmpAsgn));
+
+          //rv.add(genAssert(lhs));
+          //rv.add(genAssert(rhs));
+
+          if (op.equals("==")) {
+            /// boolean t33 = t31 == t32
+            /// ::
+            /// boolean t33 = equals(t31, t32)
+
+            final AssignVarFlatCallResult cmpAsgn = new AssignVarFlatCallResult(assignVarBinop.getLvalue(), cmpMeth);
+            rv.add(new FlatCodeItem(cmpAsgn));
+          }
+
+          if (op.equals("!=")) {
+            /// boolean t50 = t48 != t49
+            /// ::
+            /// boolean tmp = equals(t48, t49)
+            /// boolean t50 = !tmp
+
+            final Var tmp = VarCreator.justNewVar(assignVarBinop.getLvalue().getType());
+            final AssignVarFlatCallResult cmpAsgn = new AssignVarFlatCallResult(tmp, cmpMeth);
+            rv.add(new FlatCodeItem(cmpAsgn));
+
+            final Unop unop = new Unop("!", tmp);
+            final AssignVarUnop notEq = new AssignVarUnop(assignVarBinop.getLvalue(), unop);
+            rv.add(new FlatCodeItem(notEq));
+          }
+
         }
 
         else {

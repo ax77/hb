@@ -30,6 +30,9 @@ public class ApplyUnitPostEachClass {
 
   public void postEachClass() {
     for (ClassDeclaration c : instantiationUnit.getClasses()) {
+      if (c.isInterface()) {
+        continue;
+      }
       applyMethodsSpecial(c);
       checkAllFieldsAreInitialized(c);
     }
