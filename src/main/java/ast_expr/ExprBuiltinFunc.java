@@ -5,7 +5,6 @@ import java.util.List;
 
 import ast_printers.GenericListPrinter;
 import tokenize.Ident;
-import utils_oth.Normalizer;
 import utils_oth.NullChecker;
 
 public class ExprBuiltinFunc implements Serializable {
@@ -31,7 +30,7 @@ public class ExprBuiltinFunc implements Serializable {
 
     this.name = name;
     this.args = args;
-    this.fileToString = Normalizer.normalize(fileToString);
+    this.fileToString = fileToString;
     this.lineToString = lineToString;
     this.exprToString = exprToString;
   }

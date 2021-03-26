@@ -602,14 +602,17 @@ public class ParseExpression {
   ///
   private ExprExpression parseAssertTrue() {
     final Token beginPos = parser.moveget();
-    final int line = beginPos.getLocation().getLine();
-    final String lineTos = String.format("%d", line);
 
-    List<ExprExpression> args = parseArglist();
+    final List<ExprExpression> args = parseArglist();
+    if (args.size() != 1) {
+      parser.perror("assert_true(condition) expecting one argument");
+    }
 
-    ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args, beginPos.getLocation().getFilename(),
-        lineTos, args.get(0).toString());
+    final String file = beginPos.getLocation().getFilename();
+    final String line = String.format("%d", beginPos.getLocation().getLine());
+    final String expr = args.get(0).toString();
 
+    ExprBuiltinFunc builtinFunc = new ExprBuiltinFunc(beginPos.getIdent(), args, file, line, expr);
     return new ExprExpression(builtinFunc, beginPos);
   }
 

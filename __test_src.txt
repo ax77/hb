@@ -3,6 +3,7 @@ import std.natives.string::string;
 class main_class {
   int main() {
     assert_true(1==1 && 2==2 && 2+2==4);
+    assert_true(1 - 1 == 0);
     return 0;
   }
 }

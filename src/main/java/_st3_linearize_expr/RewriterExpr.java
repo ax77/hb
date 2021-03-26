@@ -72,6 +72,7 @@ import errors.ErrorLocation;
 import literals.IntLiteral;
 import tokenize.Ident;
 import tokenize.Token;
+import utils_oth.Normalizer;
 import utils_oth.NullChecker;
 
 public class RewriterExpr {
@@ -667,21 +668,28 @@ public class RewriterExpr {
       final List<Var> args = genArgs(node.getArgs());
 
       if (name.equals(Keywords.assert_true_ident)) {
+
         /// void assert_true(int cnd, const char *file, int line, const char *expr)
         /// assert_true(c == 'a', new struct string*(C:/Users/dvv/Desktop/pr/jsparse/hb/std/natives/string.hb), 10, new struct string*(c == 'a'))
 
-        String file = "\"" + CEscaper.toCString(node.getFileToString()) + "\"";
+        String file = "\"" + CEscaper.toCString(Normalizer.normalize(node.getFileToString())) + "\"";
         String line = node.getLineToString();
         String expr = "\"" + CEscaper.toCString(node.getExprToString()) + "\"";
 
-        IntrinsicText intrinsicText = new IntrinsicText(args.get(0),
-            "assert_true(" + args.get(0).getName().getName() + ", " + file + ", " + line + ", " + expr + ")");
+        StringBuilder intrArgs = new StringBuilder();
+        intrArgs.append("assert_true(");
+        intrArgs.append(args.get(0).getName().getName());
+        intrArgs.append(", ");
+        intrArgs.append(file);
+        intrArgs.append(", ");
+        intrArgs.append(line);
+        intrArgs.append(", ");
+        intrArgs.append(expr);
+        intrArgs.append(")");
 
+        IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());
         genRaw(new FlatCodeItem(intrinsicText));
 
-        //FlatCallVoidBuiltin fc = new FlatCallVoidBuiltin(name, args);
-        //FlatCodeItem item = new FlatCodeItem(fc);
-        //genRaw(item);
       }
 
       else {
