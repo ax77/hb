@@ -1,13 +1,24 @@
 package _st2_annotate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
+import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
+import ast_symtab.BuiltinNames;
+import ast_types.ClassTypeRef;
+import ast_types.Type;
+import ast_types.TypeBindings;
 import ast_unit.InstantiationUnit;
+import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
+import hashed.Hash_ident;
 
 public class ApplyUnitPreEachClass {
 
@@ -82,6 +93,19 @@ public class ApplyUnitPreEachClass {
     }
     if (object.isStaticClass()) {
       //return;
+    }
+
+    if (!object.hasPredefinedMethod(BuiltinNames.equals_ident)) {
+
+      List<VarDeclarator> parameters = new ArrayList<>();
+      parameters.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(),
+          new Type(new ClassTypeRef(object, object.getTypeParametersT())), Hash_ident.getHashedIdent("another"),
+          object.getBeginPos()));
+
+      ClassMethodDeclaration m = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, new Modifiers(), object,
+          BuiltinNames.equals_ident, parameters, TypeBindings.make_boolean(), new StmtBlock(), object.getBeginPos());
+
+      object.addMethod(m);
     }
 
     if (object.getDestructor() == null) {

@@ -61,6 +61,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
+import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -144,9 +145,45 @@ public class RewriterExpr {
 
       if (item.isAssignVarAllocObject()) {
         rv.add(item);
-      } else if (item.isAssignVarBinop()) {
-        rv.add(item);
-      } else if (item.isAssignVarFalse()) {
+      }
+
+      else if (item.isAssignVarBinop()) {
+
+        final AssignVarBinop assignVarBinop = item.getAssignVarBinop();
+
+        if (assignVarBinop.getRvalue().getOp().equals("==") && !method.getIdentifier().equals(BuiltinNames.equals_ident)
+            && assignVarBinop.getRvalue().getLhs().getType().isClass()) {
+          Binop bop = assignVarBinop.getRvalue();
+          final Var lhs = bop.getLhs();
+          final Var rhs = bop.getRhs();
+          
+          //rv.add(genAssert(lhs));
+          //rv.add(genAssert(rhs));
+
+          /// boolean t33 = t31 == t32
+          /// ::
+          /// boolean t33 = equals(t31, t32)
+          ClassMethodDeclaration meth = lhs.getType().getClassTypeFromRef()
+              .getPredefinedMethod(BuiltinNames.equals_ident);
+
+          List<Var> args = new ArrayList<>();
+          args.add(lhs);
+          args.add(rhs);
+
+          FunctionCallWithResult functionCallWithResult = new FunctionCallWithResult(meth, meth.signToStringCall(),
+              meth.getType(), args);
+          AssignVarFlatCallResult assignVarFlatCallResult = new AssignVarFlatCallResult(assignVarBinop.getLvalue(),
+              functionCallWithResult);
+          rv.add(new FlatCodeItem(assignVarFlatCallResult));
+        }
+
+        else {
+          rv.add(item);
+        }
+
+      }
+
+      else if (item.isAssignVarFalse()) {
         rv.add(item);
       } else if (item.isAssignVarFieldAccess()) {
         // a = b.c
