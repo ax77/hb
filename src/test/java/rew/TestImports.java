@@ -12,13 +12,13 @@ import ast_main.ParserMain;
 import ast_unit.InstantiationUnit;
 import utils.UtilSrcToStringLevel;
 
-public class TestCcode7 {
+public class TestImports {
 
   @Test
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    InstantiationUnit unit = new ParserMain(dir + "/__test_src.txt").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain(dir + "/tests/imports/test_imports.hb").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

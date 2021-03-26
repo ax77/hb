@@ -52,6 +52,7 @@ import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
+import ast_main.imports.GlobalSymtab;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
@@ -626,7 +627,7 @@ public class ParseExpression {
     final Token saved = parser.moveget();
 
     final Type strTypeBootstr = new Type(
-        new ClassTypeRef(parser.getClassType(BuiltinNames.string_ident), new ArrayList<>()));
+        new ClassTypeRef(GlobalSymtab.getClassType(parser, BuiltinNames.string_ident), new ArrayList<>()));
 
     final List<ExprExpression> arguments = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);

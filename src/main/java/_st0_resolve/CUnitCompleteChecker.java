@@ -12,7 +12,6 @@ public abstract class CUnitCompleteChecker {
   public static void checkAllClassesAreComplete(final CompilationUnit unit) {
     checkList(unit.getClasses());
     checkList(unit.getTemplates());
-    checkList(unit.getForwards());
   }
 
   private static void checkList(List<ClassDeclaration> classes) {

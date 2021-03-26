@@ -1,10 +1,8 @@
-import std.natives.arr;
-import std.natives.fmt;
-import std.stdio;
-import std.cbuf;
+
 
 class main_class {
   int main() {
+
     return 0;
   }
 }

@@ -169,11 +169,12 @@ public class Codeout {
     sb.append("    return result;\n");
     sb.append("\n}\n");
 
-    try {
-      genMainFile(sb);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    //    try {
+    //      genMainFile(sb);
+    //    } catch (IOException e) {
+    //      e.printStackTrace();
+    //    }
+
     return sb.toString();
   }
 

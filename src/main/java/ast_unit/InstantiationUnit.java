@@ -20,7 +20,16 @@ public class InstantiationUnit {
   }
 
   public void put(ClassDeclaration e) {
+    checkRedefinition(e, classes);
     this.classes.add(0, e);
+  }
+
+  private void checkRedefinition(ClassDeclaration clazz, List<ClassDeclaration> where) {
+    for (ClassDeclaration c : where) {
+      if (c.getIdentifier().equals(clazz.getIdentifier())) {
+        throw new AstParseException("the class is redefined: " + c.getIdentifier().toString());
+      }
+    }
   }
 
   // for unit-tests

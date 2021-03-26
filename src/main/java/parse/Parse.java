@@ -7,18 +7,22 @@ import static tokenize.T.T_SEMI_COLON;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import ast_class.ClassDeclaration;
+import ast_main.imports.GlobalSymtab;
+import ast_main.imports.ImportEntry;
 import ast_parsers.ParseTypeDeclarations;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
+import tokenize.Stream;
 import tokenize.T;
 import tokenize.Token;
+import utils_fio.FileReadKind;
+import utils_fio.FileWrapper;
 
 public class Parse {
 
@@ -31,10 +35,7 @@ public class Parse {
   private List<Token> ringBuffer;
   private Token prevtok;
 
-  // symbol table for names, for classes only
-  private Map<Ident, ClassDeclaration> referenceTypes;
   private ClassDeclaration currentClass;
-
   private int flags = 0;
 
   public Parse(Tokenlist tokenlist) {
@@ -66,7 +67,6 @@ public class Parse {
   }
 
   private void initScopes() {
-    this.referenceTypes = new HashMap<Ident, ClassDeclaration>();
   }
 
   public void move() {
@@ -111,37 +111,8 @@ public class Parse {
     this.currentClass = currentClass;
   }
 
-  public void defineClassName(ClassDeclaration clazz) {
-    for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
-      if (ent.getKey().equals(clazz.getIdentifier())) {
-        perror("duplicate type-name: " + clazz.getIdentifier() + ", previously defined here: "
-            + ent.getValue().getLocationToString());
-      }
-    }
-    this.referenceTypes.put(clazz.getIdentifier(), clazz);
-  }
-
-  public boolean isClassName(Ident ident) {
-    final ClassDeclaration sym = referenceTypes.get(ident);
-    return sym != null;
-  }
-
-  public ClassDeclaration getClassType(Ident ident) {
-    if (!isClassName(ident)) {
-      perror("class not found: " + ident.getName());
-    }
-    return referenceTypes.get(ident);
-  }
-
   public boolean isUserDefinedIdentNoKeyword(Token what) {
     return what.ofType(T.TOKEN_IDENT) && !what.isBuiltinIdent();
-  }
-
-  public boolean isClassName() {
-    if (isUserDefinedIdentNoKeyword(tok)) {
-      return isClassName(tok.getIdent());
-    }
-    return false;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -367,7 +338,32 @@ public class Parse {
       new ParseTypeDeclarations(this).parse(unit);
     }
 
+    fixupImports(unit);
     return unit;
+  }
+
+  private void fixupImports(final CompilationUnit unit) throws IOException {
+    Set<String> paths = new HashSet<>();
+    for (ImportEntry e : GlobalSymtab.imports) {
+      Ident classname = e.getClassname();
+      ClassDeclaration clazz = GlobalSymtab.referenceTypes.get(classname);
+      if (clazz.isComplete()) {
+        continue;
+      }
+      paths.add(e.getFullname());
+    }
+    for (String path : paths) {
+      final String source = new FileWrapper(path).readToString(FileReadKind.APPEND_LF);
+      final Stream nestedStream = new Stream(path, source);
+      final Parse nestedParser = new Parse(new Tokenlist(nestedStream.getTokenlist()));
+      final CompilationUnit nestedUnit = nestedParser.parse();
+      for (ClassDeclaration clazz : nestedUnit.getClasses()) {
+        unit.putClazz(clazz);
+      }
+      for (ClassDeclaration clazz : nestedUnit.getTemplates()) {
+        unit.putTemplate(clazz);
+      }
+    }
   }
 
 }

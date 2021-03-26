@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_main.imports.GlobalSymtab;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
@@ -37,7 +38,7 @@ public class ParseType {
     }
 
     if (!typeWasFound) {
-      typeWasFound = parser.isClassName();
+      typeWasFound = GlobalSymtab.isClassName(parser.tok());
       if (typeWasFound) {
         this.isReference = true;
       }
@@ -97,7 +98,7 @@ public class ParseType {
     }
 
     final List<Type> typeArguments = getTypeArguments();
-    final ClassTypeRef ref = new ClassTypeRef(parser.getClassType(typeName), typeArguments);
+    final ClassTypeRef ref = new ClassTypeRef(GlobalSymtab.getClassType(parser, typeName), typeArguments);
     return new Type(ref);
   }
 

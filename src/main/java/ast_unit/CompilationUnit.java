@@ -12,24 +12,24 @@ public class CompilationUnit {
 
   private final List<ClassDeclaration> classes;
   private final List<ClassDeclaration> templates;
-  private final List<ClassDeclaration> forwards;
 
   public CompilationUnit() {
     this.classes = new ArrayList<>();
     this.templates = new ArrayList<>();
-    this.forwards = new ArrayList<>();
   }
 
   public void putClazz(ClassDeclaration clazz) {
+    if (alreadyContains(clazz, classes)) {
+      return;
+    }
     this.classes.add(clazz);
   }
 
   public void putTemplate(ClassDeclaration clazz) {
+    if (alreadyContains(clazz, templates)) {
+      return;
+    }
     this.templates.add(clazz);
-  }
-
-  public void putForward(ClassDeclaration clazz) {
-    this.forwards.add(clazz);
   }
 
   public List<ClassDeclaration> getClasses() {
@@ -40,8 +40,17 @@ public class CompilationUnit {
     return templates;
   }
 
-  public List<ClassDeclaration> getForwards() {
-    return forwards;
+  /// this means: we already parsed that class, but it was imported
+  /// many times in a diffferent files, and we shouldn't define it
+  /// again and again. actually, this is fragile solution, and
+  /// it should be re-thinked...
+  private boolean alreadyContains(ClassDeclaration clazz, List<ClassDeclaration> where) {
+    for (ClassDeclaration c : where) {
+      if (c.getIdentifier().equals(clazz.getIdentifier())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // for unit-tests

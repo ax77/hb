@@ -16,12 +16,15 @@ public abstract class ParsePackageName {
       throw new AstParseException("unexpected id: " + id.getName());
     }
 
+    @SuppressWarnings("unused")
     final Token beginPos = parser.checkedMove(id);
+
     final StringBuilder sb = new StringBuilder();
 
     while (!parser.isEof()) {
 
-      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON);
+      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON)
+          || parser.is(T.T_COLON_COLON);
       if (!isOk) {
         parser.perror("expect import path like: [import package.file;]");
       }
@@ -33,11 +36,7 @@ public abstract class ParsePackageName {
       }
 
       Token importname = parser.moveget();
-      if (importname.ofType(T.T_DOT)) {
-        sb.append("/");
-      } else {
-        sb.append(importname.getValue());
-      }
+      sb.append(importname.getValue());
 
     }
 

@@ -2,12 +2,12 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 
 import _st0_resolve.CUnitCompleteChecker;
 import _st1_templates.InstatantiationUnitBuilder;
 import _st3_linearize_expr.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
+import ast_main.imports.GlobalSymtab;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
@@ -16,7 +16,6 @@ import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
 import tokenize.Stream;
-import tokenize.Token;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
 import utils_oth.NullChecker;
@@ -47,6 +46,7 @@ public class ParserMain implements ParserMainApi {
   public Parse initiateParse() throws IOException {
     initIdents();
     BuiltinsFnSet.clear();
+    GlobalSymtab.clear();
 
     //// without any imports it is looks like this:
     ////
@@ -58,44 +58,12 @@ public class ParserMain implements ParserMainApi {
     // return new Parse(new Tokenlist(s.getTokenlist()));
 
     if (isFromFile) {
-      final UnitInfo info = new UnitInfo(filename);
-      final List<Token> tokens = info.getTokenlist();
-      final Parse parser = new Parse(new Tokenlist(tokens));
-
-      for (ClassDeclaration c : info.getTypenames()) {
-        parser.defineClassName(c);
-      }
-
-      return parser;
+      final Stream s = new Stream(filename, new FileWrapper(filename).readToString(FileReadKind.APPEND_LF));
+      return new Parse(new Tokenlist(s.getTokenlist()));
     }
 
-    /// this is only for unit-testing, because sometimes
-    /// it is much easy to test the source from string
-    /// instead of the file
-    final String dir = System.getProperty("user.dir");
-    final StringBuilder predef = new StringBuilder();
-
-    if (Settings.IMPORT_STD_BY_DEFAULT) {
-
-      predef.append(new FileWrapper(dir + "/std/arr.hb").readToString(FileReadKind.APPEND_LF));
-      predef.append(new FileWrapper(dir + "/std/fd.hb").readToString(FileReadKind.APPEND_LF));
-      predef.append(new FileWrapper(dir + "/std/fmt.hb").readToString(FileReadKind.APPEND_LF));
-      predef.append(new FileWrapper(dir + "/std/opt.hb").readToString(FileReadKind.APPEND_LF));
-      predef.append(new FileWrapper(dir + "/std/string.hb").readToString(FileReadKind.APPEND_LF));
-
-    }
-
-    final String sourceGiven = predef.toString() + "\n" + sb.toString();
-    final Stream s = new Stream("<string-source>", sourceGiven);
-    final List<Token> tokenlist = s.getTokenlist();
-    final Parse parser = new Parse(new Tokenlist(tokenlist));
-
-    final List<ClassDeclaration> typenames = new TypenamesFinder(tokenlist).getTypenames();
-    for (ClassDeclaration c : typenames) {
-      parser.defineClassName(c);
-    }
-
-    return parser;
+    final Stream s = new Stream("<string-source>", sb.toString());
+    return new Parse(new Tokenlist(s.getTokenlist()));
 
   }
 

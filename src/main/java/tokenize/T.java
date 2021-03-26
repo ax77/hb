@@ -34,6 +34,7 @@ public enum T {
   , T_RSHIFT           /// ">>"
   , T_OR_OR            /// "||"
   , T_OR_EQUAL         /// "|="
+  , T_COLON_COLON      /// "::"
   /// combinations-3
   , T_DOT_DOT_DOT      /// "..."
   , T_LSHIFT_EQUAL     /// ">>="
