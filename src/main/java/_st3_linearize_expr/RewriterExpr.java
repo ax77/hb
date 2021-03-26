@@ -151,30 +151,46 @@ public class RewriterExpr {
 
         final AssignVarBinop assignVarBinop = item.getAssignVarBinop();
 
+        final Binop bop = assignVarBinop.getRvalue();
+        final Var lhs = bop.getLhs();
+        final Var rhs = bop.getRhs();
+        final Type lhsType = lhs.getType();
+
+        /// we may replace the '==' operator with 'equals()' call
+        /// if and only if the types of variables are classes
+        /// and the current method not the 'equals()' itself,
+        /// because it may cause the infinite recursion loop, if
+        /// inside the 'equals()' method will be another '=='
+        /// which will may be replaced with the 'equals()' call and 
+        /// so on and so on...
+        /// I do not actually how c++ handle situations like that in
+        /// operator overloading, the assign overloading in c++ may also
+        /// be a cause of infinite recursion, 100%, and compiler 
+        /// complains about that... will it be a clean solution to 
+        /// just ignore the replacement if we inside the method we
+        /// want to use as a replacement???
+        ///
+        /// TODO: '!='
         if (assignVarBinop.getRvalue().getOp().equals("==") && !method.getIdentifier().equals(BuiltinNames.equals_ident)
-            && assignVarBinop.getRvalue().getLhs().getType().isClass()) {
-          Binop bop = assignVarBinop.getRvalue();
-          final Var lhs = bop.getLhs();
-          final Var rhs = bop.getRhs();
-          
+            && lhsType.isClass()) {
+
           //rv.add(genAssert(lhs));
           //rv.add(genAssert(rhs));
 
           /// boolean t33 = t31 == t32
           /// ::
           /// boolean t33 = equals(t31, t32)
-          ClassMethodDeclaration meth = lhs.getType().getClassTypeFromRef()
+          final ClassMethodDeclaration meth = lhsType.getClassTypeFromRef()
               .getPredefinedMethod(BuiltinNames.equals_ident);
+          final String sign = meth.signToStringCall();
 
-          List<Var> args = new ArrayList<>();
+          final List<Var> args = new ArrayList<>();
           args.add(lhs);
           args.add(rhs);
 
-          FunctionCallWithResult functionCallWithResult = new FunctionCallWithResult(meth, meth.signToStringCall(),
-              meth.getType(), args);
-          AssignVarFlatCallResult assignVarFlatCallResult = new AssignVarFlatCallResult(assignVarBinop.getLvalue(),
-              functionCallWithResult);
-          rv.add(new FlatCodeItem(assignVarFlatCallResult));
+          final FunctionCallWithResult cmpMeth = new FunctionCallWithResult(meth, sign, meth.getType(), args);
+          final AssignVarFlatCallResult cmpAsgn = new AssignVarFlatCallResult(assignVarBinop.getLvalue(), cmpMeth);
+          rv.add(new FlatCodeItem(cmpAsgn));
         }
 
         else {

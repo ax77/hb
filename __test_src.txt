@@ -23,7 +23,8 @@ class main_class {
     
     eq_check c1 = new eq_check(32);
     eq_check c2 = new eq_check(32);
-    assert_true(c1 == c2);
+    eq_check c3 = new eq_check(64);
+    assert_true(c1 != c3);
     
     return 0;
   }
