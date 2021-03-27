@@ -122,6 +122,36 @@ public abstract class GenRT {
     sb.append("    }                                          \n");
     sb.append("    return to;                                 \n");
     sb.append("}                                              \n\n");
+    
+    sb.append("static inline size_t __hash_char_ptr(char* key)      \n");
+    sb.append("{                                                    \n");
+    sb.append("    assert(key);                                     \n");
+    sb.append("    char* str = key;                                 \n");
+    sb.append("    size_t hash = 5381;                              \n");
+    sb.append("    size_t c = 0;                                    \n");
+    sb.append("    while ((c = *str++)) {                           \n");
+    sb.append("        hash = ((hash << 5) + hash) + c;             \n");
+    sb.append("    }                                                \n");
+    sb.append("    return hash;                                     \n");
+    sb.append("}                                                    \n\n");
+    
+    //sb.append("static inline size_t __hash_string(struct string *s) \n");
+    //sb.append("{                                                    \n");
+    //sb.append("    assert(s);                                       \n");
+    //sb.append("    assert(s->buffer);                               \n");
+    //sb.append("    return __hash_char_ptr(s->buffer);               \n");
+    //sb.append("}                                                    \n\n");
+    
+    sb.append("static inline size_t __hash_int(ptrdiff_t i)         \n");
+    sb.append("{                                                    \n");
+    sb.append("    return (size_t) i;                               \n");
+    sb.append("}                                                    \n\n");
+    
+    sb.append("static inline size_t __hash_ptr(void * ptr)          \n");
+    sb.append("{                                                    \n");
+    sb.append("    assert(ptr);                                     \n");
+    sb.append("    return (size_t) ptr;                             \n");
+    sb.append("}                                                    \n\n");
 
     //@formatter:on
 

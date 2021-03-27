@@ -1,0 +1,28 @@
+static inline size_t __hash_char_ptr(char* key)
+{
+    char* str = key;
+    size_t hash = 5381;
+    size_t c = 0;
+    while ((c = *str++)) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
+
+static inline size_t __hash_string(struct string *s)
+{
+    assert(s);
+    assert(s->buffer);
+    return __hash_char_ptr(s->buffer);
+}
+
+static inline size_t __hash_int(ptrdiff_t i)
+{
+    return (size_t) i;
+}
+
+static inline size_t __hash_ptr(void * ptr)
+{
+    assert(ptr);
+    return (size_t) ptr;
+}

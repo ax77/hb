@@ -20,16 +20,23 @@ public class InstantiationUnit {
   }
 
   public void put(ClassDeclaration e) {
-    checkRedefinition(e, classes);
+    if (alreadyContains(e, classes)) {
+      //return;
+    }
     this.classes.add(0, e);
   }
 
-  private void checkRedefinition(ClassDeclaration clazz, List<ClassDeclaration> where) {
+  /// this means: we already parsed that class, but it was imported
+  /// many times in a diffferent files, and we shouldn't define it
+  /// again and again. actually, this is fragile solution, and
+  /// it should be re-thinked...
+  private boolean alreadyContains(ClassDeclaration clazz, List<ClassDeclaration> where) {
     for (ClassDeclaration c : where) {
       if (c.getIdentifier().equals(clazz.getIdentifier())) {
-        throw new AstParseException("the class is redefined: " + c.getIdentifier().toString());
+        return true;
       }
     }
+    return false;
   }
 
   // for unit-tests

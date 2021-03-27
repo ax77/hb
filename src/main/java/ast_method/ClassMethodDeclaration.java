@@ -42,6 +42,10 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private final int uniqueId;
 
   /// auto-generated constructor/destructor/etc...
+  /// at a code-generation stage it is possible
+  /// to mark these methods as __always_inline__
+  /// because of the simplicity 
+  ///
   private boolean isGeneratedByDefault;
 
   // function/init

@@ -9,6 +9,7 @@ native class array<T>
   
   native int size();
   native boolean is_empty();
+  native boolean equals(array<T> another);
   
   test "get" {
     array<char> arr = new array<char>();

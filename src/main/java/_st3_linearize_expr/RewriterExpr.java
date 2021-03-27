@@ -170,9 +170,13 @@ public class RewriterExpr {
         /// just ignore the replacement if we inside the method we
         /// want to use as a replacement???
         ///
+        /// and: it is much clean and precise to replace simple '==' with
+        /// and method call if and only if the class provides the 'equals()'
+        /// method, because: 
+        /// generate something like that by default: [return __this == another]
+        /// and call that method time after time it's not fine.
         final String op = assignVarBinop.getRvalue().getOp();
-        if ((op.equals("==") || op.equals("!=")) && !method.getIdentifier().equals(BuiltinNames.equals_ident)
-            && lhsType.isClass()) {
+        if (itIsPossibleToReplaceEqNeWithCall(lhsType, op)) {
 
           final ClassMethodDeclaration meth = lhsType.getClassTypeFromRef()
               .getPredefinedMethod(BuiltinNames.equals_ident);
@@ -327,6 +331,26 @@ public class RewriterExpr {
 
     }
 
+  }
+
+  private boolean itIsPossibleToReplaceEqNeWithCall(final Type lhsType, final String op) {
+    final boolean itIsEqOp = (op.equals("==") || op.equals("!="));
+
+    if (!itIsEqOp) {
+      return false;
+    }
+    if (method.getIdentifier().equals(BuiltinNames.equals_ident)) {
+      return false;
+    }
+    if (!lhsType.isClass()) {
+      return false;
+    }
+
+    //final ClassDeclaration clazz = lhsType.getClassTypeFromRef();
+    //boolean hasEqMethod = clazz.hasPredefinedMethod(BuiltinNames.equals_ident);
+    //boolean itIsNativeSpecClass = clazz.isNativeArray() || clazz.isNativeString() || clazz.isNativeOpt();
+
+    return true;
   }
 
   private FlatCodeItem genAssert(Var v) {

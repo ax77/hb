@@ -1,57 +1,83 @@
-interface IEqual<T> {
-  boolean isEqualTo(T another);
-}
-
-class SomeClass implements IEqual<SomeClass> {
-
-  int i;
-
-  public SomeClass(int i) {
-    this.i = i;
-  }
-
-  public boolean isEqualTo(SomeClass another) {
-    return i == another.i;
-  }
-
-}
-
-class main_class {
-  int main() {
-    SomeClass sc1 = new SomeClass(1);
-    return sc1.i;
-  }
-}
-
-
-//import std.natives.string::string;
+//interface IEqual<T> {
+//  boolean isEqualTo(T another);
+//}
 //
-//class eq_check
-//{
-//  int f;
-//  eq_check(int f) {
-//    this.f = f;
+//class SomeClass1 implements IEqual<SomeClass1> {
+//  int i;
+//  SomeClass1(int i) {
+//    this.i = i;
 //  }
-//  
-//  boolean equals(eq_check another) {
-//    if(this == another) {
-//      return true;
-//    }
-//    return this.f == another.f;
+//  boolean isEqualTo(SomeClass1 another) {
+//    return i == another.i;
 //  }
+//}
+//
+//class SomeClass2 implements IEqual<SomeClass2> {
+//  int i;
+//  SomeClass2(int i) {
+//    this.i = i;
+//  }
+//  boolean isEqualTo(SomeClass2 another) {
+//    return i == another.i;
+//  }
+//}
+//
+//interface speaker {
+//  void speak();
+//}
+//
+//class speaker_c implements speaker {
+//  int i;
+//  speaker_c(int i) { this.i = i; }
+//  void speak() {}
 //}
 //
 //class main_class {
 //  int main() {
-//    string s1 = "1";
-//    string s2 = "1";
-//    assert_true(s1 == s2);
-//    
-//    eq_check c1 = new eq_check(32);
-//    eq_check c2 = new eq_check(32);
-//    eq_check c3 = new eq_check(64);
-//    assert_true(c1 != c3);
-//    
+//    SomeClass1 sc1 = new SomeClass1(1);
+//    SomeClass2 sc2 = new SomeClass2(1);
 //    return 0;
 //  }
 //}
+
+
+import std.natives.string::string;
+
+class eq_check
+{
+  int f;
+  eq_check(int f) {
+    this.f = f;
+  }
+  
+  boolean equals(eq_check another) {
+    if(this == another) {
+      return true;
+    }
+    return this.f == another.f;
+  }
+}
+
+class without_eq {
+  int i;
+  without_eq() { this.i = 0; }
+}
+
+class main_class {
+  int main() {
+    string s1 = "1";
+    string s2 = "1";
+    assert_true(s1 == s2);
+    
+    eq_check c1 = new eq_check(32);
+    eq_check c2 = new eq_check(32);
+    eq_check c3 = new eq_check(64);
+    assert_true(c1 != c3);
+    
+    without_eq tmp1 = new without_eq();
+    without_eq tmp2 = new without_eq();
+    assert_true(tmp1 != tmp2);
+    
+    return 0;
+  }
+}

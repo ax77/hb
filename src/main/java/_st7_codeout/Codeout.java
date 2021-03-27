@@ -307,7 +307,7 @@ public class Codeout {
       sb.append("    " + m.getType().toString() + "(*");
       sb.append(m.getIdentifier().toString() + ")");
       sb.append(m.parametersToString());
-      sb.append(";\n");
+      sb.append(";");
     }
     sb.append("\n};\n");
     return sb.toString();

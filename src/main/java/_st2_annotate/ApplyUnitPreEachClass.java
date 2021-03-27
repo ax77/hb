@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_expr.ExprBinary;
+import ast_expr.ExprExpression;
+import ast_expr.ExprIdent;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
+import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
@@ -20,6 +24,9 @@ import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import hashed.Hash_ident;
+import tokenize.Ident;
+import tokenize.T;
+import tokenize.Token;
 
 public class ApplyUnitPreEachClass {
 
@@ -98,20 +105,32 @@ public class ApplyUnitPreEachClass {
     if (object.isStaticClass()) {
       //return;
     }
-    if(object.isInterface()) {
+    if (object.isInterface()) {
       return;
     }
 
     if (!object.hasPredefinedMethod(BuiltinNames.equals_ident)) {
 
+      final Token beginPos = object.getBeginPos();
       List<VarDeclarator> parameters = new ArrayList<>();
+
+      final Ident anotherIdent = Hash_ident.getHashedIdent("another");
       parameters.add(new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(),
-          new Type(new ClassTypeRef(object, object.getTypeParametersT())), Hash_ident.getHashedIdent("another"),
-          object.getBeginPos()));
+          new Type(new ClassTypeRef(object, object.getTypeParametersT())), anotherIdent, beginPos));
+
+      /// return this == another
+      final StmtBlock block = new StmtBlock();
+      ExprExpression lhs = new ExprExpression(object, beginPos);
+      ExprExpression rhs = new ExprExpression(new ExprIdent(anotherIdent), beginPos);
+      ExprExpression eq = new ExprExpression(new ExprBinary(new Token(beginPos, "==", T.T_EQ), lhs, rhs), beginPos);
+      StmtReturn ret = new StmtReturn();
+      ret.setExpression(eq);
+      block.pushItemBack(new StmtStatement(ret, beginPos));
 
       ClassMethodDeclaration m = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, new Modifiers(), object,
-          BuiltinNames.equals_ident, parameters, TypeBindings.make_boolean(), new StmtBlock(), object.getBeginPos());
+          BuiltinNames.equals_ident, parameters, TypeBindings.make_boolean(), block, beginPos);
 
+      m.setGeneratedByDefault();
       object.addMethod(m);
     }
 

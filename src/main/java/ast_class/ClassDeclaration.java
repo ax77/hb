@@ -344,7 +344,7 @@ public class ClassDeclaration implements Serializable, Location {
         return method;
       }
     }
-    throw new AstParseException("class has no method: " + name.toString());
+    throw new AstParseException("class " + identifier.toString() + " has no method: " + name.toString());
   }
 
   public ClassMethodDeclaration getMethodForSure(String name) {
