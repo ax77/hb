@@ -25,6 +25,53 @@ public abstract class GenRT {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
+    sb.append("#define DEBUG_THE_CALL_STACK (1) \n");
+    sb.append("struct fcall {                   \n");
+    sb.append("    char *func;                  \n");
+    sb.append("    int line;                    \n");
+    sb.append("};                               \n\n");
+    
+    sb.append("#define STACK_SIZE (1024)                  \n");
+    sb.append("struct fcall call_stack[STACK_SIZE] = { }; \n");
+    sb.append("static size_t call_stack_nr = 0;           \n");
+    sb.append("void __dumpf();                            \n\n");
+   
+    sb.append("#if DEBUG_THE_CALL_STACK                                      \n");
+    sb.append("#define __pushf(__func, __line)                               \\\n");
+    sb.append("do {                                                          \\\n");
+    sb.append("    if (call_stack_nr >= STACK_SIZE) {                        \\\n");
+    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\"        \\\n");
+    sb.append("            , __func, __line+1);                              \\\n");
+    sb.append("        __dumpf();                                            \\\n");
+    sb.append("        exit(8);                                              \\\n");
+    sb.append("    }                                                         \\\n");
+    sb.append("                                                              \\\n");
+    sb.append("    struct fcall fc = { .func = __func, .line = __line+1 };   \\\n");
+    sb.append("    call_stack[call_stack_nr] = fc;                           \\\n");
+    sb.append("    call_stack_nr += 1;                                       \\\n");
+    sb.append("} while(0)                                                      \n");
+    sb.append("#else                                                           \n");
+    sb.append("#define __pushf(__func, __line)                                 \n");
+    sb.append("#endif                                                          \n\n");
+    
+    sb.append("#if DEBUG_THE_CALL_STACK         \n");
+    sb.append("#define __popf()               \\\n");
+    sb.append("do {                           \\\n");
+    sb.append("    assert(call_stack_nr > 0); \\\n");
+    sb.append("    call_stack_nr -= 1;        \\\n");
+    sb.append("} while(0)                       \n");
+    sb.append("#else                            \n");
+    sb.append("#define __popf()                 \n");
+    sb.append("#endif                           \n\n");
+    
+    sb.append("void __dumpf()                                       \n");
+    sb.append("{                                                    \n");
+    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {  \n");
+    sb.append("        struct fcall fc = call_stack[i];             \n");
+    sb.append("        printf(\"%s:%d\\n\", fc.func, fc.line);      \n");
+    sb.append("    }                                                \n");
+    sb.append("}                                                    \n\n");
+    
     //sb.append("#define assert_true(expr) do {                               \\\n");
     //sb.append("  if( !(expr) ) {                                            \\\n");
     //sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");

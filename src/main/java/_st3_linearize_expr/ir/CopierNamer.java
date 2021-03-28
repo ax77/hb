@@ -35,4 +35,12 @@ public abstract class CopierNamer {
     return sb.toString();
   }
 
+  public static String getMethodNamePushF(ClassMethodDeclaration m) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(m.getClazz().getIdentifier().getName());
+    sb.append(".");
+    sb.append(m.getIdentifier().getName());
+    return sb.toString();
+  }
+
 }

@@ -257,6 +257,10 @@ public class RewriterExpr {
         final List<Var> args = rvalue.getArgs();
         args.add(0, lvalueVar);
 
+        //__pushf("test1::test5", __LINE__);
+        //test5(0);
+        //__popf();
+
         // 3
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         rv.add(new FlatCodeItem(flatCallConstructor));
@@ -285,10 +289,11 @@ public class RewriterExpr {
         rv.add(item);
       }
 
-      else if (item.isFlatCallConstructor()) {
+      else if (item.isFlatCallVoid()) {
+        rv.add(makePushF(item.getFlatCallVoid().getMethod().signToStringCallPushF(),
+            String.format("%d", item.getFlatCallVoid().getMethod().getLocation().getLine())));
         rv.add(item);
-      } else if (item.isFlatCallVoid()) {
-        rv.add(item);
+        rv.add(makePopF());
       } else if (item.isStoreFieldVar()) {
         // a.b = c
         rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
@@ -331,6 +336,23 @@ public class RewriterExpr {
 
     }
 
+  }
+
+  private FlatCodeItem makePushF(String methodPureName, String line) {
+    //__pushf("test1::test5", __LINE__);
+    //test5(0);
+    //__popf();
+    IntrinsicText txt = new IntrinsicText(null,
+        "__pushf(" + method.signToStringCallPushF() + "::" + methodPureName + ", " + line + ")");
+    return new FlatCodeItem(txt);
+  }
+
+  private FlatCodeItem makePopF() {
+    //__pushf("test1::test5", __LINE__);
+    //test5(0);
+    //__popf();
+    IntrinsicText txt = new IntrinsicText(null, "__popf()");
+    return new FlatCodeItem(txt);
   }
 
   private boolean itIsPossibleToReplaceEqNeWithCall(final Type lhsType, final String op) {

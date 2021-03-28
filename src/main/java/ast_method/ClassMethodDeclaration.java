@@ -228,6 +228,10 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   public String signToStringCall() {
     return CopierNamer.getMethodName(this) + TypePrinters.typeArgumentsToString(getClazz().getTypeParametersT());
   }
+  
+  public String signToStringCallPushF() {
+    return CopierNamer.getMethodNamePushF(this) ;
+  }
 
   public boolean isDestructor() {
     return base == ClassMethodBase.IS_DESTRUCTOR;

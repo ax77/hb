@@ -1,28 +1,50 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("static inline size_t __hash_char_ptr(char* key)        //001 \n");
-    sb.append("{                                                      //002 \n");
-    sb.append("    char* str = key;                                   //003 \n");
-    sb.append("    size_t hash = 5381;                                //004 \n");
-    sb.append("    size_t c = 0;                                      //005 \n");
-    sb.append("    while ((c = *str++)) {                             //006 \n");
-    sb.append("        hash = ((hash << 5) + hash) + c;               //007 \n");
-    sb.append("    }                                                  //008 \n");
-    sb.append("    return hash;                                       //009 \n");
-    sb.append("}                                                      //010 \n");
-    sb.append("static inline size_t __hash_string(struct string *s)   //011 \n");
-    sb.append("{                                                      //012 \n");
-    sb.append("    assert(s);                                         //013 \n");
-    sb.append("    assert(s->buffer);                                 //014 \n");
-    sb.append("    return __hash_char_ptr(s->buffer);                 //015 \n");
-    sb.append("}                                                      //016 \n");
-    sb.append("static inline size_t __hash_int(ptrdiff_t i)           //017 \n");
-    sb.append("{                                                      //018 \n");
-    sb.append("    return (size_t) i;                                 //019 \n");
-    sb.append("}                                                      //020 \n");
-    sb.append("static inline size_t __hash_ptr(void * ptr)            //021 \n");
-    sb.append("{                                                      //022 \n");
-    sb.append("    assert(ptr);                                       //023 \n");
-    sb.append("    return (size_t) ptr;                               //024 \n");
-    sb.append("}                                                      //025 \n");
+    
+    sb.append("#define DEBUG_THE_CALL_STACK (1) \n");
+    sb.append("struct fcall {                   \n");
+    sb.append("    char *func;                  \n");
+    sb.append("    int line;                    \n");
+    sb.append("};                               \n\n");
+    
+    sb.append("#define STACK_SIZE (1024)                  \n");
+    sb.append("struct fcall call_stack[STACK_SIZE] = { }; \n");
+    sb.append("static size_t call_stack_nr = 0;           \n");
+    sb.append("void __dumpf();                            \n\n");
+   
+    sb.append("#if DEBUG_THE_CALL_STACK                                      \n");
+    sb.append("#define __pushf(__func, __line)                               \\\n");
+    sb.append("do {                                                          \\\n");
+    sb.append("    if (call_stack_nr >= STACK_SIZE) {                        \\\n");
+    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\"        \\\n");
+    sb.append("            , __func, __line+1);                              \\\n");
+    sb.append("        __dumpf();                                            \\\n");
+    sb.append("        exit(8);                                              \\\n");
+    sb.append("    }                                                         \\\n");
+    sb.append("                                                              \\\n");
+    sb.append("    struct fcall fc = { .func = __func, .line = __line+1 };   \\\n");
+    sb.append("    call_stack[call_stack_nr] = fc;                           \\\n");
+    sb.append("    call_stack_nr += 1;                                       \\\n");
+    sb.append("} while(0)                                                      \n");
+    sb.append("#else                                                           \n");
+    sb.append("#define __pushf(__func, __line)                                 \n");
+    sb.append("#endif                                                          \n\n");
+    
+    sb.append("#if DEBUG_THE_CALL_STACK         \n");
+    sb.append("#define __popf()               \\\n");
+    sb.append("do {                           \\\n");
+    sb.append("    assert(call_stack_nr > 0); \\\n");
+    sb.append("    call_stack_nr -= 1;        \\\n");
+    sb.append("} while(0)                       \n");
+    sb.append("#else                            \n");
+    sb.append("#define __popf()                 \n");
+    sb.append("#endif                           \n\n");
+    
+    sb.append("void __dumpf()                                       \n");
+    sb.append("{                                                    \n");
+    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {  \n");
+    sb.append("        struct fcall fc = call_stack[i];             \n");
+    sb.append("        printf(\"%s:%d\\n\", fc.func, fc.line);      \n");
+    sb.append("    }                                                \n");
+    sb.append("}                                                    \n\n");
     //@formatter:on
