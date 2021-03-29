@@ -1,6 +1,17 @@
+/// assertion fail: (__test_src.txt:5) : [1 == 2]
+/// 
+/// The call-stack: 
+///   main_class.main::stub.b:25
+///   stub.b::ref.test__:16
+///   ref.test__::assert_true:5
+
+
 class ref {
   int i;
   ref(){i=0;}
+  void test__(){
+    assert_true(1==2);
+  }
 }
 
 class stub {
@@ -9,7 +20,9 @@ class stub {
   stub(){ref_count=1;r=new ref();}
   
   void a(){}
-  void b(){}
+  void b(){
+    r.test__();
+  }
 }
 
 class main_class {
@@ -18,6 +31,7 @@ class main_class {
     stub a = s;
     a.a();
     s.b();
+    
     return 0;
   }
 }

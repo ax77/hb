@@ -1,52 +1,40 @@
-#define DEBUG_THE_CALL_STACK (1)
-
-struct fcall {
-    char *func;
+struct aux_fcall_stack {
+    const char *func;
     int line;
 };
 
 #define STACK_SIZE (1024)
-struct fcall call_stack[STACK_SIZE] = { };
+struct aux_fcall_stack call_stack[STACK_SIZE] = { };
 static size_t call_stack_nr = 0;
 
-void __dumpf();
+static inline void __pushf(const char *__func, int __line);
+static inline void __popf();
+static void __dumpf();
 
-#if DEBUG_THE_CALL_STACK
-
-#define __pushf(__func, __line)                               \
-do {                                                          \
-    if (call_stack_nr >= STACK_SIZE) {                        \
-        fprintf(stderr, "stack overflow: (%s:%d)\n"           \
-            , __func, __line+1);                              \
-        __dumpf();                                            \
-        exit(8);                                              \
-    }                                                         \
-                                                              \
-    struct fcall fc = { .func = __func, .line = __line+1 };   \
-    call_stack[call_stack_nr] = fc;                           \
-    call_stack_nr += 1;                                       \
-} while(0)
-
-#else
-#define __pushf(__func, __line)
-#endif
-
-#if DEBUG_THE_CALL_STACK
-
-#define __popf()               \
-do {                           \
-    assert(call_stack_nr > 0); \
-    call_stack_nr -= 1;        \
-} while(0)
-
-#else
-#define __popf()
-#endif
-
-void __dumpf()
+static inline void __pushf(const char *__func, int __line)
 {
+    if (call_stack_nr >= STACK_SIZE) {
+        fprintf(stderr, "stack overflow: (%s:%d)\n", __func, __line);
+        __dumpf();
+        exit(8);
+    }
+
+    struct aux_fcall_stack fc = { .func = __func, .line = __line };
+    call_stack[call_stack_nr] = fc;
+    call_stack_nr += 1;
+}
+
+static inline void __popf()
+{
+    assert(call_stack_nr > 0);
+    call_stack_nr -= 1;
+}
+
+static void __dumpf()
+{
+    fprintf(stdout, "%s\n", "\nThe call-stack: ");
     for (size_t i = 0; i < call_stack_nr; i += 1) {
-        struct fcall fc = call_stack[i];
-        printf("%s:%d\n", fc.func, fc.line);
+        struct aux_fcall_stack fc = call_stack[i];
+        fprintf(stdout, "  %s:%d\n", fc.func, fc.line);
     }
 }

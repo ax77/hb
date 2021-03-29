@@ -61,6 +61,7 @@ import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
+import ast_sourceloc.SourceLocation;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
@@ -82,6 +83,7 @@ public class RewriterExpr {
   private final List<FlatCodeItem> rawResult;
   private final List<FlatCodeItem> rv;
   private final ClassMethodDeclaration method;
+  private final SourceLocation location;
 
   public List<FlatCodeItem> getRv() {
     return rv;
@@ -98,6 +100,7 @@ public class RewriterExpr {
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.method = method;
+    this.location = expr.getLocation();
 
     gen(expr);
     rewriteRaw();
@@ -110,6 +113,7 @@ public class RewriterExpr {
     this.rawResult = new ArrayList<>();
     this.rv = new ArrayList<>();
     this.method = method;
+    this.location = var.getLocation();
 
     if (var.getSimpleInitializer() == null) {
       throw new AstParseException(
@@ -290,8 +294,7 @@ public class RewriterExpr {
       }
 
       else if (item.isFlatCallVoid()) {
-        rv.add(makePushF(item.getFlatCallVoid().getMethod().signToStringCallPushF(),
-            String.format("%d", item.getFlatCallVoid().getMethod().getLocation().getLine())));
+        rv.add(makePushF(item.getFlatCallVoid().getMethod().signToStringCallPushF()));
         rv.add(item);
         rv.add(makePopF());
       } else if (item.isStoreFieldVar()) {
@@ -322,12 +325,17 @@ public class RewriterExpr {
 
       /// builtins
       ///
-      else if (item.isFlatCallVoidBuiltin()) {
-        rv.add(item);
-      }
 
       else if (item.isIntrinsicText()) {
+        if (item.getIntrinsicText().getText().startsWith("assert_true")) {
+          rv.add(makePushF("assert_true"));
+        }
+
         rv.add(item);
+
+        if (item.getIntrinsicText().getText().startsWith("assert_true")) {
+          rv.add(makePopF());
+        }
       }
 
       else {
@@ -338,12 +346,14 @@ public class RewriterExpr {
 
   }
 
-  private FlatCodeItem makePushF(String methodPureName, String line) {
+  private FlatCodeItem makePushF(String methodPureName) {
     //__pushf("test1::test5", __LINE__);
     //test5(0);
     //__popf();
-    IntrinsicText txt = new IntrinsicText(null,
-        "__pushf(" + method.signToStringCallPushF() + "::" + methodPureName + ", " + line + ")");
+    final String sign = method.signToStringCallPushF();
+    final String line = String.format("%d", location.getLine());
+    final String namef = "\"" + sign + "::" + methodPureName + "\"";
+    IntrinsicText txt = new IntrinsicText(null, "__pushf(" + namef + ", " + line + ")");
     return new FlatCodeItem(txt);
   }
 

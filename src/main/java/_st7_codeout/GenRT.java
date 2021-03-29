@@ -25,53 +25,57 @@ public abstract class GenRT {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
-    sb.append("#define DEBUG_THE_CALL_STACK (1) \n");
-    sb.append("struct fcall {                   \n");
-    sb.append("    char *func;                  \n");
-    sb.append("    int line;                    \n");
-    sb.append("};                               \n\n");
+    sb.append("struct aux_fcall_stack {                                                 \n");
+    sb.append("    const char *func;                                                    \n");
+    sb.append("    int line;                                                            \n");
+    sb.append("};                                                                       \n\n");
     
-    sb.append("#define STACK_SIZE (1024)                  \n");
-    sb.append("struct fcall call_stack[STACK_SIZE] = { }; \n");
-    sb.append("static size_t call_stack_nr = 0;           \n");
-    sb.append("void __dumpf();                            \n\n");
-   
-    sb.append("#if DEBUG_THE_CALL_STACK                                      \n");
-    sb.append("#define __pushf(__func, __line)                               \\\n");
-    sb.append("do {                                                          \\\n");
-    sb.append("    if (call_stack_nr >= STACK_SIZE) {                        \\\n");
-    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\"        \\\n");
-    sb.append("            , __func, __line+1);                              \\\n");
-    sb.append("        __dumpf();                                            \\\n");
-    sb.append("        exit(8);                                              \\\n");
-    sb.append("    }                                                         \\\n");
-    sb.append("                                                              \\\n");
-    sb.append("    struct fcall fc = { .func = __func, .line = __line+1 };   \\\n");
-    sb.append("    call_stack[call_stack_nr] = fc;                           \\\n");
-    sb.append("    call_stack_nr += 1;                                       \\\n");
-    sb.append("} while(0)                                                      \n");
-    sb.append("#else                                                           \n");
-    sb.append("#define __pushf(__func, __line)                                 \n");
-    sb.append("#endif                                                          \n\n");
+    sb.append("#define STACK_SIZE (1024)                                                \n");
+    sb.append("struct aux_fcall_stack call_stack[STACK_SIZE] = { };                     \n");
+    sb.append("static size_t call_stack_nr = 0;                                         \n");
+    sb.append("static inline void __pushf(const char *__func, int __line);              \n");
+    sb.append("static inline void __popf();                                             \n");
+    sb.append("static void __dumpf();                                                   \n\n");
     
-    sb.append("#if DEBUG_THE_CALL_STACK         \n");
-    sb.append("#define __popf()               \\\n");
-    sb.append("do {                           \\\n");
-    sb.append("    assert(call_stack_nr > 0); \\\n");
-    sb.append("    call_stack_nr -= 1;        \\\n");
-    sb.append("} while(0)                       \n");
-    sb.append("#else                            \n");
-    sb.append("#define __popf()                 \n");
-    sb.append("#endif                           \n\n");
+    sb.append("static inline void __pushf(const char *__func, int __line)               \n");
+    sb.append("{                                                                        \n");
+    sb.append("    if (call_stack_nr >= STACK_SIZE) {                                   \n");
+    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\", __func, __line); \n");
+    sb.append("        __dumpf();                                                       \n");
+    sb.append("        exit(8);                                                         \n");
+    sb.append("    }                                                                    \n");
+    sb.append("    struct aux_fcall_stack fc = { .func = __func, .line = __line };      \n");
+    sb.append("    call_stack[call_stack_nr] = fc;                                      \n");
+    sb.append("    call_stack_nr += 1;                                                  \n");
+    sb.append("}                                                                        \n\n");
     
-    sb.append("void __dumpf()                                       \n");
-    sb.append("{                                                    \n");
-    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {  \n");
-    sb.append("        struct fcall fc = call_stack[i];             \n");
-    sb.append("        printf(\"%s:%d\\n\", fc.func, fc.line);      \n");
-    sb.append("    }                                                \n");
-    sb.append("}                                                    \n\n");
+    sb.append("static inline void __popf()                                              \n");
+    sb.append("{                                                                        \n");
+    sb.append("    assert(call_stack_nr > 0);                                           \n");
+    sb.append("    call_stack_nr -= 1;                                                  \n");
+    sb.append("}                                                                        \n\n");
     
+    sb.append("static void __dumpf()                                                    \n");
+    sb.append("{                                                                        \n");
+    sb.append("    fprintf(stdout, \"%s\\n\", \"\\nThe call-stack: \");                 \n");
+    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {                      \n");
+    sb.append("        struct aux_fcall_stack fc = call_stack[i];                       \n");
+    sb.append("        fprintf(stdout, \"  %s:%d\\n\", fc.func, fc.line);               \n");
+    sb.append("    }                                                                    \n");
+    sb.append("}                                                                        \n\n");
+    
+    sb.append("static inline void assert_true(int cnd, const char *file, int line, const char *expr)  \n");
+    sb.append("{                                                                                      \n");
+    sb.append("    assert(file);                                                                      \n");
+    sb.append("    assert(expr);                                                                      \n");
+    sb.append("    if (cnd == 0) {                                                                    \n");
+    sb.append("        fprintf(stdout, \"assertion failed: (%s:%d) : [%s]\\n\", file, line, expr);    \n");
+    sb.append("        __dumpf();                                                                     \n");
+    sb.append("        exit(7);                                                                       \n");
+    sb.append("    }                                                                                  \n");
+    sb.append("}                                                                                      \n\n");
+    //@formatter:on
+
     //sb.append("#define assert_true(expr) do {                               \\\n");
     //sb.append("  if( !(expr) ) {                                            \\\n");
     //sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
@@ -79,22 +83,12 @@ public abstract class GenRT {
     //sb.append("    exit(128);                                               \\\n");
     //sb.append("  }                                                          \\\n");
     //sb.append("} while(0) \n\n");
-    
-    sb.append("static inline void assert_true(int cnd, const char *file, int line, const char *expr)  \n");
-    sb.append("{                                                                                      \n");
-    sb.append("    assert(file);                                                                      \n");
-    sb.append("    assert(expr);                                                                      \n");
-    sb.append("    if (cnd == 0) {                                                                    \n");
-    sb.append("        fprintf(stderr, \"assertion fail: (%s:%d) : [%s]\\n\", file, line, expr);      \n");
-    sb.append("        exit(7);                                                                       \n");
-    sb.append("    }                                                                                  \n");
-    sb.append("}                                                                                      \n\n");
-    
+
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");
     sb.append("void *hcalloc(size_t count, size_t eltsize);   \n");
     sb.append("char *hstrdup(char *str);                      \n\n");
-    
+
     sb.append("void* hmalloc(size_t size)                     \n");
     sb.append("{                                              \n");
     sb.append("    if (size == 0) {                           \n");
@@ -112,7 +106,7 @@ public abstract class GenRT {
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
     sb.append("}                                              \n\n");
-    
+
     sb.append("void* hrealloc(void* old, size_t newsize)      \n");
     sb.append("{                                              \n");
     sb.append("    void *ptr = NULL;                          \n");
@@ -126,7 +120,7 @@ public abstract class GenRT {
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
     sb.append("}                                              \n\n");
-    
+
     sb.append("void *hcalloc(size_t count, size_t eltsize)    \n");
     sb.append("{                                              \n");
     sb.append("    assert(count);                             \n");
@@ -142,7 +136,7 @@ public abstract class GenRT {
     sb.append("    assert(ptr);                               \n");
     sb.append("    return ptr;                                \n");
     sb.append("}                                              \n\n");
-    
+
     sb.append("char *hstrdup(char *str)                       \n");
     sb.append("{                                              \n");
     sb.append("    assert(str);                               \n");
@@ -152,7 +146,7 @@ public abstract class GenRT {
     sb.append("    rv[len] = \'\\0\';                         \n");
     sb.append("    return rv;                                 \n");
     sb.append("}                                              \n\n");
-    
+
     sb.append("char *hstrncpy(char * const to, const char * const from, const size_t count) \n");
     sb.append("{                                              \n");
     sb.append("    assert(to);                                \n");
@@ -169,7 +163,7 @@ public abstract class GenRT {
     sb.append("    }                                          \n");
     sb.append("    return to;                                 \n");
     sb.append("}                                              \n\n");
-    
+
     sb.append("static inline size_t __hash_char_ptr(char* key)      \n");
     sb.append("{                                                    \n");
     sb.append("    assert(key);                                     \n");
@@ -181,19 +175,19 @@ public abstract class GenRT {
     sb.append("    }                                                \n");
     sb.append("    return hash;                                     \n");
     sb.append("}                                                    \n\n");
-    
+
     //sb.append("static inline size_t __hash_string(struct string *s) \n");
     //sb.append("{                                                    \n");
     //sb.append("    assert(s);                                       \n");
     //sb.append("    assert(s->buffer);                               \n");
     //sb.append("    return __hash_char_ptr(s->buffer);               \n");
     //sb.append("}                                                    \n\n");
-    
+
     sb.append("static inline size_t __hash_int(ptrdiff_t i)         \n");
     sb.append("{                                                    \n");
     sb.append("    return (size_t) i;                               \n");
     sb.append("}                                                    \n\n");
-    
+
     sb.append("static inline size_t __hash_ptr(void * ptr)          \n");
     sb.append("{                                                    \n");
     sb.append("    assert(ptr);                                     \n");
