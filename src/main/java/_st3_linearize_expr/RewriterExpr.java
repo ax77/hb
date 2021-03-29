@@ -32,6 +32,8 @@ import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.CallListenerResultMethod;
+import _st3_linearize_expr.items.CallListenerVoidMethod;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
@@ -71,6 +73,7 @@ import ast_vars.VarBase;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import errors.ErrorLocation;
+import hashed.Hash_ident;
 import literals.IntLiteral;
 import tokenize.Ident;
 import tokenize.Token;
@@ -267,7 +270,11 @@ public class RewriterExpr {
 
         // 3
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
+        final String sign = rvalue.getMethod().signToStringCallPushF();
+        
+        rv.add(makePushFWithDest(flatCallConstructor.getThisVar(), sign));
         rv.add(new FlatCodeItem(flatCallConstructor));
+        rv.add(makePopFWithDest(flatCallConstructor.getThisVar(), sign));
 
       }
 
@@ -294,18 +301,28 @@ public class RewriterExpr {
       }
 
       else if (item.isFlatCallVoid()) {
-        rv.add(makePushF(item.getFlatCallVoid().getMethod().signToStringCallPushF()));
+        final String sign = item.getFlatCallVoid().getMethod().signToStringCallPushF();
+
+        rv.add(makePushF(sign));
         rv.add(item);
-        rv.add(makePopF());
-      } else if (item.isStoreFieldVar()) {
+        rv.add(makePopF(sign));
+      }
+
+      else if (item.isStoreFieldVar()) {
         // a.b = c
         rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
         rv.add(item);
-      } else if (item.isStoreVarVar()) {
+      }
+
+      else if (item.isStoreVarVar()) {
         rv.add(item);
-      } else if (item.isAssignVarTernaryOp()) {
+      }
+
+      else if (item.isAssignVarTernaryOp()) {
         rv.add(item);
-      } else if (item.isAssignVarSizeof()) {
+      }
+
+      else if (item.isAssignVarSizeof()) {
         rv.add(item);
       }
 
@@ -334,7 +351,7 @@ public class RewriterExpr {
         rv.add(item);
 
         if (item.getIntrinsicText().getText().startsWith("assert_true")) {
-          rv.add(makePopF());
+          rv.add(makePopF("assert_true"));
         }
       }
 
@@ -346,22 +363,39 @@ public class RewriterExpr {
 
   }
 
+  private Ident beforeCallIdent() {
+    return Hash_ident.getHashedIdent("__before_call");
+  }
+
+  private Ident afterCallIdent() {
+    return Hash_ident.getHashedIdent("__after_call");
+  }
+
   private FlatCodeItem makePushF(String methodPureName) {
-    //__pushf("test1::test5", __LINE__);
-    //test5(0);
-    //__popf();
     final String sign = method.signToStringCallPushF();
-    final String line = String.format("%d", location.getLine());
-    final String namef = "\"" + sign + "::" + methodPureName + "\"";
-    IntrinsicText txt = new IntrinsicText(null, "__pushf(" + namef + ", " + line + ")");
+    final String namef = sign + "::" + methodPureName;
+    CallListenerVoidMethod txt = new CallListenerVoidMethod(beforeCallIdent(), namef, location.getLine());
     return new FlatCodeItem(txt);
   }
 
-  private FlatCodeItem makePopF() {
-    //__pushf("test1::test5", __LINE__);
-    //test5(0);
-    //__popf();
-    IntrinsicText txt = new IntrinsicText(null, "__popf()");
+  private FlatCodeItem makePopF(String methodPureName) {
+    final String sign = method.signToStringCallPushF();
+    final String namef = sign + "::" + methodPureName;
+    CallListenerVoidMethod txt = new CallListenerVoidMethod(afterCallIdent(), namef, location.getLine());
+    return new FlatCodeItem(txt);
+  }
+
+  private FlatCodeItem makePushFWithDest(Var dest, String methodPureName) {
+    final String sign = method.signToStringCallPushF();
+    final String namef = sign + "::" + methodPureName;
+    CallListenerResultMethod txt = new CallListenerResultMethod(dest, beforeCallIdent(), namef, location.getLine());
+    return new FlatCodeItem(txt);
+  }
+
+  private FlatCodeItem makePopFWithDest(Var dest, String methodPureName) {
+    final String sign = method.signToStringCallPushF();
+    final String namef = sign + "::" + methodPureName;
+    CallListenerResultMethod txt = new CallListenerResultMethod(dest, afterCallIdent(), namef, location.getLine());
     return new FlatCodeItem(txt);
   }
 

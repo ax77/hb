@@ -25,5 +25,8 @@ public enum Opc {
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c
   , StoreVarVar                        // a = b
+  //
   , IntrinsicText                      // everything internal
+  , CallListenerVoidMethod             // __before_fcall("main_class.main::another_class.f", 10)
+  , CallListenerResultMethod           // __before_fcall("main_class.main::another_class.f", 10)
 }

@@ -40,6 +40,8 @@ opcodes = """
     StoreFieldVar                      ,
     StoreVarField                      ,
     IntrinsicText                      ,
+    CallListenerVoidMethod             ,
+    CallListenerResultMethod           ,
     StoreVarVar                        
 """
 opcodes_arr = []
@@ -110,6 +112,8 @@ for opc in opcodes_arr:
     elif str(opc) == 'FlatCallConstructor':
          get_dest += '      return ' + varname + '.getThisVar();\n'
     elif str(opc) == 'IntrinsicText':
+         get_dest += '      return ' + varname + '.getDest();\n'
+    elif str(opc) == 'CallListenerResultMethod':
          get_dest += '      return ' + varname + '.getDest();\n'
     else:
         get_dest += '      err();\n'
