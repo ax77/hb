@@ -11,7 +11,7 @@ class ref {
   int i;
   ref(){i=0;}
   void test__(){
-    assert_true(1==2);
+    assert_true(1==1-0);
   }
   int xxx(){
     return 0;
@@ -38,6 +38,32 @@ class main_class {
     s.b();
     
     string str1 = "1.";
+    string str2 = "1.";
+    assert_true(str1 == str2);
+    
+    string str3 = """
+      this one will be a very large string,
+      but not so long, only to check the
+      code generation output, what will it be 
+      as a label???
+    """;
+    
+    string str4 = """
+      this one will be a very large string,
+      but not so long, only to check the
+      code generation output, what will it be 
+      as a label???
+    """;
+    
+    string str5 = """
+      this one will be a very large string,
+      but not so long, only to check the
+      code generation output, what will it be 
+      as a label??? .
+    """;
+    
+    assert_true(str3 == str4);
+    assert_true(str3 != str5);
     
     return 0;
   }

@@ -38,7 +38,7 @@ public class CallListenerResultMethod {
 
   @Override
   public String toString() {
-    return listenerName.getName() + "(" + "\"" + callpath + "\"" + ", " + String.format("%d", line) + ")";
+    return listenerName.getName() + "(/*path=*/" + callpath + ", /*line=*/" + String.format("%d", line) + ")";
   }
 
 }
