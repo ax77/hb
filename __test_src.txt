@@ -13,6 +13,9 @@ class ref {
   void test__(){
     assert_true(1==2);
   }
+  int xxx(){
+    return 0;
+  }
 }
 
 class stub {
@@ -22,6 +25,7 @@ class stub {
   
   void a(){}
   void b(){
+    int a = r.xxx();
     r.test__();
   }
 }

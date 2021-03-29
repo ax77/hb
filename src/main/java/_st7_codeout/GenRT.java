@@ -74,8 +74,17 @@ public abstract class GenRT {
     sb.append("        exit(7);                                                                       \n");
     sb.append("    }                                                                                  \n");
     sb.append("}                                                                                      \n\n");
-    //@formatter:on
 
+    sb.append("static inline void __before_call(const char *__func, int __line) \n");
+    sb.append("{                                                                \n");
+    sb.append("  __pushf(__func, __line);                                       \n");
+    sb.append("}                                                                \n\n");
+    
+    sb.append("static inline void __after_call(const char *__func, int __line)  \n");
+    sb.append("{                                                                \n");
+    sb.append("  __popf();                                                      \n");
+    sb.append("}                                                                \n\n");
+    
     //sb.append("#define assert_true(expr) do {                               \\\n");
     //sb.append("  if( !(expr) ) {                                            \\\n");
     //sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
