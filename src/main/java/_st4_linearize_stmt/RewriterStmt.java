@@ -39,10 +39,8 @@ public class RewriterStmt {
     visitBlock(method.getBlock(), result);
 
     /// destructors
-    if (!method.getClazz().isInterface()) {
-      LocalDestructorsApplier applier = new LocalDestructorsApplier(method);
-      applier.apply(result);
-    }
+    LocalDestructorsApplier applier = new LocalDestructorsApplier(method);
+    applier.apply(result);
   }
 
   public LinearBlock getResult() {

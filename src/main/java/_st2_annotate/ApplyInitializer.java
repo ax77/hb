@@ -39,9 +39,11 @@ public class ApplyInitializer {
       if (lhsType.isClass() && rhsType.isClass()) {
         ClassDeclaration lhsClass = lhsType.getClassTypeFromRef();
         ClassDeclaration rhsClass = rhsType.getClassTypeFromRef();
-        if (lhsClass.isInterface() && InterfaceChecker.classFullyImplementsTheInterface(rhsClass, lhsClass)) {
-          //var.setType(rhsType);
-          return;
+        if (lhsClass.isInterface()) {
+          if (InterfaceChecker.classFullyImplementsTheInterface(rhsClass, lhsClass)) {
+            //var.setType(rhsType);
+            return;
+          }
         }
       }
 

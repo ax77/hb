@@ -44,6 +44,7 @@ public class ClassDeclaration implements Serializable, Location {
   /// if it is a class it may implements some interfaces
   ///
   private final List<InterfaceItem> interfaces;
+  private final List<ClassDeclaration> implementations;
 
   /// the class is incomplete before '}'
   /// we will use this flag to be sure that
@@ -100,6 +101,7 @@ public class ClassDeclaration implements Serializable, Location {
     this.typeSetters = new ArrayList<>();
     this.interfaces = new ArrayList<>();
     this.tests = new ArrayList<>();
+    this.implementations = new ArrayList<>();
   }
 
   private void checkTypeParameters(List<Type> typeParametersT) {
@@ -143,6 +145,14 @@ public class ClassDeclaration implements Serializable, Location {
 
   public void setComplete(boolean isComplete) {
     this.isComplete = isComplete;
+  }
+
+  public void addImpl(ClassDeclaration e) {
+    this.implementations.add(e);
+  }
+
+  public List<ClassDeclaration> getImplementations() {
+    return implementations;
   }
 
   public boolean isEqualTo(ClassDeclaration another) {

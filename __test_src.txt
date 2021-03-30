@@ -1,5 +1,3 @@
-import std.natives.string::string;
-import std.natives.arr::array;
 
 interface markable {
   void mark();
@@ -27,11 +25,10 @@ class ptr implements markable {
 
 class main_class {
   int main() {
-    //markable s = new str();
-    //markable p = new ptr();
-    //array<markable> fields = new array<markable>();
-    //fields.add(s);
-    //fields.add(p);
+    markable s = new str();
+    markable p = new ptr();
+    s.mark();
+    p.mark();
     return 0;
   }
 }

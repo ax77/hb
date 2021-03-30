@@ -2,6 +2,7 @@ package ast_main;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.UUID;
 
 import _st0_resolve.CUnitCompleteChecker;
 import _st1_templates.InstatantiationUnitBuilder;
@@ -9,6 +10,7 @@ import _st3_linearize_expr.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
 import ast_main.imports.GlobalSymtab;
 import ast_symtab.Keywords;
+import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
 import errors.AstParseException;
@@ -19,6 +21,7 @@ import tokenize.Stream;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
 import utils_oth.NullChecker;
+import utils_ser.SerializationUtils;
 
 public class ParserMain implements ParserMainApi {
 
@@ -73,9 +76,22 @@ public class ParserMain implements ParserMainApi {
 
     final CompilationUnit result = parser.parse();
     CUnitCompleteChecker.checkAllClassesAreComplete(result);
+    expandInterfaces(result);
 
     return result;
   }
+
+  /// interfaces:+
+  private void expandInterfaces(CompilationUnit result) {
+    for (ClassDeclaration c : result.getClasses()) {
+      if (!c.isInterface()) {
+        continue;
+      }
+      for (ClassDeclaration impl : c.getImplementations()) {
+      }
+    }
+  }
+  /// interfaces:-
 
   @Override
   public InstantiationUnit parseInstantiationUnit() throws IOException {

@@ -21,7 +21,7 @@ public class InstantiationUnit {
 
   public void put(ClassDeclaration e) {
     if (alreadyContains(e, classes)) {
-      //return;
+      throw new AstParseException("unexp.: " + e.getIdentifier().toString());
     }
     this.classes.add(0, e);
   }

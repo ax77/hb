@@ -19,6 +19,9 @@ public abstract class InterfaceChecker {
 
   public static boolean classFullyImplementsTheInterface(ClassDeclaration clazz, ClassDeclaration interf) {
     for (ClassMethodDeclaration m : interf.getMethods()) {
+      if (m.isGeneratedByDefault()) {
+        continue;
+      }
       ClassMethodDeclaration found = clazz.getMethodByParams(m.getIdentifier(), m.getParameters());
       if (found == null) {
         return false;
@@ -29,7 +32,7 @@ public abstract class InterfaceChecker {
 
   public static void checkImplementations(ClassDeclaration clazz) {
     if (!clazz.isClass()) {
-      throw new AstParseException("expecting class");
+      return;
     }
     if (clazz.getInterfaces().isEmpty()) {
       return;

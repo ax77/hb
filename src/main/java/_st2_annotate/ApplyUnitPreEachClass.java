@@ -51,9 +51,6 @@ public class ApplyUnitPreEachClass {
     if (object.isMainClass()) {
       return;
     }
-    if (object.isInterface()) {
-      return;
-    }
 
     if (!object.isStaticClass()) {
       for (VarDeclarator field : object.getFields()) {
@@ -63,11 +60,11 @@ public class ApplyUnitPreEachClass {
         }
       }
 
-      if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly()) {
+      if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
         throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
       }
 
-      if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly()) {
+      if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
         throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
       }
     }
@@ -104,9 +101,6 @@ public class ApplyUnitPreEachClass {
     }
     if (object.isStaticClass()) {
       //return;
-    }
-    if (object.isInterface()) {
-      return;
     }
 
     if (!object.hasPredefinedMethod(BuiltinNames.equals_ident)) {

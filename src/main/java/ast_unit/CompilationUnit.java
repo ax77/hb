@@ -20,14 +20,14 @@ public class CompilationUnit {
 
   public void putClazz(ClassDeclaration clazz) {
     if (alreadyContains(clazz, classes)) {
-      return;
+      throw new AstParseException("unexp.: " + clazz.getIdentifier().toString());
     }
     this.classes.add(clazz);
   }
 
   public void putTemplate(ClassDeclaration clazz) {
     if (alreadyContains(clazz, templates)) {
-      return;
+      throw new AstParseException("unexp.: " + clazz.getIdentifier().toString());
     }
     this.templates.add(clazz);
   }

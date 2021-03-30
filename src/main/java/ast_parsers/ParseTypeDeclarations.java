@@ -167,6 +167,7 @@ public class ParseTypeDeclarations {
 
   private void putOneInterface(ClassDeclaration clazz) {
     final Type tp = new ParseType(parser).getType();
+    tp.getClassTypeFromRef().addImpl(clazz);
     final InterfaceItem item = new InterfaceItem(tp);
     clazz.addInterfaceToImplements(item);
   }
