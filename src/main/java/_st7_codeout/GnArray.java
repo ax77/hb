@@ -149,6 +149,12 @@ public abstract class GnArray {
       line("}\n");
     }
 
+    else if (signToStringCall.startsWith("array_equals_")) {
+      line(methodCallsHeader);
+      line("    assert(__this);");
+      line("}\n");
+    }
+
     else {
       if (method.isTest()) {
         line(methodCallsHeader);

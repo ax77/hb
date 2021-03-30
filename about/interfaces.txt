@@ -1,0 +1,43 @@
+
+
+struct markable_type {
+	struct type *object;
+	void (*mark)(struct type* __this);
+};
+
+void markable_type_init(struct markable_type * __this, struct markable_type *object) {
+	__this->object = object;
+	__this->mark = &markable_type_mark;
+}
+
+struct markable_str {
+	struct str *object;
+	void (*mark)(struct str* __this);
+};
+
+void markable_str_init(struct markable_str * __this, struct markable_str *object) {
+	__this->object = object;
+	__this->mark = &markable_str_mark;
+}
+
+
+struct markable {
+	int td;
+	union {
+		struct markable_str *str;
+		struct markable_type *type;
+	};
+};
+
+void markable_init_str(struct markable* __this, struct markable_str *str) {
+	__this->td = td_str;
+	__this->str = str;
+}
+
+void markable_init_type(struct markable* __this, struct markable_type *str) {
+	__this->td = td_type;
+	__this->type = type;
+}
+
+
+

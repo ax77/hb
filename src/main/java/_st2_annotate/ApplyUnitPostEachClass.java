@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ast_class.ClassDeclaration;
+import ast_class.InterfaceChecker;
 import ast_expr.ExprAssign;
 import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
@@ -33,6 +34,7 @@ public class ApplyUnitPostEachClass {
       if (c.isInterface()) {
         continue;
       }
+      InterfaceChecker.checkImplementations(c);
       applyMethodsSpecial(c);
       checkAllFieldsAreInitialized(c);
     }

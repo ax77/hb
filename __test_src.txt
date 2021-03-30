@@ -1,70 +1,55 @@
-/// assertion fail: (__test_src.txt:5) : [1 == 2]
-/// 
-/// The call-stack: 
-///   main_class.main::stub.b:25
-///   stub.b::ref.test__:16
-///   ref.test__::assert_true:5
-
 import std.natives.string::string;
+import std.natives.arr::array;
 
-class ref {
-  int i;
-  ref(){i=0;}
-  void test__(){
-    assert_true(1==1-0);
+interface markable {
+  void mark();
+}
+
+class str implements markable {
+  boolean is_marked;
+  str() {
+    this.is_marked = false;
   }
-  int xxx(){
-    return 0;
+  void mark() {
+    this.is_marked = true;
   }
 }
 
-class stub {
-  int ref_count;
-  ref r;
-  stub(){ref_count=1;r=new ref();}
-  
-  void a(){}
-  void b(){
-    int a = r.xxx();
-    r.test__();
+class ptr implements markable {
+  boolean is_marked;
+  ptr() {
+    this.is_marked = false;
+  }
+  void mark() {
+    this.is_marked = true;
   }
 }
 
 class main_class {
   int main() {
-    stub s = new stub();
-    stub a = s;
-    a.a();
-    s.b();
-    
-    string str1 = "1.";
-    string str2 = "1.";
-    assert_true(str1 == str2);
-    
-    string str3 = """
-      this one will be a very large string,
-      but not so long, only to check the
-      code generation output, what will it be 
-      as a label???
-    """;
-    
-    string str4 = """
-      this one will be a very large string,
-      but not so long, only to check the
-      code generation output, what will it be 
-      as a label???
-    """;
-    
-    string str5 = """
-      this one will be a very large string,
-      but not so long, only to check the
-      code generation output, what will it be 
-      as a label??? .
-    """;
-    
-    assert_true(str3 == str4);
-    assert_true(str3 != str5);
-    
+    //markable s = new str();
+    //markable p = new ptr();
+    //array<markable> fields = new array<markable>();
+    //fields.add(s);
+    //fields.add(p);
     return 0;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

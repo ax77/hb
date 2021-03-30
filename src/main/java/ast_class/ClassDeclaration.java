@@ -327,10 +327,36 @@ public class ClassDeclaration implements Serializable, Location {
     return true;
   }
 
+  private boolean isCompatibleByParameters(ClassMethodDeclaration method, List<VarDeclarator> parameters) {
+    List<VarDeclarator> formalParameters = method.getParameters();
+    if (formalParameters.size() != parameters.size()) {
+      return false;
+    }
+    for (int i = 0; i < formalParameters.size(); i++) {
+      Type tp1 = formalParameters.get(i).getType();
+      Type tp2 = parameters.get(i).getType();
+      if (!tp1.isEqualTo(tp2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public ClassMethodDeclaration getMethod(Ident name, List<ExprExpression> arguments) {
     for (ClassMethodDeclaration method : methods) {
       if (method.getIdentifier().equals(name)) {
         if (isCompatibleByArguments(method, arguments)) {
+          return method;
+        }
+      }
+    }
+    return null;
+  }
+
+  public ClassMethodDeclaration getMethodByParams(Ident name, List<VarDeclarator> parameters) {
+    for (ClassMethodDeclaration method : methods) {
+      if (method.getIdentifier().equals(name)) {
+        if (isCompatibleByParameters(method, parameters)) {
           return method;
         }
       }
