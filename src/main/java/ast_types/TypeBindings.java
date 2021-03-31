@@ -28,6 +28,30 @@ public abstract class TypeBindings {
     BIND_PRIMITIVE_TO_STRING.put(TypeBase.TP_boolean, "boolean");
   }
 
+  public static int getResultForTypeTraits(Ident typeTraitsId, Type tp) {
+
+    //@formatter:off
+    
+    if (typeTraitsId.equals(Keywords.is_void_ident))       { if (tp.isVoid()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_boolean_ident))    { if (tp.isBoolean()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_char_ident))       { if (tp.isChar()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_short_ident))      { if (tp.isShort()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_int_ident))        { if (tp.isInt()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_long_ident))       { if (tp.isLong()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_float_ident))      { if (tp.isFloat()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_double_ident))     { if (tp.isDouble()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_integral_ident))   { if (tp.isInteger()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_floating_ident))   { if (tp.isFloating()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_class_ident))      { if (tp.isClass()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_primitive_ident))  { if (tp.isPrimitive()) { return 1; } return 0; }
+    if (typeTraitsId.equals(Keywords.is_arithmetic_ident)) { if (tp.isNumeric()) { return 1; } return 0; } // TODO:rename
+    if (typeTraitsId.equals(Keywords.is_reference_ident))  { if (tp.isClass()) { return 1; } return 0; } // TODO:class+enum+interface
+    
+    //@formatter:on
+
+    return -1;
+  }
+
   public static Type make_char() {
     return new Type(TP_char);
   }

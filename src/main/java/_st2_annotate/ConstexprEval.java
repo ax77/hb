@@ -1,13 +1,16 @@
 package _st2_annotate;
 
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprExpression;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_types.Type;
+import ast_types.TypeBindings;
 import errors.ErrorLocation;
 import literals.IntLiteral;
+import tokenize.Ident;
 import tokenize.T;
 
 public abstract class ConstexprEval {
@@ -145,6 +148,25 @@ public abstract class ConstexprEval {
         ErrorLocation.errorExpression("expect integer: " + number.toString(), e);
       }
       return number.getInteger();
+    }
+
+    if (base == ExpressionBase.EBUILTIN_FUNC) {
+      ExprBuiltinFunc fn = e.getExprBuiltinFunc();
+      Ident name = fn.getName();
+      ExprExpression arg = fn.getArgs().get(0);
+      Type tp = arg.getResultType();
+
+      if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+        int res = TypeBindings.getResultForTypeTraits(name, tp);
+        if (res == -1) {
+          ErrorLocation.errorExpression("not a constant expression ", e);
+        }
+        return res;
+      }
+
+      else {
+        ErrorLocation.errorExpression("not a constant expression ", e);
+      }
     }
 
     ErrorLocation.errorExpression("not a constant expression ", e);

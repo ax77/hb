@@ -104,13 +104,37 @@ public class ApplyExpression {
       applyExpression(object, arg);
     }
 
+    if (node.getArgs().isEmpty()) {
+      ErrorLocation.errorExpression("empty args: " + name.toString(), e);
+    }
+
+    final ExprExpression firstArg = node.getArgs().get(0);
+
     if (name.equals(Keywords.assert_true_ident)) {
       /// void assert_true(int cnd, const char *file, int line, const char *expr)
       if (node.getArgs().size() != 1) {
         ErrorLocation.errorExpression("assert_true expects one argument", e);
       }
-      checkIsBoolean(node.getArgs().get(0));
+      checkIsBoolean(firstArg);
       e.setResultType(voidType);
+    }
+
+    else if (name.equals(Keywords.static_assert_ident)) {
+      if (node.getArgs().size() != 1) {
+        ErrorLocation.errorExpression("static_assert expects one argument", e);
+      }
+      long res = ConstexprEval.ce(firstArg);
+      if (res == 0) {
+        ErrorLocation.errorExpression("static_assert fails: ", firstArg);
+      }
+      e.setResultType(voidType);
+    }
+
+    else if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+      if (node.getArgs().size() != 1) {
+        ErrorLocation.errorExpression(name.toString() + " expects one argument", e);
+      }
+      e.setResultType(TypeBindings.make_boolean());
     }
 
     else {

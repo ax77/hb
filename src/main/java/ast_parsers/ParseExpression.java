@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import _st2_annotate.ExprUtil;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
@@ -63,7 +64,6 @@ import parse.ParseState;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
-import utils_oth.Normalizer;
 
 public class ParseExpression {
   private final Parse parser;
@@ -556,7 +556,11 @@ public class ParseExpression {
     }
 
     // assert_true(something)
-    if (parser.is(Keywords.assert_true_ident)) {
+    // static_assert(something)
+    // is_int(something)
+
+    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
+        || ExprUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
       return parseAssertTrue();
     }
 
@@ -605,7 +609,7 @@ public class ParseExpression {
 
     final List<ExprExpression> args = parseArglist();
     if (args.size() != 1) {
-      parser.perror("assert_true(condition) expecting one argument");
+      parser.perror(beginPos.getValue() + "(condition) expecting one argument");
     }
 
     final String file = beginPos.getLocation().getFilename();

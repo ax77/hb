@@ -14,6 +14,7 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
+import _st2_annotate.ExprUtil;
 import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
@@ -566,6 +567,29 @@ public class RewriterExpr {
 
         IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());
         genRaw(new FlatCodeItem(intrinsicText));
+
+      }
+
+      else if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+        final Type tp = args.get(0).getType();
+        final int res = TypeBindings.getResultForTypeTraits(name, tp);
+        if (res == -1) {
+          ErrorLocation.errorExpression("not a type-traits expression ", e);
+        }
+
+        final boolean result = (res == 0) ? false : true;
+        if (result) {
+          AssignVarTrue trueNode = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+          FlatCodeItem item = new FlatCodeItem(trueNode);
+          genRaw(item);
+        } else {
+          AssignVarFalse falseNode = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+          FlatCodeItem item = new FlatCodeItem(falseNode);
+          genRaw(item);
+        }
+      }
+
+      else if (name.equals(Keywords.static_assert_ident)) {
 
       }
 

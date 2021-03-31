@@ -1,34 +1,23 @@
 
-interface markable {
-  void mark();
-}
-
-class str implements markable {
-  boolean is_marked;
-  str() {
-    this.is_marked = false;
-  }
-  void mark() {
-    this.is_marked = true;
-  }
-}
-
-class ptr implements markable {
-  boolean is_marked;
-  ptr() {
-    this.is_marked = false;
-  }
-  void mark() {
-    this.is_marked = true;
-  }
+class opts {
+  int i;
+  opts() { i=0; }
 }
 
 class main_class {
-  int main() {
-    markable s = new str();
-    markable p = new ptr();
-    s.mark();
-    p.mark();
+  int main(int argc) {
+    int i = 0;
+    opts o = new opts();
+    boolean b = true;
+    
+    static_assert( is_int(i) );
+    static_assert( is_int(1) );
+    static_assert( is_int(argc) );
+    static_assert( is_char('1') );
+    
+    static_assert( is_reference(o) );
+    static_assert( is_boolean(b) );
+    
     return 0;
   }
 }
