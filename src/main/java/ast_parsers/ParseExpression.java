@@ -560,8 +560,14 @@ public class ParseExpression {
     // is_int(something)
 
     if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
-        || ExprUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
-      return parseAssertTrue();
+        || parser.is(Keywords.types_are_same_ident) || ExprUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
+
+      int argcExpected = 1;
+      if (parser.is(Keywords.types_are_same_ident)) {
+        argcExpected = 2;
+      }
+
+      return parseBuiltinFunc(argcExpected);
     }
 
     if (parser.is(Keywords.this_ident)) {
@@ -604,12 +610,12 @@ public class ParseExpression {
   /// assert_true(arg == 1, file="C:/prj/main.hb", line=15, expr="arg == 1")
   /// void assert_true(int cnd, const char *file, int line, const char *expr)
   ///
-  private ExprExpression parseAssertTrue() {
+  private ExprExpression parseBuiltinFunc(int argcExpected) {
     final Token beginPos = parser.moveget();
 
     final List<ExprExpression> args = parseArglist();
-    if (args.size() != 1) {
-      parser.perror(beginPos.getValue() + "(condition) expecting one argument");
+    if (args.size() != argcExpected) {
+      parser.perror(beginPos.getValue() + "() expecting " + String.format("%d", argcExpected) + " argument(s)");
     }
 
     final String file = beginPos.getLocation().getFilename();

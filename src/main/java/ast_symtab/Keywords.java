@@ -88,7 +88,7 @@ public final class Keywords {
   public static final Ident is_reference_ident   = g("is_reference");
   //public static final Ident is_signed_ident      = g("is_signed");
   //public static final Ident is_unsigned_ident    = g("is_unsigned");
-  public static final Ident is_same_ident        = g("is_same");
+  public static final Ident types_are_same_ident = g("types_are_same");
   
   //@formatter:on
 

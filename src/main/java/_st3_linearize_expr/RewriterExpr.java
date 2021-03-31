@@ -593,6 +593,19 @@ public class RewriterExpr {
 
       }
 
+      else if (name.equals(Keywords.types_are_same_ident)) {
+        final boolean result = args.get(0).getType().isEqualTo(args.get(1).getType());
+        if (result) {
+          AssignVarTrue trueNode = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+          FlatCodeItem item = new FlatCodeItem(trueNode);
+          genRaw(item);
+        } else {
+          AssignVarFalse falseNode = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+          FlatCodeItem item = new FlatCodeItem(falseNode);
+          genRaw(item);
+        }
+      }
+
       else {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }

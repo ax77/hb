@@ -1,11 +1,14 @@
 package _st2_annotate;
 
+import java.util.List;
+
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprExpression;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
+import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.ErrorLocation;
@@ -151,10 +154,12 @@ public abstract class ConstexprEval {
     }
 
     if (base == ExpressionBase.EBUILTIN_FUNC) {
-      ExprBuiltinFunc fn = e.getExprBuiltinFunc();
-      Ident name = fn.getName();
-      ExprExpression arg = fn.getArgs().get(0);
-      Type tp = arg.getResultType();
+      final ExprBuiltinFunc fn = e.getExprBuiltinFunc();
+      final Ident name = fn.getName();
+      final List<ExprExpression> args = fn.getArgs();
+
+      final ExprExpression arg = args.get(0);
+      final Type tp = arg.getResultType();
 
       if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
         int res = TypeBindings.getResultForTypeTraits(name, tp);
@@ -162,6 +167,15 @@ public abstract class ConstexprEval {
           ErrorLocation.errorExpression("not a constant expression ", e);
         }
         return res;
+      }
+
+      else if (name.equals(Keywords.types_are_same_ident)) {
+        final Type lhsType = args.get(0).getResultType();
+        final Type rhsType = args.get(1).getResultType();
+        if (lhsType.isEqualTo(rhsType)) {
+          return 1;
+        }
+        return 0;
       }
 
       else {

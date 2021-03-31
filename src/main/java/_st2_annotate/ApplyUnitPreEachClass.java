@@ -15,7 +15,6 @@ import ast_stmt.StmtBlock;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
-import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;

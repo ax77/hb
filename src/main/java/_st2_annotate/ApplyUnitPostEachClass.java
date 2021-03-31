@@ -56,6 +56,9 @@ public class ApplyUnitPostEachClass {
         if (expr.is(ExpressionBase.EMETHOD_INVOCATION)) {
           continue; // not a var :)
         }
+        if (expr.is(ExpressionBase.EBUILTIN_FUNC)) {
+          continue;
+        }
 
         final VarDeclarator dest = getDest(expr);
         if (dest == null) {

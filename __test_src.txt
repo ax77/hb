@@ -1,22 +1,20 @@
 
-class opts {
-  int i;
-  opts() { i=0; }
+class opts<T> {
+  T data;
+  opts(T data) { 
+    static_assert(is_char(data));
+    this.data = data; 
+  }
 }
 
 class main_class {
   int main(int argc) {
-    int i = 0;
-    opts o = new opts();
-    boolean b = true;
+    int a = 0;
+    int b = 1;
+    char c = '1';
     
-    static_assert( is_int(i) );
-    static_assert( is_int(1) );
-    static_assert( is_int(argc) );
-    static_assert( is_char('1') );
-    
-    static_assert( is_reference(o) );
-    static_assert( is_boolean(b) );
+    static_assert( types_are_same(a, b) );
+    static_assert( !types_are_same(a, c) );
     
     return 0;
   }

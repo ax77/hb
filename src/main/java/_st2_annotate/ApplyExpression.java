@@ -130,6 +130,13 @@ public class ApplyExpression {
       e.setResultType(voidType);
     }
 
+    else if (name.equals(Keywords.types_are_same_ident)) {
+      if (node.getArgs().size() != 2) {
+        ErrorLocation.errorExpression("types_are_equal expects two arguments", e);
+      }
+      e.setResultType(TypeBindings.make_boolean());
+    }
+
     else if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
       if (node.getArgs().size() != 1) {
         ErrorLocation.errorExpression(name.toString() + " expects one argument", e);
