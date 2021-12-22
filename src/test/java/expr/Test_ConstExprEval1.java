@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import _st2_annotate.ConstexprEval;
@@ -17,6 +18,7 @@ import parse.Parse;
 
 public class Test_ConstExprEval1 {
 
+  @Ignore
   @Test
   public void ceEval() throws IOException {
     Map<String, Integer> toeval = new HashMap<String, Integer>();

@@ -17,7 +17,7 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    InstantiationUnit unit = new ParserMain(dir + "/__test_src.txt").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain(dir + "/tests/imports2/main.hb").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
        // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

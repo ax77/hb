@@ -21,7 +21,9 @@ import errors.AstParseException;
 import hashed.Hash_ident;
 import parse.Parse;
 import parse.Tokenlist;
+import tokenize.Env;
 import tokenize.Stream;
+import tokenize.Token;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
 import utils_oth.Normalizer;
@@ -71,47 +73,129 @@ public class ParserMain implements ParserMainApi {
     return found.trim() + ".hb";
   }
 
-  private void prepareImportsDirty(String filename, Set<String> imports, Set<String> importsOrig) throws IOException {
+  class ImportsFound {
+    final Set<String> result;
+    final Set<String> importsNames;
 
-    if (imports.contains(filename)) {
-      return;
+    public ImportsFound() {
+      this.result = new HashSet<>();
+      this.importsNames = new HashSet<>();
     }
-    imports.add(filename);
 
-    Stream s = new Stream(filename, new FileWrapper(filename).readToString(FileReadKind.APPEND_LF));
-    Parse p = new Parse(new Tokenlist(s.getTokenlist()));
+    public Set<String> getResult() {
+      return result;
+    }
 
-    Set<String> localimports = new HashSet<>();
+    public Set<String> getImportsNames() {
+      return importsNames;
+    }
 
-    while (!p.isEof()) {
-      if (p.is(Keywords.import_ident)) {
-        String importname = ParsePackageName.parse(p, Keywords.import_ident);
-        localimports.add(importname);
-        importsOrig.add(importname);
-      } else {
-        p.move();
+    public void addFullpath(String fullpath) {
+      this.result.add(fullpath);
+    }
+
+    public void addImportName(String name) {
+      this.importsNames.add(name);
+    }
+
+  }
+
+  private ImportsFound prepareImportsDirty(String firstFile) throws IOException {
+
+    final ImportsFound result = new ImportsFound();
+
+    // without normalizations there may be possible
+    // duplication if the path was given with straight or reverse slash /\
+    // main/folder/file.hb and main\folder\file.hb
+    firstFile = Normalizer.normalize(firstFile).trim();
+
+    final LinkedList<String> stack = new LinkedList<String>();
+    stack.add(firstFile);
+
+    // imports we've already parsed
+    final Set<String> processed = new HashSet<>();
+
+    while (!stack.isEmpty()) {
+      String curfile = stack.removeFirst();
+
+      // we've already been read the full content
+      // of the given file, parse that file, and 
+      // extract all the imports from it.
+      // it may happen - if we imported the same file
+      // from many different places, a common practice.
+      // for example: you import array.hb file 100 times per-project :)
+      if (processed.contains(curfile)) {
+        continue;
+      }
+      processed.add(curfile);
+
+      final String content = new FileWrapper(curfile).readToString(FileReadKind.APPEND_LF);
+      final Stream stream = new Stream(curfile, content);
+      final Parse parser = new Parse(new Tokenlist(stream.getTokenlist()));
+      final Set<String> importsFromTheFile = new HashSet<>();
+
+      while (!parser.isEof()) {
+        if (parser.is(Keywords.import_ident)) {
+          String importname = ParsePackageName.parse(parser, Keywords.import_ident);
+          importsFromTheFile.add(importname);
+        } else {
+          parser.move();
+        }
+      }
+
+      for (String originalImportName : importsFromTheFile) {
+        String fullpath = getFullFilenameFromImport(originalImportName);
+        stack.addLast(fullpath);
+
+        result.addFullpath(fullpath);
+        result.addImportName(originalImportName);
+      }
+
+    }
+
+    return result;
+
+  }
+
+  private void removeEOF(List<Token> tokenlist) {
+    if (!tokenlist.isEmpty()) {
+      final int lastIdx = tokenlist.size() - 1;
+      if (tokenlist.get(lastIdx).typeIsSpecialStreamMarks()) {
+        tokenlist.remove(lastIdx);
       }
     }
-
-    for (String path : localimports) {
-      String fullpath = getFullFilenameFromImport(path);
-      prepareImportsDirty(fullpath, imports, importsOrig);
-    }
-
   }
 
-  private String prepareTypesDirty(Set<String> imports, Set<String> importsOrig) throws IOException {
-    StringBuilder result = new StringBuilder();
-    for (String s : importsOrig) {
-      result.append("import ");
-      result.append(s);
-      result.append(";\n");
+  private List<Token> prepareTypesDirty(String path) throws IOException {
+
+    final ImportsFound result = prepareImportsDirty(path);
+
+    StringBuilder sb = new StringBuilder();
+    for (String s : result.getImportsNames()) {
+      sb.append("import ");
+      sb.append(s);
+      sb.append(";\n");
     }
-    for (String s : imports) {
-      result.append(new FileWrapper(s).readToString(FileReadKind.APPEND_LF));
+
+    List<Token> tokens = new ArrayList<Token>();
+
+    final List<Token> forwardImportTokens = new Stream("builtin", sb.toString()).getTokenlist();
+    removeEOF(forwardImportTokens);
+    tokens.addAll(forwardImportTokens);
+
+    for (String s : result.getResult()) {
+      String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF).trim();
+      final Stream stream = new Stream(s, content);
+
+      final List<Token> tokenlist = stream.getTokenlist();
+      removeEOF(tokenlist);
+      tokens.addAll(tokenlist);
     }
-    return result.toString();
+
+    tokens.add(Env.EOF_TOKEN_ENTRY);
+    return tokens;
   }
+
   /////////////
 
   @Override
@@ -119,36 +203,12 @@ public class ParserMain implements ParserMainApi {
     clearAllHashedTemps();
     initIdents();
 
-    //// without any imports it is looks like this:
-    ////
-    // final FileWrapper fw = new FileWrapper(filename);
-    // fw.assertIsExists();
-    // fw.assertIsFile();
-    // 
-    // final Stream s = new Stream(filename, fw.readToString(FileReadKind.APPEND_LF));
-    // return new Parse(new Tokenlist(s.getTokenlist()));
-
     // let's do this again in a dirty way: like C-preprocessor pasting...
     // idn how to solve this properly now, but I need these imports...
     // it works really weird, because our source-location is LOST, etc.
     // but it works fine by now.
-    Set<String> imports = new HashSet<>();
-    Set<String> importsOrig = new HashSet<>();
-    prepareImportsDirty(filename, imports, importsOrig);
-    final String content = prepareTypesDirty(imports, importsOrig);
-    //System.out.println(content);
-
-    final Stream s = new Stream("<string-source>", content);
-    return new Parse(new Tokenlist(s.getTokenlist()));
-
-    // TODO:
-    //    if (isFromFile) {
-    //      final Stream s = new Stream(filename, new FileWrapper(filename).readToString(FileReadKind.APPEND_LF));
-    //      return new Parse(new Tokenlist(s.getTokenlist()));
-    //    }
-    //
-    //    final Stream s = new Stream("<string-source>", sb.toString());
-    //    return new Parse(new Tokenlist(s.getTokenlist()));
+    final List<Token> tokens = prepareTypesDirty(filename);
+    return new Parse(new Tokenlist(tokens));
 
   }
 
