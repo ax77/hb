@@ -99,7 +99,7 @@ public class ApplyUnitPreEachClass {
       //return;
     }
     if (object.isStaticClass()) {
-      //return;
+      return;
     }
 
     if (!object.hasPredefinedMethod(BuiltinNames.equals_ident)) {

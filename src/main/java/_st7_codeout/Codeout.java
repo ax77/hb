@@ -72,7 +72,7 @@ public class Codeout {
   }
 
   private String includes() {
-    return GenRT.prebuf();
+    return GnRuntime.prebuf();
   }
 
   private void lineBuiltin(String s) {

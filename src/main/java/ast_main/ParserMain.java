@@ -108,6 +108,7 @@ public class ParserMain implements ParserMainApi {
     // duplication if the path was given with straight or reverse slash /\
     // main/folder/file.hb and main\folder\file.hb
     firstFile = Normalizer.normalize(firstFile).trim();
+    result.addFullpath(firstFile); // it's important not to forget this very file :)
 
     final LinkedList<String> stack = new LinkedList<String>();
     stack.add(firstFile);
@@ -208,6 +209,17 @@ public class ParserMain implements ParserMainApi {
     // it works really weird, because our source-location is LOST, etc.
     // but it works fine by now.
     final List<Token> tokens = prepareTypesDirty(filename);
+
+    for (Token tok : tokens) {
+      if (tok.hasLeadingWhitespace()) {
+        System.out.printf("%s", " ");
+      }
+      System.out.printf("%s", tok.getValue());
+      if (tok.isNewLine()) {
+        System.out.println();
+      }
+    }
+
     return new Parse(new Tokenlist(tokens));
 
   }

@@ -4,6 +4,7 @@ import _st4_linearize_stmt.RewriterStmt;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_unit.InstantiationUnit;
+import errors.AstParseException;
 
 public abstract class CodeoutBuilder {
 
@@ -35,6 +36,14 @@ public abstract class CodeoutBuilder {
     for (ClassMethodDeclaration method : c.getTests()) {
       RewriterStmt rw = new RewriterStmt(method);
       result.add(new Function(method, rw.getResult()));
+    }
+
+    // TODO:static_semantic
+    if (c.getDestructor() == null) {
+      if (!c.isStaticClass()) {
+        throw new AstParseException("something wrong. destructor is missing.");
+      }
+      return;
     }
 
     RewriterStmt rw = new RewriterStmt(c.getDestructor());

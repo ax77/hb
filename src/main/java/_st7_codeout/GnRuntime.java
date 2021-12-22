@@ -1,6 +1,6 @@
 package _st7_codeout;
 
-public abstract class GenRT {
+public abstract class GnRuntime {
 
   public static String prebuf() {
 
