@@ -185,7 +185,7 @@ public class ParserMain implements ParserMainApi {
     tokens.addAll(forwardImportTokens);
 
     for (String s : result.getResult()) {
-      String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF).trim();
+      String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF);
       final Stream stream = new Stream(s, content);
 
       final List<Token> tokenlist = stream.getTokenlist();
@@ -210,15 +210,15 @@ public class ParserMain implements ParserMainApi {
     // but it works fine by now.
     final List<Token> tokens = prepareTypesDirty(filename);
 
-    for (Token tok : tokens) {
-      if (tok.hasLeadingWhitespace()) {
-        System.out.printf("%s", " ");
-      }
-      System.out.printf("%s", tok.getValue());
-      if (tok.isNewLine()) {
-        System.out.println();
-      }
-    }
+    /////// for (Token tok : tokens) {
+    ///////   if (tok.hasLeadingWhitespace()) {
+    ///////     System.out.printf("%s", " ");
+    ///////   }
+    ///////   System.out.printf("%s", tok.getValue());
+    ///////   if (tok.isNewLine()) {
+    ///////     System.out.println();
+    ///////   }
+    /////// }
 
     return new Parse(new Tokenlist(tokens));
 

@@ -25,7 +25,7 @@ public class Ternary {
 
   @Override
   public String toString() {
-    return "?(" + condition.toString() + ", " + trueResult.toString() + ", " + falseResult.toString() + ")";
+    return "((" + condition.toString() + ") ? (" + trueResult.toString() + ") : (" + falseResult.toString() + "))";
   }
 
 }
