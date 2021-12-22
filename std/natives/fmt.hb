@@ -1,5 +1,5 @@
-import std.natives.arr;
-import std.natives.string;
+import std.natives.arr::array;
+import std.natives.string::string;
 
 static class fmt {
   native void print(array<char> arr);

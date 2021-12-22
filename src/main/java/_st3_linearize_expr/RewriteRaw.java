@@ -114,18 +114,14 @@ public class RewriteRaw {
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         final String sign = rvalue.getMethod().signToStringCallPushF();
 
-        rv.add(makeCallListenerWithDest(beforeCallIdent(), flatCallConstructor.getThisVar(), sign));
         rv.add(new FlatCodeItem(flatCallConstructor));
-        rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
 
       }
 
       else if (item.isAssignVarFlatCallResult()) {
         final String sign = item.getAssignVarFlatCallResult().getRvalue().getMethod().signToStringCallPushF();
 
-        rv.add(makeCallListenerWithDest(beforeCallIdent(), item.getDest(), sign));
         rv.add(item);
-        rv.add(makeCallListenerWithDest(afterCallIdent(), item.getDest(), sign));
       }
 
       else if (item.isAssignVarNull()) {
@@ -151,9 +147,7 @@ public class RewriteRaw {
       else if (item.isFlatCallVoid()) {
         final String sign = item.getFlatCallVoid().getMethod().signToStringCallPushF();
 
-        rv.add(makeCallListenerVoid(beforeCallIdent(), sign));
         rv.add(item);
-        rv.add(makeCallListenerVoid(afterCallIdent(), sign));
       }
 
       else if (item.isStoreFieldVar()) {
@@ -193,13 +187,11 @@ public class RewriteRaw {
 
       else if (item.isIntrinsicText()) {
         if (item.getIntrinsicText().getText().startsWith("assert_true")) {
-          rv.add(makeCallListenerVoid(beforeCallIdent(), "assert_true"));
         }
 
         rv.add(item);
 
         if (item.getIntrinsicText().getText().startsWith("assert_true")) {
-          rv.add(makeCallListenerVoid(afterCallIdent(), "assert_true"));
         }
       }
 
@@ -283,26 +275,6 @@ public class RewriteRaw {
       final AssignVarUnop notEq = new AssignVarUnop(assignVarBinop.getLvalue(), unop);
       rv.add(new FlatCodeItem(notEq));
     }
-  }
-
-  private Ident beforeCallIdent() {
-    return Hash_ident.getHashedIdent("__before_call");
-  }
-
-  private Ident afterCallIdent() {
-    return Hash_ident.getHashedIdent("__after_call");
-  }
-
-  private FlatCodeItem makeCallListenerVoid(Ident listenerName, String methodPureName) {
-    final String namef = labelName(method.signToStringCallPushF() + "::" + methodPureName);
-    CallListenerVoidMethod txt = new CallListenerVoidMethod(listenerName, namef, location.getLine());
-    return new FlatCodeItem(txt);
-  }
-
-  private FlatCodeItem makeCallListenerWithDest(Ident listenerName, Var dest, String methodPureName) {
-    final String namef = labelName(method.signToStringCallPushF() + "::" + methodPureName);
-    CallListenerResultMethod txt = new CallListenerResultMethod(dest, listenerName, namef, location.getLine());
-    return new FlatCodeItem(txt);
   }
 
   private FlatCodeItem genAssert(Var v) {

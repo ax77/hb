@@ -7,22 +7,15 @@ import static tokenize.T.T_SEMI_COLON;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ast_class.ClassDeclaration;
-import ast_main.imports.GlobalSymtab;
-import ast_main.imports.ImportEntry;
 import ast_parsers.ParseTypeDeclarations;
 import ast_unit.CompilationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
-import tokenize.Stream;
 import tokenize.T;
 import tokenize.Token;
-import utils_fio.FileReadKind;
-import utils_fio.FileWrapper;
 
 public class Parse {
 
@@ -338,32 +331,7 @@ public class Parse {
       new ParseTypeDeclarations(this).parse(unit);
     }
 
-    fixupImports(unit);
     return unit;
-  }
-
-  private void fixupImports(final CompilationUnit unit) throws IOException {
-    Set<String> paths = new HashSet<>();
-    for (ImportEntry e : GlobalSymtab.imports) {
-      Ident classname = e.getClassname();
-      ClassDeclaration clazz = GlobalSymtab.referenceTypes.get(classname);
-      if (clazz.isComplete()) {
-        continue;
-      }
-      paths.add(e.getFullname());
-    }
-    for (String path : paths) {
-      final String source = new FileWrapper(path).readToString(FileReadKind.APPEND_LF);
-      final Stream nestedStream = new Stream(path, source);
-      final Parse nestedParser = new Parse(new Tokenlist(nestedStream.getTokenlist()));
-      final CompilationUnit nestedUnit = nestedParser.parse();
-      for (ClassDeclaration clazz : nestedUnit.getClasses()) {
-        unit.putClazz(clazz);
-      }
-      for (ClassDeclaration clazz : nestedUnit.getTemplates()) {
-        unit.putTemplate(clazz);
-      }
-    }
   }
 
 }

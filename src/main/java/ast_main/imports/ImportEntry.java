@@ -23,7 +23,7 @@ public class ImportEntry {
 
   private String getFullFilenameFromImport(String input) {
     if (!input.contains("::")) {
-      throw new AstParseException("import name is incorrect");
+      throw new AstParseException("import name is incorrect: " + input);
     }
 
     final String dir = System.getProperty("user.dir");

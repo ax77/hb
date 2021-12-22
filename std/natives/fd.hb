@@ -1,4 +1,4 @@
-import std.natives.arr;
+import std.natives.arr::array;
 
 static class fd 
 {

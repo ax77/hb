@@ -1,20 +1,22 @@
-
-class opts<T> {
-  T data;
-  opts(T data) { 
-    static_assert(is_char(data));
-    this.data = data; 
-  }
-}
+import tests.imports.test1::class1;
+import tests.imports.test_imports::xxxxx;
+import std.natives.string::string;
+import std.natives.arr::array;
+import std.natives.fmt::fmt;
+import std.natives.opt::opt;
 
 class main_class {
   int main(int argc) {
-    int a = 0;
-    int b = 1;
-    char c = '1';
+    array<char> arr = new array<char>();
+    string s = "123";
+    array<string> args = new array<string>();
+    args.add(s);
+    fmt.print(args.get(0)); 
     
-    static_assert( types_are_same(a, b) );
-    static_assert( !types_are_same(a, c) );
+    opt<string> op = new opt<string>();
+    if(op.is_some()) {}
+    
+    opt<array<class1>> op2 = new opt<array<class1>>();
     
     return 0;
   }

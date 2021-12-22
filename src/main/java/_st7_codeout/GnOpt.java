@@ -103,6 +103,12 @@ public abstract class GnOpt {
       line("}\n");
     }
 
+    else if (signToStringCall.startsWith("opt_equals_")) {
+      line(methodCallsHeader);
+      line("    assert(__this);");
+      line("}\n");
+    }
+
     else {
       throw new AstParseException("unimplemented opt method: " + method.getIdentifier().toString());
     }
