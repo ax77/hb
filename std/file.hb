@@ -1,4 +1,4 @@
-import std.natives.fd;
+import std.natives.fd::fd;
 
 class file {
 

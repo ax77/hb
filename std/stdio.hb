@@ -1,6 +1,6 @@
-import std.natives.string;
-import std.natives.arr;
-import std.file;
+import std.natives.string::string;
+import std.natives.arr::array;
+import std.file::file;
 
 static class stdio 
 {
