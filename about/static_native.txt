@@ -1,0 +1,9 @@
+
+The main difference between static and native classes is:
+  1) we may create a native class by using 'new' expression
+  2) we cannot instantiate a static class
+  3) static class has no constructors/destructors/default methods
+  4) we do not generate c-structs for static classes
+  5) we DO generate c-structs for native classes, and we must know exactly what we do
+  
+

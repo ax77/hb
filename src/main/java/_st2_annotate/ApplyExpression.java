@@ -137,7 +137,7 @@ public class ApplyExpression {
       e.setResultType(TypeBindings.make_boolean());
     }
 
-    else if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+    else if (TypeTraitsUtil.isBuiltinTypeTraitsIdent(name)) {
       if (node.getArgs().size() != 1) {
         ErrorLocation.errorExpression(name.toString() + " expects one argument", e);
       }

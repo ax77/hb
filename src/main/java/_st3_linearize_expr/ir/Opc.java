@@ -18,16 +18,16 @@ public enum Opc {
   , AssignVarTrue                      // type a = true
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
+  , AssignVarCastExpression            // cast(expressiont : to_this_type) -> cast(32:char)
+  //
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
-  , FlatCallVoidBuiltin                // assert_true -> void
   , FlatCallVoidStaticClassMethod      // constants.write_settings(32)
+  //
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c
   , StoreVarVar                        // a = b
   //
   , IntrinsicText                      // everything internal
-  , CallListenerVoidMethod             // __before_fcall("main_class.main::another_class.f", 10)
-  , CallListenerResultMethod           // __before_fcall("main_class.main::another_class.f", 10)
-  , AssignVarCastExpression            // cast(expressiont : to_this_type) -> cast(32:char)
+  
 }

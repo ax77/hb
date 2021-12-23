@@ -5,7 +5,7 @@ import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 
-public abstract class ExprUtil {
+public abstract class TypeTraitsUtil {
 
   //@formatter:off
   public static boolean isBuiltinTypeTraitsIdent(Ident name) {

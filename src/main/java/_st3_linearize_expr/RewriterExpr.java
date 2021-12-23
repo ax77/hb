@@ -14,7 +14,7 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st2_annotate.ExprUtil;
+import _st2_annotate.TypeTraitsUtil;
 import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
@@ -582,7 +582,7 @@ public class RewriterExpr {
 
       }
 
-      else if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+      else if (TypeTraitsUtil.isBuiltinTypeTraitsIdent(name)) {
         final Type tp = args.get(0).getType();
         final int res = TypeBindings.getResultForTypeTraits(name, tp);
         if (res == -1) {

@@ -161,7 +161,7 @@ public abstract class ConstexprEval {
       final ExprExpression arg = args.get(0);
       final Type tp = arg.getResultType();
 
-      if (ExprUtil.isBuiltinTypeTraitsIdent(name)) {
+      if (TypeTraitsUtil.isBuiltinTypeTraitsIdent(name)) {
         int res = TypeBindings.getResultForTypeTraits(name, tp);
         if (res == -1) {
           ErrorLocation.errorExpression("not a constant expression ", e);

@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import _st2_annotate.ExprUtil;
+import _st2_annotate.TypeTraitsUtil;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
@@ -562,7 +562,7 @@ public class ParseExpression {
     // is_int(something)
 
     if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
-        || parser.is(Keywords.types_are_same_ident) || ExprUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
+        || parser.is(Keywords.types_are_same_ident) || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
 
       int argcExpected = 1;
       if (parser.is(Keywords.types_are_same_ident)) {

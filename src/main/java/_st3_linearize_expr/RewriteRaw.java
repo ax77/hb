@@ -11,8 +11,6 @@ import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
-import _st3_linearize_expr.items.CallListenerResultMethod;
-import _st3_linearize_expr.items.CallListenerVoidMethod;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.leaves.Binop;
@@ -26,8 +24,6 @@ import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
-import hashed.Hash_ident;
-import tokenize.Ident;
 
 public class RewriteRaw {
 
