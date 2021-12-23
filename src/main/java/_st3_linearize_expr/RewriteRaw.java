@@ -195,6 +195,11 @@ public class RewriteRaw {
         }
       }
 
+      /// cast
+      else if (item.isAssignVarCastExpression()) {
+        rv.add(item);
+      }
+
       else {
         throw new AstParseException("unknown item: " + item.toString());
       }

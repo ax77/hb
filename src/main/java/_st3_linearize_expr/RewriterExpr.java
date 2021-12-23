@@ -19,6 +19,7 @@ import _st2_annotate.LvalueUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarBinop;
+import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -48,6 +49,7 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
+import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
@@ -325,7 +327,17 @@ public class RewriterExpr {
     }
 
     else if (base == ECAST) {
-      throw new RuntimeException(base.toString() + " ???");
+      ExprCast cast = e.getCastExpression();
+      ExprExpression whatWeNeedCast = cast.getExpressionForCast();
+      Type theTypeOfTheResult = cast.getToType();
+
+      gen(whatWeNeedCast);
+
+      final FlatCodeItem Litem = popCode();
+      final Var rvalue = Litem.getDest();
+      final Var lvalue = VarCreator.justNewVar(theTypeOfTheResult);
+
+      genRaw(new FlatCodeItem(new AssignVarCastExpression(lvalue, rvalue, theTypeOfTheResult)));
     }
 
     else if (base == EMETHOD_INVOCATION) {

@@ -9,7 +9,6 @@ import _st7_codeout.CodeoutBuilder;
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
 import ast_unit.InstantiationUnit;
-import utils.UtilSrcToStringLevel;
 
 public class TestCcode7 {
 

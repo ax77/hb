@@ -2,6 +2,7 @@ package _st3_linearize_expr.ir;
 
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
+import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -35,6 +36,7 @@ public class FlatCodeItem {
   //@formatter:off
   private AssignVarAllocObject assignVarAllocObject;
   private AssignVarBinop assignVarBinop;
+  private AssignVarCastExpression assignVarCastExpression;
   private AssignVarFalse assignVarFalse;
   private AssignVarFieldAccess assignVarFieldAccess;
   private AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp;
@@ -62,6 +64,7 @@ public class FlatCodeItem {
 
   public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
   public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
+  public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) { this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
   public FlatCodeItem(AssignVarFalse assignVarFalse) { this.opcode = Opc.AssignVarFalse; this.assignVarFalse = assignVarFalse; }
   public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
   public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
@@ -89,6 +92,7 @@ public class FlatCodeItem {
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
+  public boolean isAssignVarCastExpression() { return this.opcode == Opc.AssignVarCastExpression; }
   public boolean isAssignVarFalse() { return this.opcode == Opc.AssignVarFalse; }
   public boolean isAssignVarFieldAccess() { return this.opcode == Opc.AssignVarFieldAccess; }
   public boolean isAssignVarFlatCallClassCreationTmp() { return this.opcode == Opc.AssignVarFlatCallClassCreationTmp; }
@@ -118,6 +122,7 @@ public class FlatCodeItem {
   public String toString() {
     if(isAssignVarAllocObject()) { return assignVarAllocObject.toString(); }
     if(isAssignVarBinop()) { return assignVarBinop.toString(); }
+    if(isAssignVarCastExpression()) { return assignVarCastExpression.toString(); }
     if(isAssignVarFalse()) { return assignVarFalse.toString(); }
     if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
     if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
@@ -148,6 +153,7 @@ public class FlatCodeItem {
   public Opc getOpcode() { return this.opcode; }
   public AssignVarAllocObject getAssignVarAllocObject() { return this.assignVarAllocObject; }
   public AssignVarBinop getAssignVarBinop() { return this.assignVarBinop; }
+  public AssignVarCastExpression getAssignVarCastExpression() { return this.assignVarCastExpression; }
   public AssignVarFalse getAssignVarFalse() { return this.assignVarFalse; }
   public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
   public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }
@@ -190,7 +196,8 @@ public class FlatCodeItem {
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
-      || isAssignVarVar(); 
+      || isAssignVarVar()
+      || isAssignVarCastExpression();
   }
 
   public Var getDest() {
@@ -199,6 +206,9 @@ public class FlatCodeItem {
     }
     if(isAssignVarBinop()) {
       return assignVarBinop.getLvalue();
+    }
+    if(isAssignVarCastExpression()) {
+      return assignVarCastExpression.getLvalue();
     }
     if(isAssignVarFalse()) {
       return assignVarFalse.getLvalue();

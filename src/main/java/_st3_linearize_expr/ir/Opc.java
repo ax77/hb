@@ -29,4 +29,5 @@ public enum Opc {
   , IntrinsicText                      // everything internal
   , CallListenerVoidMethod             // __before_fcall("main_class.main::another_class.f", 10)
   , CallListenerResultMethod           // __before_fcall("main_class.main::another_class.f", 10)
+  , AssignVarCastExpression            // cast(expressiont : to_this_type) -> cast(32:char)
 }

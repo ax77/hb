@@ -27,6 +27,7 @@ opcodes = """
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
     AssignVarNull                      ,
+    AssignVarCastExpression            ,
     AssignVarNum                       ,
     AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
@@ -94,7 +95,8 @@ assigns_ops = """
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
-      || isAssignVarVar(); 
+      || isAssignVarVar()
+      || isAssignVarCastExpression();
   }
 """
 

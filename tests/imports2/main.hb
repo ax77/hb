@@ -46,6 +46,22 @@ static class test_statements {
 	}
 }
 
+static class test_casting {
+  
+  test "test casting between int and char" {
+    
+    int i = 32; // whitespace
+    char c = cast(i : char);
+    char d = cast(97 : char);
+    char x = cast(98: char);
+    
+    assert_true(c == ' ');
+    assert_true(d == 'a');
+    assert_true(x == 'b');
+  }
+  
+}
+
 class main_class {
   int main(int argc) {
 	
