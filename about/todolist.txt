@@ -21,3 +21,15 @@
     just change the type of parsed token at lexer stage, that's it.
   
 * destructors for tests methods
+
+* modifiers -> all variables are final by-default, we need a mut modifier
+    and then - apply this to code-generator, it will help the
+    compiler optimize the result code.
+
+* add string methods (left, right, etc)
+
+
+
+
+
+

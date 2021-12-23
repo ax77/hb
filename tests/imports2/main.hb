@@ -155,6 +155,27 @@ static class test_static {
   
 }
 
+// TODO:
+// interface comparator {
+//   boolean is_comparable();
+// }
+// 
+// class test_interface implements comparator {
+//   int x;
+//   test_interface() {
+//     this.x = 0;
+//   }
+//   boolean is_comparable() {
+//     return false;
+//   }
+//   
+//   test "test create interface name" {
+//     comparator cmp = new test_interface();
+//     boolean f = cmp.is_comparable();
+//     assert_true(!f);
+//   }
+// }
+
 class main_class {
   int main() {
 
