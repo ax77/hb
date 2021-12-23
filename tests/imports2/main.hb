@@ -1,24 +1,36 @@
-import std.natives.opt::opt;
-import std.natives.fmt::fmt;
+import std.natives.opt::opt;import std.natives.fmt::fmt;
 
 class dummy_object {
   int i;
-  dummy_object() { i = -1; }
+
+  dummy_object() {
+    i = -1;
+  }
+  
+  deinit {
+    // fmt.print("dummy object destructor");
+  }
+  
+  test "empty" {}
+  test "empty " {}
+  test "empty  " {}
 }
 
 static class test_expressions {
-	
-	test "test_ternary" {
+
+  test"test_ternary"
+  {
 		int a = 1024;
 		int b = ?(a == 1024, 32, -1);
 		assert_true(b == 32);
 	}
-	
-	test "test_arith" {
-		int a = 2+2*2;
-		assert_true(a == 6);
-	}
-	
+
+  test"test_arith"
+  {
+    int a = 2 + 2 * 2;
+    assert_true(a == 6);
+  }
+
 }
 
 static class test_statements {
@@ -47,8 +59,9 @@ static class test_statements {
 }
 
 static class test_casting {
-  
-  test "test casting between int and char" {
+
+  test"test casting between int and char"
+  {
     
     int i = 32; // whitespace
     char c = cast(i : char);
@@ -61,7 +74,7 @@ static class test_casting {
     assert_true(x == 'b');
     assert_true(z == '!');
   }
-  
+
 }
 
 static class test_strings {
@@ -79,23 +92,21 @@ static class test_strings {
 }
 
 static class test_type_traits {
-  /// public static boolean isBuiltinTypeTraitsIdent(Ident name) {
-  ///   return name.equals(Keywords.is_void_ident)    
-  ///       || name.equals(Keywords.is_boolean_ident)  
-  ///       || name.equals(Keywords.is_char_ident)      
-  ///       || name.equals(Keywords.is_short_ident)     
-  ///       || name.equals(Keywords.is_int_ident)       
-  ///       || name.equals(Keywords.is_long_ident)     
-  ///       || name.equals(Keywords.is_float_ident)     
-  ///       || name.equals(Keywords.is_double_ident)    
-  ///       || name.equals(Keywords.is_integral_ident)  
-  ///       || name.equals(Keywords.is_floating_ident)  
-  ///       || name.equals(Keywords.is_class_ident)    
-  ///       || name.equals(Keywords.is_primitive_ident) 
-  ///       || name.equals(Keywords.is_arithmetic_ident)
-  ///       || name.equals(Keywords.is_reference_ident) 
-  ///   ;
-  /// }
+
+  /// is_void 
+  /// is_boolean  
+  /// is_char     
+  /// is_short     
+  /// is_int      
+  /// is_long    
+  /// is_float    
+  /// is_double    
+  /// is_integral 
+  /// is_floating  
+  /// is_class 
+  /// is_primitive
+  /// is_arithmetic
+  /// is_reference
   
   test "test primitive types" {
     char c = '1';
@@ -116,30 +127,8 @@ static class test_type_traits {
 }
 
 class main_class {
-  int main(int argc) {
-	
+  int main() {
+
     return 0;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

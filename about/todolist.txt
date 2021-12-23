@@ -10,4 +10,5 @@
 * gen cast expression
 * string concatenation
 * const variables in generated file!
-
+* annotations (method, field, class, etc)
+* cast expression types compatibility

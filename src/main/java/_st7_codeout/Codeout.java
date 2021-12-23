@@ -166,6 +166,7 @@ public class Codeout {
     sb.append(mainMethodImpl);
     sb.append("int main(int argc, char** argv) \n{\n");
     sb.append("    int result = " + mainMethodCall + ";\n\n");
+    sb.append("    __run_all_tests__();\n");
     sb.append("    printf(\"%d\\n\", result);\n");
     sb.append("    return result;\n");
     sb.append("\n}\n");
@@ -190,7 +191,7 @@ public class Codeout {
         String name = "\"" + className + " :: " + testName + "\"";
         String sign = m.signToStringCall();
 
-        sb.append("printf(\"test: %s\\n\", " + name + ");\n");
+        sb.append("\nprintf(\"test: %s\\n\", " + name + ");\n");
         sb.append(sign + "();\n");
       }
     }
