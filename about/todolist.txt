@@ -1,0 +1,10 @@
+* static semantic
+* unit tests
+* GC
+* opt<type> and 'null'
+* init the parser with the string
+* default methods: equals, to_string, hash
+* package semantic: std.natives.some_class is a full name of a class
+  std.natives.some_class.func1 -> is a full name of a function of this class
+  std.natives.some_class.func2 -> ...
+

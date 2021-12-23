@@ -3,10 +3,8 @@ package ast_main.imports;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import ast_class.ClassDeclaration;
 import ast_symtab.Keywords;
@@ -19,18 +17,13 @@ public abstract class GlobalSymtab {
 
   // symbol table for names, for classes only
   public final static Map<Ident, ClassDeclaration> referenceTypes = new HashMap<>();
-  public final static Set<ImportEntry> imports = new HashSet<>();
 
   public static void clear() {
     referenceTypes.clear();
-    imports.clear();
   }
 
   public static void addImport(Parse parser, String s) throws IOException {
-    final ImportEntry ent = new ImportEntry(s);
-    imports.add(ent);
-
-    final Ident found = ent.getClassname();
+    final Ident found = ImportNamesBuilder.getClassNameFromImport(s);
     if (!isClassName(found)) {
       ClassDeclaration c = new ClassDeclaration(Keywords.class_ident, found, new ArrayList<>(), parser.tok());
       defineClassName(parser, c);

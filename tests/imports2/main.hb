@@ -1,5 +1,10 @@
-
+import std.natives.opt::opt;
 import std.natives.fmt::fmt;
+
+class dummy_object {
+  int i;
+  dummy_object() { i = -1; }
+}
 
 static class test_expressions {
 	
@@ -47,4 +52,25 @@ class main_class {
     return 0;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
