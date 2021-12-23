@@ -567,13 +567,13 @@ public class RewriterExpr {
         String expr = labelName(CEscaper.toCString(node.getExprToString()));
 
         StringBuilder intrArgs = new StringBuilder();
-        intrArgs.append("assert_true(/*var=*/");
+        intrArgs.append("assert_true(");
         intrArgs.append(args.get(0).getName().getName());
-        intrArgs.append(", /*file=*/");
+        intrArgs.append(", ");
         intrArgs.append(file);
-        intrArgs.append(", /*line=*/");
+        intrArgs.append(", ");
         intrArgs.append(line);
-        intrArgs.append(", /*expr=*/");
+        intrArgs.append(", ");
         intrArgs.append(expr);
         intrArgs.append(")");
 

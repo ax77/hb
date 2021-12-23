@@ -95,13 +95,14 @@ public class Codeout {
       int[] esc = CEscaper.escape(s);
       StringBuilder content = new StringBuilder();
       for (int j = 0; j < esc.length; j += 1) {
-        content.append("'" + CEscaper.unesc((char) esc[j]) + "'");
-        if (j + 1 < esc.length) {
-          content.append(", ");
+        final char c = (char) esc[j];
+        if (c == '\0') {
+          continue;
         }
+        content.append(CEscaper.unesc(c));
       }
       String initBuffer = content.toString();
-      stringsLabels.append("static const char " + v.getName().getName() + "[] = { " + initBuffer + "};\n");
+      stringsLabels.append("static const char " + v.getName().getName() + "[] = \"" + initBuffer + "\";\n");
     }
   }
 

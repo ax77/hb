@@ -64,6 +64,57 @@ static class test_casting {
   
 }
 
+static class test_strings {
+  
+  test "test string equality" {
+    string a = "1";
+    string b = "2";
+    string c = "1";
+    
+    assert_true(a == c);
+    assert_true(b != a);
+    assert_true(b != c);
+  }
+  
+}
+
+static class test_type_traits {
+  /// public static boolean isBuiltinTypeTraitsIdent(Ident name) {
+  ///   return name.equals(Keywords.is_void_ident)    
+  ///       || name.equals(Keywords.is_boolean_ident)  
+  ///       || name.equals(Keywords.is_char_ident)      
+  ///       || name.equals(Keywords.is_short_ident)     
+  ///       || name.equals(Keywords.is_int_ident)       
+  ///       || name.equals(Keywords.is_long_ident)     
+  ///       || name.equals(Keywords.is_float_ident)     
+  ///       || name.equals(Keywords.is_double_ident)    
+  ///       || name.equals(Keywords.is_integral_ident)  
+  ///       || name.equals(Keywords.is_floating_ident)  
+  ///       || name.equals(Keywords.is_class_ident)    
+  ///       || name.equals(Keywords.is_primitive_ident) 
+  ///       || name.equals(Keywords.is_arithmetic_ident)
+  ///       || name.equals(Keywords.is_reference_ident) 
+  ///   ;
+  /// }
+  
+  test "test primitive types" {
+    char c = '1';
+    int i = 0;
+    boolean b = false;
+    dummy_object d = new dummy_object();
+    
+    assert_true(is_char(c));
+    assert_true(is_int(i));
+    assert_true(is_boolean(b));
+    
+    assert_true(is_primitive(c) && is_primitive(i) && is_primitive(b));
+    assert_true(!is_class(c));
+    
+    assert_true(is_class(d));
+    assert_true(!is_primitive(d));
+  }
+}
+
 class main_class {
   int main(int argc) {
 	
