@@ -397,7 +397,9 @@ public class ParseExpression {
       final Token beginPos = parser.checkedMove(Keywords.cast_ident);
       parser.lparen();
 
-      final ExprExpression expressionForCast = e_unary();
+      // TODO: assign expression is not allowed in casting.
+      // rewrite this.
+      final ExprExpression expressionForCast = e_expression();
       parser.checkedMove(T.T_COLON);
 
       final Type toType = new ParseType(parser).getType();

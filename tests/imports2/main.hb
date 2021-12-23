@@ -54,10 +54,12 @@ static class test_casting {
     char c = cast(i : char);
     char d = cast(97 : char);
     char x = cast(98: char);
+    char z = cast(32+1 : char);
     
     assert_true(c == ' ');
     assert_true(d == 'a');
     assert_true(x == 'b');
+    assert_true(z == '!');
   }
   
 }
