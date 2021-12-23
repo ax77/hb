@@ -126,9 +126,58 @@ static class test_type_traits {
   }
 }
 
+static class test_static {
+  
+  test "test static assert" {
+    int a = 0;
+    int b = 0;
+    
+    // these are work at compile time
+    static_assert(0 == 0);
+    static_assert(is_int(a));
+    static_assert(!is_char(a));
+    static_assert(types_are_same(a, b));
+    
+    // and of course, this works at a runtime
+    assert_true(a == b && types_are_same(a, b));
+  }
+  
+  test "test macros file, line" {
+    //fmt.print(__FILE__);
+    //fmt.print(__LINE__);
+    
+    static_assert(is_class(__FILE__));
+    static_assert(is_int(__LINE__));
+    
+    assert_true(__LINE__ >= 140 && __LINE__ <= 160);
+    static_assert(__LINE__ == 153); // for sure :)
+  }
+  
+}
+
 class main_class {
   int main() {
 
     return 0;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

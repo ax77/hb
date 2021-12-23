@@ -8,11 +8,15 @@ import static tokenize.T.TOKEN_EOF;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ast_sourceloc.SourceLocation;
+import ast_types.Type;
+import ast_types.TypeBindings;
 import errors.AstParseException;
 import errors.ScanExc;
 import hashed.Hash_ident;
@@ -380,6 +384,12 @@ public class Stream {
     return sb.toString();
   }
 
+  static Set<String> builtinMacros = new HashSet<>();
+  static {
+    builtinMacros.add("__FILE__");
+    builtinMacros.add("__LINE__");
+  }
+
   private Token getOneIdent() {
 
     final StringBuilder sb = new StringBuilder();
@@ -393,7 +403,27 @@ public class Stream {
       sb.append(buffer.nextc());
     }
 
-    return identToken(Hash_ident.getHashedIdent(sb.toString()));
+    final String result = sb.toString();
+
+    /// just replace these with the meaning
+    ///
+    if (builtinMacros.contains(result)) {
+
+      if (result.equals("__FILE__")) {
+        final String quotedFname = "\"" + filename + "\"";
+        return new Token(quotedFname, T.TOKEN_STRING, curLoc());
+      }
+
+      if (result.equals("__LINE__")) {
+        final int curlineInt = curLoc().getLine();
+        final String curline = String.format("%d", curlineInt);
+
+        final IntLiteral numconst = new IntLiteral(curline, TypeBindings.make_int(), curlineInt);
+        return new Token(numconst, curLoc());
+      }
+    }
+
+    return identToken(Hash_ident.getHashedIdent(result));
 
   }
 

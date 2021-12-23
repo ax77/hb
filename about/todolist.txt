@@ -4,11 +4,20 @@
 * opt<type> and 'null'
 * init the parser with the string
 * default methods: equals, to_string, hash
+
 * package semantic: std.natives.some_class is a full name of a class
-  std.natives.some_class.func1 -> is a full name of a function of this class
-  std.natives.some_class.func2 -> ...
+    std.natives.some_class.func1 -> is a full name of a function of this class
+    std.natives.some_class.func2 -> ...
+
 * gen cast expression
 * string concatenation
 * const variables in generated file!
 * annotations (method, field, class, etc)
 * cast expression types compatibility
+
+* maybe add some compile-time macros like __FILE__, __LINE__, are they useful? 
+    I think that they are.
+    we do not have a preprocessor, so it's quite easy to implement these macros.
+    just change the type of parsed token at lexer stage, that's it.
+  
+* destructors for tests methods
