@@ -25,73 +25,15 @@ public abstract class GnRuntime {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
-    sb.append("struct aux_fcall_stack {                                                 \n");
-    sb.append("    const char *func;                                                    \n");
-    sb.append("    int line;                                                            \n");
-    sb.append("};                                                                       \n\n");
-    
-    sb.append("#define STACK_SIZE (1024)                                                \n");
-    sb.append("struct aux_fcall_stack call_stack[STACK_SIZE] = { };                     \n");
-    sb.append("static size_t call_stack_nr = 0;                                         \n");
-    sb.append("static inline void __pushf(const char *__func, int __line);              \n");
-    sb.append("static inline void __popf();                                             \n");
-    sb.append("static void __dumpf();                                                   \n\n");
-    
-    sb.append("static inline void __pushf(const char *__func, int __line)               \n");
-    sb.append("{                                                                        \n");
-    sb.append("    if (call_stack_nr >= STACK_SIZE) {                                   \n");
-    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\", __func, __line); \n");
-    sb.append("        __dumpf();                                                       \n");
-    sb.append("        exit(8);                                                         \n");
-    sb.append("    }                                                                    \n");
-    sb.append("    struct aux_fcall_stack fc = { .func = __func, .line = __line };      \n");
-    sb.append("    call_stack[call_stack_nr] = fc;                                      \n");
-    sb.append("    call_stack_nr += 1;                                                  \n");
-    sb.append("}                                                                        \n\n");
-    
-    sb.append("static inline void __popf()                                              \n");
-    sb.append("{                                                                        \n");
-    sb.append("    assert(call_stack_nr > 0);                                           \n");
-    sb.append("    call_stack_nr -= 1;                                                  \n");
-    sb.append("}                                                                        \n\n");
-    
-    sb.append("static void __dumpf()                                                    \n");
-    sb.append("{                                                                        \n");
-    sb.append("    fprintf(stdout, \"%s\\n\", \"\\nThe call-stack: \");                 \n");
-    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {                      \n");
-    sb.append("        struct aux_fcall_stack fc = call_stack[i];                       \n");
-    sb.append("        fprintf(stdout, \"  %s:%d\\n\", fc.func, fc.line);               \n");
-    sb.append("    }                                                                    \n");
-    sb.append("}                                                                        \n\n");
-    
     sb.append("static inline void assert_true(int cnd, const char *file, int line, const char *expr)  \n");
     sb.append("{                                                                                      \n");
     sb.append("    assert(file);                                                                      \n");
     sb.append("    assert(expr);                                                                      \n");
     sb.append("    if (cnd == 0) {                                                                    \n");
     sb.append("        fprintf(stdout, \"assertion failed: (%s:%d) : [%s]\\n\", file, line, expr);    \n");
-    sb.append("        __dumpf();                                                                     \n");
     sb.append("        exit(7);                                                                       \n");
     sb.append("    }                                                                                  \n");
     sb.append("}                                                                                      \n\n");
-
-    sb.append("static inline void __before_call(const char *__func, int __line) \n");
-    sb.append("{                                                                \n");
-    sb.append("  __pushf(__func, __line);                                       \n");
-    sb.append("}                                                                \n\n");
-    
-    sb.append("static inline void __after_call(const char *__func, int __line)  \n");
-    sb.append("{                                                                \n");
-    sb.append("  __popf();                                                      \n");
-    sb.append("}                                                                \n\n");
-    
-    //sb.append("#define assert_true(expr) do {                               \\\n");
-    //sb.append("  if( !(expr) ) {                                            \\\n");
-    //sb.append("    fprintf(stderr, \"assert fail: (%s:%s():%d) : [%s]\\n\"     \\\n");
-    //sb.append("    , __FILE__, __func__, __LINE__, #expr);                  \\\n");
-    //sb.append("    exit(128);                                               \\\n");
-    //sb.append("  }                                                          \\\n");
-    //sb.append("} while(0) \n\n");
 
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");

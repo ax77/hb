@@ -16,8 +16,8 @@ native class string
   // native string trim();
   // native string replace(string pattern, string replacement);
   // native array<string> split(char sep);
-  // native boolean starts_with(string prefix);
-  // native boolean ends_with(string suffix);
+  // native boolean starts_with(string pattern);
+  // native boolean ends_with(string pattern);
   //
   // native array<char> to_array();
   
@@ -77,18 +77,18 @@ native class string
     return new string(res);
   }
   
-  boolean starts_with(string prefix) {
-    if(prefix.length() > this.length()) {
+  boolean starts_with(string pattern) {
+    if(pattern.length() > this.length()) {
       return false;
     }
-    if(length()==0 || prefix.length() == 0) {
+    if(length()==0 || pattern.length() == 0) {
       return false;
     }
     int i = 0;
     int j = 0;
-    for(; i < length() && j < prefix.length(); ) {
+    for(; i < length() && j < pattern.length(); ) {
       char c1 = get(i);
-      char c2 = prefix.get(j);
+      char c2 = pattern.get(j);
       if(c1 != c2) {
         return false;
       }
@@ -98,18 +98,18 @@ native class string
     return true;
   }
   
-  boolean ends_with(string suffix) {
-    if(suffix.length() > this.length()) {
+  boolean ends_with(string pattern) {
+    if(pattern.length() > this.length()) {
       return false;
     }
-    if(length()==0 || suffix.length() == 0) {
+    if(length()==0 || pattern.length() == 0) {
       return false;
     }
     int i = length()-1;
-    int j = suffix.length()-1;
+    int j = pattern.length()-1;
     for(; i >=0 && j >= 0; ) {
       char c1 = get(i);
-      char c2 = suffix.get(j);
+      char c2 = pattern.get(j);
       if(c1 != c2) {
         return false;
       }
@@ -117,6 +117,36 @@ native class string
       j-=1;
     }
     return true;
+  }
+  
+  string trim() {
+    if(length() == 0) {
+      return this;
+    }
+    
+    int start = 0;
+    int end = 0;
+    
+    for(start = 0; start < length(); start += 1) {
+      char c = get(start);
+      if(c > ' ') {
+        break;
+      }
+    }
+    
+    for(end = length()-1; end >=0; end -= 1) {
+      char c = get(end);
+      if(c > ' ') {
+        break;
+      }
+    }
+    
+    array<char> res = new array<char>();
+    for(int i = start; i <= end; i += 1) {
+      res.add(get(i));
+    }
+    return new string(res);
+    
   }
   
 }

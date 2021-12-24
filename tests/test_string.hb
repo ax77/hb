@@ -41,6 +41,13 @@ static class some {
   test "test string access" {
     assert_true("1.2.3".left(2) == "1.");
   }
+  
+  test "test string trim" {
+    string s = " \n \n 123 \t \t \n \r\n  ";
+    string res = s.trim();
+    
+    assert_true(res == "123");
+  }
 }
 
 class main_class {
