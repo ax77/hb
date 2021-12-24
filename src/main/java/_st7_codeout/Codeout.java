@@ -102,7 +102,12 @@ public class Codeout {
         content.append(CEscaper.unesc(c));
       }
       String initBuffer = content.toString();
-      stringsLabels.append("static const char " + v.getName().getName() + "[] = \"" + initBuffer + "\";\n");
+
+      //struct string *t1024 = &(struct string) { .buffer = "1.2.3", .length = 5 };
+      stringsLabels.append("struct string * " + v.getName().getName() + " = &(struct string) { .buffer = \""
+          + initBuffer + "\", .length = " + initBuffer.length() + " };\n");
+
+      //stringsLabels.append("static const char " + v.getName().getName() + "[] = \"" + initBuffer + "\";\n");
     }
   }
 
@@ -149,8 +154,8 @@ public class Codeout {
     sb.append(staticFields.toString());
     sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
-    sb.append(stringsLabels.toString());
     sb.append(builtinsArrays.toString());
+    sb.append(stringsLabels.toString());
     sb.append("\n");
     sb.append("\n");
 
@@ -350,14 +355,16 @@ public class Codeout {
       }
       if (c.isNativeString() && meth.isConstructor()) {
 
-        if (meth.getParameters().get(1).getType().isString()) {
-          sb.append(meth.getType().toString() + " " + meth.signToStringCall()
-              + "(struct string* __this, const char * const buffer);\n");
-        } else if (meth.getParameters().get(1).getType().isCharArray()) {
-          sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
-        } else {
+        sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
 
-        }
+        //        if (meth.getParameters().get(1).getType().isString()) {
+        //          sb.append(meth.getType().toString() + " " + meth.signToStringCall()
+        //              + "(struct string* __this, const char * const buffer);\n");
+        //        } else if (meth.getParameters().get(1).getType().isCharArray()) {
+        //          sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
+        //        } else {
+        //
+        //        }
 
         continue;
       }

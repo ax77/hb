@@ -9,6 +9,7 @@ import _st7_codeout.CodeoutBuilder;
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
 import ast_unit.InstantiationUnit;
+import utils.UtilSrcToStringLevel;
 
 public class TestCcode7 {
 
@@ -18,11 +19,13 @@ public class TestCcode7 {
     final String dir = System.getProperty("user.dir");
     InstantiationUnit unit = new ParserMain(dir + "/tests/test_string.hb").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
-      // System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+       //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
     Codeout result = CodeoutBuilder.build(unit);
     System.out.println(result.toString());
+    
+    //String s = new String(new String("a.b.c"));
 
   }
 }

@@ -459,6 +459,10 @@ public class ClassDeclaration implements Serializable, Location {
     for (ClassMethodDeclaration method : methods) {
       sb.append(method.toString() + "\n");
     }
+    
+    for (ClassMethodDeclaration method : tests) {
+      sb.append(method.toString() + "\n");
+    }
 
     sb.append("\n}\n");
     return sb.toString();

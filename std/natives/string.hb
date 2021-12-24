@@ -81,6 +81,9 @@ native class string
     if(prefix.length() > this.length()) {
       return false;
     }
+    if(length()==0 || prefix.length() == 0) {
+      return false;
+    }
     int i = 0;
     int j = 0;
     for(; i < length() && j < prefix.length(); ) {
@@ -91,6 +94,27 @@ native class string
       }
       i += 1;
       j += 1;
+    }
+    return true;
+  }
+  
+  boolean ends_with(string suffix) {
+    if(suffix.length() > this.length()) {
+      return false;
+    }
+    if(length()==0 || suffix.length() == 0) {
+      return false;
+    }
+    int i = length()-1;
+    int j = suffix.length()-1;
+    for(; i >=0 && j >= 0; ) {
+      char c1 = get(i);
+      char c2 = suffix.get(j);
+      if(c1 != c2) {
+        return false;
+      }
+      i-=1;
+      j-=1;
     }
     return true;
   }

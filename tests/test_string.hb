@@ -31,6 +31,13 @@ static class some {
     assert_true(!s.starts_with("a.b.c "));
   }
   
+  test "test string ends with" {
+    string s = "123";
+    assert_true(s.ends_with("3"));
+    assert_true(s.ends_with("23"));
+    assert_true(s.ends_with("123"));
+  }
+  
   test "test string access" {
     assert_true("1.2.3".left(2) == "1.");
   }

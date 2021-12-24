@@ -1,7 +1,10 @@
 package _st7_codeout;
 
+import java.util.List;
+
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
+import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
 public abstract class GnStr {
@@ -41,16 +44,19 @@ public abstract class GnStr {
       // void string_init_20_(struct string* __this, struct string* buffer)
       // void string_init_20_(struct string* __this, char         * buffer)
 
-      if (method.getParameters().get(1).getType().isString()) {
-        line(methodType + " " + signToStringCall + "(struct string* __this, const char * const buffer)" + " {");
+      final List<VarDeclarator> parameters = method.getParameters();
+
+      if (parameters.get(1).getType().isString()) {
+        line(methodType + " " + signToStringCall + method.parametersToString() + " {");// "(struct string* __this, const char * const buffer)" + " {");
         line("    assert(__this);");
-        line("    assert(buffer);\n");
-        line("    __this->buffer = hstrdup(buffer);");
-        line("    __this->length = strlen(buffer);");
+        line("    assert(buffer);");
+        line("    assert(buffer->buffer);\n");
+        line("    __this->buffer = hstrdup(buffer->buffer);");
+        line("    __this->length = buffer->length;");
         line("}\n");
       }
 
-      else if (method.getParameters().get(1).getType().isCharArray()) {
+      else if (parameters.get(1).getType().isCharArray()) {
         line(methodType + " " + signToStringCall + method.parametersToString() + " {");
         line("    assert(__this);");
         line("    assert(buffer);");
