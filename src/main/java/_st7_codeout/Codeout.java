@@ -251,8 +251,10 @@ public class Codeout {
         continue;
       }
       if (f.getMethodSignature().getClazz().isNativeString()) {
-        lineBuiltinArr(GnStr.genStringMethod(f));
-        continue;
+        if (f.getMethodSignature().getModifiers().isNative()) {
+          lineBuiltinArr(GnStr.genStringMethod(f));
+          continue;
+        }
       }
 
       if (f.getMethodSignature().getModifiers().isNative()) {
@@ -347,8 +349,16 @@ public class Codeout {
         }
       }
       if (c.isNativeString() && meth.isConstructor()) {
-        sb.append(meth.getType().toString() + " " + meth.signToStringCall()
-            + "(struct string* __this, const char * const buffer);\n");
+
+        if (meth.getParameters().get(1).getType().isString()) {
+          sb.append(meth.getType().toString() + " " + meth.signToStringCall()
+              + "(struct string* __this, const char * const buffer);\n");
+        } else if (meth.getParameters().get(1).getType().isCharArray()) {
+          sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
+        } else {
+
+        }
+
         continue;
       }
       sb.append(f.signToString() + ";\n");

@@ -40,12 +40,29 @@ public abstract class GnStr {
     if (signToStringCall.startsWith("string_init_")) {
       // void string_init_20_(struct string* __this, struct string* buffer)
       // void string_init_20_(struct string* __this, char         * buffer)
-      line(methodType + " " + signToStringCall + "(struct string* __this, const char * const buffer)" + " {");
-      line("    assert(__this);");
-      line("    assert(buffer);\n");
-      line("    __this->buffer = hstrdup(buffer);");
-      line("    __this->length = strlen(buffer);");
-      line("}\n");
+
+      if (method.getParameters().get(1).getType().isString()) {
+        line(methodType + " " + signToStringCall + "(struct string* __this, const char * const buffer)" + " {");
+        line("    assert(__this);");
+        line("    assert(buffer);\n");
+        line("    __this->buffer = hstrdup(buffer);");
+        line("    __this->length = strlen(buffer);");
+        line("}\n");
+      }
+
+      else if (method.getParameters().get(1).getType().isCharArray()) {
+        line(methodType + " " + signToStringCall + method.parametersToString() + " {");
+        line("    assert(__this);");
+        line("    assert(buffer);");
+        line("    assert(buffer->data);\n");
+        line("    __this->buffer = hstrdup(buffer->data);");
+        line("    __this->length = buffer->size;");
+        line("}\n");
+      }
+
+      else {
+        throw new AstParseException("unimplemented string constructor: " + method.getIdentifier().toString());
+      }
     }
 
     else if (signToStringCall.startsWith("string_length_")) {

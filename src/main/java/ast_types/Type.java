@@ -313,7 +313,11 @@ public class Type implements Serializable, TypeApi {
     if (!isClass()) {
       return false;
     }
-    return classTypeRef.getClazz().isNativeArray();
+    final ClassDeclaration ref = classTypeRef.getClazz();
+    if (!ref.isNativeArray()) {
+      return false;
+    }
+    return ref.getTypeParametersT().get(0).isChar();
   }
 
   public boolean isString() {

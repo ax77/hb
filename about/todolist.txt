@@ -27,7 +27,7 @@
     compiler optimize the result code.
 
 * add string methods (left, right, etc)
-
+* fix string constructor code generation [new string("a.b.c")]
 
 
 
