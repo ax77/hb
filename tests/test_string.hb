@@ -1,5 +1,4 @@
 import std.natives.string::string;
-import std.natives.opt::opt;
 
 static class some {
   test "test string left" {
@@ -50,11 +49,9 @@ static class some {
     assert_true(res == "123");
   }
   
-  test "test string opt" {
-    opt<string> op = new opt<string>("1");
-    assert_true(op.is_some());
-    assert_true(!op.is_none());
-    assert_true(op.get() == "1");
+  test "test string constructor from a literal" {
+    string s = new string(new string("a.b.c"));
+    assert_true(s == "a.b.c");
   }
 }
 

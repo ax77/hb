@@ -82,26 +82,29 @@ public class ApplyUnitPreEachClass {
 
   private void checkStaticClassSem(ClassDeclaration object) {
 
-    // for (VarDeclarator field : object.getFields()) {
-    //   if (!field.getMods().isStatic()) {
-    //     throw new AstParseException("field in static class should be static: " + object.getIdentifier().toString()
-    //         + "." + field.getIdentifier().toString());
-    //   }
-    //   if (field.getSimpleInitializer() == null) {
-    //     throw new AstParseException("field in static class is not initialized: " + object.getIdentifier().toString()
-    //         + "." + field.getIdentifier().toString());
-    //   }
-    // }
-
     // we cannot use fields in a static class.
     // it has no constructors, destructors, etc.
     // how can we free the class?
+    // but: we have to use [public static final type varname = value;] expressions.
+    // we need these constants, and we will generate simple c-code using static data.
 
-    if (!object.getFields().isEmpty()) {
-      throw new AstParseException("unexpected field in static class: " + object.getIdentifier().toString());
+    for (VarDeclarator field : object.getFields()) {
+      final String msg = object.getIdentifier().toString() + "." + field.getIdentifier().toString();
+
+      if (!field.getMods().isStatic()) {
+        throw new AstParseException("field in static class must be static: " + msg);
+      }
+      if (field.getSimpleInitializer() == null) {
+        throw new AstParseException("field in static class is not initialized: " + msg);
+      }
+      if (!field.getType().isPrimitive()) {
+        throw new AstParseException("field in static class can only be a primitive type: " + msg);
+      }
     }
+
     for (ClassMethodDeclaration method : object.getMethods()) {
-      if (!method.getModifiers().isStatic() && !method.getModifiers().isNative()) {
+      boolean isOk = method.getModifiers().isStatic() || method.getModifiers().isNative();
+      if (!isOk) {
         throw new AstParseException("method in static class must only be static or native: "
             + object.getIdentifier().toString() + "." + method.getIdentifier().toString());
       }
