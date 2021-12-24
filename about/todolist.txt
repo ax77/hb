@@ -3,19 +3,25 @@
 * GC
 * opt<type> and 'null'
 * init the parser with the string
-* default methods: equals, to_string, hash
+
+* default methods: 
+    equals 
+    to_string 
+    hash
+    deepcopy 
+    fill_property_values - this one is like a copy constructor
 
 * package semantic: std.natives.some_class is a full name of a class
     std.natives.some_class.func1 -> is a full name of a function of this class
     std.natives.some_class.func2 -> ...
 
-* gen cast expression
+*[V] gen cast expression
 * string concatenation
 * const variables in generated file!
 * annotations (method, field, class, etc)
 * cast expression types compatibility
 
-* maybe add some compile-time macros like __FILE__, __LINE__, are they useful? 
+*[V] maybe add some compile-time macros like __FILE__, __LINE__, are they useful? 
     I think that they are.
     we do not have a preprocessor, so it's quite easy to implement these macros.
     just change the type of parsed token at lexer stage, that's it.
@@ -26,8 +32,8 @@
     and then - apply this to code-generator, it will help the
     compiler optimize the result code.
 
-* add string methods (left, right, etc)
-* fix string constructor code generation [new string("a.b.c")]
+*[V] add string methods (left, right, etc)
+*[V] fix string constructor code generation [new string("a.b.c")]
 
 
 

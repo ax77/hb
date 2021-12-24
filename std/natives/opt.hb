@@ -1,3 +1,8 @@
+
+/// We do not have 'null' literal.
+/// So - we should use optional type
+/// if sometimes we need nullable refs.
+
 native class opt<T> {
   native opt();
   native opt(T value);

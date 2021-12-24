@@ -42,6 +42,11 @@ public class ApplyUnitPostEachClass {
       return;
     }
 
+    ///TODO:static_semantic
+    if (c.isStaticClass()) {
+      return;
+    }
+
     /// we 100% know that class has at least one constructor
     for (ClassMethodDeclaration constructor : c.getConstructors()) {
       final List<VarDeclarator> fields = c.getFields();
@@ -122,13 +127,13 @@ public class ApplyUnitPostEachClass {
       return;
     }
 
+    /// if object is not a static class (i.e. namespace)
+    /// and if the object is not a main_class
+    /// we have to put parameter named __this at the top
+    /// of the parameters list.
+    /// 
+
     for (ClassMethodDeclaration method : object.getMethods()) {
-      if (method.isMain()) {
-        continue;
-      }
-      if (method.getModifiers().isNative()) {
-        //continue;
-      }
       final VarDeclarator thisParam = createThisParameter(object, method);
       method.pushParameterFront(thisParam);
     }

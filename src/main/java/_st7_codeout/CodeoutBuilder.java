@@ -40,7 +40,8 @@ public abstract class CodeoutBuilder {
 
     // TODO:static_semantic
     if (c.getDestructor() == null) {
-      if (!c.isStaticClass()) {
+      final boolean isOk = c.isStaticClass() || c.isMainClass();
+      if (!isOk) {
         throw new AstParseException("something wrong. destructor is missing.");
       }
       return;

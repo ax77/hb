@@ -52,52 +52,73 @@ public class ApplyUnitPreEachClass {
     }
 
     if (!object.isStaticClass()) {
-      for (VarDeclarator field : object.getFields()) {
-        if (field.getSimpleInitializer() != null) {
-          throw new AstParseException("field initializer unexpected: " + object.getIdentifier().toString() + "."
-              + field.getIdentifier().toString());
-        }
-      }
-
-      if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
-        throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
-      }
-
-      if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
-        throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
-      }
+      checkPlainClassSem(object);
     }
 
     if (object.isStaticClass()) {
-      for (VarDeclarator field : object.getFields()) {
-        if (!field.getMods().isStatic()) {
-          throw new AstParseException("field in static class should be static: " + object.getIdentifier().toString()
-              + "." + field.getIdentifier().toString());
-        }
-        if (field.getSimpleInitializer() == null) {
-          throw new AstParseException("field in static class is not initialized: " + object.getIdentifier().toString()
-              + "." + field.getIdentifier().toString());
-        }
+      checkStaticClassSem(object);
+    }
+
+  }
+
+  private void checkPlainClassSem(ClassDeclaration object) {
+
+    for (VarDeclarator field : object.getFields()) {
+      if (field.getSimpleInitializer() != null) {
+        throw new AstParseException("field initializer unexpected: " + object.getIdentifier().toString() + "."
+            + field.getIdentifier().toString());
       }
-      for (ClassMethodDeclaration method : object.getMethods()) {
-        if (!method.getModifiers().isStatic() && !method.getModifiers().isNative()) {
-          throw new AstParseException("method in static class should be static: " + object.getIdentifier().toString()
-              + "." + method.getIdentifier().toString());
-        }
+    }
+
+    if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
+      throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
+    }
+
+    if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
+      throw new AstParseException("class has no fields: " + object.getIdentifier().toString());
+    }
+
+  }
+
+  private void checkStaticClassSem(ClassDeclaration object) {
+
+    // for (VarDeclarator field : object.getFields()) {
+    //   if (!field.getMods().isStatic()) {
+    //     throw new AstParseException("field in static class should be static: " + object.getIdentifier().toString()
+    //         + "." + field.getIdentifier().toString());
+    //   }
+    //   if (field.getSimpleInitializer() == null) {
+    //     throw new AstParseException("field in static class is not initialized: " + object.getIdentifier().toString()
+    //         + "." + field.getIdentifier().toString());
+    //   }
+    // }
+
+    // we cannot use fields in a static class.
+    // it has no constructors, destructors, etc.
+    // how can we free the class?
+
+    if (!object.getFields().isEmpty()) {
+      throw new AstParseException("unexpected field in static class: " + object.getIdentifier().toString());
+    }
+    for (ClassMethodDeclaration method : object.getMethods()) {
+      if (!method.getModifiers().isStatic() && !method.getModifiers().isNative()) {
+        throw new AstParseException("method in static class must only be static or native: "
+            + object.getIdentifier().toString() + "." + method.getIdentifier().toString());
       }
-      if (!object.getConstructors().isEmpty()) {
-        throw new AstParseException("unexpected constructor in static class: " + object.getIdentifier().toString());
-      }
+    }
+    if (!object.getConstructors().isEmpty()) {
+      throw new AstParseException("unexpected constructor in static class: " + object.getIdentifier().toString());
     }
 
   }
 
   private void addDefaultMethods(ClassDeclaration object) throws IOException {
 
-    //TODO: why does not this work? hmm?
     if (object.isMainClass()) {
-      //return;
+      return;
     }
+
+    // TODO:static_semantic
     if (object.isStaticClass()) {
       return;
     }
