@@ -1,8 +1,11 @@
 package ast_expr;
 
+import java.io.Serializable;
+
 import utils_oth.NullChecker;
 
-public class ExprTernaryOperator {
+public class ExprTernaryOperator implements Serializable {
+  private static final long serialVersionUID = 3094072774409495573L;
   private final ExprExpression condition;
   private final ExprExpression trueResult;
   private final ExprExpression falseResult;

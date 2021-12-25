@@ -170,7 +170,12 @@ public class ClassDeclaration implements Serializable, Location {
       return false;
     }
 
+    //MARK:IMPORTANT:TYPE_SYSTEM:FIXME
     if (!TypeListsComparer.typeListsAreEqual(typeParametersT, another.getTypeParametersT())) {
+      //return false;
+    }
+    if (typeParametersT.size() != another.getTypeParametersT().size()) {
+      System.out.println("not equal: type-parameters");
       return false;
     }
 
