@@ -1,11 +1,19 @@
 package utils;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import ast_class.ClassDeclaration;
 
 public class ClassFinder {
 
@@ -82,8 +90,49 @@ public class ClassFinder {
   @Test
   public void test() {
 
-    List<Class<?>> classes = ClassFinder.find("njast.ast_nodes.expr");
-    for (Class c : classes) {
+    List<Class<?>> classes = ClassFinder.find("ast_expr");
+    for (Class<?> c : classes) {
+      //System.out.println(c.getSimpleName());
+
+      if (c.isEnum() || c.isInterface()) {
+        continue;
+      }
+
+      for (Field f : c.getDeclaredFields()) {
+        if (f.getName().equals("serialVersionUID")) {
+          continue;
+        }
+
+        //System.out.println("    " + f.getType().getSimpleName() + " " +  f.getName());
+      }
+
+      StringBuilder allgetters = new StringBuilder();
+      allgetters
+          .append("void visit" + c.getSimpleName() + "(final ClassDeclaration clazz, " + c.getSimpleName() + " e) {\n");
+
+      for (Method f : c.getDeclaredMethods()) {
+        if ((f.getModifiers() & Modifier.PUBLIC) == 0) {
+          continue;
+        }
+        final String methodName = f.getName();
+        if (!methodName.startsWith("get")) {
+          continue;
+        }
+
+        String returnType = f.getReturnType().getSimpleName();
+        if (returnType.equals("List")) {
+          returnType = "List<ExprExpression>";
+        }
+
+        final String varname = methodName.substring(3).toLowerCase();
+
+        // type name = get___();
+
+        allgetters.append("    " + returnType + " " + varname + " = e." + methodName + "(" + ");\n");
+      }
+      allgetters.append("}\n\n");
+
+      System.out.println(allgetters.toString());
     }
 
   }
