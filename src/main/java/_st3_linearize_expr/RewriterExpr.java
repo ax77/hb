@@ -53,6 +53,7 @@ import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
+import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
@@ -235,6 +236,14 @@ public class RewriterExpr {
 
       FlatCodeItem item = new FlatCodeItem(new AssignVarBinop(VarCreator.justNewVar(e.getResultType()), binop));
       genRaw(item);
+
+    }
+
+    else if (base == ExpressionBase.EFOR_LOOP_STEP_COMMA) {
+
+      final ExprForLoopStepComma commaE = e.getExprForLoopStepComma();
+      gen(commaE.getLhs());
+      gen(commaE.getRhs());
 
     }
 

@@ -46,6 +46,7 @@ import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
+import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
@@ -157,7 +158,10 @@ public class ParseExpression {
     ExprExpression e = e_assign();
 
     if (parser.is(T.T_COMMA)) {
-      parser.errorCommaExpression();
+      //TODO:error if it is not in a for-loop step
+      //parser.errorCommaExpression();
+      Token saved = parser.checkedMove(T.T_COMMA);
+      e = new ExprExpression(new ExprForLoopStepComma(e, e_expression()), saved);
     }
 
     return e;
@@ -561,8 +565,10 @@ public class ParseExpression {
     // static_assert(something)
     // is_int(something)
 
-    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
-        || parser.is(Keywords.types_are_same_ident) || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
+    if (parser.is(Keywords.static_assert_ident)
+        || parser.is(Keywords.assert_true_ident)
+        || parser.is(Keywords.types_are_same_ident)
+        || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
 
       int argcExpected = 1;
       if (parser.is(Keywords.types_are_same_ident)) {

@@ -13,6 +13,7 @@ import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
+import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
@@ -82,12 +83,21 @@ public class ApplyExpression {
       applyTypeof(object, e);
     } else if (e.is(ExpressionBase.EBUILTIN_FUNC)) {
       applyBuiltinFunc(object, e);
+    } else if (e.is(ExpressionBase.EFOR_LOOP_STEP_COMMA)) {
+      applyForLoopComma(object, e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyForLoopComma(ClassDeclaration object, ExprExpression e) {
+    final ExprForLoopStepComma node = e.getExprForLoopStepComma();
+    applyExpression(object, node.getLhs());
+    applyExpression(object, node.getRhs());
+    e.setResultType(node.getRhs().getResultType());
   }
 
   private void applyPrimaryChar(ClassDeclaration object, final ExprExpression e) {

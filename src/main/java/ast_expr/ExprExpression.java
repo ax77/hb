@@ -34,6 +34,13 @@ public class ExprExpression implements Serializable, Location {
   private ExprSizeof exprSizeof;
   private ExprTypeof exprTypeof;
   private ExprBuiltinFunc exprBuiltinFunc;
+  private ExprForLoopStepComma exprForLoopStepComma;
+
+  public ExprExpression(ExprForLoopStepComma exprForLoopStepComma, Token beginPos) {
+    this.base = ExpressionBase.EFOR_LOOP_STEP_COMMA;
+    this.beginPos = beginPos;
+    this.exprForLoopStepComma = exprForLoopStepComma;
+  }
 
   public ExprExpression(ExprBuiltinFunc exprBuiltinFunc, Token beginPos) {
     this.base = ExpressionBase.EBUILTIN_FUNC;
@@ -246,7 +253,14 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.EBUILTIN_FUNC) {
       return exprBuiltinFunc.toString();
     }
+    if (base == ExpressionBase.EFOR_LOOP_STEP_COMMA) {
+      return exprForLoopStepComma.toString();
+    }
     return base.toString();
+  }
+
+  public ExprForLoopStepComma getExprForLoopStepComma() {
+    return exprForLoopStepComma;
   }
 
   public ExprBuiltinFunc getExprBuiltinFunc() {

@@ -269,8 +269,14 @@ public class ParseStatement {
     // 2) for (i = 0; ;)
     if (parser.tp() != T_SEMI_COLON) {
       if (isLocalVarBegin()) {
-        VarDeclarator decl = getLocalVar(VarBase.LOCAL_VAR);
-        forBlock.pushItemBack(new StmtStatement(decl, beginPos));
+        //VarDeclarator decl = getLocalVar(VarBase.LOCAL_VAR);
+        //forBlock.pushItemBack(new StmtStatement(decl, beginPos));
+
+        List<VarDeclarator> vars = new ParseVarDeclarator(parser).parseVarDeclaratorListForLoop();
+        for(VarDeclarator decl : vars) {
+          forBlock.pushItemBack(new StmtStatement(decl, beginPos));
+        }
+        
       } else {
         ExprExpression init = parseForLoopExpressions();
         forBlock.pushItemBack(new StmtStatement(init, beginPos));
