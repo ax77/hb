@@ -113,12 +113,7 @@ public class ClassDeclaration implements Serializable, Location {
 
   public void setTypeParametersT(List<Type> typeParametersT) {
     NullChecker.check(typeParametersT);
-
-    for (Type tp : typeParametersT) {
-      if (!tp.isTypenameID()) {
-        throw new AstParseException("is not a type-parameter: " + tp.toString());
-      }
-    }
+    checkTypeParameters(typeParametersT);
 
     // we may 'set' type-parameters if, and only if
     // this class was 'forward' defined, and when we begin

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import errors.AstParseException;
-import errors.ScanExc;
 import tokenize.Env;
 import tokenize.Token;
 
@@ -58,7 +57,7 @@ public class Tokenlist {
 
   public void setOffset(int offset) {
     if (offset < 0 || offset >= size) {
-      throw new ScanExc("set offset overflow.");
+      throw new AstParseException("set offset overflow.");
     }
     this.offset = offset;
   }

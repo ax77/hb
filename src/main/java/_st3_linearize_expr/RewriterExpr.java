@@ -634,7 +634,7 @@ public class RewriterExpr {
     }
 
     else {
-      throw new RuntimeException(base.toString() + ": unimplemented");
+      throw new AstParseException(base.toString() + ": unimplemented");
     }
 
   }

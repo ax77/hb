@@ -17,7 +17,6 @@ import java.util.Set;
 import ast_sourceloc.SourceLocation;
 import ast_types.TypeBindings;
 import errors.AstParseException;
-import errors.ScanExc;
 import hashed.Hash_ident;
 import literals.IntLiteral;
 import literals.ParseIntLiteral;
@@ -208,7 +207,7 @@ public class Stream {
         while (!buffer.isEof()) {
           char tmpch = buffer.nextc();
           if (tmpch == HC_FEOF) {
-            throw new ScanExc(Integer.toString(buffer.getLine()));
+            throw new AstParseException(Integer.toString(buffer.getLine()));
           }
           if (tmpch == '/' && prevc == '*') {
             return WSP_TOKEN;
@@ -251,7 +250,7 @@ public class Stream {
       return specialToken(OTHER_ASCII_CHARACTERS.get(others), others);
     }
 
-    throw new ScanExc("unknown source: " + combineOp(c1, c2, c3));
+    throw new AstParseException("unknown source: " + combineOp(c1, c2, c3));
   }
 
   private Token getString() {
@@ -263,10 +262,10 @@ public class Stream {
       char nextc = buffer.nextc();
 
       if (nextc == Env.HC_FEOF) {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
+        throw new AstParseException(Integer.toString(buffer.getLine()));
       }
       if (nextc == '\n') {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
+        throw new AstParseException(Integer.toString(buffer.getLine()));
       }
       if (nextc == endof) {
         break;
@@ -294,7 +293,7 @@ public class Stream {
     // chars
 
     if (sb.toString().length() == 0) {
-      throw new ScanExc("" + " error : empty char constant");
+      throw new AstParseException("" + " error : empty char constant");
     }
     return new Token(repr, T.TOKEN_CHAR, curLoc());
 
@@ -320,7 +319,7 @@ public class Stream {
       final char c3 = threechars[2];
 
       if (c1 == HC_FEOF || c2 == HC_FEOF || c3 == HC_FEOF) {
-        throw new ScanExc(Integer.toString(buffer.getLine()));
+        throw new AstParseException(Integer.toString(buffer.getLine()));
       }
 
       if (c1 == DOUBLE_QUOTE && c2 == DOUBLE_QUOTE && c3 == DOUBLE_QUOTE) {
@@ -369,7 +368,7 @@ public class Stream {
       return specialToken(SINGLE_OPERATORS.get(one), one);
     }
 
-    throw new ScanExc("unknown operator: " + three);
+    throw new AstParseException("unknown operator: " + three);
   }
 
   private String combineOp(char... ops) {
