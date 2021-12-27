@@ -580,11 +580,11 @@ public class RewriterExpr {
         intrArgs.append("assert_true(");
         intrArgs.append(args.get(0).getName().getName());
         intrArgs.append(", ");
-        intrArgs.append(file + "->buffer");
+        intrArgs.append(file);
         intrArgs.append(", ");
         intrArgs.append(line);
         intrArgs.append(", ");
-        intrArgs.append(expr + "->buffer");
+        intrArgs.append(expr);
         intrArgs.append(")");
 
         IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());

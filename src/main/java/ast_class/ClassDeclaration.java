@@ -169,16 +169,16 @@ public class ClassDeclaration implements Serializable, Location {
       return false;
     }
 
-    //MARK:IMPORTANT:TYPE_SYSTEM:FIXME
+    // MARK:IMPORTANT:TYPE_SYSTEM
+    // It is quite important to compare these lists.
+    // If the class was created from a template it has
+    // the same name and the same keyword, but this list
+    // will be different, and it will contain actual parameters.
     if (!TypeListsComparer.typeListsAreEqual(typeParametersT, another.getTypeParametersT())) {
-      //return false;
+      return false;
     }
 
     // paranoia?
-    if (typeParametersT.size() != another.getTypeParametersT().size()) {
-      System.out.println("not equal: type-parameters");
-      return false;
-    }
 
     if (fields.size() != another.getFields().size()) {
       System.out.println("not equal: fields");

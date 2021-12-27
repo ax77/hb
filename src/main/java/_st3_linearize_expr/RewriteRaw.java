@@ -278,7 +278,7 @@ public class RewriteRaw {
     String m = labelName(ToStringsInternal.signToStringCallPushF(method));
 
     IntrinsicText text = new IntrinsicText(v,
-        "assert_true(" + v.getName().getName() + " != NULL, " + m + "->buffer, " + line() + ", " + e + "->buffer)");
+        "assert_true(" + v.getName().getName() + " != NULL, " + m + ", " + line() + ", " + e + ")");
     return new FlatCodeItem(text);
   }
 

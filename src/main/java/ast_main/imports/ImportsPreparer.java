@@ -60,6 +60,16 @@ public abstract class ImportsPreparer {
     final LinkedList<String> stack = new LinkedList<String>();
     stack.add(firstFile);
 
+    // Let's add all of the predefined classes.
+    // We almost always need these classes to be imported.
+    final String dir = System.getProperty("user.dir");
+    final String[] names = { "arr", "fd", "fmt", "opt", "string" };
+    for (String s : names) {
+      final String nativeFileName = Normalizer.normalize(dir + "/std/natives/" + s + ".hb");
+      stack.add(nativeFileName);
+      result.addFullpath(nativeFileName);
+    }
+
     // imports we've already parsed
     final Set<String> processed = new HashSet<>();
 

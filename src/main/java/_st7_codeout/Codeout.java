@@ -156,6 +156,7 @@ public class Codeout {
     sb.append(builtinsTypedefs.toString());
     sb.append(genTypesFile.toString());
     sb.append(builtinsArrays.toString());
+    sb.append(GnAssertTrue.prebuf());
     sb.append(stringsLabels.toString());
     sb.append("\n");
     sb.append("\n");

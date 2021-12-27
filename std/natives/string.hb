@@ -1,14 +1,16 @@
 import std.natives.arr::array;
 
-native class string 
-{
+native class string {
   native string(string buffer);
+
   native string(array<char> buffer);
-  
+
   native int length();
+
   native char get(int index);
+
   native boolean equals(string another);
-  
+
   // TODO: implement these
   // native string left(int count);
   // native string right(int count);
@@ -20,7 +22,7 @@ native class string
   // native boolean ends_with(string pattern);
   //
   // native array<char> to_array();
-  
+
   string left(int count) {
     
     if(count == 0 || length() == 0) {
@@ -38,7 +40,7 @@ native class string
     
     return new string(res);
   }
-  
+
   string right(int count) {
     
     if(count == 0 || length() == 0) {
@@ -57,7 +59,7 @@ native class string
     
     return new string(res);
   }
-  
+
   string mid(int begin, int much) {
     if(begin >= length()) {
       return this;
@@ -76,49 +78,43 @@ native class string
     }
     return new string(res);
   }
-  
+
   boolean starts_with(string pattern) {
-    if(pattern.length() > this.length()) {
+    if (pattern.length() > this.length()) {
       return false;
     }
-    if(length()==0 || pattern.length() == 0) {
+    if (length() == 0 || pattern.length() == 0) {
       return false;
     }
-    int i = 0;
-    int j = 0;
-    for(; i < length() && j < pattern.length(); ) {
+    for (int i = 0, j = 0; i < length() && j < pattern.length(); i += 1, j += 1) {
       char c1 = get(i);
       char c2 = pattern.get(j);
-      if(c1 != c2) {
+      if (c1 != c2) {
         return false;
       }
-      i += 1;
-      j += 1;
     }
     return true;
   }
-  
+
   boolean ends_with(string pattern) {
-    if(pattern.length() > this.length()) {
+    if (pattern.length() > this.length()) {
       return false;
     }
-    if(length()==0 || pattern.length() == 0) {
+    if (length() == 0 || pattern.length() == 0) {
       return false;
     }
-    int i = length()-1;
-    int j = pattern.length()-1;
-    for(; i >=0 && j >= 0; ) {
+    int i = length() - 1;
+    int j = pattern.length() - 1;
+    for (; i >= 0 && j >= 0; i -= 1, j -= 1) {
       char c1 = get(i);
       char c2 = pattern.get(j);
-      if(c1 != c2) {
+      if (c1 != c2) {
         return false;
       }
-      i-=1;
-      j-=1;
     }
     return true;
   }
-  
+
   string trim() {
     if(length() == 0) {
       return this;
@@ -148,18 +144,5 @@ native class string
     return new string(res);
     
   }
-  
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

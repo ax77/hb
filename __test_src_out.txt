@@ -1,11 +1,21 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("static inline void __before_call(const char *__func, int __line)                  //001 \n");
-    sb.append("{                                                                                 //002 \n");
-    sb.append("  __pushf(__func, __line);                                                        //003 \n");
-    sb.append("}                                                                                 //004 \n");
-    sb.append("static inline void __after_call(const char *__func, int __line)                   //005 \n");
-    sb.append("{                                                                                 //006 \n");
-    sb.append("  __popf();                                                                       //007 \n");
-    sb.append("}                                                                                 //008 \n");
+    sb.append("static inline void assert_true(                                                                   //001 \n");
+    sb.append("  int cnd,                                                                                        //002 \n");
+    sb.append("  struct string *file,                                                                            //003 \n");
+    sb.append("  int line,                                                                                       //004 \n");
+    sb.append("  struct string *expr)                                                                            //005 \n");
+    sb.append("{                                                                                                 //006 \n");
+    sb.append("    assert(file);                                                                                 //007 \n");
+    sb.append("    assert(file->buffer);                                                                         //008 \n");
+    sb.append("    assert(expr);                                                                                 //009 \n");
+    sb.append("    assert(expr->buffer);                                                                         //010 \n");
+    sb.append("    if (cnd == 0) {                                                                               //011 \n");
+    sb.append("        fprintf(stdout, \"assertion failed: (%s:%d) : [%s]\\n\"                                   //012 \n");
+    sb.append("          , file->buffer                                                                          //013 \n");
+    sb.append("          , line                                                                                  //014 \n");
+    sb.append("          , expr->buffer);                                                                        //015 \n");
+    sb.append("        exit(7);                                                                                  //016 \n");
+    sb.append("    }                                                                                             //017 \n");
+    sb.append("}                                                                                                 //018 \n");
     //@formatter:on

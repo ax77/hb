@@ -1,5 +1,5 @@
-import std.natives.string::string;
-import std.natives.fmt::fmt;
+//import std.natives.string::string;
+//import std.natives.fmt::fmt;
 
 interface markable {
   int getmark();
@@ -37,6 +37,13 @@ class main_class {
     
     fmt.print(p.getkey());
     fmt.print(p.getval());
+    
+    array<string> argv = new array<string>();
+    argv.add("a.");
+    argv.add("b");
+    for(int i = 0; i < argv.size(); i += 1) {
+      fmt.print(argv.get(i));
+    }
     
     //markable mkrbl = new strmark();
     //return m.getmark();

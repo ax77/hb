@@ -1,11 +1,18 @@
-static inline void __before_call(const char *__func, int __line)               
-{                                                                        
-  __pushf(__func, __line);                                                
-}  
-
-static inline void __after_call(const char *__func, int __line)               
-{                                                                        
-  __popf();                        
-}  
-
-
+static inline void assert_true(
+  int cnd, 
+  struct string *file, 
+  int line, 
+  struct string *expr)  
+{                                                                                      
+    assert(file);
+    assert(file->buffer);                                                                      
+    assert(expr);
+    assert(expr->buffer);                                                                      
+    if (cnd == 0) {                                                                    
+        fprintf(stdout, "assertion failed: (%s:%d) : [%s]\n"
+          , file->buffer
+          , line
+          , expr->buffer);    
+        exit(7);                                                                       
+    }                                                                                  
+}

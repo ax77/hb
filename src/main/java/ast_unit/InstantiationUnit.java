@@ -32,10 +32,6 @@ public class InstantiationUnit {
   /// it should be re-thinked...
   private boolean alreadyContains(ClassDeclaration clazz, List<ClassDeclaration> where) {
     for (ClassDeclaration c : where) {
-      if (c.getIdentifier().equals(clazz.getIdentifier())) {
-        //return true;
-      }
-      // TODO: is it correct??
       if (c.isEqualTo(clazz)) {
         return true;
       }
