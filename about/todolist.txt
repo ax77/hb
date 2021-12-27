@@ -51,6 +51,11 @@
 
 * generic functions in static classes.
 
+* builtin 'hash' function. 
+    We cannot use a class-method like we do with 'equals' method,
+    because we also need this function
+    for primitives, and we use primitives in containers, and we do
+    not have wrappers like in java int/Integer, etc.
 
 
 

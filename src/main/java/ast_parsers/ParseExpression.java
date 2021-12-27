@@ -565,7 +565,7 @@ public class ParseExpression {
     // static_assert(something)
     // is_int(something)
 
-    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
+    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident) || parser.is(Keywords.hash_ident)
         || parser.is(Keywords.types_are_same_ident) || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
 
       int argcExpected = 1;

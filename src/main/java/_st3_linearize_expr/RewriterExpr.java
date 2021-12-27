@@ -628,6 +628,36 @@ public class RewriterExpr {
         }
       }
 
+      else if (name.equals(Keywords.hash_ident)) {
+        // hash(type)
+
+        // __hash_char_ptr
+        // __hash_int
+        // __hash_ptr
+
+        Type argtype = args.get(0).getType();
+        String hashfuncname = "?";
+
+        final boolean isStringable = argtype.isString() || argtype.isCharArray();
+        if (argtype.isClass() && !isStringable) {
+          hashfuncname = "__hash_ptr";
+        } else if (argtype.isString()) {
+          hashfuncname = "__hash_char_ptr_string";
+        } else if (argtype.isCharArray()) {
+          hashfuncname = "__hash_char_ptr_array";
+        } else if (argtype.isInteger()) {
+          hashfuncname = "__hash_int";
+        } else {
+          throw new AstParseException(
+              e.getLocationToString() + "\nerror: [unimplemented hash function for type]\n" + argtype.toString());
+        }
+
+        AssignVarFlatCallResult res = new AssignVarFlatCallResult(VarCreator.justNewVar(e.getResultType()),
+            new FunctionCallWithResult(method, hashfuncname, TypeBindings.make_int(), args));
+        FlatCodeItem item = new FlatCodeItem(res);
+        genRaw(item);
+      }
+
       else {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }

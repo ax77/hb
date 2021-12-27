@@ -15,6 +15,7 @@ import ast_stmt.StmtBlock;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
+import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -126,6 +127,11 @@ public class ApplyUnitPreEachClass {
       return;
     }
 
+    addEqualsMethod(object);
+    addDestructor(object);
+  }
+
+  private void addEqualsMethod(ClassDeclaration object) {
     if (!object.hasPredefinedMethod(BuiltinNames.equals_ident)) {
 
       final Token beginPos = object.getBeginPos();
@@ -151,7 +157,14 @@ public class ApplyUnitPreEachClass {
       object.addMethod(m);
     }
 
-    addDestructor(object);
+    else {
+      checkEqualsMethodSignature(object);
+    }
+  }
+
+  private void checkEqualsMethodSignature(ClassDeclaration object) {
+    // TODO Auto-generated method stub
+
   }
 
   private void addDestructor(ClassDeclaration object) {
