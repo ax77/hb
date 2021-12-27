@@ -193,6 +193,12 @@ public class ApplyExpression {
     final ExprExpression expressionForCast = castExpression.getExpressionForCast();
 
     applyExpression(object, expressionForCast);
+
+    boolean castIsOk = castExpression.getExpressionForCast().getResultType().isPrimitive() && toType.isPrimitive();
+    if (!castIsOk) {
+      ErrorLocation.errorExpression("cast expression is suitable only for primitives", e);
+    }
+
     e.setResultType(toType);
   }
 

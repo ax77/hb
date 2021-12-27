@@ -48,6 +48,9 @@ class main_class {
     pair<string, array<string>> p2 = new pair<string, array<string>>(".", new array<string>());
     pair<string, array<array<string>>> p3 = new pair<string, array<array<string>>>(".", new array<array<string>>());
     
+    int xx = 33;
+    char zz = cast(xx: char);
+    
     //markable mkrbl = new strmark();
     //return m.getmark();
     return 0;

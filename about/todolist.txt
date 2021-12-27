@@ -1,5 +1,5 @@
 * static semantic
-* unit tests
+* unit tests for each grammar rule
 * GC
 * opt<type> and 'null'
 * init the parser with the string
@@ -19,7 +19,7 @@
 * string concatenation
 * const variables in generated file!
 * annotations (method, field, class, etc)
-* cast expression types compatibility
+*[V+-] cast expression types compatibility
 
 *[V] maybe add some compile-time macros like __FILE__, __LINE__, are they useful? 
     I think that they are.
@@ -47,7 +47,7 @@
   So: we use toString() in classes only during the parse stage.
   And then - we implement our own toString() for each type, class, method, etc.
 
-* add predefined buffer with native classes: [string, array, opt, fd, fmt]
+*[V] add predefined buffer with native classes: [string, array, opt, fd, fmt]
 
 
 
