@@ -9,6 +9,7 @@ import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
+import _st3_linearize_expr.items.AssignVarFlatCallResultHashFn;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
@@ -117,9 +118,7 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isAssignVarNull()) {
-        rv.add(item);
-      } else if (item.isAssignVarNum()) {
+      else if (item.isAssignVarNum()) {
         rv.add(item);
       } else if (item.isAssignVarTrue()) {
         rv.add(item);
@@ -189,6 +188,40 @@ public class RewriteRaw {
       /// cast
       else if (item.isAssignVarCastExpression()) {
         rv.add(item);
+      }
+
+      /// hash functions
+      else if (item.isAssignVarFlatCallResultHashFn()) {
+
+        AssignVarFlatCallResultHashFn hfn = item.getAssignVarFlatCallResultHashFn();
+        FunctionCallWithResult fn = hfn.getRvalue();
+
+        Type argtype = fn.getArgs().get(0).getType();
+        String argname = fn.getArgs().get(0).getName().getName();
+
+        String hashfuncname = "0[";
+        final boolean isStringable = argtype.isString() || argtype.isCharArray();
+
+        // TODO: get from symbol table the name of
+        // the array of char, and the name of the string class,
+        // and use as a parameter. And also - generate c-code dynamically
+        // for each of these hash functions...
+
+        if (argtype.isClass() && !isStringable) {
+          hashfuncname = "__hash_ptr(" + argname + ")";
+        } else if (argtype.isString()) {
+          hashfuncname = "__hash_char_ptr(" + argname + "->buffer)";
+        } else if (argtype.isCharArray()) {
+          hashfuncname = "__hash_char_ptr(" + argname + "->data)";
+        } else if (argtype.isInteger()) {
+          hashfuncname = "__hash_int(" + argname + ")";
+        } else {
+          throw new AstParseException("\nerror: [unimplemented hash function for type]\n" + argtype.toString());
+        }
+
+        IntrinsicText txt = new IntrinsicText(hfn.getLvalue(),
+            hfn.getLvalue().typeNameToString() + " = " + hashfuncname);
+        rv.add(new FlatCodeItem(txt));
       }
 
       else {

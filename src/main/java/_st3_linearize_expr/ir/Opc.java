@@ -12,13 +12,13 @@ public enum Opc {
   , AssignVarFlatCallStringCreationTmp // temporary
   , AssignVarFlatCallResult            // type a = f(b, c)
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
-  , AssignVarNull                      // type a = null
+  , AssignVarFlatCallResultHashFn      // int hash(type);
   , AssignVarNum                       // type a = 1
   , AssignVarTernaryOp                 // type a = ?(varCnd, varTrue, varFalse)
   , AssignVarTrue                      // type a = true
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
-  , AssignVarCastExpression            // cast(expressiont : to_this_type) -> cast(32:char)
+  , AssignVarCastExpression            // cast(expression : to_this_type) -> cast(32:char)
   //
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void

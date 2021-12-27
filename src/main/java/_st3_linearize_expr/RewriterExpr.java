@@ -24,6 +24,7 @@ import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
+import _st3_linearize_expr.items.AssignVarFlatCallResultHashFn;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
@@ -634,27 +635,14 @@ public class RewriterExpr {
         // __hash_char_ptr
         // __hash_int
         // __hash_ptr
+        // TODO: floating, if any?
 
-        Type argtype = args.get(0).getType();
-        String hashfuncname = "?";
+        String hashfuncname = "0[";
 
-        final boolean isStringable = argtype.isString() || argtype.isCharArray();
-        if (argtype.isClass() && !isStringable) {
-          hashfuncname = "__hash_ptr";
-        } else if (argtype.isString()) {
-          hashfuncname = "__hash_char_ptr_string";
-        } else if (argtype.isCharArray()) {
-          hashfuncname = "__hash_char_ptr_array";
-        } else if (argtype.isInteger()) {
-          hashfuncname = "__hash_int";
-        } else {
-          throw new AstParseException(
-              e.getLocationToString() + "\nerror: [unimplemented hash function for type]\n" + argtype.toString());
-        }
-
-        AssignVarFlatCallResult res = new AssignVarFlatCallResult(VarCreator.justNewVar(e.getResultType()),
-            new FunctionCallWithResult(method, hashfuncname, TypeBindings.make_int(), args));
-        FlatCodeItem item = new FlatCodeItem(res);
+        FunctionCallWithResult rvalue = new FunctionCallWithResult(method, hashfuncname, TypeBindings.make_int(), args);
+        AssignVarFlatCallResultHashFn hashfn = new AssignVarFlatCallResultHashFn(
+            VarCreator.justNewVar(e.getResultType()), rvalue);
+        FlatCodeItem item = new FlatCodeItem(hashfn);
         genRaw(item);
       }
 

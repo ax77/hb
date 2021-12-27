@@ -22,28 +22,26 @@ opcodes = """
     AssignVarFalse                     ,
     AssignVarFieldAccess               ,
     AssignVarStaticFieldAccess         ,
+    AssignVarSizeof                    ,
     AssignVarFlatCallClassCreationTmp  ,
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
-    AssignVarNull                      ,
-    AssignVarCastExpression            ,
+    AssignVarFlatCallResultHashFn      ,
     AssignVarNum                       ,
     AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
-    AssignVarSizeof                    ,
+    AssignVarCastExpression            ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
-    FlatCallVoidBuiltin                ,
     FlatCallVoidStaticClassMethod      ,
     StoreFieldVar                      ,
     StoreVarField                      ,
-    IntrinsicText                      ,
-    CallListenerVoidMethod             ,
-    CallListenerResultMethod           ,
-    StoreVarVar                        
+    StoreVarVar                        ,
+    IntrinsicText                      
+                            
 """
 opcodes_arr = []
 for opc in opcodes.split(','):
@@ -89,14 +87,15 @@ assigns_ops = """
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
-      || isAssignVarFlatCallResultStatic()
-      || isAssignVarNull()   
+      || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum()   
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
       || isAssignVarVar()
-      || isAssignVarCastExpression();
+      || isAssignVarCastExpression() 
+      || isAssignVarFlatCallResultHashFn()
+      ;
   }
 """
 

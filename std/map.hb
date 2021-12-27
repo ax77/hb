@@ -34,7 +34,10 @@ class map<K, V> {
 
 class main_class {
   int main() {
-    map<string, char> m = new map<string, char>();
+    map<string, char> m1 = new map<string, char>();
+    map<int, char> m2 = new map<int, char>();
+    map<array<char>, char> m3 = new map<array<char>, char>();
+    map<opt<int>, long> m4 = new map<opt<int>, long>();
     return 0;
   }
 }
