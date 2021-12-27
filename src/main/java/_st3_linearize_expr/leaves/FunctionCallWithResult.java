@@ -3,7 +3,7 @@ package _st3_linearize_expr.leaves;
 import java.util.List;
 
 import ast_method.ClassMethodDeclaration;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import ast_types.Type;
 
 public class FunctionCallWithResult {
@@ -37,7 +37,7 @@ public class FunctionCallWithResult {
 
   @Override
   public String toString() {
-    return fullname + GenericListPrinter.paramsToStringWithBraces(args);
+    return fullname + ArgsListToString.paramsToStringWithBraces(args, '(');
   }
 
 }

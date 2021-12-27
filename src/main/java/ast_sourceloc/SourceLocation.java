@@ -17,12 +17,6 @@ public class SourceLocation implements Serializable {
     this.column = column;
   }
 
-  public SourceLocation(SourceLocation from) {
-    this.filename = Hash_strings.getHashedString(from.filename);
-    this.line = from.line;
-    this.column = from.column;
-  }
-
   public String getFilename() {
     return filename;
   }

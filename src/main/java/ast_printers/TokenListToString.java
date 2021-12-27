@@ -4,7 +4,7 @@ import java.util.List;
 
 import tokenize.Token;
 
-public abstract class TokenlistPrinter {
+public abstract class TokenListToString {
 
   public static String print(List<Token> tokens) {
     StringBuilder sb = new StringBuilder();

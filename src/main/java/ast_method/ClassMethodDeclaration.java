@@ -8,7 +8,7 @@ import _st1_templates.TypeSetter;
 import ast_class.ClassDeclaration;
 import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
-import ast_printers.TypeListToString;
+import ast_printers.ArgsListToString;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
@@ -182,9 +182,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
     if (isConstructor()) {
       if (!clazz.getTypeParametersT().isEmpty()) {
-        sb.append("<");
-        sb.append(TypeListToString.gen(clazz.getTypeParametersT()));
-        sb.append(">");
+        sb.append(ArgsListToString.paramsToStringWithBraces(clazz.getTypeParametersT(), '<'));
       }
     }
 

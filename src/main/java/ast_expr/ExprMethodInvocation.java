@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import ast_method.ClassMethodDeclaration;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
@@ -57,7 +57,7 @@ public class ExprMethodInvocation implements Serializable {
     sb.append(".");
 
     sb.append(funcname.getName());
-    sb.append(GenericListPrinter.paramsToStringWithBraces(arguments));
+    sb.append(ArgsListToString.paramsToStringWithBraces(arguments, '('));
 
     return sb.toString();
   }

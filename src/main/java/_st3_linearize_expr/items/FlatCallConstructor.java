@@ -3,7 +3,7 @@ package _st3_linearize_expr.items;
 import java.util.List;
 
 import _st3_linearize_expr.leaves.Var;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import errors.AstParseException;
 import utils_oth.NullChecker;
 
@@ -38,7 +38,7 @@ public class FlatCallConstructor {
 
   @Override
   public String toString() {
-    return fullname + GenericListPrinter.paramsToStringWithBraces(args);
+    return fullname + ArgsListToString.paramsToStringWithBraces(args, '(');
   }
 
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import _st3_linearize_expr.leaves.Var;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 
 public class FlatCallVoid {
 
@@ -32,7 +32,7 @@ public class FlatCallVoid {
 
   @Override
   public String toString() {
-    return fullname + GenericListPrinter.paramsToStringWithBraces(args);
+    return fullname + ArgsListToString.paramsToStringWithBraces(args, '(');
   }
 
 }

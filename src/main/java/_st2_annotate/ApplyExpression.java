@@ -22,7 +22,7 @@ import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import ast_symtab.BuiltinNames;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
@@ -243,7 +243,7 @@ public class ApplyExpression {
 
     if (constructor == null) {
       ErrorLocation.errorExpression("class has no constructor with args: "
-          + GenericListPrinter.paramsToStringWithBraces(classCreation.getArguments()), e);
+          + ArgsListToString.paramsToStringWithBraces(classCreation.getArguments(), '('), e);
     }
 
     e.setResultType(resultTypeOfObject);

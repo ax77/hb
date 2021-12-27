@@ -5,7 +5,7 @@ import java.util.List;
 
 import _st1_templates.TypeSetter;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import ast_types.Type;
 import errors.ErrorLocation;
 import utils_oth.NullChecker;
@@ -39,7 +39,7 @@ public class ExprClassCreation implements Serializable, TypeSetter {
 
   @Override
   public String toString() {
-    return "new " + classtype.toString() + GenericListPrinter.paramsToStringWithBraces(arguments);
+    return "new " + classtype.toString() + ArgsListToString.paramsToStringWithBraces(arguments, '(');
   }
 
   @Override

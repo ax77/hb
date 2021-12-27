@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_printers.TypeListToString;
+import ast_printers.ArgsListToString;
 import utils_oth.NullChecker;
 
 public class ClassTypeRef implements Serializable {
@@ -58,9 +58,7 @@ public class ClassTypeRef implements Serializable {
     StringBuilder sb = new StringBuilder();
     sb.append(clazz.getIdentifier().getName());
     if (!typeArguments.isEmpty()) {
-      sb.append("<");
-      sb.append(TypeListToString.gen(typeArguments));
-      sb.append(">");
+      sb.append(ArgsListToString.paramsToStringWithBraces(typeArguments, '<'));
     }
 
     return sb.toString();

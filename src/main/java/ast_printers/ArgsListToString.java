@@ -2,11 +2,11 @@ package ast_printers;
 
 import java.util.List;
 
-public class GenericListPrinter {
+public class ArgsListToString {
 
-  public static <E> String paramsToStringWithBraces(List<E> args) {
+  public static <E> String paramsToStringWithBraces(List<E> args, char open) {
     StringBuilder sb = new StringBuilder();
-    sb.append("(");
+    sb.append(open);
 
     for (int i = 0; i < args.size(); i++) {
       E param = args.get(i);
@@ -17,7 +17,8 @@ public class GenericListPrinter {
       }
     }
 
-    sb.append(")");
+    // method parameters, generic parameters
+    sb.append(open == '(' ? ")" : ">");
     return sb.toString();
   }
 

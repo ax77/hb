@@ -3,7 +3,7 @@ package ast_expr;
 import java.io.Serializable;
 import java.util.List;
 
-import ast_printers.GenericListPrinter;
+import ast_printers.ArgsListToString;
 import tokenize.Ident;
 import utils_oth.NullChecker;
 
@@ -57,7 +57,7 @@ public class ExprBuiltinFunc implements Serializable {
 
   @Override
   public String toString() {
-    return name.toString() + GenericListPrinter.paramsToStringWithBraces(args);
+    return name.toString() + ArgsListToString.paramsToStringWithBraces(args, '(');
   }
 
 }
