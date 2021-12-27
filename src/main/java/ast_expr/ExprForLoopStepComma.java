@@ -2,8 +2,6 @@ package ast_expr;
 
 import java.io.Serializable;
 
-import tokenize.Token;
-
 public class ExprForLoopStepComma implements Serializable {
   private static final long serialVersionUID = 7441206591539888580L;
   private final ExprExpression lhs;

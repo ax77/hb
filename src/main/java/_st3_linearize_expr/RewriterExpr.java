@@ -14,8 +14,8 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st2_annotate.TypeTraitsUtil;
 import _st2_annotate.LvalueUtil;
+import _st2_annotate.TypeTraitsUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarBinop;
@@ -45,6 +45,7 @@ import _st3_linearize_expr.leaves.FunctionCallWithResultStatic;
 import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
+import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -316,7 +317,7 @@ public class RewriterExpr {
       // TODO:
       final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(0);
       final FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor,
-          constructor.signToStringCall(), lvalue.getType(), args);
+          ToStringsInternal.signToStringCall(constructor), lvalue.getType(), args);
 
       final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
           callWithResult);
@@ -370,14 +371,14 @@ public class RewriterExpr {
         if (method.isVoid()) {
 
           final FlatCallVoidStaticClassMethod call = new FlatCallVoidStaticClassMethod(method,
-              method.signToStringCall(), args);
+              ToStringsInternal.signToStringCall(method), args);
           final FlatCodeItem item = new FlatCodeItem(call);
           genRaw(item);
         }
 
         else {
-          final FunctionCallWithResultStatic call = new FunctionCallWithResultStatic(method, method.signToStringCall(),
-              method.getType(), args);
+          final FunctionCallWithResultStatic call = new FunctionCallWithResultStatic(method,
+              ToStringsInternal.signToStringCall(method), method.getType(), args);
           final Var resultVar = VarCreator.justNewVar(method.getType());
           final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResultStatic(resultVar, call));
           genRaw(item);
@@ -388,14 +389,14 @@ public class RewriterExpr {
       else {
 
         if (method.isVoid()) {
-          final FlatCallVoid call = new FlatCallVoid(method, method.signToStringCall(), args);
+          final FlatCallVoid call = new FlatCallVoid(method, ToStringsInternal.signToStringCall(method), args);
           final FlatCodeItem item = new FlatCodeItem(call);
           genRaw(item);
         }
 
         else {
-          final FunctionCallWithResult call = new FunctionCallWithResult(method, method.signToStringCall(),
-              method.getType(), args);
+          final FunctionCallWithResult call = new FunctionCallWithResult(method,
+              ToStringsInternal.signToStringCall(method), method.getType(), args);
           final Var resultVar = VarCreator.justNewVar(method.getType());
           final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
           genRaw(item);
@@ -464,8 +465,8 @@ public class RewriterExpr {
       }
       NullChecker.check(constructor);
 
-      final FunctionCallWithResult call = new FunctionCallWithResult(constructor, constructor.signToStringCall(),
-          constructor.getType(), args);
+      final FunctionCallWithResult call = new FunctionCallWithResult(constructor,
+          ToStringsInternal.signToStringCall(constructor), constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);
       final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
           call);

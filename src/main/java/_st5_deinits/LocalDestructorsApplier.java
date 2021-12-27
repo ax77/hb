@@ -17,6 +17,7 @@ import _st4_linearize_stmt.items.LinearReturn;
 import _st4_linearize_stmt.items.LinearSelection;
 import _st4_linearize_stmt.items.LinearStatement;
 import _st4_linearize_stmt.items.LocalDestructors;
+import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
@@ -173,7 +174,7 @@ public class LocalDestructorsApplier {
         final ClassDeclaration classType = v.getType().getClassTypeFromRef();
         final ClassMethodDeclaration destructor = classType.getDestructor();
 
-        FlatCallVoid fc = new FlatCallVoid(destructor, destructor.signToStringCall(), args);
+        FlatCallVoid fc = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
         res.add(fc);
       }
     }

@@ -1,6 +1,7 @@
 package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
+import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_types.Type;
 
@@ -24,10 +25,10 @@ public class AssignVarAllocObject {
   @Override
   public String toString() {
     final ClassDeclaration clazz = typename.getClassTypeFromRef();
-    final String headerToString = clazz.headerToString();
+    final String headerToString = ToStringsInternal.classHeaderToString(clazz);
 
-    return lvalue.typeNameToString() + " = (" + lvalue.getType().toString() + ") hcalloc( 1u, sizeof(struct "
-        + headerToString + ") )";
+    return lvalue.typeNameToString() + " = (" + ToStringsInternal.typeToString(lvalue.getType())
+        + ") hcalloc( 1u, sizeof(struct " + headerToString + ") )";
   }
 
 }

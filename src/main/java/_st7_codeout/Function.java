@@ -3,7 +3,6 @@ package _st7_codeout;
 import _st3_linearize_expr.ir.CopierNamer;
 import _st4_linearize_stmt.LinearBlock;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.TypePrinters;
 
 public class Function {
   private final ClassMethodDeclaration methodSignature;
@@ -24,19 +23,19 @@ public class Function {
 
   public String signToString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(methodSignature.getType().toString());
+    sb.append(ToStringsInternal.typeToString(methodSignature.getType()));
     sb.append(" ");
     sb.append(CopierNamer.getMethodName(methodSignature));
-    sb.append(TypePrinters.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
-    sb.append(methodSignature.parametersToString());
+    sb.append(ToStringsInternal.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
+    sb.append(ToStringsInternal.parametersToString(methodSignature.getParameters()));
     return sb.toString();
   }
 
   public String signToStringCall() {
     StringBuilder sb = new StringBuilder();
     sb.append(CopierNamer.getMethodName(methodSignature));
-    sb.append(TypePrinters.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
-    sb.append(methodSignature.parametersToString());
+    sb.append(ToStringsInternal.typeArgumentsToString(methodSignature.getClazz().getTypeParametersT()));
+    sb.append(ToStringsInternal.parametersToString(methodSignature.getParameters()));
     return sb.toString();
   }
 

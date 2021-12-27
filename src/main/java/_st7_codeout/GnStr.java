@@ -19,7 +19,7 @@ public abstract class GnStr {
   public static String genStringStruct(ClassDeclaration c) {
     sb = new StringBuilder();
 
-    line("struct " + c.headerToString() + "\n{");
+    line("struct " + ToStringsInternal.classHeaderToString(c) + "\n{");
     line("    char * buffer;");
     line("    size_t length;");
     line("};\n");
@@ -32,9 +32,10 @@ public abstract class GnStr {
 
     final ClassMethodDeclaration method = func.getMethodSignature();
 
-    final String methodType = method.getType().toString();
-    final String signToStringCall = method.signToStringCall();
-    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+    final String methodType = ToStringsInternal.typeToString(method.getType());
+    final String signToStringCall = ToStringsInternal.signToStringCall(method);
+    final String methodCallsHeader = methodType + " " + signToStringCall
+        + ToStringsInternal.parametersToString(method.getParameters()) + " {";
 
     /// native string(string buffer);
     /// native int length();
@@ -47,7 +48,7 @@ public abstract class GnStr {
       final List<VarDeclarator> parameters = method.getParameters();
 
       if (parameters.get(1).getType().isString()) {
-        line(methodType + " " + signToStringCall + method.parametersToString() + " {");// "(struct string* __this, const char * const buffer)" + " {");
+        line(methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters()) + " {");
         line("    assert(__this);");
         line("    assert(buffer);");
         line("    assert(buffer->buffer);\n");
@@ -57,7 +58,7 @@ public abstract class GnStr {
       }
 
       else if (parameters.get(1).getType().isCharArray()) {
-        line(methodType + " " + signToStringCall + method.parametersToString() + " {");
+        line(methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters()) + " {");
         line("    assert(__this);");
         line("    assert(buffer);");
         line("    assert(buffer->data);\n");

@@ -27,8 +27,9 @@ public abstract class GnNative {
     final List<VarDeclarator> params = method.getParameters();
 
     //
-    final String methodType = method.getType().toString();
-    final String methodCallsHeader = methodType + " " + method.signToStringCall() + method.parametersToString() + " {";
+    final String methodType = ToStringsInternal.typeToString(method.getType());
+    final String methodCallsHeader = methodType + " " + ToStringsInternal.signToStringCall(method)
+        + ToStringsInternal.parametersToString(method.getParameters()) + " {";
 
     /// native_open_ident = g("native_open");
     /// native_close_ident = g("native_close");
@@ -146,7 +147,7 @@ public abstract class GnNative {
     if (tp.isFloat() || tp.isDouble()) {
       return "%f";
     }
-    throw new AstParseException("unimplemented type to printf: " + tp.toString());
+    throw new AstParseException("unimplemented type to printf: " + ToStringsInternal.typeToString(tp));
   }
 
   private static PrintfPair printfArgExpand(VarDeclarator param) {

@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st1_templates.TypeSetter;
-import _st3_linearize_expr.ir.CopierNamer;
 import ast_class.ClassDeclaration;
 import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
-import ast_printers.TypePrinters;
+import ast_printers.TypeListToString;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
@@ -154,7 +153,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     this.parameters.add(0, param);
   }
 
-  public String parametersToString() {
+  private String parametersToString() {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
 
@@ -182,7 +181,11 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     sb.append(identifier);
 
     if (isConstructor()) {
-      sb.append(TypePrinters.typeArgumentsToString(clazz.getTypeParametersT()));
+      if (!clazz.getTypeParametersT().isEmpty()) {
+        sb.append("<");
+        sb.append(TypeListToString.gen(clazz.getTypeParametersT()));
+        sb.append(">");
+      }
     }
 
     sb.append(parametersToString());
@@ -223,14 +226,6 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
 
   public boolean isMain() {
     return identifier.getName().equals("main");
-  }
-
-  public String signToStringCall() {
-    return CopierNamer.getMethodName(this) + TypePrinters.typeArgumentsToString(getClazz().getTypeParametersT());
-  }
-  
-  public String signToStringCallPushF() {
-    return CopierNamer.getMethodNamePushF(this) ;
   }
 
   public boolean isDestructor() {

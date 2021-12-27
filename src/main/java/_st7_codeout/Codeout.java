@@ -12,7 +12,6 @@ import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
-import ast_printers.TypePrinters;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
@@ -58,7 +57,7 @@ public class Codeout {
 
     if (!c.getTypeParametersT().isEmpty()) {
       sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(c.getTypeParametersT()));
+      sb.append(ToStringsInternal.typeArgumentsToString(c.getTypeParametersT()));
     }
 
     sb.append("\n{\n");
@@ -103,11 +102,13 @@ public class Codeout {
       }
       String initBuffer = content.toString();
 
-      //struct string *t1024 = &(struct string) { .buffer = "1.2.3", .length = 5 };
+      // We have to 'bootstrap' a string class here, so we have to use 
+      // a structures instead of char*.
+      // struct string *t1024 = &(struct string) { .buffer = "1.2.3", .length = 5 };
+      //
       stringsLabels.append("struct string * " + v.getName().getName() + " = &(struct string) { .buffer = \""
           + initBuffer + "\", .length = " + initBuffer.length() + " };\n");
 
-      //stringsLabels.append("static const char " + v.getName().getName() + "[] = \"" + initBuffer + "\";\n");
     }
   }
 
@@ -194,7 +195,7 @@ public class Codeout {
         final String testName = CEscaper.unquote(m.getTestName());
 
         String name = "\"" + className + " :: " + testName + "\"";
-        String sign = m.signToStringCall();
+        String sign = ToStringsInternal.signToStringCall(m);
 
         sb.append("\nprintf(\"test: %s\\n\", " + name + ");\n");
         sb.append(sign + "();\n");
@@ -224,7 +225,7 @@ public class Codeout {
         varname.append("_");
         varname.append(field.getIdentifier().toString());
 
-        sb.append("static const " + field.getType().toString() + " " + varname + " = "
+        sb.append("static const " + ToStringsInternal.typeToString(field.getType()) + " " + varname + " = "
             + field.getSimpleInitializer().toString() + ";\n");
       }
     }
@@ -310,13 +311,13 @@ public class Codeout {
 
   private String genInterfaceStruct(ClassDeclaration c) {
     StringBuilder sb = new StringBuilder();
-    sb.append("struct " + c.headerToString() + "\n{\n");
+    sb.append("struct " + ToStringsInternal.classHeaderToString(c) + "\n{\n");
     for (ClassMethodDeclaration m : c.getMethods()) {
       // void (*name) (args);
-      sb.append("    " + m.getType().toString() + "(*");
+      sb.append("    " + ToStringsInternal.typeToString(m.getType()) + "(*");
       sb.append(m.getIdentifier().toString() + ")");
-      sb.append(m.parametersToString());
-      sb.append(";");
+      sb.append(ToStringsInternal.parametersToString(m.getParameters()));
+      sb.append(";\n");
     }
     sb.append("\n};\n");
     return sb.toString();
@@ -335,7 +336,7 @@ public class Codeout {
       if (c.isNativeArray()) {
         //continue;
       }
-      sb.append("struct " + c.headerToString() + ";\n");
+      sb.append("struct " + ToStringsInternal.classHeaderToString(c) + ";\n");
     }
 
     return sb.toString();
@@ -355,16 +356,8 @@ public class Codeout {
       }
       if (c.isNativeString() && meth.isConstructor()) {
 
-        sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
-
-        //        if (meth.getParameters().get(1).getType().isString()) {
-        //          sb.append(meth.getType().toString() + " " + meth.signToStringCall()
-        //              + "(struct string* __this, const char * const buffer);\n");
-        //        } else if (meth.getParameters().get(1).getType().isCharArray()) {
-        //          sb.append(meth.getType().toString() + " " + meth.signToStringCall() + meth.parametersToString() + ";\n");
-        //        } else {
-        //
-        //        }
+        sb.append(ToStringsInternal.typeToString(meth.getType()) + " " + ToStringsInternal.signToStringCall(meth)
+            + ToStringsInternal.parametersToString(meth.getParameters()) + ";\n");
 
         continue;
       }

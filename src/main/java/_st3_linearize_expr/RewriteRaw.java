@@ -17,6 +17,7 @@ import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
+import _st7_codeout.ToStringsInternal;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.SourceLocation;
@@ -108,15 +109,11 @@ public class RewriteRaw {
 
         // 3
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
-        final String sign = rvalue.getMethod().signToStringCallPushF();
-
         rv.add(new FlatCodeItem(flatCallConstructor));
 
       }
 
       else if (item.isAssignVarFlatCallResult()) {
-        final String sign = item.getAssignVarFlatCallResult().getRvalue().getMethod().signToStringCallPushF();
-
         rv.add(item);
       }
 
@@ -141,8 +138,6 @@ public class RewriteRaw {
       }
 
       else if (item.isFlatCallVoid()) {
-        final String sign = item.getFlatCallVoid().getMethod().signToStringCallPushF();
-
         rv.add(item);
       }
 
@@ -242,7 +237,7 @@ public class RewriteRaw {
 
     final Type lhsType = lhs.getType();
     final ClassMethodDeclaration meth = lhsType.getClassTypeFromRef().getPredefinedMethod(BuiltinNames.equals_ident);
-    final String sign = meth.signToStringCall();
+    final String sign = ToStringsInternal.signToStringCall(meth);
 
     final List<Var> args = new ArrayList<>();
     args.add(lhs);
@@ -280,10 +275,10 @@ public class RewriteRaw {
 
   private FlatCodeItem genAssert(Var v) {
     String e = labelName(expr("null pointer field-access"));
-    String m = labelName(method.signToStringCallPushF());
+    String m = labelName(ToStringsInternal.signToStringCallPushF(method));
 
     IntrinsicText text = new IntrinsicText(v,
-        "assert_true(" + v.getName().getName() + " != NULL, " + m + ", " + line() + ", " + e + ")");
+        "assert_true(" + v.getName().getName() + " != NULL, " + m + "->buffer, " + line() + ", " + e + "->buffer)");
     return new FlatCodeItem(text);
   }
 

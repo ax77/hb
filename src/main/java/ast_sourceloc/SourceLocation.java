@@ -37,7 +37,8 @@ public class SourceLocation implements Serializable {
 
   @Override
   public String toString() {
-    return filename + ":" + String.format("%d", line); // + ":" + String.format("%d", column) + ":";
+    final String fnameSimple = filename.substring(filename.lastIndexOf('/') + 1);
+    return fnameSimple + ":" + String.format("%d", line); // + ":" + String.format("%d", column) + ":";
   }
 
 }

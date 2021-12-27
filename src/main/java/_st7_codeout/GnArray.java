@@ -22,8 +22,8 @@ public abstract class GnArray {
 
     Type arrayOf = c.getTypeParametersT().get(0);
 
-    line("struct " + c.headerToString() + "\n{");
-    line("    " + arrayOf.toString() + "* data;");
+    line("struct " + ToStringsInternal.classHeaderToString(c) + "\n{");
+    line("    " + ToStringsInternal.typeToString(arrayOf) + "* data;");
     line("    size_t size;");
     line("    size_t alloc;");
     line("};\n");
@@ -39,12 +39,13 @@ public abstract class GnArray {
     final ClassDeclaration clazz = method.getClazz();
 
     Type arrayOf = clazz.getTypeParametersT().get(0);
-    String arrayOfToString = arrayOf.toString();
+    String arrayOfToString = ToStringsInternal.typeToString(arrayOf);
 
     //
-    final String methodType = method.getType().toString();
-    final String signToStringCall = method.signToStringCall();
-    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+    final String methodType = ToStringsInternal.typeToString(method.getType());
+    final String signToStringCall = ToStringsInternal.signToStringCall(method);
+    final String methodCallsHeader = methodType + " " + signToStringCall
+        + ToStringsInternal.parametersToString(method.getParameters()) + " {";
     final String sizeofElem = "sizeof(" + arrayOfToString + ")";
     final String sizeofMulAlloc = "(" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * __this->alloc) );";
 
@@ -152,6 +153,7 @@ public abstract class GnArray {
     else if (signToStringCall.startsWith("array_equals_")) {
       line(methodCallsHeader);
       line("    assert(__this);");
+      line("    return false;");
       line("}\n");
     }
 

@@ -2,7 +2,6 @@ package ast_class;
 
 import java.util.List;
 
-import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;

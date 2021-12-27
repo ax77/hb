@@ -127,13 +127,6 @@ public abstract class GnRuntime {
     sb.append("    return hash;                                     \n");
     sb.append("}                                                    \n\n");
 
-    //sb.append("static inline size_t __hash_string(struct string *s) \n");
-    //sb.append("{                                                    \n");
-    //sb.append("    assert(s);                                       \n");
-    //sb.append("    assert(s->buffer);                               \n");
-    //sb.append("    return __hash_char_ptr(s->buffer);               \n");
-    //sb.append("}                                                    \n\n");
-
     sb.append("static inline size_t __hash_int(ptrdiff_t i)         \n");
     sb.append("{                                                    \n");
     sb.append("    return (size_t) i;                               \n");

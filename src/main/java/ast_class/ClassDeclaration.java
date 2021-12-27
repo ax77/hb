@@ -9,7 +9,6 @@ import _st1_templates.TypeSetter;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_printers.TypePrinters;
 import ast_sourceloc.Location;
 import ast_sourceloc.SourceLocation;
 import ast_stmt.StmtBlock;
@@ -174,12 +173,13 @@ public class ClassDeclaration implements Serializable, Location {
     if (!TypeListsComparer.typeListsAreEqual(typeParametersT, another.getTypeParametersT())) {
       //return false;
     }
+
+    // paranoia?
     if (typeParametersT.size() != another.getTypeParametersT().size()) {
       System.out.println("not equal: type-parameters");
       return false;
     }
 
-    // paranoia?
     if (fields.size() != another.getFields().size()) {
       System.out.println("not equal: fields");
       return false;
@@ -426,6 +426,17 @@ public class ClassDeclaration implements Serializable, Location {
     return sb.toString();
   }
 
+  private String typeArgumentsToString(List<Type> list) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < list.size(); i += 1) {
+      sb.append(list.get(i).toString());
+      if (i < list.size() - 1) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -433,8 +444,9 @@ public class ClassDeclaration implements Serializable, Location {
     sb.append(identifier.getName());
 
     if (!typeParametersT.isEmpty()) {
-      sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(typeParametersT));
+      sb.append("<");
+      sb.append(typeArgumentsToString(typeParametersT));
+      sb.append(">");
     }
 
     if (!interfaces.isEmpty()) {
@@ -464,7 +476,7 @@ public class ClassDeclaration implements Serializable, Location {
     for (ClassMethodDeclaration method : methods) {
       sb.append(method.toString() + "\n");
     }
-    
+
     for (ClassMethodDeclaration method : tests) {
       sb.append(method.toString() + "\n");
     }
@@ -511,18 +523,6 @@ public class ClassDeclaration implements Serializable, Location {
 
   public boolean isNativeOpt() {
     return identifier.equals(BuiltinNames.opt_ident);
-  }
-
-  public String headerToString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getIdentifier().getName());
-
-    if (!getTypeParametersT().isEmpty()) {
-      sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(getTypeParametersT()));
-    }
-
-    return sb.toString();
   }
 
   public boolean isStaticClass() {

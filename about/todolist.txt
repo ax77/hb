@@ -35,7 +35,17 @@
 *[V] add string methods (left, right, etc)
 *[V] fix string constructor code generation [new string("a.b.c")]
 
-
+* error codes, and pretty error printing, equal for every situation.
+  | file:line
+  | error [code]: [message]
+  | to_string
+  
+  Here's a thing: we must keep our AST.toString() clean during the parse state.
+  It must print its real representation.
+  Without any c-code semantic (like types, pointers, etc.)
+  And we have to manage a different ToString class, when we build a low-level code.
+  So: we use toString() in classes only during the parse stage.
+  And then - we implement our own toString() for each type, class, method, etc.
 
 
 

@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ast_sourceloc.SourceLocation;
-import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
 import errors.ScanExc;

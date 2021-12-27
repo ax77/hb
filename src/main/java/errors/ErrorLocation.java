@@ -14,6 +14,11 @@ public abstract class ErrorLocation {
     throw new AstParseException("\n| " + expression.getLocationToString() + "\n| error[" + message + "]\n| " + tail);
   }
 
+  public static void errorInitializer(String message, VarDeclarator var, final ExprExpression init) {
+    final String varStr = var.toString();
+    throw new AstParseException("\n| " + init.getLocationToString() + "\n| error[" + message + "]\n| " + varStr);
+  }
+
   public static void errorVarRedefinition(VarDeclarator varYouWantToDefine, VarDeclarator varDefinedPreviously) {
 
     final String name = varYouWantToDefine.getIdentifier().getName();

@@ -1,7 +1,6 @@
 package _st2_annotate;
 
 import ast_class.ClassDeclaration;
-import ast_class.InterfaceChecker;
 import ast_expr.ExprExpression;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
@@ -36,18 +35,18 @@ public class ApplyInitializer {
     final boolean typesAreTheSame = lhsType.isEqualTo(rhsType);
 
     if (!typesAreTheSame) {
-      if (lhsType.isClass() && rhsType.isClass()) {
-        ClassDeclaration lhsClass = lhsType.getClassTypeFromRef();
-        ClassDeclaration rhsClass = rhsType.getClassTypeFromRef();
-        if (lhsClass.isInterface()) {
-          if (InterfaceChecker.classFullyImplementsTheInterface(rhsClass, lhsClass)) {
-            //var.setType(rhsType);
-            return;
-          }
-        }
-      }
+      // if (lhsType.isClass() && rhsType.isClass()) {
+      //   ClassDeclaration lhsClass = lhsType.getClassTypeFromRef();
+      //   ClassDeclaration rhsClass = rhsType.getClassTypeFromRef();
+      //   if (lhsClass.isInterface()) {
+      //     if (InterfaceChecker.classFullyImplementsTheInterface(rhsClass, lhsClass)) {
+      //       //var.setType(rhsType);
+      //       return;
+      //     }
+      //   }
+      // }
 
-      ErrorLocation.errorExpression("the type of variable is different from type of its initilizer", init);
+      ErrorLocation.errorInitializer("the type of variable is different from type of its initilizer", var, init);
     }
   }
 

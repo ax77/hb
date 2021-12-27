@@ -17,7 +17,7 @@ public abstract class BuiltinNames {
   public static final Ident native_close_ident = g("native_close");
   public static final Ident native_read_ident = g("native_read");
   public static final Ident print_ident = g("print");
-  
+
   public static final Ident equals_ident = g("equals");
 
   // these names are not keywords.

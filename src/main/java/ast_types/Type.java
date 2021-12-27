@@ -84,14 +84,6 @@ public class Type implements Serializable, TypeApi {
     this.typenameId = typenameId;
   }
 
-  /// public Type(String bytesStub) {
-  ///   int[] esc = CEscaper.escape(bytesStub);
-  ///   this.base = TypeBase.TP_BYTES;
-  ///   this.bytesStub = bytesStub;
-  ///   this.size = esc.length;
-  ///   this.align = 1;
-  /// }
-
   public ClassTypeRef getClassTypeRef() {
     return classTypeRef;
   }

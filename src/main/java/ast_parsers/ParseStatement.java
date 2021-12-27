@@ -273,10 +273,10 @@ public class ParseStatement {
         //forBlock.pushItemBack(new StmtStatement(decl, beginPos));
 
         List<VarDeclarator> vars = new ParseVarDeclarator(parser).parseVarDeclaratorListForLoop();
-        for(VarDeclarator decl : vars) {
+        for (VarDeclarator decl : vars) {
           forBlock.pushItemBack(new StmtStatement(decl, beginPos));
         }
-        
+
       } else {
         ExprExpression init = parseForLoopExpressions();
         forBlock.pushItemBack(new StmtStatement(init, beginPos));

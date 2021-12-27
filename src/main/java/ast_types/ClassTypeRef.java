@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_printers.TypePrinters;
+import ast_printers.TypeListToString;
 import utils_oth.NullChecker;
 
 public class ClassTypeRef implements Serializable {
@@ -50,14 +50,19 @@ public class ClassTypeRef implements Serializable {
 
   @Override
   public String toString() {
+
+    // we need to provide a simple class name, before code-generation.
+    // it looks horrible in error printing.
+    //
+
     StringBuilder sb = new StringBuilder();
-    sb.append("struct ");
     sb.append(clazz.getIdentifier().getName());
     if (!typeArguments.isEmpty()) {
-      sb.append("_");
-      sb.append(TypePrinters.typeArgumentsToString(typeArguments));
+      sb.append("<");
+      sb.append(TypeListToString.gen(typeArguments));
+      sb.append(">");
     }
-    sb.append("*");
+
     return sb.toString();
   }
 

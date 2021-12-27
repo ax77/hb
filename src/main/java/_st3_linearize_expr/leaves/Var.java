@@ -1,5 +1,6 @@
 package _st3_linearize_expr.leaves;
 
+import _st7_codeout.ToStringsInternal;
 import ast_modifiers.Modifiers;
 import ast_types.Type;
 import ast_vars.VarBase;
@@ -62,9 +63,9 @@ public class Var implements Comparable<Var> {
 
   public String typeNameToString() {
     if (isOriginalNoTempVar()) {
-      return type.toString() + " " + name.getName();
+      return ToStringsInternal.typeToString(type) + " " + name.getName();
     }
-    return /*"const " + */ type.toString() + " " + name.getName();
+    return /*"const " + */ ToStringsInternal.typeToString(type) + " " + name.getName();
   }
 
   public boolean isOriginalNoTempVar() {

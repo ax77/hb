@@ -22,8 +22,8 @@ public abstract class GnOpt {
 
     Type arrayOf = c.getTypeParametersT().get(0);
 
-    line("struct " + c.headerToString() + "\n{");
-    line("    " + arrayOf.toString() + " value;");
+    line("struct " + ToStringsInternal.classHeaderToString(c) + "\n{");
+    line("    " + ToStringsInternal.typeToString(arrayOf) + " value;");
     line("};\n");
 
     return sb.toString();
@@ -37,11 +37,12 @@ public abstract class GnOpt {
     final ClassDeclaration clazz = method.getClazz();
 
     Type arrayOf = clazz.getTypeParametersT().get(0);
-    String arrayOfToString = arrayOf.toString();
+    String arrayOfToString = ToStringsInternal.typeToString(arrayOf);
 
-    final String methodType = method.getType().toString();
-    final String signToStringCall = method.signToStringCall();
-    final String methodCallsHeader = methodType + " " + signToStringCall + method.parametersToString() + " {";
+    final String methodType = ToStringsInternal.typeToString(method.getType());
+    final String signToStringCall = ToStringsInternal.signToStringCall(method);
+    final String methodCallsHeader = methodType + " " + signToStringCall
+        + ToStringsInternal.parametersToString(method.getParameters()) + " {";
     final String castZero = "((" + arrayOfToString + ") 0)";
 
     /// native opt();
