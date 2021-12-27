@@ -151,6 +151,10 @@ public class ApplyUnitPreEachClass {
       object.addMethod(m);
     }
 
+    addDestructor(object);
+  }
+
+  private void addDestructor(ClassDeclaration object) {
     if (object.getDestructor() == null) {
       object.setDestructor(BuildDefaultDestructor.build(object));
     } else {

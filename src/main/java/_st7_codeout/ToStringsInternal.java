@@ -64,7 +64,7 @@ public abstract class ToStringsInternal {
     return sb.toString();
   }
 
-  private static String varToString(VarDeclarator var) {
+  public static String varToString(VarDeclarator var) {
     StringBuilder sb = new StringBuilder();
     sb.append(typeToString(var.getType()));
     sb.append(" ");

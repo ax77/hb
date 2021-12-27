@@ -74,12 +74,14 @@ public class ApplyUnitPostEachClass {
 
       boolean hasErrors = false;
       for (VarDeclarator var : fields) {
-        if (!initialized.contains(var.getIdentifier().getName())) {
+        // TODO: much more clean with native array.
+        if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray()) {
           hasErrors = true;
           System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
               + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());
         }
       }
+
       if (hasErrors) {
         throw new AstParseException("you should init all fields");
       }

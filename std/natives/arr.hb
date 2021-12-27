@@ -1,5 +1,7 @@
 native class array<T> 
 {
+  array<T> data;
+  
   native array();         
   native array(int size); 
   

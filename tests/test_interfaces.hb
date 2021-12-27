@@ -45,6 +45,9 @@ class main_class {
       fmt.print(argv.get(i));
     }
     
+    pair<string, array<string>> p2 = new pair<string, array<string>>(".", new array<string>());
+    pair<string, array<array<string>>> p3 = new pair<string, array<array<string>>>(".", new array<array<string>>());
+    
     //markable mkrbl = new strmark();
     //return m.getmark();
     return 0;

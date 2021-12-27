@@ -20,10 +20,11 @@ public abstract class GnArray {
   public static String genArrayStruct(ClassDeclaration c) {
     sb = new StringBuilder();
 
-    Type arrayOf = c.getTypeParametersT().get(0);
+    final Type arrayOf = c.getTypeParametersT().get(0);
+    final String arrayOfStr = ToStringsInternal.typeToString(arrayOf);
 
     line("struct " + ToStringsInternal.classHeaderToString(c) + "\n{");
-    line("    " + ToStringsInternal.typeToString(arrayOf) + "* data;");
+    line("    " + arrayOfStr + "* data;");
     line("    size_t size;");
     line("    size_t alloc;");
     line("};\n");

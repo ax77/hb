@@ -12,6 +12,7 @@ import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.leaves.Var;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
+import ast_symtab.Keywords;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
 
@@ -63,7 +64,7 @@ public class Codeout {
     sb.append("\n{\n");
 
     for (VarDeclarator var : c.getFields()) {
-      sb.append(var.toString() + "\n");
+      sb.append(ToStringsInternal.varToString(var) + ";\n");
     }
 
     sb.append("\n};\n");
