@@ -27,6 +27,7 @@ import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallResultHashFn;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
+import _st3_linearize_expr.items.AssignVarNull;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
@@ -745,6 +746,13 @@ public class RewriterExpr {
       else {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }
+    }
+    
+    //TODO:NULLS
+    else if(e.is(ExpressionBase.ENULL_LITERAL)) {
+      AssignVarNull node = new AssignVarNull(VarCreator.justNewVar(e.getResultType()));
+      FlatCodeItem item = new FlatCodeItem(node);
+      genRaw(item);
     }
 
     else {

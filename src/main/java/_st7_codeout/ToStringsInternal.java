@@ -112,6 +112,9 @@ public abstract class ToStringsInternal {
     if (tp.isVoid()) {
       return "void";
     }
+    if(tp.isNullNoNameType()) {
+      return "void *";
+    }
     if (tp.isClass()) {
       return classTypeRefString(tp.getClassTypeRef());
     }

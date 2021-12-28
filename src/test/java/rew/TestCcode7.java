@@ -18,7 +18,7 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    InstantiationUnit unit = new ParserMain(dir + "/tests/test_short_circuit_ternary.hb").parseInstantiationUnit();
+    InstantiationUnit unit = new ParserMain(dir + "/tests/test_nulls.hb").parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

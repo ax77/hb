@@ -29,6 +29,7 @@ opcodes = """
     AssignVarFlatCallResultStatic      ,
     AssignVarFlatCallResultHashFn      ,
     AssignVarNum                       ,
+    AssignVarNull                      ,
     AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
     AssignVarUnop                      ,
@@ -89,7 +90,8 @@ assigns_ops = """
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
       || isAssignVarFlatCallResultStatic() 
-      || isAssignVarNum()   
+      || isAssignVarNum() 
+      || isAssignVarNull()   
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   

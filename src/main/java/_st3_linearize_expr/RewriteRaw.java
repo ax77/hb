@@ -227,6 +227,11 @@ public class RewriteRaw {
       else if (item.isSelectionShortCircuit()) {
         rv.add(item);
       }
+      
+      //TODO:NULLS
+      else if (item.isAssignVarNull()) {
+        rv.add(item);
+      }
 
       else {
         throw new AstParseException("unknown item: " + item.toString());

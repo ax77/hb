@@ -85,12 +85,19 @@ public class ApplyExpression {
       applyBuiltinFunc(object, e);
     } else if (e.is(ExpressionBase.EFOR_LOOP_STEP_COMMA)) {
       applyForLoopComma(object, e);
+    } else if (e.is(ExpressionBase.ENULL_LITERAL)) {
+      applyNullLiteral(object, e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {
+    //TODO:NULLS
+    e.setResultType(new Type(e.getBeginPos(), "null"));
   }
 
   private void applyForLoopComma(ClassDeclaration object, ExprExpression e) {

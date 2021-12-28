@@ -58,7 +58,10 @@
     not have wrappers like in java int/Integer, etc.
 
 
-
+* destructors for recursive structs.
+	It is quite important to not ruine the stack.
+	Because it will invoke themself as many times as it possible.
+	Read CPP std, and think about it.
 
 
 

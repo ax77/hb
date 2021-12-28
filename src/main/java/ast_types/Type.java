@@ -55,6 +55,13 @@ public class Type implements Serializable, TypeApi {
     this.align = 1;
   }
 
+  public Type(Token beginPos, String stub) {
+    this.base = TypeBase.TP_null;
+
+    this.size = -1;
+    this.align = -1;
+  }
+
   public Type(TypeBase primitiveType) {
     NullChecker.check(primitiveType);
 
@@ -162,11 +169,21 @@ public class Type implements Serializable, TypeApi {
       if (!another.is(TypeBase.TP_boolean)) {
         return false;
       }
-    } else if (is(TypeBase.TP_void)) {
+    }
+
+    else if (is(TypeBase.TP_void)) {
       if (!another.is(TypeBase.TP_void)) {
         return false;
       }
-    } else if (is(TypeBase.TP_TYPENAME_ID)) {
+    }
+
+    else if (is(TypeBase.TP_null)) {
+      if (!another.is(TypeBase.TP_null)) {
+        return false;
+      }
+    }
+
+    else if (is(TypeBase.TP_TYPENAME_ID)) {
       if (!another.is(TypeBase.TP_TYPENAME_ID)) {
         return false;
       }
@@ -176,14 +193,23 @@ public class Type implements Serializable, TypeApi {
       if (!name1.equals(name2)) {
         return false;
       }
-    } else if (is(TypeBase.TP_CLASS)) {
+    } 
+    
+    //TODO:NULLS
+    else if (is(TypeBase.TP_CLASS)) {
       if (!another.is(TypeBase.TP_CLASS)) {
-        return false;
+        if (!another.isNullNoNameType()) {
+          return false;
+        }
+      } else {
+        if (!classTypeRef.isEqualTo(another.getClassTypeRef())) {
+          return false;
+        }
       }
-      if (!classTypeRef.isEqualTo(another.getClassTypeRef())) {
-        return false;
-      }
-    } else {
+     
+    } 
+    
+    else {
       ErrorLocation.errorType("unimplemented comparison for base: " + base.toString(), this);
     }
 
@@ -204,6 +230,9 @@ public class Type implements Serializable, TypeApi {
     }
     if (isClass()) {
       return classTypeRef.toString();
+    }
+    if (isNullNoNameType()) {
+      return "?]null";
     }
     return base.toString();
   }
@@ -317,6 +346,11 @@ public class Type implements Serializable, TypeApi {
       return false;
     }
     return classTypeRef.getClazz().isNativeString();
+  }
+
+  @Override
+  public boolean isNullNoNameType() {
+    return is(TypeBase.TP_null);
   }
 
 }

@@ -591,6 +591,11 @@ public class ParseExpression {
       Token saved = parser.moveget();
       return new ExprExpression(false, saved);
     }
+    
+    if (parser.is(Keywords.null_ident)) {
+      Token saved = parser.moveget();
+      return new ExprExpression(saved);
+    }
 
     // simple name
     if (parser.isUserDefinedIdentNoKeyword(parser.tok())) {

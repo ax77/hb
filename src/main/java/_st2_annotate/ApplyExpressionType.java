@@ -26,6 +26,7 @@ import java.util.List;
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
+import ast_expr.ExpressionBase;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
@@ -138,6 +139,14 @@ public class ApplyExpressionType {
         if (lhsType.isClass() && rhsType.isClass()) {
           e.setResultType(resultType);
         }
+        
+        //
+        if (lhs.is(ExpressionBase.ENULL_LITERAL) && rhsType.isClass()) {
+          e.setResultType(resultType);
+        }
+        if (lhsType.isClass() && rhs.is(ExpressionBase.ENULL_LITERAL)) {
+          e.setResultType(resultType);
+        }
       }
 
       else {
@@ -145,13 +154,13 @@ public class ApplyExpressionType {
         // is_null_literal|is_reference
         if (lhsType == null) {
           NullChecker.check(rhsType);
-          //if (lhs.is(ExpressionBase.EPRIMARY_NULL_LITERAL) && rhsType.is_reference()) {
+          //if (lhs.is(ExpressionBase.ENULL_LITERAL) && rhsType.isClass()) {
           //  e.setResultType(resultType);
           //}
         }
         if (rhsType == null) {
           NullChecker.check(lhsType);
-          //if (lhsType.is_reference() && rhs.is(ExpressionBase.EPRIMARY_NULL_LITERAL)) {
+          //if (lhsType.isClass() && rhs.is(ExpressionBase.ENULL_LITERAL)) {
           //  e.setResultType(resultType);
           //}
         }
