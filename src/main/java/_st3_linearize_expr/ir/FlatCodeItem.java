@@ -21,6 +21,7 @@ import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.IntrinsicText;
+import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarField;
 import _st3_linearize_expr.items.StoreVarVar;
@@ -30,6 +31,7 @@ import errors.AstParseException;
 public class FlatCodeItem {
   private final Opc opcode;
 
+  //generated code begin
   //@formatter:off
   private AssignVarAllocObject assignVarAllocObject;
   private AssignVarBinop assignVarBinop;
@@ -52,6 +54,7 @@ public class FlatCodeItem {
   private FlatCallVoid flatCallVoid;
   private FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod;
   private IntrinsicText intrinsicText;
+  private SelectionShortCircuit selectionShortCircuit;
   private StoreFieldVar storeFieldVar;
   private StoreVarField storeVarField;
   private StoreVarVar storeVarVar;
@@ -77,6 +80,7 @@ public class FlatCodeItem {
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
   public FlatCodeItem(FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod) { this.opcode = Opc.FlatCallVoidStaticClassMethod; this.flatCallVoidStaticClassMethod = flatCallVoidStaticClassMethod; }
   public FlatCodeItem(IntrinsicText intrinsicText) { this.opcode = Opc.IntrinsicText; this.intrinsicText = intrinsicText; }
+  public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) { this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
   public FlatCodeItem(StoreFieldVar storeFieldVar) { this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
   public FlatCodeItem(StoreVarField storeVarField) { this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
   public FlatCodeItem(StoreVarVar storeVarVar) { this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
@@ -102,6 +106,7 @@ public class FlatCodeItem {
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isFlatCallVoidStaticClassMethod() { return this.opcode == Opc.FlatCallVoidStaticClassMethod; }
   public boolean isIntrinsicText() { return this.opcode == Opc.IntrinsicText; }
+  public boolean isSelectionShortCircuit() { return this.opcode == Opc.SelectionShortCircuit; }
   public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
   public boolean isStoreVarField() { return this.opcode == Opc.StoreVarField; }
   public boolean isStoreVarVar() { return this.opcode == Opc.StoreVarVar; }
@@ -129,6 +134,7 @@ public class FlatCodeItem {
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     if(isFlatCallVoidStaticClassMethod()) { return flatCallVoidStaticClassMethod.toString(); }
     if(isIntrinsicText()) { return intrinsicText.toString(); }
+    if(isSelectionShortCircuit()) { return selectionShortCircuit.toString(); }
     if(isStoreFieldVar()) { return storeFieldVar.toString(); }
     if(isStoreVarField()) { return storeVarField.toString(); }
     if(isStoreVarVar()) { return storeVarVar.toString(); }
@@ -157,6 +163,7 @@ public class FlatCodeItem {
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
   public FlatCallVoidStaticClassMethod getFlatCallVoidStaticClassMethod() { return this.flatCallVoidStaticClassMethod; }
   public IntrinsicText getIntrinsicText() { return this.intrinsicText; }
+  public SelectionShortCircuit getSelectionShortCircuit() { return this.selectionShortCircuit; }
   public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
   public StoreVarField getStoreVarField() { return this.storeVarField; }
   public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
@@ -172,7 +179,7 @@ public class FlatCodeItem {
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
-      || isAssignVarFlatCallResultStatic()
+      || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum()   
       || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
@@ -247,6 +254,9 @@ public class FlatCodeItem {
     if(isIntrinsicText()) {
       return intrinsicText.getDest();
     }
+    if(isSelectionShortCircuit()) {
+      return selectionShortCircuit.getDest();
+    }
     if(isStoreFieldVar()) {
       err();
     }
@@ -260,5 +270,5 @@ public class FlatCodeItem {
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
   //@formatter:on
-
+  //generated code end
 }

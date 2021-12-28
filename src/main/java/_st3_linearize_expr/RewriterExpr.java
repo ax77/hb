@@ -37,6 +37,7 @@ import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
 import _st3_linearize_expr.items.IntrinsicText;
+import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
@@ -502,22 +503,117 @@ public class RewriterExpr {
     }
 
     else if (base == ExpressionBase.ETERNARY_OPERATOR) {
-      ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
-      gen(ternaryOperator.getCondition());
-      gen(ternaryOperator.getTrueResult());
-      gen(ternaryOperator.getFalseResult());
+      // NO NO NO NO NO!
+      ///// ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
+      ///// gen(ternaryOperator.getCondition());
+      ///// gen(ternaryOperator.getTrueResult());
+      ///// gen(ternaryOperator.getFalseResult());
+      ///// 
+      ///// final FlatCodeItem Fitem = popCode();
+      ///// final FlatCodeItem Titem = popCode();
+      ///// final FlatCodeItem Citem = popCode();
+      ///// 
+      ///// final Var condition = Citem.getDest();
+      ///// final Var trueResult = Titem.getDest();
+      ///// final Var falseResult = Fitem.getDest();
+      ///// 
+      ///// Ternary ternary = new Ternary(condition, trueResult, falseResult);
+      ///// AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(VarCreator.justNewVar(e.getResultType()), ternary);
+      ///// FlatCodeItem item = new FlatCodeItem(assignVarTernaryOp);
+      ///// genRaw(item);
 
+      /// Remember about a short circuit!!!!!!!
+      /// This code is INCORRECT!!!!!!!
+      /// The plain and straight code-generation does not allowed here.
+      ///
+      /// int x = ?(1>0, 0, 1/0);
+      /// ->
+      /// int main_class_main_8()
+      /// {
+      ///     int t13 = 1;
+      ///     int t14 = 0;
+      ///     boolean t15 = (t13 > t14);
+      ///     int t16 = 0;
+      ///     int t17 = 1;
+      ///     int t18 = 0;
+      ///     int t19 = (t17 / t18);
+      ///     int t20 = ((t15) ? (t16) : (t19));
+      ///     int x = t20;
+      ///     
+      ///     int t21 = 0;
+      ///     return t21;
+      /// }
+
+      ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
+
+      List<FlatCodeItem> condblock = new ArrayList<>();
+      List<FlatCodeItem> trueblock = new ArrayList<>();
+      List<FlatCodeItem> elseblock = new ArrayList<>();
+
+      gen(ternaryOperator.getCondition());
+      while (!rawResult.isEmpty()) {
+        condblock.add(rawResult.remove(0));
+      }
+
+      gen(ternaryOperator.getTrueResult());
+      while (!rawResult.isEmpty()) {
+        trueblock.add(rawResult.remove(0));
+      }
+
+      gen(ternaryOperator.getFalseResult());
+      while (!rawResult.isEmpty()) {
+        elseblock.add(rawResult.remove(0));
+      }
+
+      /// extract the variables
       final FlatCodeItem Fitem = popCode();
       final FlatCodeItem Titem = popCode();
       final FlatCodeItem Citem = popCode();
 
-      final Var condition = Citem.getDest();
-      final Var trueResult = Titem.getDest();
-      final Var falseResult = Fitem.getDest();
+      final Var condVar = Citem.getDest();
+      final Var trueVar = Titem.getDest();
+      final Var elseVar = Fitem.getDest();
 
-      Ternary ternary = new Ternary(condition, trueResult, falseResult);
-      AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(VarCreator.justNewVar(e.getResultType()), ternary);
-      FlatCodeItem item = new FlatCodeItem(assignVarTernaryOp);
+      // result = condition ? trueres : falseres
+      // and here we must implement a short circuit
+      final Var resultVar = VarCreator.justNewVar(e.getResultType());
+      trueblock.add(new FlatCodeItem(new StoreVarVar(resultVar, trueblock.get(trueblock.size() - 1).getDest())));
+      elseblock.add(new FlatCodeItem(new StoreVarVar(resultVar, elseblock.get(elseblock.size() - 1).getDest())));
+
+      /// condBlock;
+      /// type result = 0;
+      /// if(condVar) {
+      ///    trueBlockItems;
+      ///    result = trueBlockItems.last();
+      /// } else {
+      ///    elseBlockItems;
+      ///    result = elseBlockItems.last();
+      /// }
+
+      /// int main_class_main_8()
+      /// {
+      ///     int t13 = 1;
+      ///     int t14 = 0;
+      ///     boolean t15 = (t13 > t14);
+      /// 
+      ///     int t20;
+      ///     if (t15) {
+      ///         int t16 = 0;
+      ///         t20 = t16;
+      ///     } else {
+      ///         int t17 = 1;
+      ///         int t18 = 0;
+      ///         int t19 = (t17 / t18);
+      ///         t20 = t19;
+      ///     }
+      ///     int x = t20;
+      /// 
+      ///     return 0;
+      /// }
+
+      SelectionShortCircuit sel = new SelectionShortCircuit(resultVar, condVar, trueVar, elseVar, condblock, trueblock,
+          elseblock);
+      FlatCodeItem item = new FlatCodeItem(sel);
       genRaw(item);
 
     }

@@ -29,5 +29,6 @@ public enum Opc {
   , StoreVarVar                        // a = b
   //
   , IntrinsicText                      // everything internal
+  , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
   
 }

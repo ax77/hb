@@ -42,7 +42,11 @@ public class LinearExpression {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (FlatCodeItem item : items) {
-      sb.append(item.toString() + ";\n");
+      sb.append(item.toString());
+      if (!item.isSelectionShortCircuit()) {
+        sb.append(";");
+      }
+      sb.append("\n");
     }
     return sb.toString();
   }

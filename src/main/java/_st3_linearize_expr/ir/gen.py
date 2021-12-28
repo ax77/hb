@@ -40,7 +40,8 @@ opcodes = """
     StoreFieldVar                      ,
     StoreVarField                      ,
     StoreVarVar                        ,
-    IntrinsicText                      
+    IntrinsicText                      ,
+    SelectionShortCircuit
                             
 """
 opcodes_arr = []
@@ -112,7 +113,7 @@ for opc in opcodes_arr:
         get_dest += '      return ' + varname + '.getLvalue();\n'
     elif str(opc) == 'FlatCallConstructor':
          get_dest += '      return ' + varname + '.getThisVar();\n'
-    elif str(opc) == 'IntrinsicText':
+    elif str(opc) == 'IntrinsicText' or str(opc) == 'SelectionShortCircuit':
          get_dest += '      return ' + varname + '.getDest();\n'
     elif str(opc) == 'CallListenerResultMethod':
          get_dest += '      return ' + varname + '.getDest();\n'
@@ -121,6 +122,7 @@ for opc in opcodes_arr:
         
     get_dest += '    }\n'
 
+print('  //generated code begin')
 print('  //@formatter:off')
 print(fields)
 print(constructors)
@@ -139,7 +141,7 @@ get_dest += '  private void err() { throw new AstParseException(\"unexpected ite
 
 print(get_dest)
 print('  //@formatter:on')
-
+print('  //generated code end')
 
 
 

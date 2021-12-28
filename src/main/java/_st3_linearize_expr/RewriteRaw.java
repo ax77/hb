@@ -224,6 +224,10 @@ public class RewriteRaw {
         rv.add(new FlatCodeItem(txt));
       }
 
+      else if (item.isSelectionShortCircuit()) {
+        rv.add(item);
+      }
+
       else {
         throw new AstParseException("unknown item: " + item.toString());
       }
