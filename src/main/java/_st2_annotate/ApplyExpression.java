@@ -17,6 +17,7 @@ import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
+import ast_expr.ExprStaticAccess;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
@@ -87,12 +88,20 @@ public class ApplyExpression {
       applyForLoopComma(object, e);
     } else if (e.is(ExpressionBase.ENULL_LITERAL)) {
       applyNullLiteral(object, e);
+    } else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
+      applyStaticAccess(object, e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyStaticAccess(ClassDeclaration object, ExprExpression e) {
+    //TODO:STATIC_ACCESS
+    ExprStaticAccess node = e.getExprStaticAccess();
+    e.setResultType(node.getType());
   }
 
   private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {

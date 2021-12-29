@@ -21,4 +21,5 @@ public enum ExpressionBase {
  , EBUILTIN_FUNC
  , EFOR_LOOP_STEP_COMMA // for(;; i+=1, j+=1)
  , ENULL_LITERAL
+ , ESTATIC_ACCESS
 }

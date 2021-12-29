@@ -58,6 +58,11 @@ public abstract class GlobalSymtab {
     return referenceTypes.get(ident);
   }
 
+  //TODO:STATIC_ACCESS
+  public static ClassDeclaration getClassTypeNoErr(Parse parser, Ident ident) {
+    return referenceTypes.get(ident);
+  }
+
   public static boolean isUserDefinedIdentNoKeyword(Token what) {
     return what.ofType(T.TOKEN_IDENT) && !what.isBuiltinIdent();
   }

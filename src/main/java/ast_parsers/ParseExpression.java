@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import _st2_annotate.TypeTraitsUtil;
+import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
@@ -50,6 +51,7 @@ import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
+import ast_expr.ExprStaticAccess;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
@@ -565,8 +567,9 @@ public class ParseExpression {
     // static_assert(something)
     // is_int(something)
 
-    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident) || parser.is(Keywords.hash_ident)
-        || parser.is(Keywords.types_are_same_ident) || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
+    if (parser.is(Keywords.static_assert_ident) || parser.is(Keywords.assert_true_ident)
+        || parser.is(Keywords.hash_ident) || parser.is(Keywords.types_are_same_ident)
+        || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())) {
 
       int argcExpected = 1;
       if (parser.is(Keywords.types_are_same_ident)) {
@@ -591,7 +594,7 @@ public class ParseExpression {
       Token saved = parser.moveget();
       return new ExprExpression(false, saved);
     }
-    
+
     if (parser.is(Keywords.null_ident)) {
       Token saved = parser.moveget();
       return new ExprExpression(saved);
@@ -600,7 +603,16 @@ public class ParseExpression {
     // simple name
     if (parser.isUserDefinedIdentNoKeyword(parser.tok())) {
       Token saved = parser.moveget();
-      return new ExprExpression(new ExprIdent(saved.getIdent()), saved);
+      final ExprIdent symbol = new ExprIdent(saved.getIdent());
+
+      //TODO:STATIC_ACCESS
+      ExprExpression sa = possibleGenericStaticClassInstantiationAccess(saved);
+      if (sa != null) {
+        return sa;
+      }
+      //TODO:STATIC_ACCESS
+
+      return new ExprExpression(symbol, saved);
     }
 
     // ( expression )
@@ -614,6 +626,24 @@ public class ParseExpression {
     parser.perror("something wrong in expression...");
     return null; // you never return this ;)
 
+  }
+
+  private ExprExpression possibleGenericStaticClassInstantiationAccess(Token saved) {
+    ClassDeclaration cd = GlobalSymtab.getClassTypeNoErr(parser, saved.getIdent());
+    if (parser.is(T_LT) || parser.is(T_LSHIFT)) {
+      if (cd != null && cd.isTemplate() && cd.isStaticClass()) {
+        // the specialization and access to the static templated class
+        // somefunc<int>.print(1);
+        //
+        List<Type> typeargs = new ParseType(parser).getTypeArguments();
+        ExprStaticAccess sa = new ExprStaticAccess(new Type(new ClassTypeRef(cd, typeargs)));
+        parser.getCurrentClass(true).registerTypeSetter(sa);
+
+        final ExprExpression sAccess = new ExprExpression(sa, saved);
+        return sAccess;
+      }
+    }
+    return null;
   }
 
   /// put the correct location here, and correct

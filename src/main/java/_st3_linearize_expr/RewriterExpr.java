@@ -14,6 +14,8 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import _st2_annotate.LvalueUtil;
 import _st2_annotate.TypeTraitsUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
@@ -61,6 +63,7 @@ import ast_expr.ExprForLoopStepComma;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_expr.ExprSizeof;
+import ast_expr.ExprStaticAccess;
 import ast_expr.ExprTernaryOperator;
 import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
@@ -747,12 +750,35 @@ public class RewriterExpr {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }
     }
-    
+
     //TODO:NULLS
-    else if(e.is(ExpressionBase.ENULL_LITERAL)) {
+    else if (e.is(ExpressionBase.ENULL_LITERAL)) {
       AssignVarNull node = new AssignVarNull(VarCreator.justNewVar(e.getResultType()));
       FlatCodeItem item = new FlatCodeItem(node);
       genRaw(item);
+    }
+
+    //TODO:STATIC_ACCESS
+    else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
+      ExprStaticAccess access = e.getExprStaticAccess();
+
+      if (e.getResultType().isVoid()) {
+        throw new RuntimeException("...void...");
+      }
+
+      else {
+        final Type classType = access.getType();
+
+        final Var lhsVar = VarCreator.justNewVar(classType);
+        final Var rhsVar = VarCreator.justNewVar(classType);
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lhsVar, rhsVar));
+
+        // This item is temporary, it won't be presented in the output.
+        // We need it to save the stack, and it will be handled later.
+        // Whether is a method invocation or a field access.
+        // I am not sure how to make it properly now.
+        genRaw(item);
+      }
     }
 
     else {
