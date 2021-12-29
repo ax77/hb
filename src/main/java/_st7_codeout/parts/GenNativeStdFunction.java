@@ -1,8 +1,10 @@
-package _st7_codeout;
+package _st7_codeout.parts;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import _st7_codeout.Function;
+import _st7_codeout.ToStringsInternal;
 import ast_method.ClassMethodDeclaration;
 import ast_symtab.BuiltinNames;
 import ast_types.Type;
@@ -10,7 +12,7 @@ import ast_vars.VarDeclarator;
 import errors.AstParseException;
 import tokenize.Ident;
 
-public abstract class GnNative {
+public abstract class GenNativeStdFunction {
 
   private static StringBuilder sb = new StringBuilder();
 
@@ -19,7 +21,7 @@ public abstract class GnNative {
     sb.append("\n");
   }
 
-  public static String genNativeMethod(Function func) {
+  public static String gen(Function func) {
     sb = new StringBuilder();
 
     final ClassMethodDeclaration method = func.getMethodSignature();
@@ -28,7 +30,7 @@ public abstract class GnNative {
 
     //
     final String methodType = ToStringsInternal.typeToString(method.getType());
-    final String methodCallsHeader = methodType + " " + ToStringsInternal.signToStringCall(method)
+    final String methodCallsHeader = "static " + methodType + " " + ToStringsInternal.signToStringCall(method)
         + ToStringsInternal.parametersToString(method.getParameters()) + " {";
 
     /// native_open_ident = g("native_open");

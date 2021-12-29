@@ -3,6 +3,7 @@ package _st7_codeout;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import _st3_linearize_expr.ir.CopierNamer;
 import ast_class.ClassDeclaration;
@@ -16,15 +17,47 @@ import ast_vars.VarDeclarator;
 public abstract class ToStringsInternal {
 
   private static int counter = 1024;
-  private static final Map<String, String> pairs = new HashMap<>();
+  private static final Map<String, String> pairs = new HashMap<String, String>();
 
   public static String signToStringCall(ClassMethodDeclaration meth) {
     final String rest = typeArgumentsToString(meth.getClazz().getTypeParametersT());
-    return CopierNamer.getMethodName(meth) + rest;
+    return getMethodName(meth) + rest;
+  }
+
+  public static String getMethodName(ClassMethodDeclaration m) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(m.getClazz().getIdentifier().getName());
+    sb.append("_");
+    if (m.isFunction()) {
+      sb.append(m.getIdentifier().getName());
+      sb.append("_");
+    }
+    if (m.isConstructor()) {
+      sb.append("init_");
+    }
+    if (m.isDestructor()) {
+      sb.append("deinit_");
+    }
+    if (m.isTest()) {
+      sb.append("test_");
+    }
+    sb.append(m.getUniqueIdToString());
+    if (!m.getClazz().getTypeParametersT().isEmpty()) {
+      sb.append("_");
+    }
+    return sb.toString();
   }
 
   public static String signToStringCallPushF(ClassMethodDeclaration meth) {
     return CopierNamer.getMethodNamePushF(meth);
+  }
+
+  public static String getPairsToString() {
+    StringBuilder sb = new StringBuilder();
+    for (Entry<String, String> e : pairs.entrySet()) {
+      sb.append(e.getKey() + " :: " + e.getValue() + "\n");
+    }
+    return sb.toString();
   }
 
   private static String genName(Type forType) {
@@ -112,7 +145,7 @@ public abstract class ToStringsInternal {
     if (tp.isVoid()) {
       return "void";
     }
-    if(tp.isNullNoNameType()) {
+    if (tp.isNullNoNameType()) {
       return "void *";
     }
     if (tp.isClass()) {

@@ -4,25 +4,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
 import _st1_templates.TypeSetter;
-import _st7_codeout.Codeout;
-import _st7_codeout.CodeoutBuilder;
 import ast_class.ClassDeclaration;
 import ast_main.ParserMain;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeListsComparer;
 import ast_unit.CompilationUnit;
-import ast_unit.InstantiationUnit;
 import errors.AstParseException;
 import tokenize.Ident;
-import utils.UtilSrcToStringLevel;
 import utils_ser.SerializationUtils;
 
 public class JustTests {
