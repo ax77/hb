@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import _st3_linearize_expr.ir.CopierNamer;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_types.ClassTypeRef;
@@ -48,8 +47,12 @@ public abstract class ToStringsInternal {
     return sb.toString();
   }
 
-  public static String signToStringCallPushF(ClassMethodDeclaration meth) {
-    return CopierNamer.getMethodNamePushF(meth);
+  public static String signToStringCallPushF(ClassMethodDeclaration m) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(m.getClazz().getIdentifier().getName());
+    sb.append(".");
+    sb.append(m.getIdentifier().getName());
+    return sb.toString();
   }
 
   public static String getPairsToString() {
