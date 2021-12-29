@@ -54,6 +54,7 @@ public class CgMain {
     /// to be sure they are present, etc...
 
     // string and all of the labels
+
     final ClassDeclaration stringClass = cutString();
     final GenBuiltinString stringCg = new GenBuiltinString(stringClass);
     final String stringProto = stringCg.getProto();
@@ -73,6 +74,7 @@ public class CgMain {
 
     // main class
     final ClassDeclaration mainClass = cutMainClass();
+    final List<Function> mainClassFuncs = LinearizeMethods.flat(mainClass);
 
     // static fields
     final String staticFields = GenStaticFields.gen(classes);
@@ -131,7 +133,6 @@ public class CgMain {
     resultBuffer.append(emptiesImpls);
 
     // main method
-    final List<Function> mainClassFuncs = LinearizeMethods.flat(mainClass);
     if (mainClassFuncs.size() != 1) {
       throw new AstParseException("cannot find main function");
     }

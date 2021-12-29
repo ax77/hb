@@ -1,11 +1,11 @@
-hhh doesn’t have null, at all. hhh doesn’t have optional types, undefided, null-coalescing, wrapping-unwrapping, and things like that. 
-But how do we know that the pointer is null (i.e. it hasn’t been initialized)? 
+hhh doesn't have null, at all. hhh doesn't have optional types, undefided, null-coalescing, wrapping-unwrapping, and things like that. 
+But how do we know that the pointer is null (i.e. it hasn't been initialized)? 
 The solution is quite simple: we have to initialize all fields and variables. 
 Hahaha you may thought, but how about recursive structs (trees, lists, and many many others)? 
-You’re right. It’s absolutely impossible to initialize self-referenced structure without null. 
+You're right. It's absolutely impossible to initialize self-referenced structure without null. 
 Really? Not at all. 
 What if we create an empty structure in static memory for every class we have? 
 And also we may create a static method that will initialize all of the fieds when the program started. 
-If the field is a reference-we initialize that field with the static structure we created, and if it’s a primitive-it’s a zero. 
+If the field is a reference-we initialize that field with the static structure we created, and if it's a primitive-it's a zero. 
 And all of the references in the program will be guaranteed alive. 
 You may invoke the method, access the fied, compare them between each other, etc.

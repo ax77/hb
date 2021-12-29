@@ -762,23 +762,17 @@ public class RewriterExpr {
     else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
       ExprStaticAccess access = e.getExprStaticAccess();
 
-      if (e.getResultType().isVoid()) {
-        throw new RuntimeException("...void...");
-      }
+      final Type classType = access.getType();
 
-      else {
-        final Type classType = access.getType();
+      final Var lhsVar = VarCreator.justNewVar(classType);
+      final Var rhsVar = VarCreator.justNewVar(classType);
+      final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lhsVar, rhsVar));
 
-        final Var lhsVar = VarCreator.justNewVar(classType);
-        final Var rhsVar = VarCreator.justNewVar(classType);
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarVar(lhsVar, rhsVar));
-
-        // This item is temporary, it won't be presented in the output.
-        // We need it to save the stack, and it will be handled later.
-        // Whether is a method invocation or a field access.
-        // I am not sure how to make it properly now.
-        genRaw(item);
-      }
+      // This item is temporary, it won't be presented in the output.
+      // We need it to save the stack, and it will be handled later.
+      // Whether is a method invocation or a field access.
+      // I am not sure how to make it properly now.
+      genRaw(item);
     }
 
     else {

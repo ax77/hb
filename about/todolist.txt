@@ -63,6 +63,8 @@
 	Because it will invoke themself as many times as it possible.
 	Read CPP std, and think about it.
 
+* null terminator in a strings and in a char array.
+
 
 
 
