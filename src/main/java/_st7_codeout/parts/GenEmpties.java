@@ -36,7 +36,7 @@ public class GenEmpties implements Ccode {
   }
 
   private String gen() {
-    
+
     // static TYPE   NAME_PREFIX1 = 0;
     // static TYPE * NAME_PREFIX2 = &NAME_PREFIX1;
     String[] primitives1 = { "boolean", "char", "short", "int", "long", "float", "double" };
@@ -46,8 +46,6 @@ public class GenEmpties implements Ccode {
     }
 
     impls.append("static void " + DEFAULT_INIT_ALL_EMPTIES_METHOD_CALL_NAME + "() {\n");
-
-
 
     for (ClassDeclaration c : classes) {
       if (c.isStaticClass()) {
@@ -122,13 +120,7 @@ public class GenEmpties implements Ccode {
     StringBuilder sb = new StringBuilder();
     final String varname = getVarname(c);
 
-    if (c.isNativeString()) {
-      sb.append("    // INIT: " + varname + "\n");
-      sb.append("    " + varname + "->buffer = char_default_empty_ptr;\n");
-      sb.append("    " + varname + "->length = 0;\n");
-    }
-
-    else if (c.isNativeArray()) {
+    if (c.isNativeArray()) {
       if (c.getTypeParametersT().get(0).isChar()) {
         sb.append("    // INIT: " + varname + "\n");
         sb.append("    " + varname + "->data = char_default_empty_ptr;\n");

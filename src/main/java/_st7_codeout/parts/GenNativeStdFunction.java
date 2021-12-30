@@ -203,7 +203,8 @@ public abstract class GenNativeStdFunction {
 
       if (tp.isString()) {
         asserts.add(param.getIdentifier().getName() + "->buffer");
-        arg = param.getIdentifier().getName() + "->buffer";
+        asserts.add(param.getIdentifier().getName() + "->buffer->data");
+        arg = param.getIdentifier().getName() + "->buffer->data";
       }
     }
 

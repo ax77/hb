@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import _st7_codeout.parts.GenBuiltinArray;
-import _st7_codeout.parts.GenBuiltinString;
 import _st7_codeout.parts.GenBuiltinStringStaticLabels;
 import _st7_codeout.parts.GenCommentHeader;
 import _st7_codeout.parts.GenEmpties;
@@ -17,6 +16,7 @@ import _st7_codeout.parts.GenStructsForwards;
 import _st7_codeout.parts.GenUnittests;
 import ast_class.ClassDeclaration;
 import errors.AstParseException;
+import utils_oth.NullChecker;
 
 public class CgMain {
 
@@ -53,13 +53,6 @@ public class CgMain {
     /// if we want string, arrays, main class - we have to cut them all
     /// to be sure they are present, etc...
 
-    // string and all of the labels
-
-    final ClassDeclaration stringClass = cutString();
-    final GenBuiltinString stringCg = new GenBuiltinString(stringClass);
-    final String stringProto = stringCg.getProto();
-    final String stringImpls = stringCg.getImpls();
-
     // assert true function which depends on the string class
     final String assertTrueFunction = GenRuntimeHeader.genAssertTrueFunction();
 
@@ -86,6 +79,15 @@ public class CgMain {
 
     // and the result
 
+    ClassDeclaration charArray = null;
+    for (ClassDeclaration c : arrays) {
+      if (c.getTypeParametersT().get(0).isChar()) {
+        charArray = c;
+        break;
+      }
+    }
+    NullChecker.check(charArray);
+
     resultBuffer.append(GenCommentHeader.gen("the runtime part"));
     resultBuffer.append(runtimeHeader);
 
@@ -95,18 +97,15 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("struct forwards"));
     resultBuffer.append(structsForwards);
 
-    resultBuffer.append(GenCommentHeader.gen("string proto"));
-    resultBuffer.append(stringProto);
-
-    String stringLabls = GenBuiltinStringStaticLabels.gen(); // XXX: we MUST gen labels after we traversed all of the classes
-    resultBuffer.append(GenCommentHeader.gen("string labels"));
-    resultBuffer.append(stringLabls);
-
     resultBuffer.append(GenCommentHeader.gen("arrays proto"));
     resultBuffer.append(arraysProto);
 
     resultBuffer.append(GenCommentHeader.gen("struct bodies"));
     resultBuffer.append(structsBodies);
+
+    String stringLabls = GenBuiltinStringStaticLabels.gen(charArray); // XXX: we MUST gen labels after we traversed all of the classes
+    resultBuffer.append(GenCommentHeader.gen("string labels"));
+    resultBuffer.append(stringLabls);
 
     resultBuffer.append(GenCommentHeader.gen("functions proto"));
     resultBuffer.append(funcsProto);
@@ -116,9 +115,6 @@ public class CgMain {
 
     resultBuffer.append(GenCommentHeader.gen("assert true impl"));
     resultBuffer.append(assertTrueFunction);
-
-    resultBuffer.append(GenCommentHeader.gen("string methods impls"));
-    resultBuffer.append(stringImpls);
 
     resultBuffer.append(GenCommentHeader.gen("arrays methods impls"));
     resultBuffer.append(arraysImpls);
@@ -181,22 +177,6 @@ public class CgMain {
     }
 
     return rv;
-  }
-
-  private ClassDeclaration cutString() {
-
-    Iterator<ClassDeclaration> iter = classes.iterator();
-
-    while (iter.hasNext()) {
-      ClassDeclaration c = iter.next();
-      if (c.isNativeString()) {
-        ClassDeclaration rv = c;
-        iter.remove();
-        return rv;
-      }
-    }
-
-    throw new AstParseException("cannot find string class");
   }
 
 }

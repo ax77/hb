@@ -1,27 +1,49 @@
 import std.natives.arr::array;
 
-native class string {
-  native string(string buffer);
+class string {
 
-  native string(array<char> buffer);
+  array<char>buffer;
 
-  native int length();
+  string(string str) {
+    this.buffer = new array<char>();
+    
+    // TODO: null-terminator for c-compatibility.
+    // this null-terminator mustn't have change the length.
+    
+    for(int i = 0; i < str.length(); i += 1) {
+      this.buffer.add(str.get(i));
+    }
 
-  native char get(int index);
+  }
 
-  native boolean equals(string another);
+  string(array<char> arr) {
+    this.buffer = arr;
+  }
 
-  // TODO: implement these
-  // native string left(int count);
-  // native string right(int count);
-  // native string mid(int begin, int count);
-  // native string trim();
-  // native string replace(string pattern, string replacement);
-  // native array<string> split(char sep);
-  // native boolean starts_with(string pattern);
-  // native boolean ends_with(string pattern);
-  //
-  // native array<char> to_array();
+  int length() {
+    return buffer.size();
+  }
+
+  char get(int at) {
+    return buffer.get(at);
+  }
+
+  boolean equals(string another) {
+    if (length() != another.length()) {
+      return false;
+    }
+
+    int size = buffer.size();
+    for (int i = 0; i < size; i += 1) {
+      char c1 = get(i);
+      char c2 = another.get(i);
+      if (c1 != c2) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   string left(int count) {
     
@@ -115,6 +137,7 @@ native class string {
     return true;
   }
 
+  // TODO: this one does not work :(
   string trim() {
     if(length() == 0) {
       return this;
