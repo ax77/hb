@@ -760,7 +760,7 @@ public class RewriterExpr {
       //struct dummy* d = t380;
 
       final Var lhsVar = VarCreator.justNewVar(tp);
-      final Var rhsVar = VarCreator.varWithName(tp, defaultVarNameForType(tp));
+      final Var rhsVar = VarCreator.varWithName(tp, ToStringsInternal.defaultVarNameForType(tp));
       AssignVarDefaultValueFotType node = new AssignVarDefaultValueFotType(lhsVar, rhsVar);
       FlatCodeItem item = new FlatCodeItem(node);
       genRaw(item);
@@ -787,18 +787,6 @@ public class RewriterExpr {
       throw new AstParseException(base.toString() + ": unimplemented");
     }
 
-  }
-
-  private String defaultVarNameForType(Type tp) {
-    if (tp.isClass()) {
-      final String hdr = ToStringsInternal.classHeaderToString(tp.getClassTypeFromRef());
-      final String varname = hdr + GenEmpties.DEFAULT_EMPTY_PTR;
-      return varname;
-    }
-    if (tp.isPrimitive()) {
-      return tp.toString() + GenEmpties.DEFAULT_EMPTY_VAL;
-    }
-    return "?[";
   }
 
   private String labelName(String sconst) {

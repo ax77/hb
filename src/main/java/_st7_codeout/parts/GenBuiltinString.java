@@ -121,6 +121,7 @@ public class GenBuiltinString implements Ccode {
         lineI("    assert(buffer->buffer);\n");
         lineI("    __this->buffer = hstrdup(buffer->buffer);");
         lineI("    __this->length = buffer->length;");
+        lineI("    __this->buffer[__this->length] = '\\0';");
         lineI("}\n");
       }
 
@@ -132,6 +133,7 @@ public class GenBuiltinString implements Ccode {
         lineI("    assert(buffer->data);\n");
         lineI("    __this->buffer = hstrdup(buffer->data);");
         lineI("    __this->length = buffer->size;");
+        lineI("    __this->buffer[__this->length] = '\\0';");
         lineI("}\n");
       }
 

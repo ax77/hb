@@ -67,6 +67,21 @@ public class GenBuiltinArray implements Ccode {
 
   }
 
+  private String genTableEmptifier(Type tp) {
+    /// for (size_t i = 0; i < __this->alloc; i += 1) {
+    ///   __this->data[__this->alloc] = char_default_empty_val;
+    /// }
+
+    String varname = ToStringsInternal.defaultVarNameForType(tp);
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("for (size_t i = 0; i < __this->alloc; i += 1) {\n");
+    sb.append("  __this->data[i] = " + varname + ";\n");
+    sb.append("}\n");
+
+    return sb.toString();
+  }
+
   private void genMethod(Function func) {
 
     final ClassMethodDeclaration method = func.getMethodSignature();
@@ -104,6 +119,7 @@ public class GenBuiltinArray implements Ccode {
         lineI("    __this->size = 0;");
         lineI("    __this->alloc = 2;");
         lineI("    __this->data = " + sizeofMulAlloc);
+        lineI(genTableEmptifier(arrayOf));
         lineI("}\n");
       }
 
@@ -114,9 +130,10 @@ public class GenBuiltinArray implements Ccode {
         lineI("    assert(size > 0);");
         lineI("    assert(size < INT_MAX);");
 
-        lineI("    __this->size = 0;");
+        lineI("    __this->size = size;");
         lineI("    __this->alloc = size;");
         lineI("    __this->data = " + sizeofMulAlloc);
+        lineI(genTableEmptifier(arrayOf));
         lineI("}\n");
       }
 

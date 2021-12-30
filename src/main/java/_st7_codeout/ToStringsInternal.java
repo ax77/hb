@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import _st7_codeout.parts.GenEmpties;
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
 import ast_types.ClassTypeRef;
@@ -152,6 +153,18 @@ public abstract class ToStringsInternal {
       return classTypeRefString(tp.getClassTypeRef());
     }
     return tp.getBase().toString();
+  }
+
+  public static String defaultVarNameForType(Type tp) {
+    if (tp.isClass()) {
+      final String hdr = ToStringsInternal.classHeaderToString(tp.getClassTypeFromRef());
+      final String varname = hdr + GenEmpties.DEFAULT_EMPTY_PTR;
+      return varname;
+    }
+    if (tp.isPrimitive()) {
+      return tp.toString() + GenEmpties.DEFAULT_EMPTY_VAL;
+    }
+    return "?[";
   }
 
 }
