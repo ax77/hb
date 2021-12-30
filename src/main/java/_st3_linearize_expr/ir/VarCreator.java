@@ -27,6 +27,11 @@ public abstract class VarCreator {
     final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, tmpIdent());
     return result;
   }
+  
+  public static Var varWithName(Type type, String name) {
+    final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, Hash_ident.getHashedIdent(name));
+    return result;
+  }
 
   public static Var just_this_(Type type) {
     final Var result = new Var(VarBase.METHOD_PARAMETER, ModifiersChecker.letMods(), type, BuiltinNames.__this_ident);

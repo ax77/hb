@@ -21,7 +21,7 @@ public class GenEmpties implements Ccode {
     gen();
   }
 
-  public static final String DEFAULT_EMPTY_VAL = "_default_empty_var";
+  public static final String DEFAULT_EMPTY_VAL = "_default_empty_val";
   public static final String DEFAULT_EMPTY_PTR = "_default_empty_ptr";
   public static final String DEFAULT_INIT_ALL_EMPTIES_METHOD_CALL_NAME = "__init_empties_static_data__";
 
@@ -41,8 +41,8 @@ public class GenEmpties implements Ccode {
     // static TYPE * NAME_PREFIX2 = &NAME_PREFIX1;
     String[] primitives1 = { "boolean", "char", "short", "int", "long", "float", "double" };
     for (String s : primitives1) {
-      proto.append("static " + s + "   " + s + DEFAULT_EMPTY_VAL + " = 0;\n");
-      proto.append("static " + s + " * " + s + DEFAULT_EMPTY_PTR + " = &" + s + DEFAULT_EMPTY_VAL + ";\n");
+      proto.append("static " + s + " " + s + DEFAULT_EMPTY_VAL + " = 0;\n");
+      proto.append("static " + s + " *" + s + DEFAULT_EMPTY_PTR + " = &" + s + DEFAULT_EMPTY_VAL + ";\n");
     }
 
     impls.append("static void " + DEFAULT_INIT_ALL_EMPTIES_METHOD_CALL_NAME + "() {\n");

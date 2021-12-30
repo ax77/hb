@@ -10,7 +10,6 @@ public enum TypeBase {
   , TP_double
   , TP_boolean
   , TP_void
-  , TP_null
   , TP_TYPENAME_ID
   , TP_CLASS
 }

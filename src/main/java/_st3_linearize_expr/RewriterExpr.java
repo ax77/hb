@@ -29,7 +29,7 @@ import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallResultHashFn;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
-import _st3_linearize_expr.items.AssignVarNull;
+import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
@@ -51,6 +51,7 @@ import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
+import _st7_codeout.parts.GenEmpties;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -752,8 +753,15 @@ public class RewriterExpr {
     }
 
     //TODO:NULLS
-    else if (e.is(ExpressionBase.ENULL_LITERAL)) {
-      AssignVarNull node = new AssignVarNull(VarCreator.justNewVar(e.getResultType()));
+    else if (e.is(ExpressionBase.EDEFAULT_VALUE_FOR_TYPE)) {
+      final Type tp = e.getResultType();
+
+      //struct dummy* t380 = &dummy_default_empty_var;
+      //struct dummy* d = t380;
+
+      final Var lhsVar = VarCreator.justNewVar(tp);
+      final Var rhsVar = VarCreator.varWithName(tp, defaultVarNameForType(tp));
+      AssignVarDefaultValueFotType node = new AssignVarDefaultValueFotType(lhsVar, rhsVar);
       FlatCodeItem item = new FlatCodeItem(node);
       genRaw(item);
     }
@@ -779,6 +787,18 @@ public class RewriterExpr {
       throw new AstParseException(base.toString() + ": unimplemented");
     }
 
+  }
+
+  private String defaultVarNameForType(Type tp) {
+    if (tp.isClass()) {
+      final String hdr = ToStringsInternal.classHeaderToString(tp.getClassTypeFromRef());
+      final String varname = hdr + GenEmpties.DEFAULT_EMPTY_PTR;
+      return varname;
+    }
+    if (tp.isPrimitive()) {
+      return tp.toString() + GenEmpties.DEFAULT_EMPTY_VAL;
+    }
+    return "?[";
   }
 
   private String labelName(String sconst) {

@@ -227,9 +227,10 @@ public class RewriteRaw {
       else if (item.isSelectionShortCircuit()) {
         rv.add(item);
       }
-      
+
       //TODO:NULLS
-      else if (item.isAssignVarNull()) {
+      else if (item.isAssignVarDefaultValueFotType()) {
+
         rv.add(item);
       }
 

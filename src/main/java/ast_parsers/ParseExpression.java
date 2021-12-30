@@ -45,6 +45,7 @@ import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
+import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprForLoopStepComma;
@@ -595,9 +596,19 @@ public class ParseExpression {
       return new ExprExpression(false, saved);
     }
 
-    if (parser.is(Keywords.null_ident)) {
+    if (parser.is(Keywords.default_ident)) {
       Token saved = parser.moveget();
-      return new ExprExpression(saved);
+
+      // default(T)
+
+      parser.lparen();
+      Type type = new ParseType(parser).getType();
+      parser.rparen();
+
+      ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
+      parser.getCurrentClass(true).registerTypeSetter(defaultValueForType);
+
+      return new ExprExpression(defaultValueForType, saved);
     }
 
     // simple name

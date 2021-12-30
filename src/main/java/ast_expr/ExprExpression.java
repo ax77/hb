@@ -36,6 +36,13 @@ public class ExprExpression implements Serializable, Location {
   private ExprBuiltinFunc exprBuiltinFunc;
   private ExprForLoopStepComma exprForLoopStepComma;
   private ExprStaticAccess exprStaticAccess;
+  private ExprDefaultValueForType exprDefaultValueForType;
+
+  public ExprExpression(ExprDefaultValueForType exprDefaultValueForType, Token beginPos) {
+    this.base = ExpressionBase.EDEFAULT_VALUE_FOR_TYPE;
+    this.exprDefaultValueForType = exprDefaultValueForType;
+    this.beginPos = beginPos;
+  }
 
   public ExprExpression(ExprStaticAccess exprStaticAccess, Token beginPos) {
     this.base = ExpressionBase.ESTATIC_ACCESS;
@@ -44,7 +51,7 @@ public class ExprExpression implements Serializable, Location {
   }
 
   public ExprExpression(Token beginPos) {
-    this.base = ExpressionBase.ENULL_LITERAL;
+    this.base = ExpressionBase.EDEFAULT_VALUE_FOR_TYPE;
     this.beginPos = beginPos;
   }
 
@@ -268,8 +275,8 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.EFOR_LOOP_STEP_COMMA) {
       return exprForLoopStepComma.toString();
     }
-    if (base == ExpressionBase.ENULL_LITERAL) {
-      return "null";
+    if (base == ExpressionBase.EDEFAULT_VALUE_FOR_TYPE) {
+      return exprDefaultValueForType.toString();
     }
     if (base == ExpressionBase.ESTATIC_ACCESS) {
       return exprStaticAccess.toString();
@@ -314,6 +321,10 @@ public class ExprExpression implements Serializable, Location {
 
   public ExprStaticAccess getExprStaticAccess() {
     return exprStaticAccess;
+  }
+
+  public ExprDefaultValueForType getExprDefaultValueForType() {
+    return exprDefaultValueForType;
   }
 
 }

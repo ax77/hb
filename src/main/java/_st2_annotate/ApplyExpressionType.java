@@ -139,14 +139,6 @@ public class ApplyExpressionType {
         if (lhsType.isClass() && rhsType.isClass()) {
           e.setResultType(resultType);
         }
-        
-        //
-        if (lhs.is(ExpressionBase.ENULL_LITERAL) && rhsType.isClass()) {
-          e.setResultType(resultType);
-        }
-        if (lhsType.isClass() && rhs.is(ExpressionBase.ENULL_LITERAL)) {
-          e.setResultType(resultType);
-        }
       }
 
       else {

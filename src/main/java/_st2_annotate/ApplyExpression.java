@@ -86,8 +86,8 @@ public class ApplyExpression {
       applyBuiltinFunc(object, e);
     } else if (e.is(ExpressionBase.EFOR_LOOP_STEP_COMMA)) {
       applyForLoopComma(object, e);
-    } else if (e.is(ExpressionBase.ENULL_LITERAL)) {
-      applyNullLiteral(object, e);
+    } else if (e.is(ExpressionBase.EDEFAULT_VALUE_FOR_TYPE)) {
+      applyDefaultValueFotType(object, e);
     } else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
       applyStaticAccess(object, e);
     }
@@ -104,9 +104,8 @@ public class ApplyExpression {
     e.setResultType(node.getType());
   }
 
-  private void applyNullLiteral(ClassDeclaration object, ExprExpression e) {
-    //TODO:NULLS
-    e.setResultType(new Type(e.getBeginPos(), "null"));
+  private void applyDefaultValueFotType(ClassDeclaration object, ExprExpression e) {
+    e.setResultType(e.getExprDefaultValueForType().getType());
   }
 
   private void applyForLoopComma(ClassDeclaration object, ExprExpression e) {
