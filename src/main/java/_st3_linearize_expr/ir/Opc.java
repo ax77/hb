@@ -12,7 +12,6 @@ public enum Opc {
   , AssignVarFlatCallStringCreationTmp // temporary
   , AssignVarFlatCallResult            // type a = f(b, c)
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
-  , AssignVarFlatCallResultHashFn      // int hash(type);
   , AssignVarNum                       // type a = 1
   , AssignVarDefaultValueFotType       // type a = default(type)
   , AssignVarTernaryOp                 // type a = ?(varCnd, varTrue, varFalse)

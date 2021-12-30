@@ -14,26 +14,22 @@ import static ast_expr.ExpressionBase.EUNARY;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import _st2_annotate.LvalueUtil;
 import _st2_annotate.TypeTraitsUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarCastExpression;
+import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
-import _st3_linearize_expr.items.AssignVarFlatCallResultHashFn;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
-import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
-import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
@@ -47,11 +43,9 @@ import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FieldAccess;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.FunctionCallWithResultStatic;
-import _st3_linearize_expr.leaves.Ternary;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
-import _st7_codeout.parts.GenEmpties;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
@@ -728,23 +722,6 @@ public class RewriterExpr {
           FlatCodeItem item = new FlatCodeItem(falseNode);
           genRaw(item);
         }
-      }
-
-      else if (name.equals(Keywords.hash_ident)) {
-        // hash(type)
-
-        // __hash_char_ptr
-        // __hash_int
-        // __hash_ptr
-        // TODO: floating, if any?
-
-        String hashfuncname = "0[";
-
-        FunctionCallWithResult rvalue = new FunctionCallWithResult(method, hashfuncname, TypeBindings.make_int(), args);
-        AssignVarFlatCallResultHashFn hashfn = new AssignVarFlatCallResultHashFn(
-            VarCreator.justNewVar(e.getResultType()), rvalue);
-        FlatCodeItem item = new FlatCodeItem(hashfn);
-        genRaw(item);
       }
 
       else {

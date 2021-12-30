@@ -63,7 +63,7 @@ public abstract class ImportsPreparer {
     // Let's add all of the predefined classes.
     // We almost always need these classes to be imported.
     final String dir = System.getProperty("user.dir");
-    final String[] names = { "arr", "fd", "fmt", "opt", "string" };
+    final String[] names = { "arr", "string" };
     for (String s : names) {
       final String nativeFileName = Normalizer.normalize(dir + "/std/natives/" + s + ".hb");
       stack.add(nativeFileName);

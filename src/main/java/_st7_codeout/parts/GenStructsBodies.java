@@ -21,9 +21,6 @@ public abstract class GenStructsBodies {
       if (c.isNativeArray()) {
         continue;
       }
-      if (c.isNativeOpt()) {
-        continue;
-      }
       if (c.isNativeString()) {
         continue;
       }

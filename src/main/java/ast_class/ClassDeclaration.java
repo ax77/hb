@@ -516,10 +516,6 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.array_ident);
   }
 
-  public boolean isNativeOpt() {
-    return identifier.equals(BuiltinNames.opt_ident);
-  }
-
   public boolean isStaticClass() {
     return modifiers.isStaticOnly();
   }

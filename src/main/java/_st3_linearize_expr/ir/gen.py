@@ -27,7 +27,6 @@ opcodes = """
     AssignVarFlatCallStringCreationTmp ,
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
-    AssignVarFlatCallResultHashFn      ,
     AssignVarNum                       ,
     AssignVarDefaultValueFotType       ,
     AssignVarTernaryOp                 ,
@@ -97,7 +96,6 @@ assigns_ops = """
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 
-      || isAssignVarFlatCallResultHashFn()
       ;
   }
 """

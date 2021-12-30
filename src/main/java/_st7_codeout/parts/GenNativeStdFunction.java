@@ -48,12 +48,14 @@ public abstract class GenNativeStdFunction {
       lineBuiltin("    return open(filename->buffer, O_RDONLY);");
       lineBuiltin("}");
     }
-    if (name.equals(BuiltinNames.native_close_ident)) {
+
+    else if (name.equals(BuiltinNames.native_close_ident)) {
       lineBuiltin(methodCallsHeader);
       lineBuiltin("    return close(fd);");
       lineBuiltin("}");
     }
-    if (name.equals(BuiltinNames.native_read_ident)) {
+
+    else if (name.equals(BuiltinNames.native_read_ident)) {
       lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(fd != -1);");
       lineBuiltin("    assert(buffer);");
@@ -64,7 +66,7 @@ public abstract class GenNativeStdFunction {
     }
 
     ///
-    if (name.equals(BuiltinNames.print_ident)) {
+    else if (name.equals(BuiltinNames.native_print_ident)) {
       lineBuiltin(methodCallsHeader);
 
       StringBuilder printfFmtNames = new StringBuilder();
@@ -92,6 +94,38 @@ public abstract class GenNativeStdFunction {
 
       lineBuiltin("    printf(" + quotedFmt + ", " + printfArgNames.toString() + ");");
       lineBuiltin("}\n");
+    }
+
+    else if (name.equals(BuiltinNames.native_hashcode_ident)) {
+      lineBuiltin(methodCallsHeader);
+      if (params.size() != 1) {
+        throw new AstParseException("expected one parameter for hashcode function");
+      }
+
+      Type argtype = params.get(0).getType();
+      String hashfuncname = "0[";
+
+      final boolean isStringable = argtype.isString() || argtype.isCharArray();
+
+      if (argtype.isClass() && !isStringable) {
+        hashfuncname = "__hash_ptr";
+      } else if (argtype.isString()) {
+        hashfuncname = "__hash_char_ptr";
+      } else if (argtype.isCharArray()) {
+        hashfuncname = "__hash_char_ptr";
+      } else if (argtype.isInteger()) {
+        hashfuncname = "__hash_int";
+      } else {
+        throw new AstParseException("\nerror: [unimplemented hash function for type]\n" + argtype.toString());
+      }
+
+      lineBuiltin("    return " + hashfuncname + "(arg);\n");
+      lineBuiltin("}");
+
+    }
+
+    else {
+      throw new AstParseException("native function was not being implemented yet: " + name.toString());
     }
 
     return sb.toString();

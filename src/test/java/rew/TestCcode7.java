@@ -1,6 +1,10 @@
 package rew;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -12,11 +16,26 @@ import utils.UtilSrcToStringLevel;
 
 public class TestCcode7 {
 
+  private void bufferReaderToList(String path) throws IOException {
+    BufferedReader reader = new BufferedReader(new FileReader(path));
+    String line = reader.readLine();
+
+    while (line != null) {
+      System.out.println(line);
+      line = reader.readLine();
+    }
+
+    reader.close();
+
+  }
+
   @Test
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    InstantiationUnit unit = new ParserMain(dir + "/tests/test_default_value_for_type.hb").parseInstantiationUnit();
+    final String filename = dir + "/tests/test_nio.hb";
+
+    InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
       //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }

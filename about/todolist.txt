@@ -63,8 +63,10 @@
 	Because it will invoke themself as many times as it possible.
 	Read CPP std, and think about it.
 
-* null terminator in a strings and in a char array.
+*[V] null terminator in a strings and in a char array.
 
+* a real position of the allocated object.
+  we have to use this position for handle errors if the malloc fails for some reson or other.
 
 
 
