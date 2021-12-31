@@ -1,4 +1,5 @@
 import std.natives.string::string;
+import std.list::list;
 
 class dummy_object {
   int i;
@@ -226,6 +227,20 @@ static class test_short_circuits {
     int y = ?(x==12, ?(1>0, 21, 1/0), 1/0);
     assert_true(y==21);
   }
+}
+
+static class test_list {
+  
+  test "test fill list with the values" {
+    list<int> list = new list<int>();
+    for(int i=0; i<32; i+=1) {
+      list.push_front(i);
+    }
+    while(!list.is_empty()) {
+      int i = list.pop_front();
+    }
+  }
+  
 }
 
 class main_class {

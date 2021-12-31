@@ -38,6 +38,10 @@ public abstract class BuildDefaultDestructor {
       for (int i = fields.size() - 1; i >= 0; i -= 1) {
         VarDeclarator field = fields.get(i);
         if (field.getType().isClass()) {
+          if (field.getType().getClassTypeFromRef().isEqualTo(object)) {
+            continue; // TODO: self-referenced structs WILL produce an infinite recursion
+          }
+
           ExprExpression deinit = deinitForField(object, field);
           rv.add(new StmtStatement(deinit, object.getBeginPos()));
         }

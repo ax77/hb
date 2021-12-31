@@ -59,7 +59,6 @@ public class ParserMain implements ParserMainApi {
     // it works really weird, because our source-location is LOST, etc.
     // but it works fine by now.
     final List<Token> tokens = ImportsPreparer.findAllClassesAndDefineTheirHeaders(filename);
-    TokenListToString.print(tokens);
     return new Parse(new Tokenlist(tokens));
 
   }
