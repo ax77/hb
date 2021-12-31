@@ -243,7 +243,7 @@ static class test_list {
   
 }
 
-class main_class {
+class main {
   int main() {
 
     return 0;

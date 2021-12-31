@@ -29,6 +29,10 @@ public class GenUnittests implements Ccode {
 
   private String genMainTestMethodImpl() {
     impls.append("static void " + RUN_ALL_TESTS_METHOD_NAME + "() \n{\n");
+    impls.append("push_function(\"test_runner\", -1);\n");
+
+    //printf("test: %s\n", "test_string_class :: test string right");
+    //test_string_class_test_54();
 
     for (ClassDeclaration c : classes) {
 
@@ -39,11 +43,17 @@ public class GenUnittests implements Ccode {
         String name = "\"" + className + " :: " + testName + "\"";
         String sign = ToStringsInternal.signToStringCall(m);
 
+        String pushFuncSignature = ToStringsInternal.signToStringCallPushF(m);
+        String location = String.format("%d", m.getLocation().getLine());
+
         impls.append("\nprintf(\"test: %s\\n\", " + name + ");\n");
+        impls.append("push_function(" + "\"" + "test_runner::" + pushFuncSignature + "\"" + ", " + location + ");\n");
         impls.append(sign + "();\n");
+        impls.append("pop_function(" + "\"" + "test_runner::" + pushFuncSignature + "\"" + ", " + location + ");\n");
       }
     }
 
+    impls.append("pop_function(\"test_runner\", -1);\n");
     impls.append("\n}\n");
     return impls.toString();
   }

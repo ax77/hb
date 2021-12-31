@@ -30,5 +30,6 @@ public enum Opc {
   //
   , IntrinsicText                      // everything internal
   , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
-  
+  , CallListenerVoidMethod             // __before_fcall("main_class.main::another_class.f", 10)
+  , CallListenerResultMethod           // __before_fcall("main_class.main::another_class.f", 10)
 }

@@ -479,7 +479,7 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   public boolean isMainClass() {
-    return identifier.getName().equals("main_class");
+    return identifier.getName().equals("main");
   }
 
   public boolean isNativeString() {

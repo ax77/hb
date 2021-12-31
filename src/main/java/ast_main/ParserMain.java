@@ -10,7 +10,6 @@ import _st3_linearize_expr.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
 import ast_main.imports.GlobalSymtab;
 import ast_main.imports.ImportsPreparer;
-import ast_printers.TokenListToString;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
@@ -69,22 +68,9 @@ public class ParserMain implements ParserMainApi {
 
     final CompilationUnit result = parser.parse();
     CUnitCompleteChecker.checkAllClassesAreComplete(result);
-    expandInterfaces(result);
 
     return result;
   }
-
-  /// interfaces:+
-  private void expandInterfaces(CompilationUnit result) {
-    for (ClassDeclaration c : result.getClasses()) {
-      if (!c.isInterface()) {
-        continue;
-      }
-      for (ClassDeclaration impl : c.getImplementations()) {
-      }
-    }
-  }
-  /// interfaces:-
 
   @Override
   public InstantiationUnit parseInstantiationUnit() throws IOException {
@@ -92,7 +78,7 @@ public class ParserMain implements ParserMainApi {
     final InstatantiationUnitBuilder unitBuilder = new InstatantiationUnitBuilder(unit);
     final InstantiationUnit result = unitBuilder.getInstantiationUnit();
 
-    ClassDeclaration mainClass = result.getClassByName("main_class");
+    ClassDeclaration mainClass = result.getClassByName("main");
     if (mainClass == null) {
       throw new AstParseException("main class not found");
     }

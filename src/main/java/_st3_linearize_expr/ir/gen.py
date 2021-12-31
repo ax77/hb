@@ -41,7 +41,9 @@ opcodes = """
     StoreVarField                      ,
     StoreVarVar                        ,
     IntrinsicText                      ,
-    SelectionShortCircuit
+    SelectionShortCircuit              ,
+    CallListenerVoidMethod             ,
+    CallListenerResultMethod           
                             
 """
 opcodes_arr = []

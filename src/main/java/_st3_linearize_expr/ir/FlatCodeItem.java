@@ -17,6 +17,8 @@ import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.CallListenerResultMethod;
+import _st3_linearize_expr.items.CallListenerVoidMethod;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
@@ -50,6 +52,8 @@ public class FlatCodeItem {
   private AssignVarTrue assignVarTrue;
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
+  private CallListenerResultMethod callListenerResultMethod;
+  private CallListenerVoidMethod callListenerVoidMethod;
   private FlatCallConstructor flatCallConstructor;
   private FlatCallVoid flatCallVoid;
   private FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod;
@@ -76,6 +80,8 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarTrue assignVarTrue) { this.opcode = Opc.AssignVarTrue; this.assignVarTrue = assignVarTrue; }
   public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
+  public FlatCodeItem(CallListenerResultMethod callListenerResultMethod) { this.opcode = Opc.CallListenerResultMethod; this.callListenerResultMethod = callListenerResultMethod; }
+  public FlatCodeItem(CallListenerVoidMethod callListenerVoidMethod) { this.opcode = Opc.CallListenerVoidMethod; this.callListenerVoidMethod = callListenerVoidMethod; }
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
   public FlatCodeItem(FlatCallVoidStaticClassMethod flatCallVoidStaticClassMethod) { this.opcode = Opc.FlatCallVoidStaticClassMethod; this.flatCallVoidStaticClassMethod = flatCallVoidStaticClassMethod; }
@@ -102,6 +108,8 @@ public class FlatCodeItem {
   public boolean isAssignVarTrue() { return this.opcode == Opc.AssignVarTrue; }
   public boolean isAssignVarUnop() { return this.opcode == Opc.AssignVarUnop; }
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
+  public boolean isCallListenerResultMethod() { return this.opcode == Opc.CallListenerResultMethod; }
+  public boolean isCallListenerVoidMethod() { return this.opcode == Opc.CallListenerVoidMethod; }
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isFlatCallVoidStaticClassMethod() { return this.opcode == Opc.FlatCallVoidStaticClassMethod; }
@@ -130,6 +138,8 @@ public class FlatCodeItem {
     if(isAssignVarTrue()) { return assignVarTrue.toString(); }
     if(isAssignVarUnop()) { return assignVarUnop.toString(); }
     if(isAssignVarVar()) { return assignVarVar.toString(); }
+    if(isCallListenerResultMethod()) { return callListenerResultMethod.toString(); }
+    if(isCallListenerVoidMethod()) { return callListenerVoidMethod.toString(); }
     if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     if(isFlatCallVoidStaticClassMethod()) { return flatCallVoidStaticClassMethod.toString(); }
@@ -159,6 +169,8 @@ public class FlatCodeItem {
   public AssignVarTrue getAssignVarTrue() { return this.assignVarTrue; }
   public AssignVarUnop getAssignVarUnop() { return this.assignVarUnop; }
   public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
+  public CallListenerResultMethod getCallListenerResultMethod() { return this.callListenerResultMethod; }
+  public CallListenerVoidMethod getCallListenerVoidMethod() { return this.callListenerVoidMethod; }
   public FlatCallConstructor getFlatCallConstructor() { return this.flatCallConstructor; }
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
   public FlatCallVoidStaticClassMethod getFlatCallVoidStaticClassMethod() { return this.flatCallVoidStaticClassMethod; }
@@ -241,6 +253,12 @@ public class FlatCodeItem {
     }
     if(isAssignVarVar()) {
       return assignVarVar.getLvalue();
+    }
+    if(isCallListenerResultMethod()) {
+      return callListenerResultMethod.getDest();
+    }
+    if(isCallListenerVoidMethod()) {
+      err();
     }
     if(isFlatCallConstructor()) {
       return flatCallConstructor.getThisVar();

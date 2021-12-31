@@ -25,6 +25,49 @@ public abstract class GenRuntimeHeader {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
+    // call stack +
+    sb.append("struct aux_fcall_stack {                                                 \n");
+    sb.append("    const char *func;                                                    \n");
+    sb.append("    int line;                                                            \n");
+    sb.append("};                                                                       \n\n");
+    
+    sb.append("#define STACK_SIZE (1024)                                                \n");
+    sb.append("struct aux_fcall_stack call_stack[STACK_SIZE];                           \n");
+    sb.append("static size_t call_stack_nr = 0;                                         \n");
+    sb.append("static inline void push_function(const char *__func, int __line);        \n");
+    sb.append("static inline void pop_function();                                       \n");
+    sb.append("static void dump_call_stack();                                           \n\n");
+    
+    sb.append("static inline void push_function(const char *__func, int __line)         \n");
+    sb.append("{                                                                        \n");
+    sb.append("    if (call_stack_nr >= STACK_SIZE) {                                   \n");
+    sb.append("        fprintf(stderr, \"stack overflow: (%s:%d)\\n\", __func, __line); \n");
+    sb.append("        dump_call_stack();                                               \n");
+    sb.append("        exit(8);                                                         \n");
+    sb.append("    }                                                                    \n");
+    sb.append("    struct aux_fcall_stack fc = { .func = __func, .line = __line };      \n");
+    sb.append("    call_stack[call_stack_nr] = fc;                                      \n");
+    sb.append("    call_stack_nr += 1;                                                  \n");
+    sb.append("}                                                                        \n\n");
+    
+    sb.append("static inline void pop_function(const char *__func, int __line)          \n");
+    sb.append("{                                                                        \n");
+    sb.append("    assert(call_stack_nr > 0);                                           \n");
+    sb.append("    call_stack_nr -= 1;                                                  \n");
+    sb.append("}                                                                        \n\n");
+    
+    sb.append("static void dump_call_stack()                                            \n");
+    sb.append("{                                                                        \n");
+    sb.append("    fprintf(stdout, \"%s\\n\", \"\\nThe call-stack: \");                 \n");
+    sb.append("    for (size_t i = 0; i < call_stack_nr; i += 1) {                      \n");
+    sb.append("        struct aux_fcall_stack fc = call_stack[i];                       \n");
+    sb.append("        fprintf(stdout, \"  %s:%d\\n\", fc.func, fc.line);               \n");
+    sb.append("    }                                                                    \n");
+    sb.append("}                                                                        \n\n");
+
+    // call stack -
+    
+    
     sb.append("void* hmalloc(size_t size);                    \n");
     sb.append("void* hrealloc(void* old, size_t newsize);     \n");
     sb.append("void *hcalloc(size_t count, size_t eltsize);   \n");
@@ -143,13 +186,16 @@ public abstract class GenRuntimeHeader {
     sb.append("{                                                                \n");
     sb.append("    assert(file);                                                \n");
     sb.append("    assert(file->buffer);                                        \n");
+    sb.append("    assert(file->buffer->data);                                  \n");
     sb.append("    assert(expr);                                                \n");
     sb.append("    assert(expr->buffer);                                        \n");
+    sb.append("    assert(expr->buffer->data);                                  \n");
     sb.append("    if (cnd == 0) {                                              \n");
     sb.append("        fprintf(stdout, \"assertion failed: (%s:%d) : [%s]\\n\"  \n");
-    sb.append("          , file->buffer                                         \n");
+    sb.append("          , file->buffer->data                                   \n");
     sb.append("          , line                                                 \n");
-    sb.append("          , expr->buffer);                                       \n");
+    sb.append("          , expr->buffer->data);                                 \n");
+    sb.append("        dump_call_stack();                                       \n");
     sb.append("        exit(7);                                                 \n");
     sb.append("    }                                                            \n");
     sb.append("}                                                                \n\n");

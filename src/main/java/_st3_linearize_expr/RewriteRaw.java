@@ -11,6 +11,8 @@ import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.CallListenerResultMethod;
+import _st3_linearize_expr.items.CallListenerVoidMethod;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.leaves.Binop;
@@ -25,6 +27,8 @@ import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import errors.AstParseException;
+import hashed.Hash_ident;
+import tokenize.Ident;
 
 public class RewriteRaw {
 
@@ -101,7 +105,7 @@ public class RewriteRaw {
         final Var lvalueVar = node.getLvalue();
 
         AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
-        rv.add(new FlatCodeItem(assignVarAllocObject));
+        rv.add(new FlatCodeItem(assignVarAllocObject)); // TODO: here we have to trace the location of the memory allocation, if OOM error will occur.
 
         final FunctionCallWithResult rvalue = node.getRvalue();
         final List<Var> args = rvalue.getArgs();
@@ -109,12 +113,22 @@ public class RewriteRaw {
 
         // 3
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
+        final String sign = ToStringsInternal.signToStringCallPushF(rvalue.getMethod());
+
+        rv.add(makeCallListenerWithDest(beforeCallIdent(), flatCallConstructor.getThisVar(), sign));
         rv.add(new FlatCodeItem(flatCallConstructor));
+        rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
 
       }
 
       else if (item.isAssignVarFlatCallResult()) {
+        final AssignVarFlatCallResult fcall = item.getAssignVarFlatCallResult();
+        final FunctionCallWithResult rvalue = fcall.getRvalue();
+        final String sign = ToStringsInternal.signToStringCallPushF(rvalue.getMethod());
+
+        rv.add(makeCallListenerWithDest(beforeCallIdent(), item.getDest(), sign));
         rv.add(item);
+        rv.add(makeCallListenerWithDest(afterCallIdent(), item.getDest(), sign));
       }
 
       else if (item.isAssignVarNum()) {
@@ -136,7 +150,11 @@ public class RewriteRaw {
       }
 
       else if (item.isFlatCallVoid()) {
+        final String sign = ToStringsInternal.signToStringCallPushF(item.getFlatCallVoid().getMethod());
+
+        rv.add(makeCallListenerVoid(beforeCallIdent(), sign));
         rv.add(item);
+        rv.add(makeCallListenerVoid(afterCallIdent(), sign));
       }
 
       else if (item.isStoreFieldVar()) {
@@ -176,11 +194,13 @@ public class RewriteRaw {
 
       else if (item.isIntrinsicText()) {
         if (item.getIntrinsicText().getText().startsWith("assert_true")) {
+          rv.add(makeCallListenerVoid(beforeCallIdent(), "assert_true"));
         }
 
         rv.add(item);
 
         if (item.getIntrinsicText().getText().startsWith("assert_true")) {
+          rv.add(makeCallListenerVoid(afterCallIdent(), "assert_true"));
         }
       }
 
@@ -277,6 +297,28 @@ public class RewriteRaw {
       final AssignVarUnop notEq = new AssignVarUnop(assignVarBinop.getLvalue(), unop);
       rv.add(new FlatCodeItem(notEq));
     }
+  }
+
+  private Ident beforeCallIdent() {
+    return Hash_ident.getHashedIdent("push_function");
+  }
+
+  private Ident afterCallIdent() {
+    return Hash_ident.getHashedIdent("pop_function");
+  }
+
+  private FlatCodeItem makeCallListenerVoid(Ident listenerName, String methodPureName) {
+    final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
+    IntrinsicText result = new IntrinsicText(null,
+        listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
+    return new FlatCodeItem(result);
+  }
+
+  private FlatCodeItem makeCallListenerWithDest(Ident listenerName, Var dest, String methodPureName) {
+    final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
+    IntrinsicText result = new IntrinsicText(dest,
+        listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
+    return new FlatCodeItem(result);
   }
 
   private FlatCodeItem genAssert(Var v) {

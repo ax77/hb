@@ -138,11 +138,13 @@ public class CgMain {
 
     resultBuffer.append(mainMethodImpl);
     resultBuffer.append("int main(int argc, char** argv) \n{\n");
+    resultBuffer.append("    push_function(__func__, -1);\n");
     resultBuffer.append("    __init_empties_static_data__();   \n");
     resultBuffer.append("    __run_all_tests__();              \n");
     resultBuffer.append("    int result = " + mainMethodCall + ";\n\n");
     resultBuffer.append("    printf(\"%d\\n\", result);\n");
     resultBuffer.append("    printf(\"%s\\n\", \":ok:\");\n");
+    resultBuffer.append("    pop_function(__func__, -1);\n");
     resultBuffer.append("    return result;\n");
     resultBuffer.append("\n}\n");
 
