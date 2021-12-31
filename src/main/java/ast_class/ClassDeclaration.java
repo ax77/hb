@@ -29,9 +29,9 @@ public class ClassDeclaration implements Serializable, Location {
 
   /// class, interface, enum
   private final Ident keyword;
-  private Modifiers modifiers;
+  private final Modifiers modifiers;
 
-  private Token beginPos;
+  private final Token beginPos;
   private final Ident identifier;
   private final List<ClassMethodDeclaration> constructors;
   private final List<VarDeclarator> fields;
@@ -62,8 +62,7 @@ public class ClassDeclaration implements Serializable, Location {
   /// we'll replace each at once in every places it used by its pointer
   /// it is important to not screw this reference up before
   ///
-  private List<Type> typeParametersT;
-  private boolean typeParametersWasSet = false;
+  private final List<Type> typeParametersT;
 
   /// we'll collect all type-setters here
   /// type-setter is an variable, new-expression, method-parameter, etc...
@@ -82,12 +81,13 @@ public class ClassDeclaration implements Serializable, Location {
   ///
   private final List<TypeSetter> typeSetters;
 
-  public ClassDeclaration(Ident keyword, Ident identifier, List<Type> typeParametersT, Token beginPos) {
-    NullChecker.check(keyword, identifier, typeParametersT, beginPos);
+  public ClassDeclaration(Modifiers modifiers, Ident keyword, Ident identifier, List<Type> typeParametersT,
+      Token beginPos) {
+    NullChecker.check(modifiers, keyword, identifier, typeParametersT, beginPos);
     checkTypeParameters(typeParametersT);
 
     this.keyword = keyword;
-    this.modifiers = new Modifiers();
+    this.modifiers = modifiers;
     this.identifier = identifier;
     this.typeParametersT = Collections.unmodifiableList(typeParametersT);
     this.beginPos = beginPos;
@@ -109,28 +109,6 @@ public class ClassDeclaration implements Serializable, Location {
         throw new AstParseException("expect type-parameter, but was: " + tp.toString());
       }
     }
-  }
-
-  public void setTypeParametersT(List<Type> typeParametersT) {
-    NullChecker.check(typeParametersT);
-    checkTypeParameters(typeParametersT);
-
-    // we may 'set' type-parameters if, and only if
-    // this class was 'forward' defined, and when we begin
-    // to parse the real class-declaration, and we found
-    // the previously defined class, and set these type-parameters
-    // to it.
-    if (typeParametersWasSet) {
-      throw new AstParseException("you cannot set type-parameters more than once.");
-    }
-
-    this.typeParametersT = typeParametersT;
-    this.typeParametersWasSet = true;
-  }
-
-  public void setBeginPos(Token beginPos) {
-    NullChecker.check(beginPos);
-    this.beginPos = beginPos;
   }
 
   public boolean isComplete() {
@@ -265,10 +243,6 @@ public class ClassDeclaration implements Serializable, Location {
 
   public Modifiers getModifiers() {
     return modifiers;
-  }
-
-  public void setModifiers(Modifiers modifiers) {
-    this.modifiers = modifiers;
   }
 
   public List<ClassMethodDeclaration> getConstructors() {

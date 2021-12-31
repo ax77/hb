@@ -57,7 +57,7 @@ public class ParserMain implements ParserMainApi {
     // idn how to solve this properly now, but I need these imports...
     // it works really weird, because our source-location is LOST, etc.
     // but it works fine by now.
-    final List<Token> tokens = ImportsPreparer.prepareTypesDirty(filename);
+    final List<Token> tokens = ImportsPreparer.findAllClassesAndDefineTheirHeaders(filename);
     return new Parse(new Tokenlist(tokens));
 
   }
@@ -95,18 +95,6 @@ public class ParserMain implements ParserMainApi {
     if (mainClass == null) {
       throw new AstParseException("main class not found");
     }
-
-    // TODO:
-    // if (mainClass.getMethods().size() != 1) {
-    //   throw new AstParseException("main class should contain main-method");
-    // }
-    // ClassMethodDeclaration mainMethod = mainClass.getMethods().get(0);
-    // if (!mainMethod.getIdentifier().getName().equals("main")) {
-    //   throw new AstParseException("main method not found");
-    // }
-    // if (!mainMethod.getType().is_void()) {
-    //   throw new AstParseException("main method should return the void");
-    // }
 
     return result;
   }

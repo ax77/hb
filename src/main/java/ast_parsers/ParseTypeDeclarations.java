@@ -21,7 +21,6 @@ import parse.Parse;
 import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
-import utils_oth.NullChecker;
 
 public class ParseTypeDeclarations {
   private final Parse parser;
@@ -33,11 +32,11 @@ public class ParseTypeDeclarations {
   public void parse(CompilationUnit unit) throws IOException {
 
     // opt
+    @SuppressWarnings("unused")
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
     if (parser.is(Keywords.class_ident) || parser.is(Keywords.interface_ident)) {
       final ClassDeclaration clazz = parseClassDeclaration(parser.tok().getIdent());
-      clazz.setModifiers(modifiers);
 
       if (clazz.isTemplate()) {
         unit.putTemplate(clazz);
@@ -47,8 +46,8 @@ public class ParseTypeDeclarations {
     }
 
     else if (parser.is(Keywords.import_ident)) {
+      @SuppressWarnings("unused")
       String importName = ParsePackageName.parse(parser, Keywords.import_ident);
-      GlobalSymtab.addImport(parser, importName);
     }
 
     else {
@@ -65,33 +64,11 @@ public class ParseTypeDeclarations {
 
     // class Thing<T> {
     // ......^....^
-    final List<Type> typeParameters = parseTypeParametersT();
+    @SuppressWarnings("unused")
+    final List<Type> typeParameters = new ParseTypeParameters(parser).parse();
 
-    // it may be a previously fully-parsed class, or a new one.
-    ClassDeclaration clazz = null;
-
-    if (GlobalSymtab.isClassName(ident)) {
-      // get previously defined with a 'forward' directive
-      // and fill its type-parameters
-      clazz = GlobalSymtab.getClassType(parser, ident);
-      if (clazz.isComplete()) {
-        skipToTheEndOfTheClass();
-        return clazz;
-      }
-      clazz.setTypeParametersT(typeParameters);
-      clazz.setBeginPos(beginPos);
-    }
-
-    else {
-      // define a newly-founded class
-      // with or without type-parameters, and WITH class body { ... }
-      clazz = new ClassDeclaration(keyword, ident, typeParameters, beginPos);
-      GlobalSymtab.defineClassName(parser, clazz);
-    }
-
-    // set the current class immediately after we
-    // found it
-    NullChecker.check(clazz);
+    // It MUST be there
+    ClassDeclaration clazz = GlobalSymtab.getClassType(parser, ident);
     parser.setCurrentClass(clazz);
 
     // implements list for a class
@@ -145,24 +122,6 @@ public class ParseTypeDeclarations {
 
     clazz.setComplete(true);
     return clazz;
-  }
-
-  private void skipToTheEndOfTheClass() {
-
-    int c = 0;
-    while (!parser.isEof()) {
-      Token t = parser.moveget();
-      if (t.ofType(T.T_LEFT_BRACE)) {
-        c += 1;
-      }
-      if (t.ofType(T.T_RIGHT_BRACE)) {
-        c -= 1;
-        if (c == 0) {
-          break;
-        }
-      }
-    }
-
   }
 
   private void putOneInterface(ClassDeclaration clazz) {
@@ -405,33 +364,6 @@ public class ParseTypeDeclarations {
       }
     }
     return true;
-  }
-
-  private List<Type> parseTypeParametersT() {
-
-    // class Thing<K, V> {
-    // ...........^
-
-    final List<Type> typenamesT = new ArrayList<>();
-
-    if (parser.is(T.T_LT)) {
-      parser.lt();
-
-      typenamesT.add(getOneTypeParameter());
-      while (parser.is(T.T_COMMA)) {
-        parser.move();
-        typenamesT.add(getOneTypeParameter());
-      }
-
-      parser.gt();
-    }
-
-    return typenamesT;
-  }
-
-  private Type getOneTypeParameter() {
-    final Token tok = parser.checkedMove(T.TOKEN_IDENT);
-    return new Type(tok.getIdent());
   }
 
   public List<VarDeclarator> parseMethodParameters() {

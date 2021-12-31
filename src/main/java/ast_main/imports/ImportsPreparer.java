@@ -7,12 +7,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import ast_class.ClassDeclaration;
+import ast_modifiers.Modifiers;
+import ast_parsers.ParseModifiers;
 import ast_parsers.ParsePackageName;
+import ast_parsers.ParseTypeParameters;
 import ast_symtab.Keywords;
+import ast_types.Type;
 import parse.Parse;
 import parse.Tokenlist;
 import tokenize.Env;
+import tokenize.Ident;
 import tokenize.Stream;
+import tokenize.T;
 import tokenize.Token;
 import utils_fio.FileReadKind;
 import utils_fio.FileWrapper;
@@ -124,7 +131,7 @@ public abstract class ImportsPreparer {
     }
   }
 
-  public static List<Token> prepareTypesDirty(String path) throws IOException {
+  private static List<Token> prepareTypesDirty(String path) throws IOException {
 
     final ImportsFound result = prepareImportsDirty(path);
 
@@ -151,6 +158,69 @@ public abstract class ImportsPreparer {
     }
 
     tokens.add(Env.EOF_TOKEN_ENTRY);
+    return tokens;
+  }
+
+  private static void skipBlockFast(Parse parser) {
+
+    parser.lbrace();
+    if (parser.is(T.T_RIGHT_BRACE)) {
+      parser.move();
+      return; // empty class without body
+    }
+
+    int deep = 1;
+    for (; !parser.isEof(); parser.move()) {
+
+      if (parser.is(T.T_LEFT_BRACE)) {
+        deep++;
+      } else if (parser.is(T.T_RIGHT_BRACE)) {
+        deep--;
+        if (deep == 0) {
+          break;
+        }
+      }
+    }
+
+    parser.rbrace();
+  }
+
+  public static List<Token> findAllClassesAndDefineTheirHeaders(String path) throws IOException {
+    final List<Token> tokens = prepareTypesDirty(path);
+
+    final List<ClassDeclaration> classes = new ArrayList<>();
+    final Parse parser = new Parse(new Tokenlist(tokens));
+
+    while (!parser.isEof()) {
+
+      if (parser.is(Keywords.import_ident)) {
+
+        @SuppressWarnings("unused")
+        String importName = ParsePackageName.parse(parser, Keywords.import_ident);
+      }
+
+      else if (parser.is(Keywords.static_ident) || parser.is(Keywords.native_ident) || parser.is(Keywords.class_ident)
+          || parser.is(Keywords.interface_ident)) {
+        final Modifiers modifiers = new ParseModifiers(parser).parse();
+        final Token keyword = parser.moveget(); // class/interface/enum
+        final Ident identifier = parser.getIdent();
+        final List<Type> typeParametersT = new ParseTypeParameters(parser).parse();
+        classes.add(new ClassDeclaration(modifiers, keyword.getIdent(), identifier, typeParametersT, keyword));
+
+        skipBlockFast(parser);
+      }
+
+      else {
+        parser.perror("dunno what to do");
+      }
+
+    }
+
+    // forward definition of all of the classes with their headers (modifiers/type-parameters/etc)
+    for (ClassDeclaration c : classes) {
+      GlobalSymtab.defineClassName(c);
+    }
+
     return tokens;
   }
 
