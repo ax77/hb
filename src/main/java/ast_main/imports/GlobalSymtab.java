@@ -24,12 +24,12 @@ public abstract class GlobalSymtab {
   // PRE-SYMTAB
 
   public static void defineClassName(ClassDeclaration clazz) {
-    for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
-      if (ent.getKey().equals(clazz.getIdentifier())) {
-        throw new AstParseException("duplicate type-name: " + clazz.getIdentifier() + ", previously defined here: "
-            + ent.getValue().getLocationToString());
-      }
-    }
+    // for (Entry<Ident, ClassDeclaration> ent : referenceTypes.entrySet()) {
+    //   if (ent.getKey().equals(clazz.getIdentifier())) {
+    //     throw new AstParseException("duplicate type-name: " + clazz.getIdentifier() + " " + clazz.getLocationToString()
+    //         + ", previously defined here: " + ent.getValue().getLocationToString());
+    //   }
+    // }
     referenceTypes.put(clazz.getIdentifier(), clazz);
   }
 

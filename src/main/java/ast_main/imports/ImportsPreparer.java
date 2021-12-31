@@ -70,7 +70,7 @@ public abstract class ImportsPreparer {
     // Let's add all of the predefined classes.
     // We almost always need these classes to be imported.
     final String dir = System.getProperty("user.dir");
-    final String[] names = { "arr", "string", "std" };
+    final String[] names = { "string", "std" };
     for (String s : names) {
       final String nativeFileName = Normalizer.normalize(dir + "/std/natives/" + s + ".hb");
       stack.add(nativeFileName);
@@ -131,30 +131,37 @@ public abstract class ImportsPreparer {
     }
   }
 
-  private static List<Token> prepareTypesDirty(String path) throws IOException {
+  private static List<Token> getTokenlistNoEof(final String path, final String content) throws IOException {
+    final Stream stream = new Stream(path, content);
+    final List<Token> tokenlist = stream.getTokenlist();
+
+    removeEOF(tokenlist);
+    return tokenlist;
+  }
+
+  private static List<Token> prepareTypesDirty(final String path) throws IOException {
 
     final ImportsFound result = prepareImportsDirty(path);
+    final List<Token> tokens = new ArrayList<Token>();
 
     StringBuilder sb = new StringBuilder();
-    for (String s : result.getImportsNames()) {
-      sb.append("import ");
-      sb.append(s);
-      sb.append(";\n");
-    }
+    sb.append("native class array<T>                       \n");
+    sb.append("{                                           \n");
+    sb.append("  native array();                           \n");
+    sb.append("  native array(int size);                   \n");
+    sb.append("  native void add(T element);               \n");
+    sb.append("  native T get(int index);                  \n");
+    sb.append("  native T set(int index, T element);       \n");
+    sb.append("  native int size();                        \n");
+    sb.append("  native boolean is_empty();                \n");
+    sb.append("  native boolean equals(array<T> another);  \n");
+    sb.append("}                                           \n");
 
-    List<Token> tokens = new ArrayList<Token>();
-
-    final List<Token> forwardImportTokens = new Stream("builtin", sb.toString()).getTokenlist();
-    removeEOF(forwardImportTokens);
-    tokens.addAll(forwardImportTokens);
+    tokens.addAll(getTokenlistNoEof("<builtin-array>", sb.toString()));
 
     for (String s : result.getResult()) {
-      String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF);
-      final Stream stream = new Stream(s, content);
-
-      final List<Token> tokenlist = stream.getTokenlist();
-      removeEOF(tokenlist);
-      tokens.addAll(tokenlist);
+      final String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF);
+      tokens.addAll(getTokenlistNoEof(s, content));
     }
 
     tokens.add(Env.EOF_TOKEN_ENTRY);

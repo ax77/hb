@@ -1,4 +1,4 @@
-import std.natives.opt::opt;import std.natives.fmt::fmt;
+import std.natives.string::string;
 
 class dummy_object {
   int i;
@@ -8,7 +8,6 @@ class dummy_object {
   }
   
   deinit {
-    // fmt.print("dummy object destructor");
   }
   
   test "empty" {}
@@ -143,38 +142,91 @@ static class test_static {
   }
   
   test "test macros file, line" {
-    //fmt.print(__FILE__);
-    //fmt.print(__LINE__);
-    
     static_assert(is_class(__FILE__));
     static_assert(is_int(__LINE__));
-    
-    assert_true(__LINE__ >= 140 && __LINE__ <= 160);
-    static_assert(__LINE__ == 153); // for sure :)
   }
   
 }
 
-// TODO:
-// interface comparator {
-//   boolean is_comparable();
-// }
-// 
-// class test_interface implements comparator {
-//   int x;
-//   test_interface() {
-//     this.x = 0;
-//   }
-//   boolean is_comparable() {
-//     return false;
-//   }
-//   
-//   test "test create interface name" {
-//     comparator cmp = new test_interface();
-//     boolean f = cmp.is_comparable();
-//     assert_true(!f);
-//   }
-// }
+static class test_string_class {
+  test "test string left" {
+    string s = "123";
+    assert_true(s.left(1) == "1");
+    assert_true(s.left(2) == "12");
+    assert_true(s.left(3) == "123");
+  }
+  
+  test "test string right" {
+    string s = "123";
+    assert_true(s.right(1) == "3");
+    assert_true(s.right(2) == "23");
+    assert_true(s.right(3) == "123");
+  }
+  
+  test "test string mid" {
+    string s = "123";
+    assert_true(s.mid(0, 2) == "12");
+    assert_true(s.mid(1, 2) == "23");
+  }
+  
+  test "test string starts with some prefix" {
+    string s = "a.b.c";
+    assert_true(s.starts_with("a"));
+    assert_true(s.starts_with("a."));
+    assert_true(s.starts_with("a.b"));
+    assert_true(s.starts_with("a.b."));
+    assert_true(s.starts_with("a.b.c"));
+    assert_true(!s.starts_with("a.b.c "));
+  }
+  
+  test "test string ends with" {
+    string s = "123";
+    assert_true(s.ends_with("3"));
+    assert_true(s.ends_with("23"));
+    assert_true(s.ends_with("123"));
+  }
+  
+  test "test string access" {
+    assert_true("1.2.3".left(2) == "1.");
+  }
+  
+  test "test string trim" {
+    string s = " \n \n 123 \t \t \n \r\n  ";
+    string res = s.trim();
+    fmt<string>.print(res);
+    //assert_true(res == "123");
+  }
+  
+  test "test string constructor from a literal" {
+    string s = new string(new string("a.b.c"));
+    assert_true(s == "a.b.c");
+  }
+}
+
+static class tok_type {
+  static final int T_STRING = 1;
+  static final int T_CHAR = 2;
+}
+
+static class test_static_semantic {
+  
+  test "test static constants" {
+    int x = tok_type.T_CHAR;
+    assert_true(x == 2);
+    assert_true(x == tok_type.T_CHAR);
+  }
+  
+}
+
+static class test_short_circuits {
+  test "? ternary operator short circuit division by zero shoud pass" {
+    int x = ?(1>0, 12, 1/0);
+    assert_true(x==12);
+    
+    int y = ?(x==12, ?(1>0, 21, 1/0), 1/0);
+    assert_true(y==21);
+  }
+}
 
 class main_class {
   int main() {

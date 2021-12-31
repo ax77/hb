@@ -45,7 +45,8 @@ public abstract class GenNativeStdFunction {
       lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(filename);");
       lineBuiltin("    assert(filename->buffer);");
-      lineBuiltin("    return open(filename->buffer, O_RDONLY);");
+      lineBuiltin("    assert(filename->buffer->data);");
+      lineBuiltin("    return open(filename->buffer->data, O_RDONLY);");
       lineBuiltin("}");
     }
 

@@ -1,18 +1,13 @@
-static inline void assert_true(
-  int cnd, 
-  struct string *file, 
-  int line, 
-  struct string *expr)  
-{                                                                                      
-    assert(file);
-    assert(file->buffer);                                                                      
-    assert(expr);
-    assert(expr->buffer);                                                                      
-    if (cnd == 0) {                                                                    
-        fprintf(stdout, "assertion failed: (%s:%d) : [%s]\n"
-          , file->buffer
-          , line
-          , expr->buffer);    
-        exit(7);                                                                       
-    }                                                                                  
+native class array<T> 
+{
+  native array();         
+  native array(int size); 
+  
+  native void add(T element);
+  native T get(int index);
+  native T set(int index, T element);
+  
+  native int size();
+  native boolean is_empty();
+  native boolean equals(array<T> another);
 }

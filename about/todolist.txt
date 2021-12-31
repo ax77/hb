@@ -68,7 +68,7 @@
 * a real position of the allocated object.
   we have to use this position for handle errors if the malloc fails for some reson or other.
 
-
+* an array have to be an embed class.
 
 
 

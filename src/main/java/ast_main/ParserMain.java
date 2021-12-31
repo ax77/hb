@@ -10,6 +10,7 @@ import _st3_linearize_expr.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
 import ast_main.imports.GlobalSymtab;
 import ast_main.imports.ImportsPreparer;
+import ast_printers.TokenListToString;
 import ast_symtab.Keywords;
 import ast_unit.CompilationUnit;
 import ast_unit.InstantiationUnit;
@@ -58,6 +59,7 @@ public class ParserMain implements ParserMainApi {
     // it works really weird, because our source-location is LOST, etc.
     // but it works fine by now.
     final List<Token> tokens = ImportsPreparer.findAllClassesAndDefineTheirHeaders(filename);
+    TokenListToString.print(tokens);
     return new Parse(new Tokenlist(tokens));
 
   }

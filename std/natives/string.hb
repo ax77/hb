@@ -1,4 +1,3 @@
-import std.natives.arr::array;
 
 class string {
 
