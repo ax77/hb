@@ -177,6 +177,7 @@ public class GenBuiltinArray implements Ccode {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");
+      lineI("    assert(__this->size > 0);");
       lineI("    assert(index >= 0);");
       lineI("    assert(index < __this->size);");
       lineI("    " + arrayOfToString + " old =  __this->data[index];");

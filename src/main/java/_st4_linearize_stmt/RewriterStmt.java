@@ -14,6 +14,7 @@ import _st4_linearize_stmt.items.LinearStatement;
 import _st5_deinits.LocalDestructorsApplier;
 import ast_expr.ExprExpression;
 import ast_expr.ExprUnary;
+import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StatementBase;
 import ast_stmt.StmtBlock;
@@ -39,8 +40,10 @@ public class RewriterStmt {
     visitBlock(method.getBlock(), result);
 
     /// destructors
-    LocalDestructorsApplier applier = new LocalDestructorsApplier(method);
-    applier.apply(result);
+    if (ParserMainOptions.GENERATE_LOCAL_DESTRUCTORS_CALLS) {
+      LocalDestructorsApplier applier = new LocalDestructorsApplier(method);
+      applier.apply(result);
+    }
   }
 
   public LinearBlock getResult() {
