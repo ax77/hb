@@ -1,6 +1,7 @@
 package res;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
@@ -151,6 +152,14 @@ public class Xcv {
     return rv;
   }
 
+  // 0    : k:32
+  // 1    : res.Xcv$MyString@2db7a79b
+  // 2    : res.Xcv$Something@6950e31
+  // 3    : res.Xcv$MyString@b7dd107
+  // 4    : res.Xcv$Something@42eca56e
+  // 5    : res.Xcv$MyList@52f759d7
+  // 6    : res.Xcv$MyList@7cbd213e
+
   private void walk(Markable from, List<Markable> rv) {
     for (Markable ptr : from.getPtrs()) {
       if (ptr == null) {
@@ -161,10 +170,45 @@ public class Xcv {
     }
   }
 
+  // 0    : res.Xcv$MyToken@2db7a79b
+  // 1    : k:32
+  // 2    : res.Xcv$MyList@6950e31
+  // 3    : res.Xcv$MyString@b7dd107
+  // 4    : res.Xcv$MyString@42eca56e
+  // 5    : res.Xcv$MyList@52f759d7
+  // 6    : res.Xcv$Something@7cbd213e
+  // 7    : res.Xcv$Something@192d3247
+
+  private List<Markable> walk2(Markable from) {
+
+    List<Markable> rv = new ArrayList<>();
+
+    LinkedList<Markable> pointers = new LinkedList<>();
+    pointers.add(from);
+
+    while (!pointers.isEmpty()) {
+      Markable m = pointers.removeFirst();
+      if (m == null) {
+        continue;
+      }
+
+      rv.add(m);
+
+      for (Markable ptr : m.getPtrs()) {
+        if (ptr == null) {
+          continue;
+        }
+        pointers.addLast(ptr);
+      }
+    }
+
+    return rv;
+  }
+
   @Test
   public void test() {
     MyToken tok = new MyToken();
-    List<Markable> toWalk = getAllPtrs(tok);
+    List<Markable> toWalk = walk2(tok);
     int i = 0;
     for (Markable m : toWalk) {
       System.out.printf("%-5d: %s\n", i, m);

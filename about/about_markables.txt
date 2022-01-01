@@ -1,0 +1,42 @@
+
+When we want to drop the reference - we may find all of the sub-refs,
+by getting all fields, and getting all fields from the fields we got, 
+and so on.
+
+Then - we have to decide what to do with this knowledge.
+We may delete all these refs, if it is possible.
+How do we know that it is possible?
+We have to scan all other local vars, global static vars, and find - 
+whether one of these vars is use one of these refs we want to drop.
+
+So - we may walk through the pointers we found, and for each pointer
+we may set the flag that this pointer may be possibly deleted.
+
+Then - we have to scan all other local vars, and for their pointers we
+have to set the flag that we cannot delete this pointer. And if this
+pointer is refer to the pointer we marked before, the flag will be 
+cleaned, and the pointer will be untouched.
+
+And then - we have to re-scan the first list again, and if the flag
+is set - we may easily clean the memory, and drop this object...
+
+class some {
+	string type;
+	string name;
+}
+
+int main() {
+	some s = new some();
+	string name = s.name;
+	delete(some);
+}
+
+In the code below - we will get all of the pointers for the 's'.
+The list will be look like [s.type, s.name, s].
+We will mark this list, and set for each element flag - 'to_delete'.
+Then - we will get all the locals -> [name].
+And we will iterate over this list and for each pointer we will 
+clear the 'to_delete' flag.
+The result will look like this: we may delete s.type, and s itself, but
+we cannot delete s.name, because it is used in the 'name' variable.
+
