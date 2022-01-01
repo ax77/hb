@@ -21,6 +21,7 @@ import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
 import ast_expr.ExprExpression;
+import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.SourceLocation;
 import ast_symtab.BuiltinNames;
@@ -308,6 +309,10 @@ public class RewriteRaw {
   }
 
   private FlatCodeItem makeCallListenerVoid(Ident listenerName, String methodPureName) {
+    if(!ParserMainOptions.GENERATE_CALL_STACK) {
+      return new FlatCodeItem(new IntrinsicText(null, ""));
+    }
+    
     final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
     IntrinsicText result = new IntrinsicText(null,
         listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
@@ -315,6 +320,10 @@ public class RewriteRaw {
   }
 
   private FlatCodeItem makeCallListenerWithDest(Ident listenerName, Var dest, String methodPureName) {
+    if(!ParserMainOptions.GENERATE_CALL_STACK) {
+      return new FlatCodeItem(new IntrinsicText(dest, ""));
+    }
+    
     final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
     IntrinsicText result = new IntrinsicText(dest,
         listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
@@ -322,6 +331,10 @@ public class RewriteRaw {
   }
 
   private FlatCodeItem genAssert(Var v) {
+    if(!ParserMainOptions.GENERATE_FIELD_ACCESS_ASSERTS) {
+      return new FlatCodeItem(new IntrinsicText(v, ""));
+    }
+    
     String e = labelName(expr("null pointer field-access"));
     String m = labelName(ToStringsInternal.signToStringCallPushF(method));
 

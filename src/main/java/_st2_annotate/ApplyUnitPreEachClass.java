@@ -72,7 +72,8 @@ public class ApplyUnitPreEachClass {
     }
 
     if (object.getConstructors().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
-      throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
+      //XXX:default_constructor
+      //throw new AstParseException("class has no constructor: " + object.getIdentifier().toString());
     }
 
     if (object.getFields().isEmpty() && !object.getModifiers().isNativeOnly() && !object.isInterface()) {
@@ -129,6 +130,7 @@ public class ApplyUnitPreEachClass {
 
     addEqualsMethod(object);
     addDestructor(object);
+    addConstructor(object);
   }
 
   private void addEqualsMethod(ClassDeclaration object) {
@@ -177,30 +179,16 @@ public class ApplyUnitPreEachClass {
     }
   }
 
+  private void addConstructor(ClassDeclaration object) {
+    if (object.getConstructors().isEmpty()) {
+      object.addConstructor(BuildDefaultConstructor.build(object));
+    } else {
+      for (ClassMethodDeclaration constr : object.getConstructors()) {
+        constr.getBlock().pushItemFront(new StmtStatement(
+            BuildDefaultConstructor.genBlockForWithAllFieldsAreInitialized(object), object.getBeginPos()));
+      }
+    }
+
+  }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

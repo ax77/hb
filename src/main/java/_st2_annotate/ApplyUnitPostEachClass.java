@@ -33,7 +33,9 @@ public class ApplyUnitPostEachClass {
     for (ClassDeclaration c : instantiationUnit.getClasses()) {
       InterfaceChecker.checkImplementations(c);
       applyMethodsSpecial(c);
-      checkAllFieldsAreInitialized(c);
+
+      //XXX:default_constructor
+      //checkAllFieldsAreInitialized(c);
     }
   }
 

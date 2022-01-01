@@ -43,10 +43,26 @@ public class LinearExpression {
     StringBuilder sb = new StringBuilder();
     for (FlatCodeItem item : items) {
       sb.append(item.toString());
-      if (!item.isSelectionShortCircuit()) {
+
+      boolean needSemicolon = true;
+      boolean needNewline = true;
+
+      if (item.isSelectionShortCircuit()) {
+        needSemicolon = false;
+      }
+
+      if (item.isIntrinsicText() && item.getIntrinsicText().getText().isEmpty()) {
+        needSemicolon = false;
+        needNewline = false;
+      }
+
+      if (needSemicolon) {
         sb.append(";");
       }
-      sb.append("\n");
+
+      if (needNewline) {
+        sb.append("\n");
+      }
     }
     return sb.toString();
   }
