@@ -74,15 +74,15 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    final String filename = dir + "/tests/main.hb";
+    final String filename = dir + "/tests/test_set_deletion_mark.hb";
 
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
-      //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
     CgMain result = new CgMain(unit.getClasses());
-    System.out.println(result.toString());
+    //System.out.println(result.toString());
 
     //    String s = " \n \n 123 \t \t \n \r\n  ";
     //    for (int i = s.length() - 1; i >= 0; i -= 1) {

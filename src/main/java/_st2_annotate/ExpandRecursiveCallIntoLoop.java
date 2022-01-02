@@ -39,14 +39,32 @@ public abstract class ExpandRecursiveCallIntoLoop {
     ///     mark_ptr(tmp);
     /// }
     ///
-    Ident iterVarName = Hash_ident.getHashedIdent("__iterator");
+    ///
+    /// {
+    ///   node iterator = this.next;
+    ///   for(; iterator != default(type); ) 
+    ///   {
+    ///     node saved_ref = iterator.next;
+    ///     iterator.next = default(type);
+    ///     {
+    ///       // destroy the object here
+    ///     }
+    ///     iterator = saved_ref;
+    ///   }
+    /// }
+
+    Ident iterVarName = Hash_ident.getHashedIdent("iterator");
     VarDeclarator iteratorDecl = new VarDeclarator(VarBase.LOCAL_VAR, new Modifiers(), tp, iterVarName, beginPos);
     ExprExpression iteratorInit = new ExprExpression(new ExprIdent(name), beginPos);
     iteratorDecl.setSimpleInitializer(iteratorInit);
 
+    // outer block with a declaration
+    StmtBlock outerBlockNamespace = new StmtBlock();
+    outerBlockNamespace.pushItemBack(new StmtStatement(iteratorDecl, beginPos));
+
     // loop test expression
     //
-    // tmp != default(FieldType)
+    // iterator != default(FieldType)
     //
     Token notEqualOp = new Token(beginPos, "!=", T.T_NE);
     ExprExpression lhs = new ExprExpression(new ExprIdent(iterVarName), beginPos);
@@ -55,29 +73,39 @@ public abstract class ExpandRecursiveCallIntoLoop {
 
     // loop step expression
     //
-    // tmp = tmp.FieldName
+    // saved_ref = iterator.next
     //
-    Token assignOp = new Token(beginPos, "=", T.T_ASSIGN);
+
+    Ident tmpVarName = Hash_ident.getHashedIdent("saved_ref");
+    VarDeclarator tmpVarDecl = new VarDeclarator(VarBase.LOCAL_VAR, new Modifiers(), tp, tmpVarName, beginPos);
+
+    final ExprExpression iteratorDotNext = new ExprExpression(new ExprIdent(iterVarName), beginPos);
+    final ExprFieldAccess fieldAccessTmp = new ExprFieldAccess(iteratorDotNext, name);
+    final ExprExpression tmpVarInitializer = new ExprExpression(fieldAccessTmp, beginPos);
+    tmpVarDecl.setSimpleInitializer(tmpVarInitializer);
+
+    // iterator = saved_ref;
+    //
+    Token tokEqualOp = new Token(beginPos, "=", T.T_ASSIGN);
     ExprExpression lvalue = new ExprExpression(new ExprIdent(iterVarName), beginPos);
-    ExprExpression rvalue = new ExprExpression(new ExprFieldAccess(lvalue, name), beginPos);
-    ExprExpression step = new ExprExpression(new ExprAssign(assignOp, lvalue, rvalue), beginPos);
+    ExprExpression rvalue = new ExprExpression(new ExprIdent(tmpVarName), beginPos);
+    ExprExpression assign = new ExprExpression(new ExprAssign(tokEqualOp, lvalue, rvalue), beginPos);
 
     // the loop itself
 
-    // outer block with a declaration
-    StmtBlock outerBlockNamespace = new StmtBlock();
-    outerBlockNamespace.pushItemBack(new StmtStatement(iteratorDecl, beginPos));
-
     // for loop with test and step expressions
     StmtFor forLoop = new StmtFor();
+    StmtBlock forLoopBody = new StmtBlock();
+    forLoopBody.pushItemBack(new StmtStatement(tmpVarDecl, beginPos));
+    forLoopBody.pushItemBack(new StmtStatement(new StmtBlock(), beginPos)); // and empty block, where the value will be deleted...
+    forLoopBody.pushItemBack(new StmtStatement(assign, beginPos));
+    
     forLoop.setTest(test);
-    forLoop.setStep(step);
-    forLoop.setBlock(new StmtBlock()); // the block of the FOR-LOOP, here will be our marking function.
-    outerBlockNamespace.pushItemBack(new StmtStatement(forLoop, beginPos));
+    forLoop.setBlock(forLoopBody); // the block of the FOR-LOOP, here will be our marking function.
 
     // the block itself as a result
-    StmtStatement item = new StmtStatement(outerBlockNamespace, beginPos);
-    return item;
+    outerBlockNamespace.pushItemBack(new StmtStatement(forLoop, beginPos));
+    return new StmtStatement(outerBlockNamespace, beginPos);
   }
 
 }
