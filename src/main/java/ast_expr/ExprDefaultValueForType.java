@@ -26,7 +26,7 @@ public class ExprDefaultValueForType implements Serializable, TypeSetter {
 
   @Override
   public String toString() {
-    return type.toString();
+    return "default(" + type.toString() + ")";
   }
 
 }
