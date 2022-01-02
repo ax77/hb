@@ -74,7 +74,7 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    final String filename = dir + "/tests/test_arrays_are_equal.hb";
+    final String filename = dir + "/tests/main.hb";
 
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {

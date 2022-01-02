@@ -28,20 +28,7 @@ class string {
   }
 
   boolean equals(string another) {
-    if (length() != another.length()) {
-      return false;
-    }
-
-    int size = buffer.size();
-    for (int i = 0; i < size; i += 1) {
-      char c1 = get(i);
-      char c2 = another.get(i);
-      if (c1 != c2) {
-        return false;
-      }
-    }
-
-    return true;
+    return buffer.equals(another.buffer);
   }
 
   string left(int count) {

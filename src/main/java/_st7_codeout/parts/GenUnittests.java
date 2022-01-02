@@ -38,9 +38,19 @@ public class GenUnittests implements Ccode {
     //printf("test: %s\n", "test_string_class :: test string right");
     //test_string_class_test_54();
 
+    int tot = 0;
+    for (ClassDeclaration c : classes) {
+      tot += c.getTests().size();
+    }
+
+    final String testTotal = String.format("%d", tot);
+    int testNum = 1;
+
     for (ClassDeclaration c : classes) {
 
-      for (ClassMethodDeclaration m : c.getTests()) {
+      final List<ClassMethodDeclaration> tests = c.getTests();
+
+      for (ClassMethodDeclaration m : tests) {
         final String className = m.getClazz().getIdentifier().toString();
         final String testName = CEscaper.unquote(m.getTestName());
 
@@ -50,17 +60,21 @@ public class GenUnittests implements Ccode {
         String pushFuncSignature = ToStringsInternal.signToStringCallPushF(m);
         String location = String.format("%d", m.getLocation().getLine());
 
-        impls.append("\nprintf(\"test: %s\\n\", " + name + ");\n");
+        impls.append("\nprintf(\"%d/%d test: %s\", " + String.format("%d", testNum) + ", " + testTotal + ", " + name
+            + ");\n");
 
         if (ParserMainOptions.GENERATE_CALL_STACK) {
           impls.append("push_function(" + "\"" + "test_runner::" + pushFuncSignature + "\"" + ", " + location + ");\n");
         }
 
         impls.append(sign + "();\n");
+        impls.append("printf(\"%s\\n\", \" OK\");");
 
         if (ParserMainOptions.GENERATE_CALL_STACK) {
           impls.append("pop_function(" + "\"" + "test_runner::" + pushFuncSignature + "\"" + ", " + location + ");\n");
         }
+
+        testNum += 1;
       }
     }
 
