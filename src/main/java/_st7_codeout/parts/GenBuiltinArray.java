@@ -173,7 +173,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_set_") && !signToStringCall.startsWith("array_set_deletion_mark_")) {
+    else if (signToStringCall.startsWith("array_set_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");
@@ -220,36 +220,62 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    //else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
-    //  lineI(methodCallsHeader);
-    //  lineI("    assert(__this);\n");
-    //
-    //  lineI("    mark_ptr(__this);");
-    //  lineI("    mark_ptr(__this->data);\n");
-    //
-    //  if (arrayOf.isClass()) {
-    //    ClassDeclaration cd = arrayOf.getClassTypeFromRef();
-    //    ClassMethodDeclaration meth = cd.getMethodForSure("set_deletion_mark");
-    //    String subTypeName = ToStringsInternal.typeToString(arrayOf);
-    //    lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
-    //    lineI("    " + subTypeName + " __element = __this->data[i];");
-    //    lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element, m);");
-    //    lineI("}");
-    //  }
-    //
-    //  lineI("}\n");
-    //}
+    // static boolean array_equals_15_1027(struct array_1027* __this, struct array_1027* another)
+    // if(__this->size != another->size) {
+    //     return false;
+    // }
+    // for( size_t i = 0; i < __this->size; i += 1 ) {
+    //     type element_1 = __this->data[i];
+    //     type element_2 = another->data[i];
+    //     if(!equals(element_1, element_2)) {
+    //         return false;
+    //     }
+    // }
+    // return true;
 
     else if (signToStringCall.startsWith("array_equals_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
-      lineI("    return false;");
-      lineI("}\n");
-    }
+      lineI("    assert(__this->data);");
+      lineI("    assert(another);");
+      lineI("    assert(another->data);");
 
-    else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
-      lineI(methodCallsHeader);
-      lineI("    assert(__this);");
+      lineI("    if(__this->size != another->size) {");
+      lineI("        return false;");
+      lineI("    }");
+
+      if (arrayOf.isClass()) {
+        ClassDeclaration cd = arrayOf.getClassTypeFromRef();
+        ClassMethodDeclaration meth = cd.getMethodForSure("equals");
+        String subTypeName = ToStringsInternal.typeToString(arrayOf);
+        lineI("  for( size_t i = 0; i < __this->size; i += 1 ) {");
+        lineI("      " + subTypeName + " __element_1 = __this->data[i];");
+        lineI("      " + subTypeName + " __element_2 = another->data[i];");
+        lineI("      if(!" + ToStringsInternal.signToStringCall(meth) + "(__element_1, __element_2)) {");
+        lineI("          return false;");
+        lineI("      }");
+        lineI("  }");
+      }
+
+      else {
+        if (arrayOf.isChar()) {
+          lineI("if(strcmp(__this->data, another->data) != 0) {");
+          lineI("    return false;");
+          lineI("}");
+        }
+
+        else {
+          String subTypeName = ToStringsInternal.typeToString(arrayOf);
+          lineI("      " + subTypeName + " __element_1 = *(__this->data);");
+          lineI("      " + subTypeName + " __element_2 = *(another->data);");
+          
+          lineI("if(__element_1 != __element_2) {");
+          lineI("    return false;");
+          lineI("}");
+        }
+      }
+
+      lineI("    return true;");
       lineI("}\n");
     }
 

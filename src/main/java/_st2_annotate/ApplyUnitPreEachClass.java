@@ -136,12 +136,13 @@ public class ApplyUnitPreEachClass {
     addEqualsMethod(object);
     addDestructor(object);
     addConstructor(object);
-    
+
     //addSetDeletionMarkMethod(object);
   }
 
+  @SuppressWarnings("unused")
   private void addSetDeletionMarkMethod(ClassDeclaration object) {
-    if (object.hasPredefinedMethod(BuiltinNames.set_deletion_mark_ident)) {
+    if (object.hasPredefinedMethod(BuiltinNames.apply_deletion_mark_ident)) {
       return;
     }
 
@@ -189,7 +190,7 @@ public class ApplyUnitPreEachClass {
     }
 
     ClassMethodDeclaration m = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, new Modifiers(), object,
-        BuiltinNames.set_deletion_mark_ident, parameters, new Type(beginPos), block, beginPos);
+        BuiltinNames.apply_deletion_mark_ident, parameters, new Type(beginPos), block, beginPos);
 
     m.setGeneratedByDefault();
     object.addMethod(m);
@@ -201,7 +202,7 @@ public class ApplyUnitPreEachClass {
     ExprFieldAccess eFieldAccess = new ExprFieldAccess(thisExpression, name);
     ExprExpression lhs = new ExprExpression(eFieldAccess, object.getBeginPos());
 
-    ExprMethodInvocation eMethodInvocation = new ExprMethodInvocation(lhs, BuiltinNames.set_deletion_mark_ident,
+    ExprMethodInvocation eMethodInvocation = new ExprMethodInvocation(lhs, BuiltinNames.apply_deletion_mark_ident,
         arguments);
 
     block.pushItemBack(new StmtStatement(new ExprExpression(eMethodInvocation, beginPos), beginPos));
