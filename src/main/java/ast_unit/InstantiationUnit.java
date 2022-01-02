@@ -20,10 +20,10 @@ public class InstantiationUnit {
   }
 
   public void put(ClassDeclaration e) {
-    if (alreadyContains(e, classes)) {
-      throw new AstParseException("unexp.: " + e.getIdentifier().toString());
+    //TODO:templates
+    if (!alreadyContains(e, classes)) {
+      this.classes.add(0, e);
     }
-    this.classes.add(0, e);
   }
 
   /// this means: we already parsed that class, but it was imported

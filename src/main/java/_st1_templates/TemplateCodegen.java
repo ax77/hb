@@ -57,18 +57,25 @@ public class TemplateCodegen {
     /// again and again, and can just return the previously saved ref.
     ///
     final ClassDeclaration template = copyClazz(from.getClassTypeFromRef());
-    final List<Type> typeArguments = Collections.unmodifiableList(from.getTypeArgumentsFromRef());
-    final Type result = new Type(new ClassTypeRef(template, typeArguments));
+
+    //TODO:templates
+    final List<Type> typeArgumentsExpanded = new ArrayList<>();
+    for (Type tp : Collections.unmodifiableList(from.getTypeArgumentsFromRef())) {
+      Type clean = new TemplateCodegen().getTypeFromTemplate(tp);
+      typeArgumentsExpanded.add(clean);
+    }
+
+    final Type result = new Type(new ClassTypeRef(template, typeArgumentsExpanded));
     generatedClasses.add(result);
 
-    if (typeArguments.size() != template.getTypeParametersT().size()) {
+    if (typeArgumentsExpanded.size() != template.getTypeParametersT().size()) {
       throw new AstParseException("type parameters and type arguments are different by count.");
     }
 
     /// replace each type-parameter 'T' 
     /// with given type like i32, [i32], list<i32>, etc...
-    for (int i = 0; i < typeArguments.size(); i++) {
-      template.getTypeParametersT().get(i).fillPropValues(typeArguments.get(i));
+    for (int i = 0; i < typeArgumentsExpanded.size(); i++) {
+      template.getTypeParametersT().get(i).fillPropValues(typeArgumentsExpanded.get(i));
     }
 
     /// expand the whole template type-setters recursively
