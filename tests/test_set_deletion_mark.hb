@@ -2,30 +2,43 @@
 class node {
   node prev;
   node next;
+  
+  deinit {
+    fmt<string>.print("node is being dropped");
+  }
 }
 
 class toktype {
   string type;
   string name;
+  
+  deinit {
+    fmt<string>.print("toktype is being dropped");
+  }
 }
 
 class intlit {
   string svalue;
   int ivalue;
+  
+  deinit {
+    fmt<string>.print("intval is being dropped");
+  }
 }
 
 class tok {
   toktype typ;
   intlit lit;
   node chain;
+  
+  deinit {
+    fmt<string>.print("token is being dropped");
+  }
 }
 
 class main {
   int main() {
     tok t = new tok();
-    array<array<int>> args = new array<array<int>>();
-    node node = new node();
-    node.set_deletion_mark(true);
     return 0;
   }
 }

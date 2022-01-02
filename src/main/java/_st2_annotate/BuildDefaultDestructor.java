@@ -11,6 +11,7 @@ import ast_method.ClassMethodDeclaration;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
 import ast_symtab.Keywords;
+import ast_types.Type;
 import ast_vars.VarDeclarator;
 import tokenize.Token;
 
@@ -34,17 +35,25 @@ public abstract class BuildDefaultDestructor {
   public static List<StmtStatement> deinits(ClassDeclaration object) {
     final List<VarDeclarator> fields = object.getFields();
     final List<StmtStatement> rv = new ArrayList<>();
+
     if (!fields.isEmpty()) {
       for (int i = fields.size() - 1; i >= 0; i -= 1) {
-        VarDeclarator field = fields.get(i);
-        if (field.getType().isClass()) {
-          if (field.getType().getClassTypeFromRef().isEqualTo(object)) {
-            continue; // TODO: self-referenced structs WILL produce an infinite recursion
-          }
+        final VarDeclarator field = fields.get(i);
+        final Type type = field.getType();
+        if (!type.isClass()) {
+          continue;
+        }
 
+        if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
+          StmtStatement recursiveCallIntoLoop = ExpandRecursiveCallIntoLoop.expandField(field);
+          rv.add(recursiveCallIntoLoop);
+        }
+
+        else {
           ExprExpression deinit = deinitForField(object, field);
           rv.add(new StmtStatement(deinit, object.getBeginPos()));
         }
+
       }
     }
     return rv;
