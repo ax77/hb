@@ -234,7 +234,7 @@ public class ParseTypeDeclarations {
   }
 
   private void putDestructor(ClassDeclaration clazz, Modifiers modifiers) {
-    if (!modifiers.isEmpty()) {
+    if (!modifiers.isEmpty() && !clazz.isNativeArray()) {
       parser.perror("destructor with modifiers: " + modifiers.toString());
     }
 

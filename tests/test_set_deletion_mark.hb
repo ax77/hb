@@ -38,6 +38,7 @@ class tok {
 
 class main {
   int main() {
+    array<array<array<array<int>>>> arr = new array<array<array<array<int>>>>();
     tok t = new tok();
     return 0;
   }

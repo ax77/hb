@@ -121,14 +121,25 @@ public class GenEmpties implements Ccode {
     final String varname = getVarname(c);
 
     if (c.isNativeArray()) {
-      if (c.getTypeParametersT().get(0).isChar()) {
+      final Type arrayOf = c.getTypeParametersT().get(0);
+      if (arrayOf.isChar()) {
         sb.append("    // INIT: " + varname + "\n");
         sb.append("    " + varname + "->data = char_default_empty_ptr;\n");
         sb.append("    " + varname + "->size = 0;\n");
         sb.append("    " + varname + "->alloc = 0;\n");
       } else {
         sb.append("    // INIT: " + varname + "\n");
-        sb.append("    " + varname + "->data = 0;\n");
+
+        if (arrayOf.isClass()) {
+          sb.append("    " + varname + "->data = &" + getNameForType(arrayOf) + ";\n");
+        }
+
+        else {
+          // an array always holds pointers
+          String typePrefix = ToStringsInternal.typeToString(arrayOf);
+          sb.append("    " + varname + "->data = " + typePrefix + DEFAULT_EMPTY_PTR + ";\n");
+        }
+
         sb.append("    " + varname + "->size = 0;\n");
         sb.append("    " + varname + "->alloc = 0;\n");
       }

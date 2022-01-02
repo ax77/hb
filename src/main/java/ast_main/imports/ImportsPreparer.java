@@ -155,7 +155,7 @@ public abstract class ImportsPreparer {
     sb.append("  native int size();                        \n");
     sb.append("  native boolean is_empty();                \n");
     sb.append("  native boolean equals(array<T> another);  \n");
-    sb.append("  native void set_deletion_mark(boolean m); \n");
+    sb.append("  native deinit;                            \n");
     sb.append("}                                           \n");
 
     tokens.addAll(getTokenlistNoEof("<builtin-array>", sb.toString()));

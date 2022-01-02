@@ -31,9 +31,12 @@ public abstract class BuildDefaultConstructor {
     final List<VarDeclarator> parameters = new ArrayList<>();
 
     final Token beginPos = object.getBeginPos();
+
+    //final Type returnType = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
+    final Type returnType = new Type(beginPos); // void
+
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR,
-        new Modifiers(), object, object.getIdentifier(), parameters,
-        new Type(new ClassTypeRef(object, object.getTypeParametersT())), block, beginPos);
+        new Modifiers(), object, object.getIdentifier(), parameters, returnType, block, beginPos);
 
     constructor.setGeneratedByDefault();
     return constructor;

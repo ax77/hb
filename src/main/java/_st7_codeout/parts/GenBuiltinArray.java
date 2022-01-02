@@ -199,32 +199,46 @@ public class GenBuiltinArray implements Ccode {
       lineI("    return (__this->size == 0);");
       lineI("}\n");
     }
-    
+
     else if (signToStringCall.startsWith("array_deinit_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);\n");
-      lineI("}\n");
-    }
 
-    else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
-      lineI(methodCallsHeader);
-      lineI("    assert(__this);\n");
+      if (arrayOf.isClass()) {
+        ClassDeclaration cd = arrayOf.getClassTypeFromRef();
+        ClassMethodDeclaration meth = cd.getDestructor();
+        String subTypeName = ToStringsInternal.typeToString(arrayOf);
+        lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
+        lineI("    " + subTypeName + " __element = __this->data[i];");
+        lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element);");
+        lineI("}");
+      }
 
       lineI("    mark_ptr(__this);");
       lineI("    mark_ptr(__this->data);\n");
 
-      if (arrayOf.isClass()) {
-        ClassDeclaration cd = arrayOf.getClassTypeFromRef();
-        ClassMethodDeclaration meth = cd.getMethodForSure("set_deletion_mark");
-        String subTypeName = ToStringsInternal.typeToString(arrayOf);
-        lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
-        lineI("    " + subTypeName + " __element = __this->data[i];");
-        lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element, m);");
-        lineI("}");
-      }
-
       lineI("}\n");
     }
+
+    //else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
+    //  lineI(methodCallsHeader);
+    //  lineI("    assert(__this);\n");
+    //
+    //  lineI("    mark_ptr(__this);");
+    //  lineI("    mark_ptr(__this->data);\n");
+    //
+    //  if (arrayOf.isClass()) {
+    //    ClassDeclaration cd = arrayOf.getClassTypeFromRef();
+    //    ClassMethodDeclaration meth = cd.getMethodForSure("set_deletion_mark");
+    //    String subTypeName = ToStringsInternal.typeToString(arrayOf);
+    //    lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
+    //    lineI("    " + subTypeName + " __element = __this->data[i];");
+    //    lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element, m);");
+    //    lineI("}");
+    //  }
+    //
+    //  lineI("}\n");
+    //}
 
     else if (signToStringCall.startsWith("array_equals_")) {
       lineI(methodCallsHeader);
