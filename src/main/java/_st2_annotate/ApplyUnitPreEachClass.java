@@ -21,7 +21,6 @@ import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
-import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -176,65 +175,9 @@ public class ApplyUnitPreEachClass {
       ClassDeclaration classTypeForField = ref.getClazz();
 
       if (classTypeForField.isEqualTo(object)) {
-        /// An example:
-        ///
-        /// class node { node prev; node next; }
-        ///
-        /// We cannot generate direct calls, because it will cause a recursion.
-        /// And it depends on how the size of the object;
-        /// If it is a linked-list with 1_000_000 of nodes - we do not have enough stack space
-        /// for invoke all these calls.
-        /// So - we have to linearize a recursion into a simple loop.
-        /// for(FieldType tmp = FieldName; tmp != default(FieldType); tmp = tmp.FieldName) {
-        ///     mark_ptr(tmp);
-        /// }
-        ///
-        Ident iterName = Hash_ident.getHashedIdent("__iterator");
-        VarDeclarator iteratorDecl = new VarDeclarator(VarBase.LOCAL_VAR, new Modifiers(), tp, iterName, beginPos);
-        ExprExpression initializer = new ExprExpression(new ExprIdent(name), beginPos);
-        iteratorDecl.setSimpleInitializer(initializer);
-
-        // loop test expression
-        //
-        // tmp != default(FieldType)
-        //
-        Token notEqualOp = new Token(beginPos, "!=", T.T_NE);
-        ExprExpression lhs = new ExprExpression(new ExprIdent(iterName), beginPos);
-        ExprExpression rhs = new ExprExpression(new ExprDefaultValueForType(tp), beginPos);
-        ExprExpression test = new ExprExpression(new ExprBinary(notEqualOp, lhs, rhs), beginPos);
-
-        // loop step expression
-        //
-        // tmp = tmp.FieldName
-        //
-        Token assignOp = new Token(beginPos, "=", T.T_ASSIGN);
-        ExprExpression lvalue = new ExprExpression(new ExprIdent(iterName), beginPos);
-        ExprExpression rvalue = new ExprExpression(new ExprFieldAccess(lvalue, name), beginPos);
-        ExprAssign assign = new ExprAssign(assignOp, lvalue, rvalue);
-        ExprExpression step = new ExprExpression(assign, beginPos);
-
-        // the loop itself
-
-        // outer block with a declaration
-        StmtBlock forBlock = new StmtBlock();
-        forBlock.pushItemBack(new StmtStatement(iteratorDecl, beginPos));
-
-        // for loop with test and step expressions
-        StmtFor stmtFor = new StmtFor();
-        stmtFor.setTest(test);
-        stmtFor.setStep(step);
-        stmtFor.setBlock(new StmtBlock()); // the block of the FOR-LOOP, here will be our marking function.
-        forBlock.pushItemBack(new StmtStatement(stmtFor, beginPos));
-
-        // the block itself as a result
-        StmtStatement item = new StmtStatement(forBlock, beginPos);
-        block.pushItemBack(item);
-
-      }
-
-      else {
+        expandRecursiveCallsIntoLoop(beginPos, block, tp, name);
+      } else {
         invokeSetDeletionMarkForField(object, beginPos, arguments, block, name);
-
       }
     }
 
@@ -243,6 +186,61 @@ public class ApplyUnitPreEachClass {
 
     m.setGeneratedByDefault();
     object.addMethod(m);
+  }
+
+  private void expandRecursiveCallsIntoLoop(final Token beginPos, final StmtBlock block, Type tp, Ident name) {
+    /// An example:
+    ///
+    /// class node { node prev; node next; }
+    ///
+    /// We cannot generate direct calls, because it will cause a recursion.
+    /// And it depends on how the size of the object;
+    /// If it is a linked-list with 1_000_000 of nodes - we do not have enough stack space
+    /// for invoke all these calls.
+    /// So - we have to linearize a recursion into a simple loop.
+    /// for(FieldType tmp = FieldName; tmp != default(FieldType); tmp = tmp.FieldName) {
+    ///     mark_ptr(tmp);
+    /// }
+    ///
+    Ident iterVarName = Hash_ident.getHashedIdent("__iterator");
+    VarDeclarator iteratorDecl = new VarDeclarator(VarBase.LOCAL_VAR, new Modifiers(), tp, iterVarName, beginPos);
+    ExprExpression iteratorInit = new ExprExpression(new ExprIdent(name), beginPos);
+    iteratorDecl.setSimpleInitializer(iteratorInit);
+
+    // loop test expression
+    //
+    // tmp != default(FieldType)
+    //
+    Token notEqualOp = new Token(beginPos, "!=", T.T_NE);
+    ExprExpression lhs = new ExprExpression(new ExprIdent(iterVarName), beginPos);
+    ExprExpression rhs = new ExprExpression(new ExprDefaultValueForType(tp), beginPos);
+    ExprExpression test = new ExprExpression(new ExprBinary(notEqualOp, lhs, rhs), beginPos);
+
+    // loop step expression
+    //
+    // tmp = tmp.FieldName
+    //
+    Token assignOp = new Token(beginPos, "=", T.T_ASSIGN);
+    ExprExpression lvalue = new ExprExpression(new ExprIdent(iterVarName), beginPos);
+    ExprExpression rvalue = new ExprExpression(new ExprFieldAccess(lvalue, name), beginPos);
+    ExprExpression step = new ExprExpression(new ExprAssign(assignOp, lvalue, rvalue), beginPos);
+
+    // the loop itself
+
+    // outer block with a declaration
+    StmtBlock outerBlockNamespace = new StmtBlock();
+    outerBlockNamespace.pushItemBack(new StmtStatement(iteratorDecl, beginPos));
+
+    // for loop with test and step expressions
+    StmtFor forLoop = new StmtFor();
+    forLoop.setTest(test);
+    forLoop.setStep(step);
+    forLoop.setBlock(new StmtBlock()); // the block of the FOR-LOOP, here will be our marking function.
+    outerBlockNamespace.pushItemBack(new StmtStatement(forLoop, beginPos));
+
+    // the block itself as a result
+    StmtStatement item = new StmtStatement(outerBlockNamespace, beginPos);
+    block.pushItemBack(item);
   }
 
   private void invokeSetDeletionMarkForField(ClassDeclaration object, final Token beginPos,
