@@ -7,7 +7,9 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprBinary;
 import ast_expr.ExprExpression;
+import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
+import ast_expr.ExprMethodInvocation;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
@@ -131,6 +133,74 @@ public class ApplyUnitPreEachClass {
     addEqualsMethod(object);
     addDestructor(object);
     addConstructor(object);
+    addSetDeletionMarkMethod(object);
+  }
+
+  private void addSetDeletionMarkMethod(ClassDeclaration object) {
+    if (object.hasPredefinedMethod(BuiltinNames.set_deletion_mark_ident)) {
+      return;
+    }
+
+    /// void set_deletion_mark(boolean m) { 
+    ///     this.field_1.set_deletion_mark(m);
+    ///     this.field_2.set_deletion_mark(m);
+    ///     this.field_3.set_deletion_mark(m);
+    /// }
+
+    final Token beginPos = object.getBeginPos();
+    List<VarDeclarator> parameters = new ArrayList<>();
+
+    final Ident mIdent = Hash_ident.getHashedIdent("m");
+    VarDeclarator param = new VarDeclarator(VarBase.METHOD_PARAMETER, new Modifiers(), TypeBindings.make_boolean(),
+        mIdent, beginPos);
+    parameters.add(param);
+
+    final List<ExprExpression> arguments = new ArrayList<>();
+    arguments.add(new ExprExpression(new ExprIdent(mIdent), beginPos));
+
+    final StmtBlock block = new StmtBlock();
+
+    for (VarDeclarator field : object.getFields()) {
+      Type tp = field.getType();
+      Ident name = field.getIdentifier();
+
+      if (!tp.isClass()) {
+        continue;
+      }
+
+      ClassTypeRef ref = tp.getClassTypeRef();
+      ClassDeclaration classTypeForField = ref.getClazz();
+
+      if (classTypeForField.isNativeArray()) {
+        // for-each loop statement
+        
+        // mark the array itself
+        invokeSetDeletionMarkForField(object, beginPos, arguments, block, name);
+      }
+
+      else {
+        invokeSetDeletionMarkForField(object, beginPos, arguments, block, name);
+
+      }
+    }
+
+    ClassMethodDeclaration m = new ClassMethodDeclaration(ClassMethodBase.IS_FUNC, new Modifiers(), object,
+        BuiltinNames.set_deletion_mark_ident, parameters, new Type(beginPos), block, beginPos);
+
+    m.setGeneratedByDefault();
+    object.addMethod(m);
+  }
+
+  private void invokeSetDeletionMarkForField(ClassDeclaration object, final Token beginPos,
+      final List<ExprExpression> arguments, final StmtBlock block, Ident name) {
+    ExprExpression thisExpression = new ExprExpression(object, object.getBeginPos());
+    ExprFieldAccess eFieldAccess = new ExprFieldAccess(thisExpression, name);
+    ExprExpression lhs = new ExprExpression(eFieldAccess, object.getBeginPos());
+
+    ExprMethodInvocation eMethodInvocation = new ExprMethodInvocation(lhs, BuiltinNames.set_deletion_mark_ident,
+        arguments);
+
+    block.pushItemBack(new StmtStatement(new ExprExpression(eMethodInvocation, beginPos), beginPos));
   }
 
   private void addEqualsMethod(ClassDeclaration object) {

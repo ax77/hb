@@ -173,7 +173,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_set_")) {
+    else if (signToStringCall.startsWith("array_set_") && !signToStringCall.startsWith("array_set_deletion_mark_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");
@@ -199,10 +199,30 @@ public class GenBuiltinArray implements Ccode {
       lineI("    return (__this->size == 0);");
       lineI("}\n");
     }
-
+    
     else if (signToStringCall.startsWith("array_deinit_")) {
       lineI(methodCallsHeader);
-      lineI("    assert(__this);");
+      lineI("    assert(__this);\n");
+      lineI("}\n");
+    }
+
+    else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
+      lineI(methodCallsHeader);
+      lineI("    assert(__this);\n");
+
+      lineI("    mark_ptr(__this);");
+      lineI("    mark_ptr(__this->data);\n");
+
+      if (arrayOf.isClass()) {
+        ClassDeclaration cd = arrayOf.getClassTypeFromRef();
+        ClassMethodDeclaration meth = cd.getMethodForSure("set_deletion_mark");
+        String subTypeName = ToStringsInternal.typeToString(arrayOf);
+        lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
+        lineI("    " + subTypeName + " __element = __this->data[i];");
+        lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element, m);");
+        lineI("}");
+      }
+
       lineI("}\n");
     }
 
@@ -210,6 +230,12 @@ public class GenBuiltinArray implements Ccode {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    return false;");
+      lineI("}\n");
+    }
+
+    else if (signToStringCall.startsWith("array_set_deletion_mark_")) {
+      lineI(methodCallsHeader);
+      lineI("    assert(__this);");
       lineI("}\n");
     }
 

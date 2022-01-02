@@ -25,6 +25,8 @@ public abstract class GenRuntimeHeader {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
+    sb.append("static void mark_ptr(void *ptr) { }\n\n");
+    
     // call stack +
     sb.append("struct aux_fcall_stack {                                                 \n");
     sb.append("    const char *func;                                                    \n");

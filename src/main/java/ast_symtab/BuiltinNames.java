@@ -19,6 +19,7 @@ public abstract class BuiltinNames {
   public static final Ident native_hashcode_ident = g("hashcode");
 
   public static final Ident equals_ident = g("equals");
+  public static final Ident set_deletion_mark_ident = g("set_deletion_mark");
 
   // these names are not keywords.
   private static Ident g(String name) {
