@@ -4,7 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import _st7_codeout.CgMain;
@@ -27,6 +34,40 @@ public class TestCcode7 {
 
     reader.close();
 
+  }
+
+  @Ignore
+  @Test
+  public void testMap() {
+    Hashtable<String, String> map = new Hashtable<String, String>();
+    map.put("test", "test123");
+    map.put("test2", "test456");
+
+    for (Iterator<Map.Entry<String, String>> it = map.entrySet().iterator(); it.hasNext();) {
+      Map.Entry<String, String> entry = it.next();
+      if (entry.getKey().equals("test")) {
+        it.remove();
+      }
+    }
+  }
+
+  @Ignore
+  @Test
+  public void testSet() {
+    HashSet<String> s1 = new HashSet<>();
+    s1.add("var_1");
+    s1.add("var_2");
+
+    HashSet<String> s2 = new HashSet<>();
+    s2.add("var_2");
+    s2.add("var_3");
+
+    HashSet<String> intersection = new HashSet<String>(s1); // use the copy constructor
+    intersection.retainAll(s2);
+
+    for (String s : intersection) {
+      System.out.println(s);
+    }
   }
 
   @Test

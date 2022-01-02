@@ -162,22 +162,27 @@ public class ApplyUnitPreEachClass {
     arguments.add(new ExprExpression(new ExprIdent(mIdent), beginPos));
 
     final StmtBlock block = new StmtBlock();
+    final List<VarDeclarator> fields = object.getFields();
 
-    for (VarDeclarator field : object.getFields()) {
-      Type tp = field.getType();
-      Ident name = field.getIdentifier();
+    if (!fields.isEmpty()) {
+      for (int i = fields.size() - 1; i >= 0; i -= 1) {
+        VarDeclarator field = fields.get(i);
 
-      if (!tp.isClass()) {
-        continue;
-      }
+        Type tp = field.getType();
+        Ident name = field.getIdentifier();
 
-      ClassTypeRef ref = tp.getClassTypeRef();
-      ClassDeclaration classTypeForField = ref.getClazz();
+        if (!tp.isClass()) {
+          continue;
+        }
 
-      if (classTypeForField.isEqualTo(object)) {
-        expandRecursiveCallsIntoLoop(beginPos, block, tp, name);
-      } else {
-        invokeSetDeletionMarkForField(object, beginPos, arguments, block, name);
+        ClassTypeRef ref = tp.getClassTypeRef();
+        ClassDeclaration classTypeForField = ref.getClazz();
+
+        if (classTypeForField.isEqualTo(object)) {
+          expandRecursiveCallsIntoLoop(beginPos, block, tp, name);
+        } else {
+          invokeSetDeletionMarkForField(object, beginPos, arguments, block, name);
+        }
       }
     }
 
