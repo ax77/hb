@@ -243,6 +243,53 @@ static class test_list {
   
 }
 
+static class test_arrays {
+  
+  static array<int> get_1d() {
+    array<int> arr = new array<int>();
+    arr.add(32);
+    arr.add(64);
+    arr.add(128);
+    return arr;
+  }
+  
+  static array<array<int>> get_2d() {
+    array<array<int>> arr = new array<array<int>>();
+    arr.add(get_1d());
+    arr.add(get_1d());
+    return arr;
+  }
+  
+  static array<array<array<int>>> get_3d() {
+    array<array<array<int>>> arr = new array<array<array<int>>>();
+    arr.add(get_2d());
+    arr.add(get_2d());
+    return arr;
+  }
+  
+  test "test 2d array" {
+    array<array<int>> arr = new array<array<int>>();
+    arr.add(new array<int>());
+    array<int> first = arr.get(0);
+    assert_true(first.is_empty());
+  }
+  
+  test "test 1d array" {
+    array<int> arr = new array<int>();
+    arr.add(1);
+    arr.add(2);
+    assert_true(arr.size() == 2);
+    assert_true(arr.get(1) == 2);
+  }
+  
+  test "test 3d array" {
+    array<array<array<int>>> arr = get_3d();
+    assert_true(arr.size() == 2);
+    array<array<int>> arr2 = arr.get(0);
+    assert_true(arr2.size() == 2);
+  }
+}
+
 class main {
   int main() {
 
