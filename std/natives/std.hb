@@ -1,9 +1,9 @@
-import std.natives.string::string;
+import std.natives.str::str;
 
 static class io {
-  native int open(string filename, int mode);
+  native int open(str filename, int mode);
   native int close(int fd);
-  native int read(int fd, array<char> buffer, int size); 
+  native int read(int fd, arr<char> buffer, int size); 
 }
 
 static class fmt<T> {

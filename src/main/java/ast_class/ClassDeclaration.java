@@ -483,11 +483,11 @@ public class ClassDeclaration implements Serializable, Location {
   }
 
   public boolean isNativeString() {
-    return identifier.equals(BuiltinNames.string_ident);
+    return identifier.equals(BuiltinNames.str_ident);
   }
 
   public boolean isNativeArray() {
-    return identifier.equals(BuiltinNames.array_ident);
+    return identifier.equals(BuiltinNames.arr_ident);
   }
 
   public boolean isStaticClass() {

@@ -1,4 +1,4 @@
-import std.natives.string::string;
+import std.natives.str::str;
 import std.list::list;
 
 class dummy_object {
@@ -94,10 +94,10 @@ static class test_casting {
 
 static class test_strings {
   
-  test "test string equality" {
-    string a = "1";
-    string b = "2";
-    string c = "1";
+  test "test str equality" {
+    str a = "1";
+    str b = "2";
+    str c = "1";
     
     assert_true(a == c);
     assert_true(b != a);
@@ -165,28 +165,28 @@ static class test_static {
 }
 
 static class test_string_class {
-  test "test string left" {
-    string s = "123";
+  test "test str left" {
+    str s = "123";
     assert_true(s.left(1) == "1");
     assert_true(s.left(2) == "12");
     assert_true(s.left(3) == "123");
   }
   
-  test "test string right" {
-    string s = "123";
+  test "test str right" {
+    str s = "123";
     assert_true(s.right(1) == "3");
     assert_true(s.right(2) == "23");
     assert_true(s.right(3) == "123");
   }
   
-  test "test string mid" {
-    string s = "123";
+  test "test str mid" {
+    str s = "123";
     assert_true(s.mid(0, 2) == "12");
     assert_true(s.mid(1, 2) == "23");
   }
   
-  test "test string starts with some prefix" {
-    string s = "a.b.c";
+  test "test str starts with some prefix" {
+    str s = "a.b.c";
     assert_true(s.starts_with("a"));
     assert_true(s.starts_with("a."));
     assert_true(s.starts_with("a.b"));
@@ -195,25 +195,25 @@ static class test_string_class {
     assert_true(!s.starts_with("a.b.c "));
   }
   
-  test "test string ends with" {
-    string s = "123";
+  test "test str ends with" {
+    str s = "123";
     assert_true(s.ends_with("3"));
     assert_true(s.ends_with("23"));
     assert_true(s.ends_with("123"));
   }
   
-  test "test string access" {
+  test "test str access" {
     assert_true("1.2.3".left(2) == "1.");
   }
   
-  test "test string trim" {
-    string s = " \n \n 123 \t \t \n \r\n  ";
-    string res = s.trim();
+  test "test str trim" {
+    str s = " \n \n 123 \t \t \n \r\n  ";
+    str res = s.trim();
     assert_true(res == "123");
   }
   
-  test "test string constructor from a literal" {
-    string s = new string(new string("a.b.c"));
+  test "test str constructor from a literal" {
+    str s = new str(new str("a.b.c"));
     assert_true(s == "a.b.c");
   }
 }
@@ -259,37 +259,37 @@ static class test_list {
 
 static class test_arrays {
   
-  static array<int> get_1d() {
-    array<int> arr = new array<int>();
+  static arr<int> get_1d() {
+    arr<int> arr = new arr<int>();
     arr.add(32);
     arr.add(64);
     arr.add(128);
     return arr;
   }
   
-  static array<array<int>> get_2d() {
-    array<array<int>> arr = new array<array<int>>();
+  static arr<arr<int>> get_2d() {
+    arr<arr<int>> arr = new arr<arr<int>>();
     arr.add(get_1d());
     arr.add(get_1d());
     return arr;
   }
   
-  static array<array<array<int>>> get_3d() {
-    array<array<array<int>>> arr = new array<array<array<int>>>();
+  static arr<arr<arr<int>>> get_3d() {
+    arr<arr<arr<int>>> arr = new arr<arr<arr<int>>>();
     arr.add(get_2d());
     arr.add(get_2d());
     return arr;
   }
   
   test "test 2d array" {
-    array<array<int>> arr = new array<array<int>>();
-    arr.add(new array<int>());
-    array<int> first = arr.get(0);
+    arr<arr<int>> arr = new arr<arr<int>>();
+    arr.add(new arr<int>());
+    arr<int> first = arr.get(0);
     assert_true(first.is_empty());
   }
   
   test "test 1d array" {
-    array<int> arr = new array<int>();
+    arr<int> arr = new arr<int>();
     arr.add(1);
     arr.add(2);
     assert_true(arr.size() == 2);
@@ -297,20 +297,20 @@ static class test_arrays {
   }
   
   test "test 3d array" {
-    array<array<array<int>>> arr = get_3d();
+    arr<arr<arr<int>>> arr = get_3d();
     assert_true(arr.size() == 2);
-    array<array<int>> arr2 = arr.get(0);
+    arr<arr<int>> arr2 = arr.get(0);
     assert_true(arr2.size() == 2);
   }
   
   test "test simple arrays of ints" {
-    array<int> a= new array<int>();
+    arr<int> a= new arr<int>();
     a.add(32);
     
-    array<int> b= new array<int>();
+    arr<int> b= new arr<int>();
     b.add(32);
     
-    array<int> c= new array<int>();
+    arr<int> c= new arr<int>();
     c.add(64);
     
     assert_true(a.equals(b));
@@ -319,10 +319,10 @@ static class test_arrays {
   }
   
   test "test simple arrays of strings" {
-    array<string> a= new array<string>();
+    arr<str> a= new arr<str>();
     a.add("abc");
     
-    array<string> b= new array<string>();
+    arr<str> b= new arr<str>();
     b.add("abc");
     
     assert_true(a.equals(b));

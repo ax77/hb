@@ -1,21 +1,18 @@
 
-class string {
+class str {
 
-  array<char>buffer;
+  arr<char>buffer;
 
-  string(string str) {
-    this.buffer = new array<char>();
-    
-    // TODO: null-terminator for c-compatibility.
-    // this null-terminator mustn't have change the length.
-    
+  str(str str) {
+    this.buffer = new arr<char>();
+
     for(int i = 0; i < str.length(); i += 1) {
       this.buffer.add(str.get(i));
     }
 
   }
 
-  string(array<char> arr) {
+  str(arr<char> arr) {
     this.buffer = arr;
   }
 
@@ -27,11 +24,11 @@ class string {
     return buffer.get(at);
   }
 
-  boolean equals(string another) {
+  boolean equals(str another) {
     return buffer.equals(another.buffer);
   }
 
-  string left(int count) {
+  str left(int count) {
     
     if(count == 0 || length() == 0) {
       return this;
@@ -41,15 +38,15 @@ class string {
       return this;
     }
     
-    array<char> res = new array<char>();
+    arr<char> res = new arr<char>();
     for(int i = 0; i < count; i += 1) {
       res.add(get(i));
     }
     
-    return new string(res);
+    return new str(res);
   }
 
-  string right(int count) {
+  str right(int count) {
     
     if(count == 0 || length() == 0) {
       return this;
@@ -58,17 +55,17 @@ class string {
       return this;
     }
     
-    array<char> res = new array<char>();
+    arr<char> res = new arr<char>();
     
     int start = length() - count;
     for(int i = start; i < length(); i += 1) {
       res.add(get(i));
     }
     
-    return new string(res);
+    return new str(res);
   }
 
-  string mid(int begin, int much) {
+  str mid(int begin, int much) {
     if(begin >= length()) {
       return this;
     }
@@ -80,14 +77,14 @@ class string {
       end = length();
     }
     
-    array<char> res = new array<char>();
+    arr<char> res = new arr<char>();
     for(int i = begin; i < end; i += 1) {
       res.add(get(i));
     }
-    return new string(res);
+    return new str(res);
   }
 
-  boolean starts_with(string pattern) {
+  boolean starts_with(str pattern) {
     if (pattern.length() > this.length()) {
       return false;
     }
@@ -104,7 +101,7 @@ class string {
     return true;
   }
 
-  boolean ends_with(string pattern) {
+  boolean ends_with(str pattern) {
     if (pattern.length() > this.length()) {
       return false;
     }
@@ -123,8 +120,7 @@ class string {
     return true;
   }
 
-  // TODO: this one does not work :(
-  string trim() {
+  str trim() {
     if(length() == 0) {
       return this;
     }
@@ -146,11 +142,11 @@ class string {
       }
     }
     
-    array<char> res = new array<char>();
+    arr<char> res = new arr<char>();
     for(int i = start; i <= end; i += 1) {
       res.add(get(i));
     }
-    return new string(res);
+    return new str(res);
     
   }
 

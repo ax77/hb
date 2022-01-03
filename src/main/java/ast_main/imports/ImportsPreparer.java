@@ -70,7 +70,7 @@ public abstract class ImportsPreparer {
     // Let's add all of the predefined classes.
     // We almost always need these classes to be imported.
     final String dir = System.getProperty("user.dir");
-    final String[] names = { "string", "std" };
+    final String[] names = { "str", "std" };
     for (String s : names) {
       final String nativeFileName = Normalizer.normalize(dir + "/std/natives/" + s + ".hb");
       stack.add(nativeFileName);
@@ -145,17 +145,17 @@ public abstract class ImportsPreparer {
     final List<Token> tokens = new ArrayList<Token>();
 
     StringBuilder sb = new StringBuilder();
-    sb.append("native class array<T>                       \n");
-    sb.append("{                                           \n");
-    sb.append("  native array();                           \n");
-    sb.append("  native void add(T element);               \n");
-    sb.append("  native T get(int index);                  \n");
-    sb.append("  native T set(int index, T element);       \n");
-    sb.append("  native int size();                        \n");
-    sb.append("  native boolean is_empty();                \n");
-    sb.append("  native boolean equals(array<T> another);  \n");
-    sb.append("  native ~array();                          \n");
-    sb.append("}                                           \n");
+    sb.append("native class arr<T>                      \n");
+    sb.append("{                                        \n");
+    sb.append("  native arr();                          \n");
+    sb.append("  native void add(T element);            \n");
+    sb.append("  native T get(int index);               \n");
+    sb.append("  native T set(int index, T element);    \n");
+    sb.append("  native int size();                     \n");
+    sb.append("  native boolean is_empty();             \n");
+    sb.append("  native boolean equals(arr<T> another); \n");
+    sb.append("  native ~arr();                         \n");
+    sb.append("}                                        \n");
 
     tokens.addAll(getTokenlistNoEof("<builtin-array>", sb.toString()));
 

@@ -68,9 +68,6 @@ public class GenBuiltinArray implements Ccode {
   }
 
   private String genTableEmptifier(Type tp) {
-    /// for (size_t i = 0; i < __this->alloc; i += 1) {
-    ///   __this->data[__this->alloc] = char_default_empty_val;
-    /// }
 
     String varname = ToStringsInternal.defaultVarNameForType(tp);
 
@@ -91,7 +88,6 @@ public class GenBuiltinArray implements Ccode {
     Type arrayOf = clazz.getTypeParametersT().get(0);
     String arrayOfToString = ToStringsInternal.typeToString(arrayOf);
 
-    //
     final String methodType = ToStringsInternal.typeToString(method.getType());
     final String signToStringCall = ToStringsInternal.signToStringCall(method);
     final String methodCallsHeader = "static " + methodType + " " + signToStringCall
@@ -102,17 +98,8 @@ public class GenBuiltinArray implements Ccode {
     lineP("static " + methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters())
         + ";");
 
-    /// native array(int size);
-    /// native T get(int index);
-    /// native T set(int index, T element);
-    /// native int size();
+    if (signToStringCall.startsWith("arr_init_")) {
 
-    if (signToStringCall.startsWith("array_init_")) {
-
-      /// native array();         /// resizable
-      /// native array(int size); /// fixed
-
-      /// dynamic
       if (parameters.size() == 1) {
         lineI(methodCallsHeader);
         lineI("    assert(__this);");
@@ -129,7 +116,7 @@ public class GenBuiltinArray implements Ccode {
 
     }
 
-    else if (signToStringCall.startsWith("array_add_")) {
+    else if (signToStringCall.startsWith("arr_add_")) {
       lineI(methodCallsHeader);
 
       lineI("    if(__this->size >= __this->alloc) {                ");
@@ -148,7 +135,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_get_")) {
+    else if (signToStringCall.startsWith("arr_get_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");
@@ -159,7 +146,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_set_")) {
+    else if (signToStringCall.startsWith("arr_set_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");
@@ -172,21 +159,21 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_size_")) {
+    else if (signToStringCall.startsWith("arr_size_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    return __this->size;");
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_is_empty_")) {
+    else if (signToStringCall.startsWith("arr_is_empty_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    return (__this->size == 0);");
       lineI("}\n");
     }
 
-    else if (signToStringCall.startsWith("array_deinit_")) {
+    else if (signToStringCall.startsWith("arr_deinit_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);\n");
 
@@ -206,20 +193,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("}\n");
     }
 
-    // static boolean array_equals_15_1027(struct array_1027* __this, struct array_1027* another)
-    // if(__this->size != another->size) {
-    //     return false;
-    // }
-    // for( size_t i = 0; i < __this->size; i += 1 ) {
-    //     type element_1 = __this->data[i];
-    //     type element_2 = another->data[i];
-    //     if(!equals(element_1, element_2)) {
-    //         return false;
-    //     }
-    // }
-    // return true;
-
-    else if (signToStringCall.startsWith("array_equals_")) {
+    else if (signToStringCall.startsWith("arr_equals_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);");
       lineI("    assert(__this->data);");

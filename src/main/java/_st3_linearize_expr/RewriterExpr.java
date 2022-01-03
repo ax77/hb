@@ -665,26 +665,7 @@ public class RewriterExpr {
 
       if (name.equals(Keywords.assert_true_ident)) {
 
-        /// void assert_true(int cnd, const char *file, int line, const char *expr)
-        /// assert_true(c == 'a', new struct string*(C:/Users/dvv/Desktop/pr/jsparse/hb/std/natives/string.hb), 10, new struct string*(c == 'a'))
-
-        String file = labelName(CEscaper.toCString(Normalizer.normalize(node.getFileToString())));
-        String line = node.getLineToString();
-        String expr = labelName(CEscaper.toCString(node.getExprToString()));
-
-        StringBuilder intrArgs = new StringBuilder();
-        intrArgs.append("assert_true(");
-        intrArgs.append(args.get(0).getName().getName());
-        intrArgs.append(", ");
-        intrArgs.append(file);
-        intrArgs.append(", ");
-        intrArgs.append(line);
-        intrArgs.append(", ");
-        intrArgs.append(expr);
-        intrArgs.append(")");
-
-        IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());
-        genRaw(new FlatCodeItem(intrinsicText));
+        genAssertTrueBuiltinFunc(node, args);
 
       }
 
@@ -766,17 +747,41 @@ public class RewriterExpr {
 
   }
 
+  private void genAssertTrueBuiltinFunc(ExprBuiltinFunc node, final List<Var> args) {
+
+    /// void assert_true(int cnd, const char *file, int line, const char *expr)
+    /// assert_true(c == 'a', new struct string*(C:/Users/dvv/Desktop/pr/jsparse/hb/std/natives/string.hb), 10, new struct string*(c == 'a'))
+
+    String file = labelName(CEscaper.toCString(Normalizer.normalize(node.getFileToString())));
+    String line = node.getLineToString();
+    String expr = labelName(CEscaper.toCString(node.getExprToString()));
+
+    StringBuilder intrArgs = new StringBuilder();
+    intrArgs.append("assert_true(");
+    intrArgs.append(args.get(0).getName().getName());
+    intrArgs.append(", ");
+    intrArgs.append(file);
+    intrArgs.append(", ");
+    intrArgs.append(line);
+    intrArgs.append(", ");
+    intrArgs.append(expr);
+    intrArgs.append(")");
+
+    IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());
+    genRaw(new FlatCodeItem(intrinsicText));
+  }
+
   private String labelName(String sconst) {
     String e = getStrlabel(sconst).getName().getName();
     return e;
   }
 
   private Var getStrlabel(String sconst) {
-    Var lvalue = BuiltinsFnSet.getVar(sconst);
+    Var lvalue = BuiltinsFnSet.getAuxVar(sconst);
     if (lvalue == null) {
       lvalue = VarCreator.justNewVar(TypeBindings.make_char()); // that's wrong :)
     }
-    BuiltinsFnSet.registerStringLabel(sconst, lvalue);
+    BuiltinsFnSet.registerAuxStringLabel(sconst, lvalue);
     return lvalue;
   }
 

@@ -239,7 +239,7 @@ public class ApplyExpression {
     //e.setResultType(field.getType());
 
     e.setResultType(
-        new Type(new ClassTypeRef(symtabApplier.getTypename(BuiltinNames.string_ident), new ArrayList<>())));
+        new Type(new ClassTypeRef(symtabApplier.getTypename(BuiltinNames.str_ident), new ArrayList<>())));
   }
 
   private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {

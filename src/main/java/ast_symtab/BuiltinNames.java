@@ -6,8 +6,8 @@ import tokenize.Ident;
 public abstract class BuiltinNames {
 
   // predefined classes
-  public static final Ident array_ident = g("array");
-  public static final Ident string_ident = g("string");
+  public static final Ident arr_ident = g("arr");
+  public static final Ident str_ident = g("str");
 
   // predefined parameters
   public static final Ident __this_ident = g("__this");

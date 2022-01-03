@@ -1,6 +1,6 @@
 public class cbuf {
 
-  private final array<char>buffer;
+  private final arr<char>buffer;
   private final int size;
   private int offset;
   private int line;
@@ -8,9 +8,9 @@ public class cbuf {
   private char prevc;
   private int eofs;
 
-  public cbuf(final string input) {
+  public cbuf(final str input) {
 
-    this.buffer = new array<char>();
+    this.buffer = new arr<char>();
     this.size = input.length() + 8;
     this.offset = 0;
     this.line = 1;
@@ -21,7 +21,7 @@ public class cbuf {
     fill_buffer(input);
   }
 
-  void fill_buffer(string input) {
+  void fill_buffer(str input) {
     for (int i = 0; i < input.length(); i += 1) {
       char c = input.get(i);
       buffer.add(c);
@@ -55,9 +55,9 @@ public class cbuf {
     return c;
   }
 
-  public array<char> peekc3() {
+  public arr<char> peekc3() {
 
-    array<char> res = new array<char>();
+    arr<char> res = new arr<char>();
 
     // don't be too smart ;)
     int save_offset = offset;

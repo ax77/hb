@@ -715,7 +715,7 @@ public class ParseExpression {
 
   private ExprExpression createStringCreationFromGivenTok(final Token saved) {
     final Type strTypeBootstr = new Type(
-        new ClassTypeRef(GlobalSymtab.getClassType(parser, BuiltinNames.string_ident), new ArrayList<>()));
+        new ClassTypeRef(GlobalSymtab.getClassType(parser, BuiltinNames.str_ident), new ArrayList<>()));
 
     final List<ExprExpression> arguments = new ArrayList<>();
     final ExprExpression arg = new ExprExpression(ExpressionBase.EPRIMARY_STRING, saved);
