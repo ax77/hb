@@ -33,7 +33,7 @@ public abstract class GenBuiltinStringStaticLabels {
       }
 
       final String initBuffer = content.toString();
-      final int buflen = initBuffer.length();
+      final String buflen = "sizeof(\"" + initBuffer + "\")-1";
 
       final String charArrayName = ToStringsInternal.classHeaderToString(charArray);
       final String randomVarname = getRandomName();
@@ -46,8 +46,7 @@ public abstract class GenBuiltinStringStaticLabels {
       // struct array_1024 a_42b7b406_5f99_4b1d_b554_c278a6a80204 = { .data = "xxxxx", .size = 40, .alloc = 40 };
       // struct string * t96 = &(struct string) {.buffer = &a_42b7b406_5f99_4b1d_b554_c278a6a80204 };
 
-      sb.append("struct " + charArrayName + " " + randomVarname + " = { .data = \"" + initBuffer + "\", .size = "
-          + buflen + ", .alloc = " + buflen + " };\n");
+      sb.append("struct " + charArrayName + " " + randomVarname + " = { .data = \"" + initBuffer + "\", .size = " + buflen + ", .alloc = " + buflen + " };\n");
       sb.append(
           "struct string * " + v.getName().getName() + " = &(struct string) { .buffer = &" + randomVarname + " };\n");
 

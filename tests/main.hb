@@ -209,8 +209,7 @@ static class test_string_class {
   test "test string trim" {
     string s = " \n \n 123 \t \t \n \r\n  ";
     string res = s.trim();
-    //fmt<string>.print(res);
-    //assert_true(res == "123");
+    assert_true(res == "123");
   }
   
   test "test string constructor from a literal" {
