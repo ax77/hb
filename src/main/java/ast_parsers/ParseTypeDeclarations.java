@@ -177,7 +177,7 @@ public class ParseTypeDeclarations {
       // return;
     }
 
-    if (parser.is(Keywords.deinit_ident)) {
+    if (parser.is(T.T_TILDE)) {
       putDestructor(clazz, mods);
       return;
     }
@@ -238,7 +238,13 @@ public class ParseTypeDeclarations {
       parser.perror("destructor with modifiers: " + modifiers.toString());
     }
 
-    final Token beginPos = parser.checkedMove(Keywords.deinit_ident);
+    final Token beginPos = parser.checkedMove(T.T_TILDE);
+    Ident id = parser.getIdent();
+    if (!id.equals(clazz.getIdentifier())) {
+      parser.perror("destructor must have the name of its class.");
+    }
+    parser.lparen();
+    parser.rparen();
 
     StmtBlock block = new StmtBlock();
     if (!modifiers.isNativeOnly()) {

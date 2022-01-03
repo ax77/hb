@@ -8,7 +8,7 @@ class dummy_object {
     i = -1;
   }
   
-  deinit {
+  ~dummy_object() {
   }
   
   test "empty" {}

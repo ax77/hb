@@ -123,20 +123,6 @@ public class GenBuiltinArray implements Ccode {
         lineI("}\n");
       }
 
-      /// fixed
-      else if (parameters.size() == 2 && parameters.get(1).getType().isInt()) {
-        lineI(methodCallsHeader);
-        lineI("    assert(__this);");
-        lineI("    assert(size > 0);");
-        lineI("    assert(size < INT_MAX);");
-
-        lineI("    __this->size = size;");
-        lineI("    __this->alloc = size;");
-        lineI("    __this->data = " + sizeofMulAlloc);
-        lineI(genTableEmptifier(arrayOf));
-        lineI("}\n");
-      }
-
       else {
         throw new AstParseException("unimplemented array constructor: " + method.getIdentifier().toString());
       }
@@ -268,7 +254,7 @@ public class GenBuiltinArray implements Ccode {
           String subTypeName = ToStringsInternal.typeToString(arrayOf);
           lineI("      " + subTypeName + " __element_1 = *(__this->data);");
           lineI("      " + subTypeName + " __element_2 = *(another->data);");
-          
+
           lineI("if(__element_1 != __element_2) {");
           lineI("    return false;");
           lineI("}");
