@@ -22,7 +22,7 @@ public class AssignVarNum {
 
   @Override
   public String toString() {
-    return lvalue.typeNameToString() + " = " + literal.toString();
+    return "const " + lvalue.typeNameToString() + " = " + literal.toString();
   }
 
 }

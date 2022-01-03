@@ -214,7 +214,12 @@ public class RewriterStmt {
     visitBlock(forStmt.getBlock(), resultLoop.getBlock());
 
     if (resultLoop.hasStep()) {
-      resultLoop.getBlock().pushItemBack(new LinearStatement(StatementBase.SEXPR, resultLoop.getStep()));
+      // TODO: if the last item in block is a 'break' - do we REALLY need to
+      // put this unreachable expression here?
+      // I am sure that the c-compiler will delete it, so, it's not an error.
+      //
+      final LinearStatement stepExpr = new LinearStatement(StatementBase.SEXPR, resultLoop.getStep());
+      resultLoop.getBlock().pushItemBack(stepExpr);
     }
 
     popLoop();

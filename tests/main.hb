@@ -56,6 +56,21 @@ static class test_statements {
 		assert_true(a==1);
 		assert_true(b==7);
 	}
+	
+	test "test if-s" {
+	  int a = 32;
+	  int b = -1;
+	  if(a == 10) {
+	    b = 1;
+	  } else if(a == 11) {
+	    b = 2;
+	  } else if(a == 12) {
+	    b = 3;
+	  } else {
+	    b = 5;
+	  }
+	  assert_true(b == 5);
+	}
 }
 
 static class test_casting {
