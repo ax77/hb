@@ -20,4 +20,5 @@ public interface TypeApi {
   public boolean isArithmetic();
   public boolean isInteger();
   public boolean isFloating();
+  public boolean isNamespace();
 }

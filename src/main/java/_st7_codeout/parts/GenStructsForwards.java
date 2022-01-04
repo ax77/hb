@@ -15,7 +15,7 @@ public abstract class GenStructsForwards {
       if (c.isMainClass()) {
         continue;
       }
-      if (c.isStaticClass()) {
+      if (c.isNamespace()) {
         continue;
       }
       sb.append("struct " + ToStringsInternal.classHeaderToString(c) + ";\n");

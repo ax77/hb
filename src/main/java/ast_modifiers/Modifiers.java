@@ -81,14 +81,6 @@ public class Modifiers implements Serializable {
     return modifiers.contains(Keywords.native_ident);
   }
 
-  public boolean isStatic() {
-    return modifiers.contains(Keywords.static_ident);
-  }
-
-  public boolean isStaticOnly() {
-    return modifiers.size() == 1 && modifiers.contains(Keywords.static_ident);
-  }
-
   public boolean isFinal() {
     return modifiers.contains(Keywords.final_ident);
   }

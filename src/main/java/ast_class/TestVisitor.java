@@ -41,8 +41,8 @@ public class TestVisitor {
   public void traverseClazz(ClassDeclaration clazz) {
     if (clazz.isInterface()) {
       visitInterface(clazz);
-    } else if (clazz.isStaticClass()) {
-      visitStaticClass(clazz);
+    } else if (clazz.isNamespace()) {
+      visitNamespace(clazz);
     } else if (clazz.isMainClass()) {
       visitMainClass(clazz);
     } else if (clazz.isNativeClass()) {
@@ -117,7 +117,7 @@ public class TestVisitor {
 
   }
 
-  private void visitStaticClass(ClassDeclaration clazz) {
+  private void visitNamespace(ClassDeclaration clazz) {
     // TODO Auto-generated method stub
 
   }

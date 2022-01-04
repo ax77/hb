@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,6 +121,25 @@ public class TestCcode7 {
 
   }
 
+  private void printFloat(double f) {
+    String s = String.format(Locale.US, "%f", f);
+    System.out.println(s);
+  }
+
+  @Ignore
+  @Test
+  public void testParseDouble() {
+    double a = 472086.94347999006;
+    double b = 4.720869e+05;
+    double c = 0x1.cd05bc61f9e57p+18;
+
+    printFloat(Double.parseDouble("472086.94347999006"));
+    printFloat(Double.parseDouble("4.720869e+05"));
+    printFloat(Double.parseDouble("0x1.cd05bc61f9e57p+18"));
+
+    System.out.printf("%e\n", a);
+  }
+
   @Test
   public void test1() throws IOException {
 
@@ -132,6 +152,7 @@ public class TestCcode7 {
     }
 
     CgMain result = new CgMain(unit.getClasses());
+    //System.out.println(result.toString());
 
     FileWriter fw = new FileWriter("ccode.c");
     fw.write(result.toString());

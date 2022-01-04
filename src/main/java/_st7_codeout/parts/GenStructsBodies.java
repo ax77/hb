@@ -15,7 +15,7 @@ public abstract class GenStructsBodies {
       if (c.isMainClass()) {
         continue;
       }
-      if (c.isStaticClass()) {
+      if (c.isNamespace()) {
         continue;
       }
       if (c.isNativeArray()) {

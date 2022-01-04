@@ -490,8 +490,8 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.arr_ident);
   }
 
-  public boolean isStaticClass() {
-    return modifiers.isStaticOnly();
+  public boolean isNamespace() {
+    return keyword.equals(Keywords.namespace_ident);
   }
 
   public boolean isNativeClass() {

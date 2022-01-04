@@ -365,7 +365,7 @@ public class RewriterExpr {
       args.add(0, obj.getDest());
 
       ///TODO:static_semantic
-      if (clazz.isStaticClass()) {
+      if (clazz.isNamespace()) {
 
         args.remove(0); // __this
 
@@ -417,7 +417,7 @@ public class RewriterExpr {
 
       ///TODO:static_semantic
       final ClassDeclaration clazz = obj.getType().getClassTypeFromRef();
-      if (clazz.isStaticClass()) {
+      if (clazz.isNamespace()) {
         /// int f = constants.os_version;
         /// ::
         /// int t8 = constants->os_version;

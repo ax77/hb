@@ -45,7 +45,7 @@ public class ApplyUnitPostEachClass {
     }
 
     ///TODO:static_semantic
-    if (c.isStaticClass()) {
+    if (c.isNamespace()) {
       return;
     }
 
@@ -127,7 +127,7 @@ public class ApplyUnitPostEachClass {
       return;
     }
     ///TODO:static_semantic
-    if (object.isStaticClass()) {
+    if (object.isNamespace()) {
       return;
     }
 

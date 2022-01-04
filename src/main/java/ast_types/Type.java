@@ -327,4 +327,9 @@ public class Type implements Serializable, TypeApi {
     return classTypeRef.getClazz().isNativeString();
   }
 
+  @Override
+  public boolean isNamespace() {
+    return isClass() && classTypeRef.isNamespace();
+  }
+
 }

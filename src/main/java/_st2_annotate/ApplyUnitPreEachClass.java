@@ -57,12 +57,12 @@ public class ApplyUnitPreEachClass {
       return;
     }
 
-    if (!object.isStaticClass()) {
+    if (!object.isNamespace()) {
       checkPlainClassSem(object);
     }
 
-    if (object.isStaticClass()) {
-      checkStaticClassSem(object);
+    if (object.isNamespace()) {
+      checkNamespace(object);
     }
 
   }
@@ -72,6 +72,10 @@ public class ApplyUnitPreEachClass {
     for (VarDeclarator field : object.getFields()) {
       if (field.getSimpleInitializer() != null) {
         throw new AstParseException("field initializer unexpected: " + object.getIdentifier().toString() + "."
+            + field.getIdentifier().toString());
+      }
+      if (field.getType().isNamespace()) {
+        throw new AstParseException("field cannot be a namespace name type: " + object.getIdentifier().toString() + "."
             + field.getIdentifier().toString());
       }
     }
@@ -87,7 +91,7 @@ public class ApplyUnitPreEachClass {
 
   }
 
-  private void checkStaticClassSem(ClassDeclaration object) {
+  private void checkNamespace(ClassDeclaration object) {
 
     // we cannot use fields in a static class.
     // it has no constructors, destructors, etc.
@@ -98,9 +102,6 @@ public class ApplyUnitPreEachClass {
     for (VarDeclarator field : object.getFields()) {
       final String msg = object.getIdentifier().toString() + "." + field.getIdentifier().toString();
 
-      if (!field.getMods().isStatic()) {
-        throw new AstParseException("field in static class must be static: " + msg);
-      }
       if (field.getSimpleInitializer() == null) {
         throw new AstParseException("field in static class is not initialized: " + msg);
       }
@@ -109,15 +110,12 @@ public class ApplyUnitPreEachClass {
       }
     }
 
-    for (ClassMethodDeclaration method : object.getMethods()) {
-      boolean isOk = method.getModifiers().isStatic() || method.getModifiers().isNative();
-      if (!isOk) {
-        throw new AstParseException("method in static class must only be static or native: "
-            + object.getIdentifier().toString() + "." + method.getIdentifier().toString());
-      }
-    }
     if (!object.getConstructors().isEmpty()) {
-      throw new AstParseException("unexpected constructor in static class: " + object.getIdentifier().toString());
+      throw new AstParseException("unexpected constructor in namespace: " + object.getIdentifier().toString());
+    }
+
+    if (object.getDestructor() != null) {
+      throw new AstParseException("unexpected destructor in namespace: " + object.getIdentifier().toString());
     }
 
   }
@@ -129,7 +127,7 @@ public class ApplyUnitPreEachClass {
     }
 
     // TODO:static_semantic
-    if (object.isStaticClass()) {
+    if (object.isNamespace()) {
       return;
     }
 

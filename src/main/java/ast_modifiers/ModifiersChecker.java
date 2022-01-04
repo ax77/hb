@@ -30,7 +30,6 @@ public abstract class ModifiersChecker {
        what.equals(Keywords.private_ident  )
     || what.equals(Keywords.public_ident   )
     || what.equals(Keywords.native_ident   )
-    || what.equals(Keywords.static_ident   )
     || what.equals(Keywords.final_ident    );
   }
 
@@ -40,7 +39,7 @@ public abstract class ModifiersChecker {
         what.equals(Keywords.private_ident  )
      || what.equals(Keywords.public_ident   )
      || what.equals(Keywords.native_ident   )
-     || what.equals(Keywords.static_ident   );
+     ;
   }
 
   private static boolean isMethodParameterModifierId(Ident what) {
@@ -51,8 +50,8 @@ public abstract class ModifiersChecker {
     return 
         what.equals(Keywords.private_ident  )
      || what.equals(Keywords.public_ident   )
-     || what.equals(Keywords.static_ident   )
-     || what.equals(Keywords.final_ident    );
+     || what.equals(Keywords.final_ident    )
+     ;
   }
 
   private static boolean isConstructorModifierId(Ident what) {

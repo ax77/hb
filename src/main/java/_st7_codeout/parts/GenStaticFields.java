@@ -16,7 +16,7 @@ public abstract class GenStaticFields {
       if (c.isMainClass()) {
         continue;
       }
-      if (!c.isStaticClass()) {
+      if (!c.isNamespace()) {
         continue;
       }
       if (c.getFields().isEmpty()) {

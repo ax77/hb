@@ -16,16 +16,16 @@ class dummy_object {
   test "empty  " {}
 }
 
-static class test_expressions {
+namespace test_expressions {
 
-  test"test_ternary"
+  test "test_ternary"
   {
 		int a = 1024;
 		int b = ?(a == 1024, 32, -1);
 		assert_true(b == 32);
 	}
 
-  test"test_arith"
+  test "test_arith"
   {
     int a = 2 + 2 * 2;
     assert_true(a == 6);
@@ -33,7 +33,7 @@ static class test_expressions {
 
 }
 
-static class test_statements {
+namespace test_statements {
 	test "test for loop break" {
 		int a = 0;
 		for(int i=0; i<8; i+=1) {
@@ -73,9 +73,9 @@ static class test_statements {
 	}
 }
 
-static class test_casting {
+namespace test_casting {
 
-  test"test casting between int and char"
+  test "test casting between int and char"
   {
     
     int i = 32; // whitespace
@@ -92,7 +92,7 @@ static class test_casting {
 
 }
 
-static class test_strings {
+namespace test_strings {
   
   test "test str equality" {
     str a = "1";
@@ -106,7 +106,7 @@ static class test_strings {
   
 }
 
-static class test_type_traits {
+namespace test_type_traits {
 
   /// is_void 
   /// is_boolean  
@@ -141,7 +141,7 @@ static class test_type_traits {
   }
 }
 
-static class test_static {
+namespace test_static {
   
   test "test static assert" {
     int a = 0;
@@ -164,7 +164,7 @@ static class test_static {
   
 }
 
-static class test_string_class {
+namespace test_string_class {
   test "test str left" {
     str s = "123";
     assert_true(s.left(1) == "1");
@@ -218,12 +218,12 @@ static class test_string_class {
   }
 }
 
-static class tok_type {
-  static final int T_STRING = 1;
-  static final int T_CHAR = 2;
+namespace tok_type {
+  final int T_STRING = 1;
+  final int T_CHAR = 2;
 }
 
-static class test_static_semantic {
+namespace test_static_semantic {
   
   test "test static constants" {
     int x = tok_type.T_CHAR;
@@ -233,8 +233,8 @@ static class test_static_semantic {
   
 }
 
-static class test_short_circuits {
-  test"? ternary operator short circuit division by zero shoud pass"
+namespace test_short_circuits {
+  test "? ternary operator short circuit division by zero shoud pass"
   {
     int x = ?(1>0, 12, 1/0);
     assert_true(x==12);
@@ -244,9 +244,9 @@ static class test_short_circuits {
   }
 }
 
-static class test_list {
+namespace test_list {
 
-  test"test fill list with the values"
+  test "test fill list with the values"
   {
     list<int> list = new list<int>();
     for(int i=0; i<32; i+=1) {
@@ -259,9 +259,9 @@ static class test_list {
 
 }
 
-static class test_arrays {
+namespace test_arrays {
 
-  static arr<int> get_1d() {
+  arr<int> get_1d() {
     arr<int> arr = new arr<int>();
     arr.add(32);
     arr.add(64);
@@ -269,21 +269,21 @@ static class test_arrays {
     return arr;
   }
 
-  static arr<arr<int>> get_2d() {
+  arr<arr<int>> get_2d() {
     arr<arr<int>> arr = new arr<arr<int>>();
     arr.add(get_1d());
     arr.add(get_1d());
     return arr;
   }
 
-  static arr<arr<arr<int>>> get_3d() {
+  arr<arr<arr<int>>> get_3d() {
     arr<arr<arr<int>>> arr = new arr<arr<arr<int>>>();
     arr.add(get_2d());
     arr.add(get_2d());
     return arr;
   }
 
-  test"test 2d array"
+  test "test 2d array"
 
   {
     arr<arr<int>> arr = new arr<arr<int>>();
@@ -292,7 +292,7 @@ static class test_arrays {
     assert_true(first.is_empty());
   }
 
-  test"test 1d array"
+  test "test 1d array"
   {
     arr<int> arr = new arr<int>();
     arr.add(1);
@@ -301,7 +301,7 @@ static class test_arrays {
     assert_true(arr.get(1) == 2);
   }
 
-  test"test 3d array"
+  test "test 3d array"
   {
     arr<arr<arr<int>>> arr = get_3d();
     assert_true(arr.size() == 2);
@@ -309,7 +309,7 @@ static class test_arrays {
     assert_true(arr2.size() == 2);
   }
 
-  test"test simple arrays of ints"
+  test "test simple arrays of ints"
   {
     arr<int> a= new arr<int>();
     a.add(32);
@@ -325,7 +325,7 @@ static class test_arrays {
     assert_true(!b.equals(c));
   }
 
-  test"test simple arrays of strings"
+  test "test simple arrays of strings"
   {
     arr<str> a = new arr<str>();
     a.add("abc");
@@ -649,7 +649,7 @@ class z {
   }
 }
 
-static class test_path_access {
+namespace test_path_access {
   test "a long path" {
     z obj = new z();
     int res = obj.next.next().next.next.next().next().next.next().next.next().next.next.next().next().next().next.next.next.next.next().next.next().next.next().next().next();
@@ -658,16 +658,16 @@ static class test_path_access {
 }
 
 /// silly :)
-static class test_floating_simple {
+namespace test_floating_simple {
   
-  static float fabs(float v) {
+  float fabs(float v) {
     if(v <= 0_f32) {
       return -1_f32 * v;
     }
     return v;
   }
   
-  static boolean cmp(float a, float b, float epsilon)
+  boolean cmp(float a, float b, float epsilon)
   {
       if (fabs(a - b) < epsilon) {
           return true;
