@@ -70,6 +70,56 @@ public class TestCcode7 {
     }
   }
 
+  @Ignore
+  @Test
+  public void genPath() {
+    /// class a {
+    ///   int next;
+    ///   a() { next = 32; }
+    ///   int next() { return next; }
+    /// }
+    ///
+    /// class b {
+    ///   a next;
+    ///   b() { next = new a(); }
+    ///   a next() { return next; }
+    /// }
+    ///
+    /// class c {
+    ///   b next;
+    ///   c() { next = new b(); }
+    ///   b next() { return next; }
+    /// }
+
+    String names = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
+    final String[] split = names.split(" ");
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("class a {                   \n");
+    sb.append("  int next;                 \n");
+    sb.append("  a() { this.next = 32; };  \n");
+    sb.append("  int next() {              \n");
+    sb.append("    return this.next;       \n");
+    sb.append("  }                         \n");
+    sb.append("}                           \n\n");
+
+    for (int i = 1; i < split.length; i += 1) {
+      String curr = split[i];
+      String prev = split[i - 1];
+      sb.append("class " + curr + " {\n");
+      sb.append("    " + prev + " next;\n");
+      sb.append("    " + curr + "() { this.next = new " + prev + "(); }\n");
+      sb.append("    " + prev + " next() { return this.next; }\n");
+      sb.append("}\n\n");
+    }
+    sb.append("z obj = new z();\n");
+    sb.append(
+        "int res = obj.next.next().next.next.next().next().next.next().next.next().next.next.next().next().next().next.next.next.next.next().next.next().next.next().next().next;\n");
+
+    System.out.println(sb.toString());
+
+  }
+
   @Test
   public void test1() throws IOException {
 
@@ -82,13 +132,10 @@ public class TestCcode7 {
     }
 
     CgMain result = new CgMain(unit.getClasses());
-    System.out.println(result.toString());
 
-    //    String s = " \n \n 123 \t \t \n \r\n  ";
-    //    for (int i = s.length() - 1; i >= 0; i -= 1) {
-    //      char c = s.charAt(i);
-    //      System.out.printf("%d ", (int)c);
-    //    }
+    FileWriter fw = new FileWriter("ccode.c");
+    fw.write(result.toString());
+    fw.close();
 
   }
 }

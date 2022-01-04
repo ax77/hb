@@ -329,33 +329,172 @@ static class test_arrays {
   }
 }
 
-class a {
-  int next;
-  a() { next = 32; }
-  int next() { return next; }
-}
+// TODO: why with this constructor we have 
+// a 'type not recognized error' ?
+// WFT ???
+class a {                   
+  public int next;                 
+  //public a() { this.next = 32; };  
+  public int next() {              
+    return 32; //this.next;       
+  }                         
+}                           
 
 class b {
-  a next;
-  b() { next = new a(); }
-  a next() { return next; }
+    a next;
+    b() { this.next = new a(); }
+    a next() { return this.next; }
 }
 
 class c {
-  b next;
-  c() { next = new b(); }
-  b next() { return next; }
+    b next;
+    c() { this.next = new b(); }
+    b next() { return this.next; }
 }
 
+class d {
+    c next;
+    d() { this.next = new c(); }
+    c next() { return this.next; }
+}
+
+class e {
+    d next;
+    e() { this.next = new d(); }
+    d next() { return this.next; }
+}
+
+class f {
+    e next;
+    f() { this.next = new e(); }
+    e next() { return this.next; }
+}
+
+class g {
+    f next;
+    g() { this.next = new f(); }
+    f next() { return this.next; }
+}
+
+class h {
+    g next;
+    h() { this.next = new g(); }
+    g next() { return this.next; }
+}
+
+class i {
+    h next;
+    i() { this.next = new h(); }
+    h next() { return this.next; }
+}
+
+class j {
+    i next;
+    j() { this.next = new i(); }
+    i next() { return this.next; }
+}
+
+class k {
+    j next;
+    k() { this.next = new j(); }
+    j next() { return this.next; }
+}
+
+class l {
+    k next;
+    l() { this.next = new k(); }
+    k next() { return this.next; }
+}
+
+class m {
+    l next;
+    m() { this.next = new l(); }
+    l next() { return this.next; }
+}
+
+class n {
+    m next;
+    n() { this.next = new m(); }
+    m next() { return this.next; }
+}
+
+class o {
+    n next;
+    o() { this.next = new n(); }
+    n next() { return this.next; }
+}
+
+class p {
+    o next;
+    p() { this.next = new o(); }
+    o next() { return this.next; }
+}
+
+class q {
+    p next;
+    q() { this.next = new p(); }
+    p next() { return this.next; }
+}
+
+class r {
+    q next;
+    r() { this.next = new q(); }
+    q next() { return this.next; }
+}
+
+class s {
+    r next;
+    s() { this.next = new r(); }
+    r next() { return this.next; }
+}
+
+class t {
+    s next;
+    t() { this.next = new s(); }
+    s next() { return this.next; }
+}
+
+class u {
+    t next;
+    u() { this.next = new t(); }
+    t next() { return this.next; }
+}
+
+class v {
+    u next;
+    v() { this.next = new u(); }
+    u next() { return this.next; }
+}
+
+class w {
+    v next;
+    w() { this.next = new v(); }
+    v next() { return this.next; }
+}
+
+class x {
+    w next;
+    x() { this.next = new w(); }
+    w next() { return this.next; }
+}
+
+class y {
+    x next;
+    y() { this.next = new x(); }
+    x next() { return this.next; }
+}
+
+class z {
+    y next;
+    z() { this.next = new y(); }
+    y next() { return this.next; }
+}
 
 static class test_path_access {
   test "a long path" {
-    c something = new c();
-    int x = something.next.next.next;
-    assert_true(x == 32);
-    
-    int y = something.next().next().next();
-    assert_true(y == 32);
+    z obj = new z();
+    int res = obj.next.next().next.next.next().next().next.next().next.next().next.next.next().next().next().next.next.next.next.next().next.next().next.next().next().next();
+    assert_true(res == 32);
   }
 }
 
