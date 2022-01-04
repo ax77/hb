@@ -17,7 +17,7 @@ public interface TypeApi {
   public boolean isEqualTo(Type another);
   public boolean isClassTemplate();
   public boolean isPrimitive();
-  public boolean isNumeric();
+  public boolean isArithmetic();
   public boolean isInteger();
   public boolean isFloating();
 }

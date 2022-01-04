@@ -99,7 +99,7 @@ public class Token implements Serializable {
     NullChecker.check(location);
 
     this.type = T.TOKEN_NUMBER;
-    this.value = numconst.getInput();
+    this.value = numconst.getOriginalInput();
     this.numconst = numconst;
     this.location = location;
   }

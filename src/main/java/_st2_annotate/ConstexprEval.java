@@ -150,7 +150,7 @@ public abstract class ConstexprEval {
       if (!tp.isInteger()) {
         ErrorLocation.errorExpression("expect integer: " + number.toString(), e);
       }
-      return number.getInteger();
+      return number.getLongValue();
     }
 
     if (base == ExpressionBase.EBUILTIN_FUNC) {

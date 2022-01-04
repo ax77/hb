@@ -68,7 +68,7 @@ public class ApplyExpressionType {
     final Type lhsType = operand.getResultType();
 
     if (op == T_PLUS || op == T_MINUS) {
-      if (lhsType.isNumeric()) {
+      if (lhsType.isArithmetic()) {
         e.setResultType(lhsType);
       }
     }
@@ -130,7 +130,7 @@ public class ApplyExpressionType {
         if (!lhsType.isEqualTo(rhsType)) {
           errorNoComatible(e, lhs, operator, rhs);
         }
-        if (lhsType.isNumeric() && rhsType.isNumeric()) {
+        if (lhsType.isArithmetic() && rhsType.isArithmetic()) {
           e.setResultType(resultType);
         }
         if (lhsType.isBoolean() && rhsType.isBoolean()) {
@@ -165,7 +165,7 @@ public class ApplyExpressionType {
     else if (op == T_PLUS || op == T_MINUS || op == T_TIMES || op == T_DIVIDE || op == T_PERCENT) {
       // T_PLUS,T_MINUS->numeric
       // is_numeric|is_numeric
-      if (lhsType.isNumeric() && rhsType.isNumeric()) {
+      if (lhsType.isArithmetic() && rhsType.isArithmetic()) {
         e.setResultType(lhsType);
       }
     }
@@ -183,7 +183,7 @@ public class ApplyExpressionType {
     else if (op == T_LT || op == T_LE || op == T_GT || op == T_GE) {
       // T_LT,T_LE,T_GT,T_GE->boolean
       // is_numeric|is_numeric
-      if (lhsType.isNumeric() && rhsType.isNumeric()) {
+      if (lhsType.isArithmetic() && rhsType.isArithmetic()) {
         e.setResultType(TypeBindings.make_boolean());
       }
     }

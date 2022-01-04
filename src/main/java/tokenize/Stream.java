@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ast_sourceloc.SourceLocation;
-import ast_types.TypeBindings;
 import errors.AstParseException;
 import hashed.Hash_ident;
 import literals.IntLiteral;
@@ -416,7 +415,7 @@ public class Stream {
         final int curlineInt = curLoc().getLine();
         final String curline = String.format("%d", curlineInt);
 
-        final IntLiteral numconst = new IntLiteral(curline, TypeBindings.make_int(), curlineInt);
+        final IntLiteral numconst = ParseIntLiteral.parse(curline);
         return new Token(numconst, curLoc());
       }
     }
@@ -462,7 +461,7 @@ public class Stream {
     }
 
     final String numstr = sb.toString();
-    final IntLiteral intLiteral = new ParseIntLiteral(numstr, EOL_TOKEN).parse(); // TODO: location
+    final IntLiteral intLiteral = ParseIntLiteral.parse(numstr); // TODO: location
 
     return new Token(intLiteral, curLoc());
   }

@@ -626,7 +626,10 @@ public class RewriterExpr {
         ErrorLocation.errorExpression("char constant incorrect: " + value, e);
       }
 
-      IntLiteral number = new IntLiteral(value, TypeBindings.make_char(), (long) esc[0]);
+      //public IntLiteralInfo(String originalInput, char mainSign, String dec, String mnt, String exp, String suf, char exponentSign)
+      IntLiteral number = new IntLiteral(value, '+', String.format("%d", (long) esc[0]), "", "", "", '+');
+      number.setType(TypeBindings.make_char());
+      number.setLong((long) esc[0]);
 
       final Var lhsVar = VarCreator.justNewVar(number.getType());
       AssignVarNum assignVarNum = new AssignVarNum(lhsVar, number);

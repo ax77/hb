@@ -44,7 +44,7 @@ public abstract class TypeBindings {
     if (typeTraitsId.equals(Keywords.is_floating_ident))   { if (tp.isFloating()) { return 1; } return 0; }
     if (typeTraitsId.equals(Keywords.is_class_ident))      { if (tp.isClass()) { return 1; } return 0; }
     if (typeTraitsId.equals(Keywords.is_primitive_ident))  { if (tp.isPrimitive()) { return 1; } return 0; }
-    if (typeTraitsId.equals(Keywords.is_arithmetic_ident)) { if (tp.isNumeric()) { return 1; } return 0; } // TODO:rename
+    if (typeTraitsId.equals(Keywords.is_arithmetic_ident)) { if (tp.isArithmetic()) { return 1; } return 0; } // TODO:rename
     if (typeTraitsId.equals(Keywords.is_reference_ident))  { if (tp.isClass()) { return 1; } return 0; } // TODO:class+enum+interface
     
     //@formatter:on
@@ -100,19 +100,19 @@ public abstract class TypeBindings {
   }
 
   public static Type getTypeBySuffix(String suff) {
-    // if (suff.equals("i8")) {
-    //   return make_char(beginPos);
-    // } else if (suff.equals("i16")) {
-    //   return make_short(beginPos);
-    // } else if (suff.equals("i32")) {
-    //   return make_int(beginPos);
-    // } else if (suff.equals("i64")) {
-    //   return make_long(beginPos);
-    // } else if (suff.equals("f32")) {
-    //   return make_float(beginPos);
-    // } else if (suff.equals("f64")) {
-    //   return make_double(beginPos);
-    // }
+    if (suff.equals("i8")) {
+      return make_char();
+    } else if (suff.equals("i16")) {
+      return make_short();
+    } else if (suff.equals("i32")) {
+      return make_int();
+    } else if (suff.equals("i64")) {
+      return make_long();
+    } else if (suff.equals("f32")) {
+      return make_float();
+    } else if (suff.equals("f64")) {
+      return make_double();
+    }
     throw new AstParseException("unknown suffix: " + suff.toString());
   }
 

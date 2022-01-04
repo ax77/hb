@@ -234,7 +234,8 @@ static class test_static_semantic {
 }
 
 static class test_short_circuits {
-  test "? ternary operator short circuit division by zero shoud pass" {
+  test"? ternary operator short circuit division by zero shoud pass"
+  {
     int x = ?(1>0, 12, 1/0);
     assert_true(x==12);
     
@@ -244,8 +245,9 @@ static class test_short_circuits {
 }
 
 static class test_list {
-  
-  test "test fill list with the values" {
+
+  test"test fill list with the values"
+  {
     list<int> list = new list<int>();
     for(int i=0; i<32; i+=1) {
       list.push_front(i);
@@ -254,11 +256,11 @@ static class test_list {
       int i = list.pop_front();
     }
   }
-  
+
 }
 
 static class test_arrays {
-  
+
   static arr<int> get_1d() {
     arr<int> arr = new arr<int>();
     arr.add(32);
@@ -266,44 +268,49 @@ static class test_arrays {
     arr.add(128);
     return arr;
   }
-  
+
   static arr<arr<int>> get_2d() {
     arr<arr<int>> arr = new arr<arr<int>>();
     arr.add(get_1d());
     arr.add(get_1d());
     return arr;
   }
-  
+
   static arr<arr<arr<int>>> get_3d() {
     arr<arr<arr<int>>> arr = new arr<arr<arr<int>>>();
     arr.add(get_2d());
     arr.add(get_2d());
     return arr;
   }
-  
-  test "test 2d array" {
+
+  test"test 2d array"
+
+  {
     arr<arr<int>> arr = new arr<arr<int>>();
     arr.add(new arr<int>());
     arr<int> first = arr.get(0);
     assert_true(first.is_empty());
   }
-  
-  test "test 1d array" {
+
+  test"test 1d array"
+  {
     arr<int> arr = new arr<int>();
     arr.add(1);
     arr.add(2);
     assert_true(arr.size() == 2);
     assert_true(arr.get(1) == 2);
   }
-  
-  test "test 3d array" {
+
+  test"test 3d array"
+  {
     arr<arr<arr<int>>> arr = get_3d();
     assert_true(arr.size() == 2);
     arr<arr<int>> arr2 = arr.get(0);
     assert_true(arr2.size() == 2);
   }
-  
-  test "test simple arrays of ints" {
+
+  test"test simple arrays of ints"
+  {
     arr<int> a= new arr<int>();
     a.add(32);
     
@@ -317,14 +324,15 @@ static class test_arrays {
     assert_true(!a.equals(c));
     assert_true(!b.equals(c));
   }
-  
-  test "test simple arrays of strings" {
-    arr<str> a= new arr<str>();
+
+  test"test simple arrays of strings"
+  {
+    arr<str> a = new arr<str>();
     a.add("abc");
-    
-    arr<str> b= new arr<str>();
+
+    arr<str> b = new arr<str>();
     b.add("abc");
-    
+
     assert_true(a.equals(b));
   }
 }
@@ -332,162 +340,313 @@ static class test_arrays {
 // TODO: why with this constructor we have 
 // a 'type not recognized error' ?
 // WFT ???
-class a {                   
-  public int next;                 
+class a {
+  public int next;
+
   //public a() { this.next = 32; };  
-  public int next() {              
+  public int next() {
     return 32; //this.next;       
-  }                         
-}                           
+  }
+}
 
 class b {
-    a next;
-    b() { this.next = new a(); }
-    a next() { return this.next; }
+  a next;
+
+  b() {
+    this.next = new a();
+  }
+
+  a next() {
+    return this.next;
+  }
 }
 
 class c {
-    b next;
-    c() { this.next = new b(); }
-    b next() { return this.next; }
+  b next;
+
+  c() {
+    this.next = new b();
+  }
+
+  b next() {
+    return this.next;
+  }
 }
 
 class d {
-    c next;
-    d() { this.next = new c(); }
-    c next() { return this.next; }
+  c next;
+
+  d() {
+    this.next = new c();
+  }
+
+  c next() {
+    return this.next;
+  }
 }
 
 class e {
-    d next;
-    e() { this.next = new d(); }
-    d next() { return this.next; }
+  d next;
+
+  e() {
+    this.next = new d();
+  }
+
+  d next() {
+    return this.next;
+  }
 }
 
 class f {
-    e next;
-    f() { this.next = new e(); }
-    e next() { return this.next; }
+  e next;
+
+  f() {
+    this.next = new e();
+  }
+
+  e next() {
+    return this.next;
+  }
 }
 
 class g {
-    f next;
-    g() { this.next = new f(); }
-    f next() { return this.next; }
+  f next;
+
+  g() {
+    this.next = new f();
+  }
+
+  f next() {
+    return this.next;
+  }
 }
 
 class h {
-    g next;
-    h() { this.next = new g(); }
-    g next() { return this.next; }
+  g next;
+
+  h() {
+    this.next = new g();
+  }
+
+  g next() {
+    return this.next;
+  }
 }
 
 class i {
-    h next;
-    i() { this.next = new h(); }
-    h next() { return this.next; }
+  h next;
+
+  i() {
+    this.next = new h();
+  }
+
+  h next() {
+    return this.next;
+  }
 }
 
 class j {
-    i next;
-    j() { this.next = new i(); }
-    i next() { return this.next; }
+  i next;
+
+  j() {
+    this.next = new i();
+  }
+
+  i next() {
+    return this.next;
+  }
 }
 
 class k {
-    j next;
-    k() { this.next = new j(); }
-    j next() { return this.next; }
+  j next;
+
+  k() {
+    this.next = new j();
+  }
+
+  j next() {
+    return this.next;
+  }
 }
 
 class l {
-    k next;
-    l() { this.next = new k(); }
-    k next() { return this.next; }
+  k next;
+
+  l() {
+    this.next = new k();
+  }
+
+  k next() {
+    return this.next;
+  }
 }
 
 class m {
-    l next;
-    m() { this.next = new l(); }
-    l next() { return this.next; }
+  l next;
+
+  m() {
+    this.next = new l();
+  }
+
+  l next() {
+    return this.next;
+  }
 }
 
 class n {
-    m next;
-    n() { this.next = new m(); }
-    m next() { return this.next; }
+  m next;
+
+  n() {
+    this.next = new m();
+  }
+
+  m next() {
+    return this.next;
+  }
 }
 
 class o {
-    n next;
-    o() { this.next = new n(); }
-    n next() { return this.next; }
+  n next;
+
+  o() {
+    this.next = new n();
+  }
+
+  n next() {
+    return this.next;
+  }
 }
 
 class p {
-    o next;
-    p() { this.next = new o(); }
-    o next() { return this.next; }
+  o next;
+
+  p() {
+    this.next = new o();
+  }
+
+  o next() {
+    return this.next;
+  }
 }
 
 class q {
-    p next;
-    q() { this.next = new p(); }
-    p next() { return this.next; }
+  p next;
+
+  q() {
+    this.next = new p();
+  }
+
+  p next() {
+    return this.next;
+  }
 }
 
 class r {
-    q next;
-    r() { this.next = new q(); }
-    q next() { return this.next; }
+  q next;
+
+  r() {
+    this.next = new q();
+  }
+
+  q next() {
+    return this.next;
+  }
 }
 
 class s {
-    r next;
-    s() { this.next = new r(); }
-    r next() { return this.next; }
+  r next;
+
+  s() {
+    this.next = new r();
+  }
+
+  r next() {
+    return this.next;
+  }
 }
 
 class t {
-    s next;
-    t() { this.next = new s(); }
-    s next() { return this.next; }
+  s next;
+
+  t() {
+    this.next = new s();
+  }
+
+  s next() {
+    return this.next;
+  }
 }
 
 class u {
-    t next;
-    u() { this.next = new t(); }
-    t next() { return this.next; }
+  t next;
+
+  u() {
+    this.next = new t();
+  }
+
+  t next() {
+    return this.next;
+  }
 }
 
 class v {
-    u next;
-    v() { this.next = new u(); }
-    u next() { return this.next; }
+  u next;
+
+  v() {
+    this.next = new u();
+  }
+
+  u next() {
+    return this.next;
+  }
 }
 
 class w {
-    v next;
-    w() { this.next = new v(); }
-    v next() { return this.next; }
+  v next;
+
+  w() {
+    this.next = new v();
+  }
+
+  v next() {
+    return this.next;
+  }
 }
 
 class x {
-    w next;
-    x() { this.next = new w(); }
-    w next() { return this.next; }
+  w next;
+
+  x() {
+    this.next = new w();
+  }
+
+  w next() {
+    return this.next;
+  }
 }
 
 class y {
-    x next;
-    y() { this.next = new x(); }
-    x next() { return this.next; }
+  x next;
+
+  y() {
+    this.next = new x();
+  }
+
+  x next() {
+    return this.next;
+  }
 }
 
 class z {
-    y next;
-    z() { this.next = new y(); }
-    y next() { return this.next; }
+  y next;
+
+  z() {
+    this.next = new y();
+  }
+
+  y next() {
+    return this.next;
+  }
 }
 
 static class test_path_access {
@@ -498,69 +657,45 @@ static class test_path_access {
   }
 }
 
+/// silly :)
+static class test_floating_simple {
+  
+  static float fabs(float v) {
+    if(v <= 0_f32) {
+      return -1_f32 * v;
+    }
+    return v;
+  }
+  
+  static boolean cmp(float a, float b, float epsilon)
+  {
+      if (fabs(a - b) < epsilon) {
+          return true;
+      }
+      return false;
+  }
+  
+  /// input = "0x1.cd05bc61f9e57p+18";
+  /// assert(dbl_cmp(472086.94347999006, 0x1.cd05bc61f9e57p+18, 0.0001f));
+  /// assert(dbl_cmp(parse_again(input)->f64, strtod(input, &endptr), 0.0001f));
+  ///
+  /// input = "4.720869e+05";
+  /// assert(dbl_cmp(472086.94347999006, 4.720869e+05, 0.1f));
+  /// assert(dbl_cmp(parse_again(input)->f64, strtod(input, &endptr), 0.0001f));
+  
+  test "this have to be parsed" {
+    float epsilon = 0.0001;
+    float a = 472086.94347999006;
+    float b = 4.720869e+05;
+    float c = 0x1.cd05bc61f9e57p+18;
+    
+    assert_true(cmp(a, c, epsilon));
+  }
+}
+
 class main {
   int main() {
 
     return 0;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
