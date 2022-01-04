@@ -329,6 +329,35 @@ static class test_arrays {
   }
 }
 
+class a {
+  int next;
+  a() { next = 32; }
+  int next() { return next; }
+}
+
+class b {
+  a next;
+  b() { next = new a(); }
+  a next() { return next; }
+}
+
+class c {
+  b next;
+  c() { next = new b(); }
+  b next() { return next; }
+}
+
+
+static class test_path_access {
+  test "a long path" {
+    c something = new c();
+    int x = something.next.next.next;
+    assert_true(x == 32);
+    
+    int y = something.next().next().next();
+    assert_true(y == 32);
+  }
+}
 
 class main {
   int main() {
@@ -336,6 +365,46 @@ class main {
     return 0;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
