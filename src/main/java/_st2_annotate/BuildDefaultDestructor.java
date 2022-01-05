@@ -32,7 +32,7 @@ public abstract class BuildDefaultDestructor {
 
   }
 
-  public static List<StmtStatement> deinits(ClassDeclaration object) {
+  private static List<StmtStatement> deinits(ClassDeclaration object) {
     final List<VarDeclarator> fields = object.getFields();
     final List<StmtStatement> rv = new ArrayList<>();
 
@@ -45,14 +45,26 @@ public abstract class BuildDefaultDestructor {
         }
 
         if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
-          StmtStatement recursiveCallIntoLoop = ExpandRecursiveCallIntoLoop.expandField(field);
-          rv.add(recursiveCallIntoLoop);
+          System.out.println("warning: the default destructor-call for self-referenced field won't be created, \n"
+              + "you have to provide the correct deinitialization for the field, \n"
+              + "or it will cause a recursive call loop: " + field.getIdentifier() + " " + field.getLocationToString()
+              + "\n");
+          continue;
         }
 
-        else {
-          ExprExpression deinit = deinitForField(object, field);
-          rv.add(new StmtStatement(deinit, object.getBeginPos()));
-        }
+        ExprExpression deinit = deinitForField(object, field);
+        rv.add(new StmtStatement(deinit, object.getBeginPos()));
+
+        /// TODO:
+        /// if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
+        ///   StmtStatement recursiveCallIntoLoop = ExpandRecursiveCallIntoLoop.expandField(field);
+        ///   rv.add(recursiveCallIntoLoop);
+        /// }
+        /// 
+        /// else {
+        ///   ExprExpression deinit = deinitForField(object, field);
+        ///   rv.add(new StmtStatement(deinit, object.getBeginPos()));
+        /// }
 
       }
     }

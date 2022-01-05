@@ -5,40 +5,28 @@ class tok_type {
 }
 
 class location {
-  string filename;
+  str filename;
   int line;
-  location() {
-    this.filename = "<builtin>";
-    this.line = 1;
+  ~location() {
+    filename = default(str);
   }
 }
 
 class num_literal {
   char cvalue;
   int ivalue;
-  num_literal() {
-    this.cvalue = ' ';
-    this.ivalue = 32;
-  }
 }
 
 class token {
   tok_type type;
   location loc;
   num_literal literal;
-  string value;
-  
-  token() { 
-    this.type = new tok_type();
-    this.loc = new location();
-    this.literal = new num_literal();
-    this.value = "void";
-  }
+  str value;
 }
 
-static class test_destructors {
+namespace test_destructors {
   
-  static token get_tok() {
+  token get_tok() {
     token tok = new token();
     return tok;
   }

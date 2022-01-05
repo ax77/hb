@@ -245,17 +245,23 @@ public class ApplyUnitPreEachClass {
   private void addDestructor(ClassDeclaration object) {
     if (object.getDestructor() == null) {
       object.setDestructor(BuildDefaultDestructor.build(object));
-    } else {
-      for (StmtStatement s : BuildDefaultDestructor.deinits(object)) {
-        object.getDestructor().getBlock().pushItemBack(s);
-      }
     }
+
+    /// that's totally wrong!
+    ///else {
+    ///  for (StmtStatement s : BuildDefaultDestructor.deinits(object)) {
+    ///    object.getDestructor().getBlock().pushItemBack(s);
+    ///  }
+    ///}
   }
 
   private void addConstructor(ClassDeclaration object) {
     if (object.getConstructors().isEmpty()) {
       object.addConstructor(BuildDefaultConstructor.build(object));
     } else {
+      /// We have to initialize all of the fields with their default values.
+      /// And this statement must be the first in the constructor block.
+      /// After this statement a normal initizlizers will follow.
       for (ClassMethodDeclaration constr : object.getConstructors()) {
         constr.getBlock().pushItemFront(new StmtStatement(
             BuildDefaultConstructor.genBlockForWithAllFieldsAreInitialized(object), object.getBeginPos()));
