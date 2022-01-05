@@ -11,12 +11,16 @@ import errors.ErrorLocation;
 public class ApplyInitializer {
 
   private final SymbolTable symtabApplier;
+  private final ClassDeclaration object;
+  private final ClassMethodDeclaration method;
 
-  public ApplyInitializer(SymbolTable symtabApplier) {
+  public ApplyInitializer(SymbolTable symtabApplier, ClassDeclaration object, ClassMethodDeclaration method) {
     this.symtabApplier = symtabApplier;
+    this.object = object;
+    this.method = method;
   }
 
-  public void applyInitializer(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var) {
+  public void applyInitializer(final VarDeclarator var) {
 
     final ExprExpression init = var.getSimpleInitializer();
 
@@ -24,8 +28,8 @@ public class ApplyInitializer {
       throw new AstParseException("uninitialized variables are deprecated: " + var.getLocationToString());
     }
 
-    ApplyExpression applier = new ApplyExpression(symtabApplier);
-    applier.applyExpression(object, method, init);
+    ApplyExpression applier = new ApplyExpression(symtabApplier, object, method);
+    applier.applyExpression(init);
 
     final Type lhsType = var.getType();
     final Type rhsType = init.getResultType();

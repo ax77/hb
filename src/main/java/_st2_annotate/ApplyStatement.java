@@ -17,13 +17,16 @@ import errors.ErrorLocation;
 public class ApplyStatement {
 
   private final SymbolTable symtabApplier;
+  private final ClassDeclaration object;
+  private final ClassMethodDeclaration method;
 
-  public ApplyStatement(SymbolTable symtabApplier) {
+  public ApplyStatement(SymbolTable symtabApplier, ClassDeclaration object, ClassMethodDeclaration method) {
     this.symtabApplier = symtabApplier;
+    this.object = object;
+    this.method = method;
   }
 
-  public void applyStatement(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtStatement s) {
+  public void applyStatement(final StmtStatement s) {
 
     if (s == null) {
       return;
@@ -31,67 +34,66 @@ public class ApplyStatement {
 
     StatementBase base = s.getBase();
     if (base == StatementBase.SIF) {
-      visitSelectionStmt(object, method, s.getIfStmt());
+      visitSelectionStmt(s.getIfStmt());
     } else if (base == StatementBase.SEXPR) {
-      visitExprStmt(object, method, s);
+      visitExprStmt(s);
     } else if (base == StatementBase.SBLOCK) {
-      visitBlock(object, method, s.getBlockStmt());
+      visitBlock(s.getBlockStmt());
     } else if (base == StatementBase.SRETURN) {
-      visitReturn(object, method, s.getReturnStmt());
+      visitReturn(s.getReturnStmt());
     } else if (base == StatementBase.SFOR) {
-      visitFor(object, method, s);
+      visitFor(s);
     } else if (base == StatementBase.SBREAK) {
-      visitBreak(object, method, s);
+      visitBreak(s);
     } else if (base == StatementBase.SCONTINUE) {
-      visitContinue(object, method, s);
+      visitContinue(s);
     } else if (base == StatementBase.SVAR_DECLARATION) {
-      visitLocalVar(object, method, s.getLocalVariable());
+      visitLocalVar(s.getLocalVariable());
     } else {
       throw new AstParseException("unimpl. stmt.:" + base.toString());
     }
 
   }
 
-  private void visitBreak(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
+  private void visitBreak(StmtStatement s) {
 
   }
 
-  private void visitContinue(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
+  private void visitContinue(StmtStatement s) {
 
   }
 
-  private void visitExprStmt(final ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
-    applyExpression(object, method, node.getExprStmt());
-    semExprStmt(object, method, node);
+  private void visitExprStmt(final StmtStatement node) {
+    applyExpression(node.getExprStmt());
+    semExprStmt(node);
   }
 
-  private void visitReturn(final ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {
-    applyExpression(object, method, node.getExpression());
-    semReturn(object, method, node);
+  private void visitReturn(final StmtReturn node) {
+    applyExpression(node.getExpression());
+    semReturn(node);
   }
 
-  private void visitFor(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
+  private void visitFor(StmtStatement s) {
 
     StmtFor node = s.getForStmt();
 
     symtabApplier.openBlockScope();
-    applyExpression(object, method, node.getTest());
-    applyExpression(object, method, node.getStep());
-    visitBlock(object, method, node.getBlock());
+    applyExpression(node.getTest());
+    applyExpression(node.getStep());
+    visitBlock(node.getBlock());
     symtabApplier.closeBlockScope();
 
-    semFor(object, method, s);
+    semFor(s);
   }
 
-  private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
-      final StmtSelect node) {
-    applyExpression(object, method, node.getCondition());
-    visitBlock(object, method, node.getTrueStatement());
-    visitBlock(object, method, node.getOptionalElseStatement());
-    semSelection(object, method, node);
+  private void visitSelectionStmt(final StmtSelect node) {
+    applyExpression(node.getCondition());
+    visitBlock(node.getTrueStatement());
+    visitBlock(node.getOptionalElseStatement());
+    semSelection(node);
   }
 
-  private void visitBlock(final ClassDeclaration object, final ClassMethodDeclaration method, final StmtBlock block) {
+  private void visitBlock(final StmtBlock block) {
 
     /// if without else, etc...
     if (block == null) {
@@ -101,13 +103,13 @@ public class ApplyStatement {
     symtabApplier.openBlockScope();
 
     for (StmtStatement item : block.getBlockItems()) {
-      applyStatement(object, method, item);
+      applyStatement(item);
     }
 
     symtabApplier.closeBlockScope();
   }
 
-  private void visitLocalVar(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var) {
+  private void visitLocalVar(final VarDeclarator var) {
 
     if (var.is(VarBase.METHOD_VAR)) {
       if (symtabApplier.howMuchBlocks() != 1) {
@@ -121,34 +123,34 @@ public class ApplyStatement {
       symtabApplier.defineBlockVar(var);
     }
 
-    applyInitializer(object, method, var);
+    applyInitializer(var);
   }
 
-  private void applyExpression(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
-    ApplyExpression applier = new ApplyExpression(symtabApplier);
-    applier.applyExpression(object, method, e);
+  private void applyExpression(ExprExpression e) {
+    ApplyExpression applier = new ApplyExpression(symtabApplier, object, method);
+    applier.applyExpression(e);
   }
 
-  private void applyInitializer(ClassDeclaration object, ClassMethodDeclaration method, VarDeclarator var) {
-    ApplyInitializer applier = new ApplyInitializer(symtabApplier);
-    applier.applyInitializer(object, method, var);
+  private void applyInitializer(VarDeclarator var) {
+    ApplyInitializer applier = new ApplyInitializer(symtabApplier, object, method);
+    applier.applyInitializer(var);
 
   }
 
   /// 3ac-semantic
 
-  private void semExprStmt(ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
+  private void semExprStmt(final StmtStatement node) {
   }
 
-  private void semReturn(ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {
+  private void semReturn(final StmtReturn node) {
   }
 
-  private void semFor(ClassDeclaration object, ClassMethodDeclaration method, StmtStatement s) {
+  private void semFor(StmtStatement s) {
     StmtFor node = s.getForStmt();
     checkIsBoolean(node.getTest());
   }
 
-  private void semSelection(ClassDeclaration object, ClassMethodDeclaration method, final StmtSelect node) {
+  private void semSelection(final StmtSelect node) {
     checkIsBoolean(node.getCondition());
   }
 

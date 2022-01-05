@@ -1,6 +1,7 @@
 package _st2_annotate;
 
 import java.io.IOException;
+import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_method.ClassMethodDeclaration;
@@ -84,9 +85,10 @@ public class ApplyUnit {
     }
 
     // block
-    for (StmtStatement item : method.getBlock().getBlockItems()) {
-      ApplyStatement applier = new ApplyStatement(symtabApplier);
-      applier.applyStatement(object, method, item);
+    final List<StmtStatement> items = method.getBlock().getBlockItems();
+    for (StmtStatement item : items) {
+      ApplyStatement applier = new ApplyStatement(symtabApplier, object, method);
+      applier.applyStatement(item);
     }
 
     symtabApplier.closeMethodScope();
