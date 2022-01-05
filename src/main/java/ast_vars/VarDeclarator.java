@@ -25,7 +25,6 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
 
   // for variables
   private ExprExpression simpleInitializer;
-  private VarArrayInitializer arrayInitializer;
 
   // is it is a field
   private ClassDeclaration clazz;
@@ -99,20 +98,8 @@ public class VarDeclarator implements Serializable, TypeSetter, Location {
     this.simpleInitializer = simpleInitializer;
   }
 
-  public VarArrayInitializer getArrayInitializer() {
-    return arrayInitializer;
-  }
-
-  public void setArrayInitializer(VarArrayInitializer arrayInitializer) {
-    this.arrayInitializer = arrayInitializer;
-  }
-
   public Ident getIdentifier() {
     return identifier;
-  }
-
-  public boolean isArrayInitializer() {
-    return arrayInitializer != null;
   }
 
   @Override

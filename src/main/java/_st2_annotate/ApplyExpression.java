@@ -41,7 +41,8 @@ public class ApplyExpression {
     this.symtabApplier = symtabApplier;
   }
 
-  public void applyExpression(final ClassDeclaration object, final ExprExpression e) {
+  public void applyExpression(final ClassDeclaration object, final ClassMethodDeclaration method,
+      final ExprExpression e) {
 
     if (e == null) {
       return;
@@ -51,45 +52,45 @@ public class ApplyExpression {
     }
 
     if (e.is(ExpressionBase.EUNARY)) {
-      applyUnary(object, e);
+      applyUnary(object, method, e);
     } else if (e.is(ExpressionBase.EBINARY)) {
-      applyBinary(object, e);
+      applyBinary(object, method, e);
     } else if (e.is(ExpressionBase.EASSIGN)) {
-      applyAssign(object, e);
+      applyAssign(object, method, e);
     } else if (e.is(ExpressionBase.EPRIMARY_IDENT)) {
-      applyIdentifier(object, e);
+      applyIdentifier(object, method, e);
     } else if (e.is(ExpressionBase.EMETHOD_INVOCATION)) {
-      applyMethodInvocation(object, e);
+      applyMethodInvocation(object, method, e);
     } else if (e.is(ExpressionBase.EFIELD_ACCESS)) {
-      applyFieldAccess(object, e);
+      applyFieldAccess(object, method, e);
     } else if (e.is(ExpressionBase.ETHIS)) {
       applySelfLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_NUMBER)) {
       applyNumericLiteral(e);
     } else if (e.is(ExpressionBase.ECLASS_CREATION)) {
-      applyClassInstanceCreation(object, e);
+      applyClassInstanceCreation(object, method, e);
     } else if (e.is(ExpressionBase.EPRIMARY_STRING)) {
       applyStringLiteral(e);
     } else if (e.is(ExpressionBase.EPRIMARY_CHAR)) {
-      applyPrimaryChar(object, e);
+      applyPrimaryChar(object, method, e);
     } else if (e.is(ExpressionBase.EBOOLEAN_LITERAL)) {
       e.setResultType(TypeBindings.make_boolean());
     } else if (e.is(ExpressionBase.ECAST)) {
-      asslyCast(object, e);
+      asslyCast(object, method, e);
     } else if (e.is(ExpressionBase.ETERNARY_OPERATOR)) {
-      appyTernary(object, e);
+      appyTernary(object, method, e);
     } else if (e.is(ExpressionBase.ESIZEOF)) {
-      applySizeof(object, e);
+      applySizeof(object, method, e);
     } else if (e.is(ExpressionBase.ETYPEOF)) {
-      applyTypeof(object, e);
+      applyTypeof(object, method, e);
     } else if (e.is(ExpressionBase.EBUILTIN_FUNC)) {
-      applyBuiltinFunc(object, e);
+      applyBuiltinFunc(object, method, e);
     } else if (e.is(ExpressionBase.EFOR_LOOP_STEP_COMMA)) {
-      applyForLoopComma(object, e);
+      applyForLoopComma(object, method, e);
     } else if (e.is(ExpressionBase.EDEFAULT_VALUE_FOR_TYPE)) {
-      applyDefaultValueFotType(object, e);
+      applyDefaultValueFotType(object, method, e);
     } else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
-      applyStaticAccess(object, e);
+      applyStaticAccess(object, method, e);
     }
 
     else {
@@ -98,35 +99,35 @@ public class ApplyExpression {
 
   }
 
-  private void applyStaticAccess(ClassDeclaration object, ExprExpression e) {
+  private void applyStaticAccess(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     //TODO:STATIC_ACCESS
     ExprStaticAccess node = e.getExprStaticAccess();
     e.setResultType(node.getType());
   }
 
-  private void applyDefaultValueFotType(ClassDeclaration object, ExprExpression e) {
+  private void applyDefaultValueFotType(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     e.setResultType(e.getExprDefaultValueForType().getType());
   }
 
-  private void applyForLoopComma(ClassDeclaration object, ExprExpression e) {
+  private void applyForLoopComma(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     final ExprForLoopStepComma node = e.getExprForLoopStepComma();
-    applyExpression(object, node.getLhs());
-    applyExpression(object, node.getRhs());
+    applyExpression(object, method, node.getLhs());
+    applyExpression(object, method, node.getRhs());
     e.setResultType(node.getRhs().getResultType());
   }
 
-  private void applyPrimaryChar(ClassDeclaration object, final ExprExpression e) {
+  private void applyPrimaryChar(ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
     e.setResultType(TypeBindings.make_char());
   }
 
-  private void applyBuiltinFunc(ClassDeclaration object, ExprExpression e) {
+  private void applyBuiltinFunc(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
 
     final ExprBuiltinFunc node = e.getExprBuiltinFunc();
     final Ident name = node.getName();
     final Type voidType = new Type(e.getBeginPos());
 
     for (ExprExpression arg : node.getArgs()) {
-      applyExpression(object, arg);
+      applyExpression(object, method, arg);
     }
 
     if (node.getArgs().isEmpty()) {
@@ -174,22 +175,22 @@ public class ApplyExpression {
     }
   }
 
-  private void applyTypeof(ClassDeclaration object, ExprExpression e) {
+  private void applyTypeof(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     ExprTypeof node = e.getExprTypeof();
-    applyExpression(object, node.getExpr());
+    applyExpression(object, method, node.getExpr());
     e.setResultType(TypeBindings.make_boolean());
   }
 
-  private void applySizeof(ClassDeclaration object, ExprExpression e) {
+  private void applySizeof(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     ExprSizeof exprSizeof = e.getExprSizeof();
     e.setResultType(TypeBindings.make_int()); /// TODO:size
   }
 
-  private void appyTernary(ClassDeclaration object, ExprExpression e) {
+  private void appyTernary(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
-    applyExpression(object, ternaryOperator.getCondition());
-    applyExpression(object, ternaryOperator.getTrueResult());
-    applyExpression(object, ternaryOperator.getFalseResult());
+    applyExpression(object, method, ternaryOperator.getCondition());
+    applyExpression(object, method, ternaryOperator.getTrueResult());
+    applyExpression(object, method, ternaryOperator.getFalseResult());
 
     checkIsBoolean(ternaryOperator.getCondition());
 
@@ -201,13 +202,13 @@ public class ApplyExpression {
     e.setResultType(falseType);
   }
 
-  private void asslyCast(final ClassDeclaration object, final ExprExpression e) {
+  private void asslyCast(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
     // TODO:
     final ExprCast castExpression = e.getCastExpression();
     final Type toType = castExpression.getToType();
     final ExprExpression expressionForCast = castExpression.getExpressionForCast();
 
-    applyExpression(object, expressionForCast);
+    applyExpression(object, method, expressionForCast);
 
     boolean castIsOk = castExpression.getExpressionForCast().getResultType().isPrimitive() && toType.isPrimitive();
     if (!castIsOk) {
@@ -238,13 +239,13 @@ public class ApplyExpression {
     //
     //e.setResultType(field.getType());
 
-    e.setResultType(
-        new Type(new ClassTypeRef(symtabApplier.getTypename(BuiltinNames.str_ident), new ArrayList<>())));
+    e.setResultType(new Type(new ClassTypeRef(symtabApplier.getTypename(BuiltinNames.str_ident), new ArrayList<>())));
   }
 
-  private void applyClassInstanceCreation(final ClassDeclaration object, final ExprExpression e) {
+  private void applyClassInstanceCreation(final ClassDeclaration object, ClassMethodDeclaration method,
+      final ExprExpression e) {
     final ExprClassCreation classCreation = e.getClassCreation();
-    applyArgs(object, classCreation.getArguments());
+    applyArgs(object, method, classCreation.getArguments());
 
     // type tp = new type(1)
 
@@ -265,16 +266,16 @@ public class ApplyExpression {
     classCreation.setConstructor(constructor);
   }
 
-  private void applyAssign(final ClassDeclaration object, final ExprExpression e) {
+  private void applyAssign(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
     final ExprAssign node = e.getAssign();
 
     final ExprExpression lvalue = node.getLvalue();
     final ExprExpression rvalue = node.getRvalue();
 
-    applyExpression(object, lvalue);
-    applyExpression(object, rvalue);
+    applyExpression(object, method, lvalue);
+    applyExpression(object, method, rvalue);
 
-    LvalueUtil.checkHard(lvalue);
+    LvalueUtil.checkHard(lvalue, e, method);
 
     final Type lhsType = node.getLvalue().getResultType();
     final Type rhsType = node.getRvalue().getResultType();
@@ -285,20 +286,20 @@ public class ApplyExpression {
     e.setResultType(lhsType);
   }
 
-  private void applyUnary(final ClassDeclaration object, final ExprExpression e) {
+  private void applyUnary(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
     final ExprUnary node = e.getUnary();
-    applyExpression(object, node.getOperand());
+    applyExpression(object, method, node.getOperand());
     ApplyExpressionType.setUnaryType(e);
   }
 
-  private void applyBinary(final ClassDeclaration object, final ExprExpression e) {
+  private void applyBinary(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
     final ExprBinary node = e.getBinary();
-    applyExpression(object, node.getLhs());
-    applyExpression(object, node.getRhs());
+    applyExpression(object, method, node.getLhs());
+    applyExpression(object, method, node.getRhs());
     ApplyExpressionType.setBinaryType(e);
   }
 
-  private void applyIdentifier(final ClassDeclaration object, final ExprExpression e) {
+  private void applyIdentifier(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
 
     /// the only one thing that we should to do here:
     /// to find what the 'id' is, and bind the
@@ -339,10 +340,10 @@ public class ApplyExpression {
     return resultTypeOfObject.getClassTypeFromRef();
   }
 
-  private void applyFieldAccess(final ClassDeclaration object, final ExprExpression e) {
+  private void applyFieldAccess(final ClassDeclaration object, ClassMethodDeclaration method, final ExprExpression e) {
 
     final ExprFieldAccess fieldAccess = e.getFieldAccess();
-    applyExpression(object, fieldAccess.getObject());
+    applyExpression(object, method, fieldAccess.getObject());
 
     final Ident fieldName = fieldAccess.getFieldName();
     final String fieldNameToString = fieldName.getName();
@@ -361,11 +362,11 @@ public class ApplyExpression {
 
   }
 
-  private void applyMethodInvocation(final ClassDeclaration object, final ExprExpression e) {
+  private void applyMethodInvocation(final ClassDeclaration object, ClassMethodDeclaration m, final ExprExpression e) {
 
     final ExprMethodInvocation methodInvocation = e.getMethodInvocation();
-    applyExpression(object, methodInvocation.getObject());
-    applyArgs(object, methodInvocation.getArguments());
+    applyExpression(object, m, methodInvocation.getObject());
+    applyArgs(object, m, methodInvocation.getArguments());
 
     // a.fn(1,2,3)
     // self.fn(1,2,3)
@@ -387,9 +388,10 @@ public class ApplyExpression {
 
   }
 
-  private void applyArgs(final ClassDeclaration object, final List<ExprExpression> arguments) {
+  private void applyArgs(final ClassDeclaration object, ClassMethodDeclaration method,
+      final List<ExprExpression> arguments) {
     for (ExprExpression arg : arguments) {
-      applyExpression(object, arg);
+      applyExpression(object, method, arg);
     }
   }
 

@@ -2,6 +2,7 @@ package _st2_annotate;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
+import ast_method.ClassMethodDeclaration;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
 import errors.AstParseException;
@@ -15,10 +16,7 @@ public class ApplyInitializer {
     this.symtabApplier = symtabApplier;
   }
 
-  public void applyInitializer(final ClassDeclaration object, final VarDeclarator var) {
-    if (var.isArrayInitializer()) {
-      throw new AstParseException("unimpl. array-inits.");
-    }
+  public void applyInitializer(final ClassDeclaration object, ClassMethodDeclaration method, final VarDeclarator var) {
 
     final ExprExpression init = var.getSimpleInitializer();
 
@@ -27,7 +25,7 @@ public class ApplyInitializer {
     }
 
     ApplyExpression applier = new ApplyExpression(symtabApplier);
-    applier.applyExpression(object, init);
+    applier.applyExpression(object, method, init);
 
     final Type lhsType = var.getType();
     final Type rhsType = init.getResultType();
@@ -35,17 +33,6 @@ public class ApplyInitializer {
     final boolean typesAreTheSame = lhsType.isEqualTo(rhsType);
 
     if (!typesAreTheSame) {
-      // if (lhsType.isClass() && rhsType.isClass()) {
-      //   ClassDeclaration lhsClass = lhsType.getClassTypeFromRef();
-      //   ClassDeclaration rhsClass = rhsType.getClassTypeFromRef();
-      //   if (lhsClass.isInterface()) {
-      //     if (InterfaceChecker.classFullyImplementsTheInterface(rhsClass, lhsClass)) {
-      //       //var.setType(rhsType);
-      //       return;
-      //     }
-      //   }
-      // }
-
       ErrorLocation.errorInitializer("the type of variable is different from type of its initilizer", var, init);
     }
   }

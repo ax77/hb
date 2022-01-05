@@ -1,3 +1,5 @@
+
+//@formatter:off
 import std.natives.str::str;
 import std.list::list;
 
@@ -35,8 +37,8 @@ namespace test_expressions {
 
 namespace test_statements {
 	test "test for loop break" {
-		int a = 0;
-		for(int i=0; i<8; i+=1) {
+	  mut int a = 0;
+		for(mut int i=0; i<8; i+=1) {
 			a+=1;
 			break;
 		}
@@ -44,22 +46,22 @@ namespace test_statements {
 	}
 	
 	test "test for loop continue" {
-        int a=0;
-        int b=0;
-        for(int i=0; i<8; i+=1) {
-          if(a==1) {
-            b+=1;
-            continue;
-          }
-          a+=1;
-        }
+	  mut int a=0;
+	  mut int b=0;
+    for(mut int i=0; i<8; i+=1) {
+      if(a==1) {
+        b+=1;
+        continue;
+      }
+      a+=1;
+    }
 		assert_true(a==1);
 		assert_true(b==7);
 	}
 	
 	test "test if-s" {
-	  int a = 32;
-	  int b = -1;
+	  mut int a = 32;
+	  mut int b = -1;
 	  if(a == 10) {
 	    b = 1;
 	  } else if(a == 11) {
@@ -219,8 +221,8 @@ namespace test_string_class {
 }
 
 namespace tok_type {
-  final int T_STRING = 1;
-  final int T_CHAR = 2;
+  int T_STRING = 1;
+  int T_CHAR = 2;
 }
 
 namespace test_static_semantic {
@@ -249,7 +251,7 @@ namespace test_list {
   test "test fill list with the values"
   {
     list<int> list = new list<int>();
-    for(int i=0; i<32; i+=1) {
+    for(mut int i=0; i<32; i+=1) {
       list.push_front(i);
     }
     while(!list.is_empty()) {

@@ -15,11 +15,6 @@ public abstract class ModifiersChecker {
     return new Modifiers();
   }
 
-  public static Modifiers letMods() {
-    List<Ident> res = new ArrayList<>();
-    res.add(Keywords.final_ident);
-    return new Modifiers(res);
-  }
 
   public static boolean isAnyModifier(Token what) {
     return what.ofType(T.TOKEN_IDENT) && isAnyModifierId(what.getIdent());
@@ -30,7 +25,7 @@ public abstract class ModifiersChecker {
        what.equals(Keywords.private_ident  )
     || what.equals(Keywords.public_ident   )
     || what.equals(Keywords.native_ident   )
-    || what.equals(Keywords.final_ident    );
+    || what.equals(Keywords.mut_ident      );
   }
 
 
@@ -42,15 +37,12 @@ public abstract class ModifiersChecker {
      ;
   }
 
-  private static boolean isMethodParameterModifierId(Ident what) {
-    return what.equals(Keywords.final_ident);
-  }
 
   private static boolean isClassFieldModifierId(Ident what) {
     return 
         what.equals(Keywords.private_ident  )
      || what.equals(Keywords.public_ident   )
-     || what.equals(Keywords.final_ident    )
+     || what.equals(Keywords.mut_ident      )
      ;
   }
 

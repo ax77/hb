@@ -7,6 +7,7 @@ import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
+import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
@@ -45,10 +46,12 @@ public abstract class BuildDefaultDestructor {
         }
 
         if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
-          System.out.println("warning: the default destructor-call for self-referenced field won't be created, \n"
-              + "you have to provide the correct deinitialization for the field, \n"
-              + "or it will cause a recursive call loop: " + field.getIdentifier() + " " + field.getLocationToString()
-              + "\n");
+          if (ParserMainOptions.WARN_SELF_REFERENCED_DESTRUCTORS) {
+            System.out.println("warning: the default destructor-call for self-referenced field won't be created, \n"
+                + "you have to provide the correct deinitialization for the field, \n"
+                + "or it will cause a recursive call loop: " + field.getIdentifier() + " " + field.getLocationToString()
+                + "\n");
+          }
           continue;
         }
 

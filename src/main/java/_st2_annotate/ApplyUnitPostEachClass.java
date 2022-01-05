@@ -10,6 +10,7 @@ import ast_expr.ExprAssign;
 import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_modifiers.ModifiersChecker;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
@@ -34,8 +35,7 @@ public class ApplyUnitPostEachClass {
       InterfaceChecker.checkImplementations(c);
       applyMethodsSpecial(c);
 
-      //XXX:default_constructor
-      //checkAllFieldsAreInitialized(c);
+      checkAllFieldsAreInitialized(c);
     }
   }
 
@@ -77,7 +77,7 @@ public class ApplyUnitPostEachClass {
       boolean hasErrors = false;
       for (VarDeclarator var : fields) {
         // TODO: much more clean with native array.
-        if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray()) {
+        if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray() && !var.getMods().isMutable()) {
           hasErrors = true;
           System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
               + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());
@@ -155,7 +155,7 @@ public class ApplyUnitPostEachClass {
     //@formatter:off
     final Type paramType = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
     final VarDeclarator __thisParam = new VarDeclarator(VarBase.METHOD_PARAMETER
-        , ModifiersChecker.letMods()
+        , new Modifiers()
         , paramType
         , BuiltinNames.__this_ident
         , method.getBeginPos()

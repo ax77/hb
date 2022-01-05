@@ -34,7 +34,7 @@ public abstract class VarCreator {
   }
 
   public static Var just_this_(Type type) {
-    final Var result = new Var(VarBase.METHOD_PARAMETER, ModifiersChecker.letMods(), type, BuiltinNames.__this_ident);
+    final Var result = new Var(VarBase.METHOD_PARAMETER, new Modifiers(), type, BuiltinNames.__this_ident);
     return result;
   }
 

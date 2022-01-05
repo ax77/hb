@@ -1,8 +1,8 @@
 
 class node<E> {
-  E item;
-  node<E> next;
-  node<E> prev;
+  mut E item;
+  mut node<E> next;
+  mut node<E> prev;
 
   node(node<E> prev, E element, node<E> next) {
       this.item = element;
@@ -12,9 +12,9 @@ class node<E> {
 }
 
 class list<E> {
-  int size;
-  node<E> first;
-  node<E> last;
+  mut int size;
+  mut node<E> first;
+  mut node<E> last;
   
   list() {
     this.size = 0;

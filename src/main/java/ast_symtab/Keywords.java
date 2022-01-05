@@ -32,7 +32,7 @@ public final class Keywords {
   
   // modifiers
   public static final Ident native_ident         = g("native");
-  public static final Ident final_ident          = g("final");
+  public static final Ident mut_ident            = g("mut");
   
   // literals
   public static final Ident true_ident           = g("true");

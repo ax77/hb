@@ -144,7 +144,7 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    final String filename = dir + "/tests/test_destructors.hb";
+    final String filename = dir + "/tests/test_mut.hb";
 
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     for (ClassDeclaration c : unit.getClasses()) {
@@ -154,9 +154,9 @@ public class TestCcode7 {
     CgMain result = new CgMain(unit.getClasses());
     System.out.println(result.toString());
 
-    FileWriter fw = new FileWriter("ccode.c");
-    fw.write(result.toString());
-    fw.close();
+    //    FileWriter fw = new FileWriter("ccode.c");
+    //    fw.write(result.toString());
+    //    fw.close();
 
   }
 }

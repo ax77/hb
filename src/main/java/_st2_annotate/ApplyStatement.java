@@ -61,12 +61,12 @@ public class ApplyStatement {
   }
 
   private void visitExprStmt(final ClassDeclaration object, ClassMethodDeclaration method, final StmtStatement node) {
-    applyExpression(object, node.getExprStmt());
+    applyExpression(object, method, node.getExprStmt());
     semExprStmt(object, method, node);
   }
 
   private void visitReturn(final ClassDeclaration object, ClassMethodDeclaration method, final StmtReturn node) {
-    applyExpression(object, node.getExpression());
+    applyExpression(object, method, node.getExpression());
     semReturn(object, method, node);
   }
 
@@ -75,8 +75,8 @@ public class ApplyStatement {
     StmtFor node = s.getForStmt();
 
     symtabApplier.openBlockScope();
-    applyExpression(object, node.getTest());
-    applyExpression(object, node.getStep());
+    applyExpression(object, method, node.getTest());
+    applyExpression(object, method, node.getStep());
     visitBlock(object, method, node.getBlock());
     symtabApplier.closeBlockScope();
 
@@ -85,7 +85,7 @@ public class ApplyStatement {
 
   private void visitSelectionStmt(final ClassDeclaration object, final ClassMethodDeclaration method,
       final StmtSelect node) {
-    applyExpression(object, node.getCondition());
+    applyExpression(object, method, node.getCondition());
     visitBlock(object, method, node.getTrueStatement());
     visitBlock(object, method, node.getOptionalElseStatement());
     semSelection(object, method, node);
@@ -121,17 +121,17 @@ public class ApplyStatement {
       symtabApplier.defineBlockVar(var);
     }
 
-    applyInitializer(object, var);
+    applyInitializer(object, method, var);
   }
 
-  private void applyExpression(ClassDeclaration object, ExprExpression e) {
+  private void applyExpression(ClassDeclaration object, ClassMethodDeclaration method, ExprExpression e) {
     ApplyExpression applier = new ApplyExpression(symtabApplier);
-    applier.applyExpression(object, e);
+    applier.applyExpression(object, method, e);
   }
 
-  private void applyInitializer(ClassDeclaration object, VarDeclarator var) {
+  private void applyInitializer(ClassDeclaration object, ClassMethodDeclaration method, VarDeclarator var) {
     ApplyInitializer applier = new ApplyInitializer(symtabApplier);
-    applier.applyInitializer(object, var);
+    applier.applyInitializer(object, method, var);
 
   }
 

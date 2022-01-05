@@ -217,7 +217,7 @@ public class RewriterExpr {
       final ExprExpression rvalue = assign.getRvalue();
       gen(rvalue);
 
-      LvalueUtil.checkHard(lvalue);
+      LvalueUtil.checkHard(lvalue, e, method);
       store(e.getResultType());
     }
 

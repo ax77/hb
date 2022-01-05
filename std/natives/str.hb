@@ -1,12 +1,13 @@
 
 class str {
 
-  arr<char>buffer;
+  mut arr<char>buffer;
 
   str(str str) {
     this.buffer = new arr<char>();
-
-    for(int i = 0; i < str.length(); i += 1) {
+    int len = str.length();
+    
+    for(mut int i = 0; i < len; i += 1) {
       this.buffer.add(str.get(i));
     }
 
@@ -29,17 +30,18 @@ class str {
   }
 
   str left(int count) {
+    int len = length();
     
-    if(count == 0 || length() == 0) {
+    if(count == 0 || len == 0) {
       return this;
     }
     
-    if(count >= length()) {
+    if(count >= len) {
       return this;
     }
     
     arr<char> res = new arr<char>();
-    for(int i = 0; i < count; i += 1) {
+    for(mut int i = 0; i < count; i += 1) {
       res.add(get(i));
     }
     
@@ -47,51 +49,58 @@ class str {
   }
 
   str right(int count) {
+    int len = length();
     
-    if(count == 0 || length() == 0) {
+    if(count == 0 || len == 0) {
       return this;
     }
-    if(count >= length()) {
+    if(count >= len) {
       return this;
     }
     
     arr<char> res = new arr<char>();
     
-    int start = length() - count;
-    for(int i = start; i < length(); i += 1) {
+    int start = len - count;
+    for(mut int i = start; i < len; i += 1) {
       res.add(get(i));
     }
     
     return new str(res);
   }
 
-  str mid(int begin, int much) {
-    if(begin >= length()) {
+  str mid(int begin, mut int much) {
+    int len = length();
+    
+    if(begin >= len) {
       return this;
     }
-    if(much >= length()) {
-      much = length();
+    if(much >= len) {
+      much = len;
     }
-    int end = begin + much;
-    if(end >= length()) {
-      end = length();
+    mut int end = begin + much;
+    if(end >= len) {
+      end = len;
     }
     
     arr<char> res = new arr<char>();
-    for(int i = begin; i < end; i += 1) {
+    for(mut int i = begin; i < end; i += 1) {
       res.add(get(i));
     }
     return new str(res);
   }
 
   boolean starts_with(str pattern) {
-    if (pattern.length() > this.length()) {
+    int len1 = length();
+    int len2 = pattern.length();
+    
+    if (len2 > len1) {
       return false;
     }
-    if (length() == 0 || pattern.length() == 0) {
+    if (len1 == 0 || len2 == 0) {
       return false;
     }
-    for (int i = 0, j = 0; i < length() && j < pattern.length(); i += 1, j += 1) {
+    
+    for (mut int i = 0, j = 0; i < len1 && j < len2; i += 1, j += 1) {
       char c1 = get(i);
       char c2 = pattern.get(j);
       if (c1 != c2) {
@@ -102,14 +111,17 @@ class str {
   }
 
   boolean ends_with(str pattern) {
-    if (pattern.length() > this.length()) {
+    int len1 = length();
+    int len2 = pattern.length();
+    
+    if (len2 > len1) {
       return false;
     }
-    if (length() == 0 || pattern.length() == 0) {
+    if (len1 == 0 || len2 == 0) {
       return false;
     }
-    int i = length() - 1;
-    int j = pattern.length() - 1;
+    mut int i = len1 - 1;
+    mut int j = len2 - 1;
     for (; i >= 0 && j >= 0; i -= 1, j -= 1) {
       char c1 = get(i);
       char c2 = pattern.get(j);
@@ -121,21 +133,23 @@ class str {
   }
 
   str trim() {
-    if(length() == 0) {
+    int len = length();
+    
+    if(len == 0) {
       return this;
     }
     
-    int start = 0;
-    int end = 0;
+    mut int start = 0;
+    mut int end = 0;
     
-    for(start = 0; start < length(); start += 1) {
+    for(start = 0; start < len; start += 1) {
       char c = get(start);
       if(c > ' ') {
         break;
       }
     }
     
-    for(end = length()-1; end >=0; end -= 1) {
+    for(end = len-1; end >=0; end -= 1) {
       char c = get(end);
       if(c > ' ') {
         break;
@@ -143,7 +157,7 @@ class str {
     }
     
     arr<char> res = new arr<char>();
-    for(int i = start; i <= end; i += 1) {
+    for(mut int i = start; i <= end; i += 1) {
       res.add(get(i));
     }
     return new str(res);
