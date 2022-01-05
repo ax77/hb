@@ -3,7 +3,6 @@ package _st3_linearize_expr.ir;
 import _st3_linearize_expr.leaves.Var;
 import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
-import ast_modifiers.ModifiersChecker;
 import ast_symtab.BuiltinNames;
 import ast_types.Type;
 import ast_vars.VarBase;
@@ -27,7 +26,7 @@ public abstract class VarCreator {
     final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, tmpIdent());
     return result;
   }
-  
+
   public static Var varWithName(Type type, String name) {
     final Var result = new Var(VarBase.LOCAL_VAR, new Modifiers(), type, Hash_ident.getHashedIdent(name));
     return result;

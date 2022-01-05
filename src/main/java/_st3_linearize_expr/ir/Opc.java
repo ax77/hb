@@ -14,7 +14,6 @@ public enum Opc {
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarNum                       // type a = 1
   , AssignVarDefaultValueFotType       // type a = default(type)
-  , AssignVarTernaryOp                 // type a = ?(varCnd, varTrue, varFalse)
   , AssignVarTrue                      // type a = true
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b

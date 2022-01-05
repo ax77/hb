@@ -99,7 +99,7 @@ public abstract class ExpandRecursiveCallIntoLoop {
     forLoopBody.pushItemBack(new StmtStatement(tmpVarDecl, beginPos));
     forLoopBody.pushItemBack(new StmtStatement(new StmtBlock(), beginPos)); // and empty block, where the value will be deleted...
     forLoopBody.pushItemBack(new StmtStatement(assign, beginPos));
-    
+
     forLoop.setTest(test);
     forLoop.setBlock(forLoopBody); // the block of the FOR-LOOP, here will be our marking function.
 

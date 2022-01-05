@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
-import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
@@ -17,7 +15,6 @@ import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtFor;
 import ast_stmt.StmtReturn;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;

@@ -13,7 +13,6 @@ import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
-import _st3_linearize_expr.items.AssignVarTernaryOp;
 import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
@@ -48,7 +47,6 @@ public class FlatCodeItem {
   private AssignVarNum assignVarNum;
   private AssignVarSizeof assignVarSizeof;
   private AssignVarStaticFieldAccess assignVarStaticFieldAccess;
-  private AssignVarTernaryOp assignVarTernaryOp;
   private AssignVarTrue assignVarTrue;
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
@@ -76,7 +74,6 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarNum assignVarNum) { this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
   public FlatCodeItem(AssignVarSizeof assignVarSizeof) { this.opcode = Opc.AssignVarSizeof; this.assignVarSizeof = assignVarSizeof; }
   public FlatCodeItem(AssignVarStaticFieldAccess assignVarStaticFieldAccess) { this.opcode = Opc.AssignVarStaticFieldAccess; this.assignVarStaticFieldAccess = assignVarStaticFieldAccess; }
-  public FlatCodeItem(AssignVarTernaryOp assignVarTernaryOp) { this.opcode = Opc.AssignVarTernaryOp; this.assignVarTernaryOp = assignVarTernaryOp; }
   public FlatCodeItem(AssignVarTrue assignVarTrue) { this.opcode = Opc.AssignVarTrue; this.assignVarTrue = assignVarTrue; }
   public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
@@ -104,7 +101,6 @@ public class FlatCodeItem {
   public boolean isAssignVarNum() { return this.opcode == Opc.AssignVarNum; }
   public boolean isAssignVarSizeof() { return this.opcode == Opc.AssignVarSizeof; }
   public boolean isAssignVarStaticFieldAccess() { return this.opcode == Opc.AssignVarStaticFieldAccess; }
-  public boolean isAssignVarTernaryOp() { return this.opcode == Opc.AssignVarTernaryOp; }
   public boolean isAssignVarTrue() { return this.opcode == Opc.AssignVarTrue; }
   public boolean isAssignVarUnop() { return this.opcode == Opc.AssignVarUnop; }
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
@@ -134,7 +130,6 @@ public class FlatCodeItem {
     if(isAssignVarNum()) { return assignVarNum.toString(); }
     if(isAssignVarSizeof()) { return assignVarSizeof.toString(); }
     if(isAssignVarStaticFieldAccess()) { return assignVarStaticFieldAccess.toString(); }
-    if(isAssignVarTernaryOp()) { return assignVarTernaryOp.toString(); }
     if(isAssignVarTrue()) { return assignVarTrue.toString(); }
     if(isAssignVarUnop()) { return assignVarUnop.toString(); }
     if(isAssignVarVar()) { return assignVarVar.toString(); }
@@ -165,7 +160,6 @@ public class FlatCodeItem {
   public AssignVarNum getAssignVarNum() { return this.assignVarNum; }
   public AssignVarSizeof getAssignVarSizeof() { return this.assignVarSizeof; }
   public AssignVarStaticFieldAccess getAssignVarStaticFieldAccess() { return this.assignVarStaticFieldAccess; }
-  public AssignVarTernaryOp getAssignVarTernaryOp() { return this.assignVarTernaryOp; }
   public AssignVarTrue getAssignVarTrue() { return this.assignVarTrue; }
   public AssignVarUnop getAssignVarUnop() { return this.assignVarUnop; }
   public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
@@ -194,7 +188,6 @@ public class FlatCodeItem {
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
       || isAssignVarDefaultValueFotType()   
-      || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
       || isAssignVarVar()
@@ -241,9 +234,6 @@ public class FlatCodeItem {
     }
     if(isAssignVarStaticFieldAccess()) {
       return assignVarStaticFieldAccess.getLvalue();
-    }
-    if(isAssignVarTernaryOp()) {
-      return assignVarTernaryOp.getLvalue();
     }
     if(isAssignVarTrue()) {
       return assignVarTrue.getLvalue();

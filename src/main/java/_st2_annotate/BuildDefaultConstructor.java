@@ -8,18 +8,13 @@ import ast_expr.ExprAssign;
 import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
-import ast_expr.ExprIdent;
-import ast_expr.ExprMethodInvocation;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
-import ast_symtab.Keywords;
-import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
-import tokenize.Ident;
 import tokenize.T;
 import tokenize.Token;
 

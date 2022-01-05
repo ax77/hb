@@ -60,8 +60,8 @@ public class GenUnittests implements Ccode {
         String pushFuncSignature = ToStringsInternal.signToStringCallPushF(m);
         String location = String.format("%d", m.getLocation().getLine());
 
-        impls.append("\nprintf(\"%d/%d test: %s\", " + String.format("%d", testNum) + ", " + testTotal + ", " + name
-            + ");\n");
+        impls.append(
+            "\nprintf(\"%d/%d test: %s\", " + String.format("%d", testNum) + ", " + testTotal + ", " + name + ");\n");
 
         if (ParserMainOptions.GENERATE_CALL_STACK) {
           impls.append("push_function(" + "\"" + "test_runner::" + pushFuncSignature + "\"" + ", " + location + ");\n");

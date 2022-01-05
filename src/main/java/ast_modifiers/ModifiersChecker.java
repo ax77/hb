@@ -1,8 +1,5 @@
 package ast_modifiers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ast_symtab.Keywords;
 import tokenize.Ident;
 import tokenize.T;

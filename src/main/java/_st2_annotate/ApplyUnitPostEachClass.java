@@ -11,7 +11,6 @@ import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
-import ast_modifiers.ModifiersChecker;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;

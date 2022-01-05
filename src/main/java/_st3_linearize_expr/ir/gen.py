@@ -29,7 +29,6 @@ opcodes = """
     AssignVarFlatCallResultStatic      ,
     AssignVarNum                       ,
     AssignVarDefaultValueFotType       ,
-    AssignVarTernaryOp                 ,
     AssignVarTrue                      ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
@@ -93,7 +92,6 @@ assigns_ops = """
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
       || isAssignVarDefaultValueFotType()   
-      || isAssignVarTernaryOp()  
       || isAssignVarTrue()   
       || isAssignVarUnop()   
       || isAssignVarVar()

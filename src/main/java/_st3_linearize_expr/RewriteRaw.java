@@ -11,8 +11,6 @@ import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
-import _st3_linearize_expr.items.CallListenerResultMethod;
-import _st3_linearize_expr.items.CallListenerVoidMethod;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.leaves.Binop;
@@ -164,10 +162,6 @@ public class RewriteRaw {
       }
 
       else if (item.isStoreVarVar()) {
-        rv.add(item);
-      }
-
-      else if (item.isAssignVarTernaryOp()) {
         rv.add(item);
       }
 
