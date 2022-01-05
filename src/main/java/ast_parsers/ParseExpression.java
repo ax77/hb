@@ -372,17 +372,13 @@ public class ParseExpression {
   }
 
   private ExprExpression e_mul() {
-    ExprExpression e = e_cast();
+    ExprExpression e = e_unary();
     while (parser.tp() == T_TIMES || parser.tp() == T_DIVIDE || parser.tp() == T_PERCENT) {
       Token saved = parser.tok();
       parser.move();
-      e = build_binary(saved, e, e_cast());
+      e = build_binary(saved, e, e_unary());
     }
     return e;
-  }
-
-  private ExprExpression e_cast() {
-    return e_unary();
   }
 
   private ExprExpression e_unary() {
@@ -401,73 +397,111 @@ public class ParseExpression {
 
     // cast(unary: type)
     if (parser.is(Keywords.cast_ident)) {
-      final Token beginPos = parser.checkedMove(Keywords.cast_ident);
-      parser.lparen();
-
-      // TODO: assign expression is not allowed in casting.
-      // rewrite this.
-      final ExprExpression expressionForCast = e_expression();
-      parser.checkedMove(T.T_COLON);
-
-      final Type toType = new ParseType(parser).getType();
-      parser.rparen();
-
-      return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
+      return e_cast();
     }
 
     return e_postfix();
   }
 
-  private ExprExpression e_postfix() {
+  private ExprExpression e_cast() {
+    final Token beginPos = parser.checkedMove(Keywords.cast_ident);
+    parser.lparen();
 
+    // TODO: assign expression is not allowed in casting.
+    // rewrite this.
+    // TODO: is the grammar - this node should be an 'unary', not an 'expression'.
+    // But: what if we want to cast(1+32 : char)
+    // we want to cast the whole 1+32 to char, not only the 1.
+    final ExprExpression expressionForCast = e_expression();
+    parser.checkedMove(T.T_COLON);
+
+    final Type toType = new ParseType(parser).getType();
+    parser.rparen();
+
+    return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
+  }
+
+  //  private ExprExpression e_postfix() {
+  //
+  //    ExprExpression lhs = e_prim();
+  //
+  //    while (!parser.isEof()) {
+  //      if (parser.is(T.T_DOT)) {
+  //
+  //        ParseState parseState = new ParseState(parser);
+  //
+  //        parser.checkedMove(T.T_DOT);
+  //        final Token peek = parser.peek();
+  //
+  //        final boolean dot_ident_lparen = parser.isUserDefinedIdentNoKeyword(parser.tok())
+  //            && peek.ofType(T.T_LEFT_PAREN);
+  //
+  //        if (dot_ident_lparen) {
+  //          Ident ident = parser.getIdent();
+  //
+  //          // TODO: think about it, is it correct?
+  //          // the result tree is correct as I think, but I'm not sure.
+  //          // maybe I have to rebuild the node from field-access to func-call
+  //          // for example: the path like "a().b().c"
+  //          if (lhs.getBase() == ExpressionBase.EFIELD_ACCESS) {
+  //          }
+  //
+  //          lhs = methodInvocation(lhs, ident);
+  //        }
+  //
+  //        else {
+  //          parser.restoreState(parseState); // normal field access like: "a.b.c.d.e"
+  //          lhs = fieldAccess(lhs);
+  //        }
+  //
+  //      }
+  //
+  //      else if (parser.is(T_LEFT_PAREN)) {
+  //        Ident funcname = lhs.getIdent().getIdentifier();
+  //        if (funcname == null) {
+  //          parser.perror("expect function name");
+  //        }
+  //
+  //        lhs = methodInvocation(funcname); // TODO: more clean, more precise.
+  //      }
+  //
+  //      else if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
+  //        parser.perror("post-increment/post-decrement are deprecated by design.");
+  //      }
+  //
+  //      // array-subscript
+  //      //
+  //      else if (parser.is(T.T_LEFT_BRACKET)) {
+  //        parser.errorArray();
+  //      }
+  //
+  //      else {
+  //        break;
+  //      }
+  //    }
+  //
+  //    return lhs;
+  //  }
+
+  private ExprExpression e_postfix() {
     ExprExpression lhs = e_prim();
 
     while (!parser.isEof()) {
       if (parser.is(T.T_DOT)) {
-
-        ParseState parseState = new ParseState(parser);
-
-        parser.checkedMove(T.T_DOT);
-        final Token peek = parser.peek();
-
-        final boolean dot_ident_lparen = parser.isUserDefinedIdentNoKeyword(parser.tok())
-            && peek.ofType(T.T_LEFT_PAREN);
-
-        if (dot_ident_lparen) {
-          Ident ident = parser.getIdent();
-
-          // TODO: think about it, is it correct?
-          // the result tree is correct as I think, but I'm not sure.
-          // maybe I have to rebuild the node from field-access to func-call
-          // for example: the path like "a().b().c"
-          if (lhs.getBase() == ExpressionBase.EFIELD_ACCESS) {
-          }
-
-          lhs = methodInvocation(lhs, ident);
+        final Token dot = parser.moveget();
+        final Ident member = parser.getIdent();
+        if (parser.is(T_LEFT_PAREN)) {
+          final List<ExprExpression> arglist = parseArglist();
+          lhs = new ExprExpression(new ExprMethodInvocation(lhs, member, arglist), dot);
+        } else {
+          lhs = new ExprExpression(new ExprFieldAccess(lhs, member), dot);
         }
-
-        else {
-          parser.restoreState(parseState); // normal field access like: "a.b.c.d.e"
-          lhs = fieldAccess(lhs);
-        }
-
-      }
-
-      else if (parser.is(T_LEFT_PAREN)) {
-        Ident funcname = lhs.getIdent().getIdentifier();
-        if (funcname == null) {
-          parser.perror("expect function name");
-        }
-
-        lhs = methodInvocation(funcname); // TODO: more clean, more precise.
       }
 
       else if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
         parser.perror("post-increment/post-decrement are deprecated by design.");
       }
 
-      // array-subscript
-      //
       else if (parser.is(T.T_LEFT_BRACKET)) {
         parser.errorArray();
       }
@@ -478,12 +512,6 @@ public class ParseExpression {
     }
 
     return lhs;
-  }
-
-  private ExprExpression fieldAccess(final ExprExpression obj) {
-    final Token dot = parser.checkedMove(T.T_DOT);
-    final Token fieldName = parser.checkedMove(T.TOKEN_IDENT);
-    return new ExprExpression(new ExprFieldAccess(obj, fieldName.getIdent()), dot);
   }
 
   private ExprExpression methodInvocation(final Ident funcname) {
@@ -503,12 +531,6 @@ public class ParseExpression {
 
     tok = parser.tok();
     return new ExprExpression(new ExprMethodInvocation(selfExpression, funcname, arglist), tok);
-  }
-
-  private ExprExpression methodInvocation(final ExprExpression obj, final Ident funcname) {
-    List<ExprExpression> arglist = parseArglist();
-    Token tok = parser.tok();
-    return new ExprExpression(new ExprMethodInvocation(obj, funcname, arglist), tok);
   }
 
   private List<ExprExpression> parseArglist() {
@@ -616,12 +638,17 @@ public class ParseExpression {
       Token saved = parser.moveget();
       final ExprIdent symbol = new ExprIdent(saved.getIdent());
 
-      //TODO:STATIC_ACCESS
+      // TODO:STATIC_ACCESS
+      // somefunc<int>.print(1);
       ExprExpression sa = possibleGenericStaticClassInstantiationAccess(saved);
       if (sa != null) {
         return sa;
       }
-      //TODO:STATIC_ACCESS
+
+      // this.func()
+      if (parser.is(T_LEFT_PAREN)) {
+        return methodInvocation(saved.getIdent());
+      }
 
       return new ExprExpression(symbol, saved);
     }

@@ -153,6 +153,9 @@ public class TestCcode7 {
 
     CgMain result = new CgMain(unit.getClasses());
     //System.out.println(result.toString());
+    
+    char c = ((int)1+32);
+    System.out.println(c);
 
     FileWriter fw = new FileWriter("ccode.c");
     fw.write(result.toString());
