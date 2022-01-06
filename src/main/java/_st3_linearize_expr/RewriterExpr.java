@@ -467,6 +467,9 @@ public class RewriterExpr {
 
       if (clazz.isNamespace()) {
 
+        final FlatCodeItem thisItem = popCode();
+        final Var obj = thisItem.getDest();
+
         /// int f = constants.os_version;
         /// ::
         /// int t8 = constants->os_version;

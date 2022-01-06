@@ -145,7 +145,7 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    final String filename = dir + "/tests/test_enums.hb";
+    final String filename = dir + "/tests/main.hb";
 
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     final List<ClassDeclaration> classes = unit.getClasses();
@@ -154,11 +154,11 @@ public class TestCcode7 {
     }
 
     CgMain result = new CgMain(classes);
-    System.out.println(result.toString());
+    //System.out.println(result.toString());
 
-//    FileWriter fw = new FileWriter("ccode.c");
-//    fw.write(result.toString());
-//    fw.close();
+    FileWriter fw = new FileWriter("ccode.c");
+    fw.write(result.toString());
+    fw.close();
 
   }
 }

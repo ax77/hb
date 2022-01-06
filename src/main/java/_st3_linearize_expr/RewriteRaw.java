@@ -292,6 +292,9 @@ public class RewriteRaw {
     if (!lhsType.isClass()) {
       return false;
     }
+    if(lhsType.isNamespace() || lhsType.isEnum()) {
+      return false;
+    }
     return true;
   }
 
