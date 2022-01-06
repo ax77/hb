@@ -6,7 +6,11 @@ interface markable {
   int flag();
 }
 
-class token implements markable {
+interface equitable {
+  void iseq();
+}
+
+class token implements markable, equitable {
   mut boolean is_marked;
   void mark() {
     this.is_marked = true;
@@ -17,9 +21,10 @@ class token implements markable {
   int flag() {
     return 32;
   }
+  void iseq() {}
 }
 
-class literal implements markable {
+class literal implements markable, equitable {
   mut boolean is_marked;
   void mark() {
     this.is_marked = true;
@@ -30,6 +35,7 @@ class literal implements markable {
   int flag() {
     return 64;
   }
+  void iseq() {}
 }
 
 namespace tests {
@@ -40,8 +46,16 @@ namespace tests {
   
   test "simple" {
     arr<markable> arr = new arr<markable>();
+    arr<token> tokens = new arr<token>();
     markable a = new token();
     markable b = new literal();
+    equitable c = new token();
+    
+    tokens.add(new token());
+    for(mut int i=0; i<tokens.size(); i+=1) {
+      markable m = tokens.get(i);
+      arr.add(m);
+    }
     
     arr.add(a);
     arr.add(b);

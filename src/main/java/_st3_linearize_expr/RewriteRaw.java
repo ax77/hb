@@ -178,8 +178,8 @@ public class RewriteRaw {
         /// m->mark = &token_mark;
         /// m->unmark = &token_unmark;
 
-        if (ltype.isInterface()) {
-          //throw new AstParseException("unimpl.0");
+        if (ltype.isInterface() && !ltype.isEqualTo(rtype)) {
+          throw new AstParseException("unimpl.0");
         }
 
         rv.add(item);

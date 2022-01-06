@@ -154,11 +154,11 @@ public class TestCcode7 {
     }
 
     CgMain result = new CgMain(classes);
-    System.out.println(result.toString());
+    //System.out.println(result.toString());
 
-//    FileWriter fw = new FileWriter("ccode.c");
-//    fw.write(result.toString());
-//    fw.close();
+    FileWriter fw = new FileWriter("ccode.c");
+    fw.write(result.toString());
+    fw.close();
 
   }
 }

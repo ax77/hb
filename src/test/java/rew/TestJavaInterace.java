@@ -13,8 +13,12 @@ public class TestJavaInterace {
 
     void unmark();
   }
+  
+  interface equitable {
+    boolean isEq();
+  }
 
-  class token implements markable {
+  class token implements markable,equitable {
     boolean is_marked;
 
     @Override
@@ -25,10 +29,15 @@ public class TestJavaInterace {
     @Override
     public void unmark() {
       this.is_marked = false;
+    }
+
+    @Override
+    public boolean isEq() {
+      return false;
     }
   }
 
-  class literal implements markable {
+  class literal implements markable,equitable {
     boolean is_marked;
 
     @Override
@@ -39,14 +48,47 @@ public class TestJavaInterace {
     @Override
     public void unmark() {
       this.is_marked = false;
+    }
+
+    @Override
+    public boolean isEq() {
+      return true;
     }
   }
 
   @Test
   public void test() {
-    token tok = new token();
-    markable m = tok;
-    m.mark();
+    ArrayList<markable> arr = new ArrayList<>();
+    equitable eq = new token();
+    markable mk = new literal();
+    arr.add(new token());
+    arr.add(mk);
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
