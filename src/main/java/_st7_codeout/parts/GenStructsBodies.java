@@ -98,29 +98,37 @@ public abstract class GenStructsBodies {
     sb.append("  void *object;\n");
 
     for (ClassMethodDeclaration method : c.getMethods()) {
-      String type = ToStringsInternal.typeToString(method.getType());
-      String name = "(*" + method.getIdentifier().getName() + ")";
+      oneFuncPtrToString(c, sb, method);
+    }
 
-      final List<VarDeclarator> parameters = new ArrayList<>(method.getParameters()); //XXX: copy, do not modify original!
-      if (parameters.isEmpty()) {
-        throw new AstParseException("empty parameters for interface: " + c.toString());
-      }
-      parameters.remove(0); // __this
-
-      String params = ToStringsInternal.parametersToString(parameters);
-      if (params.startsWith("(") && params.endsWith(")")) {
-        String sub = params.substring(1, params.length() - 1);
-        String comma = sub.trim().isEmpty() ? "" : ", ";
-        params = "(void *__this" + comma + sub + ")";
-      } else {
-        throw new AstParseException("empty parameters for interface: " + params);
-      }
-
-      sb.append(type + " " + name + params + ";\n");
+    if (c.getDestructor() != null) {
+      oneFuncPtrToString(c, sb, c.getDestructor());
     }
 
     sb.append("\n};\n");
     return sb.toString();
+  }
+
+  private static void oneFuncPtrToString(ClassDeclaration c, StringBuilder sb, ClassMethodDeclaration method) {
+    String type = ToStringsInternal.typeToString(method.getType());
+    String name = "(*" + method.getIdentifier().getName() + ")";
+
+    final List<VarDeclarator> parameters = new ArrayList<>(method.getParameters()); //XXX: copy, do not modify original!
+    if (parameters.isEmpty()) {
+      throw new AstParseException("empty parameters for interface: " + c.toString());
+    }
+    parameters.remove(0); // __this
+
+    String params = ToStringsInternal.parametersToString(parameters);
+    if (params.startsWith("(") && params.endsWith(")")) {
+      String sub = params.substring(1, params.length() - 1);
+      String comma = sub.trim().isEmpty() ? "" : ", ";
+      params = "(void *__this" + comma + sub + ")";
+    } else {
+      throw new AstParseException("empty parameters for interface: " + params);
+    }
+
+    sb.append(type + " " + name + params + ";\n");
   }
 
   private static String classToString(ClassDeclaration c) {

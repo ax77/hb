@@ -158,9 +158,10 @@ public class RewriterExpr {
       final ClassDeclaration realClazz = rvaluevar.getType().getClassTypeFromRef();
       final List<ClassMethodDeclaration> interfaceMethods = interfaceClazz.getMethods();
       for (ClassMethodDeclaration m : interfaceMethods) {
-        final String methodName = m.getIdentifier().getName();
-        final String implMethodFullname = ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
-        funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
+        oneFuncPtrInitializer(lvalueVarName, funcPtrs, realClazz, m);
+      }
+      if (interfaceClazz.getDestructor() != null) {
+        oneFuncPtrInitializer(lvalueVarName, funcPtrs, realClazz, interfaceClazz.getDestructor());
       }
       rv.add(new FlatCodeItem(assignVarAllocObject));
       rv.add(new FlatCodeItem(new IntrinsicText(lvaluevar, funcPtrs.toString())));
@@ -172,6 +173,14 @@ public class RewriterExpr {
       rv.add(new FlatCodeItem(assignVarVar));
     }
 
+  }
+
+  private void oneFuncPtrInitializer(final String lvalueVarName, final StringBuilder funcPtrs,
+      final ClassDeclaration realClazz, ClassMethodDeclaration m) {
+    final String methodName = m.getIdentifier().getName();
+    final String implMethodFullname = m.isDestructor() ? ToStringsInternal.getMethodName(realClazz.getDestructor())
+        : ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
+    funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
   }
 
   private FlatCodeItem getLast() {

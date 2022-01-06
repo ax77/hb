@@ -41,7 +41,8 @@ public abstract class BuildDefaultDestructor {
       for (int i = fields.size() - 1; i >= 0; i -= 1) {
         final VarDeclarator field = fields.get(i);
         final Type type = field.getType();
-        if (!type.isClass()) {
+        final boolean needIt = type.isClass() || type.isInterface();
+        if (!needIt) {
           continue;
         }
 

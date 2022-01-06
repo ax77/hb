@@ -132,6 +132,19 @@ public class GenFunctions implements Ccode {
       impls.append(func.toString());
       proto.append(methodCallsHeader + ";\n");
     }
+
+    if (c.getDestructor() != null) {
+      ClassMethodDeclaration method = c.getDestructor();
+      final String methodType = ToStringsInternal.typeToString(method.getType());
+      final String signToStringCall = ToStringsInternal.signToStringCall(method);
+      final List<VarDeclarator> parameters = method.getParameters();
+      final String parametersToString = ToStringsInternal.parametersToString(parameters);
+      final String methodCallsHeader = "static " + methodType + " " + signToStringCall + parametersToString;
+      final String methodCleanName = method.getIdentifier().getName();
+
+      impls.append(methodCallsHeader + " {  }\n");
+      proto.append(methodCallsHeader + ";\n");
+    }
   }
 
   private void genMethod(Function f) {
