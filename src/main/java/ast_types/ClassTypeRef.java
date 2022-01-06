@@ -72,4 +72,8 @@ public class ClassTypeRef implements Serializable {
     return clazz.isNamespace();
   }
 
+  public boolean isInterface() {
+    return clazz.isInterface();
+  }
+
 }

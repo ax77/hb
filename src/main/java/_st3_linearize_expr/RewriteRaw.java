@@ -57,6 +57,15 @@ public class RewriteRaw {
     for (final FlatCodeItem item : rawResult) {
 
       if (item.isAssignVarAllocObject()) {
+
+        AssignVarAllocObject assignVarAllocObject = item.getAssignVarAllocObject();
+        Var lvalue = assignVarAllocObject.getLvalue();
+
+        //xxxxx
+        if (lvalue.getType().isInterface()) {
+          throw new AstParseException("unimpl.1");
+        }
+
         rv.add(item);
       }
 
@@ -118,6 +127,11 @@ public class RewriteRaw {
         rv.add(new FlatCodeItem(flatCallConstructor));
         rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
 
+        //xxxxx
+        if (lvalueVar.getType().isInterface()) {
+          throw new AstParseException("unimpl.2");
+        }
+
       }
 
       else if (item.isAssignVarFlatCallResult()) {
@@ -140,8 +154,32 @@ public class RewriteRaw {
 
       else if (item.isAssignVarVar()) {
         AssignVarVar assign = item.getAssignVarVar();
-        if (assign.getLvalue().getType().isNamespace()) {
+
+        final Var lvalue = assign.getLvalue();
+        final Var rvalue = assign.getRvalue();
+        final Type ltype = lvalue.getType();
+        final Type rtype = rvalue.getType();
+
+        if (ltype.isNamespace()) {
           continue;
+        }
+
+        //xxxxx
+        /// markable m = new token();
+        /// will produce:
+        ///     struct token* t123 = (struct token*) hcalloc( 1u, sizeof(struct token) );
+        ///     token_init_112(t123);
+        ///     struct markable* m = t123;
+        /// while we need:
+        ///    struct markable *m = markable_new(t123, (void (*)(void*)) &token_mark, (void (*)(void*)) &token_unmark);
+        /// or:
+        /// m = hcalloc( 1u, sizeof( struct markable ) );
+        /// m->object = t123;
+        /// m->mark = &token_mark;
+        /// m->unmark = &token_unmark;
+
+        if (ltype.isInterface()) {
+          //throw new AstParseException("unimpl.0");
         }
 
         rv.add(item);

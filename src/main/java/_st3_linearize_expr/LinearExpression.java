@@ -51,9 +51,14 @@ public class LinearExpression {
         needSemicolon = false;
       }
 
-      if (item.isIntrinsicText() && item.getIntrinsicText().getText().isEmpty()) {
-        needSemicolon = false;
-        needNewline = false;
+      if (item.isIntrinsicText()) {
+        if (item.getIntrinsicText().getText().isEmpty()) {
+          needSemicolon = false;
+          needNewline = false;
+        } else {
+          needSemicolon = !item.getIntrinsicText().getText().trim().endsWith(";");
+          needNewline = true;
+        }
       }
 
       if (needSemicolon) {

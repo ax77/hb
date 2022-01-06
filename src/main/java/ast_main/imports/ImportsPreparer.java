@@ -214,6 +214,15 @@ public abstract class ImportsPreparer {
         final List<Type> typeParametersT = new ParseTypeParameters(parser).parse();
         classes.add(new ClassDeclaration(modifiers, keyword.getIdent(), identifier, typeParametersT, keyword));
 
+        if (parser.is(Keywords.implements_ident)) {
+          parser.move();
+          parser.getIdent();
+          while (parser.is(T.T_COMMA)) {
+            parser.move();
+            parser.getIdent();
+          }
+        }
+
         skipBlockFast(parser);
       }
 

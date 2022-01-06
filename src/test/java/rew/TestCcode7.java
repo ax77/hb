@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -144,19 +145,20 @@ public class TestCcode7 {
   public void test1() throws IOException {
 
     final String dir = System.getProperty("user.dir");
-    final String filename = dir + "/tests/main.hb";
+    final String filename = dir + "/tests/test_interfaces.hb";
 
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
-    for (ClassDeclaration c : unit.getClasses()) {
+    final List<ClassDeclaration> classes = unit.getClasses();
+    for (ClassDeclaration c : classes) {
       //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
-    CgMain result = new CgMain(unit.getClasses());
-    //System.out.println(result.toString());
+    CgMain result = new CgMain(classes);
+    System.out.println(result.toString());
 
-    FileWriter fw = new FileWriter("ccode.c");
-    fw.write(result.toString());
-    fw.close();
+//    FileWriter fw = new FileWriter("ccode.c");
+//    fw.write(result.toString());
+//    fw.close();
 
   }
 }

@@ -332,4 +332,9 @@ public class Type implements Serializable, TypeApi {
     return isClass() && classTypeRef.isNamespace();
   }
 
+  @Override
+  public boolean isInterface() {
+    return isClass() && classTypeRef.isInterface();
+  }
+
 }

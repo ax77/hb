@@ -18,6 +18,7 @@ import _st2_annotate.LvalueUtil;
 import _st2_annotate.TypeTraitsUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
+import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
@@ -131,8 +132,46 @@ public class RewriterExpr {
     Var lvaluevar = VarCreator.copyVarDecl(var);
     Var rvaluevar = getLast().getDest();
 
-    AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
-    rv.add(new FlatCodeItem(assignVarVar));
+    //xxxxx
+    /// markable m = new token();
+    /// will produce:
+    ///     struct token* t123 = (struct token*) hcalloc( 1u, sizeof(struct token) );
+    ///     token_init_112(t123);
+    ///     struct markable* m = t123;
+    /// while we need:
+    ///    struct markable *m = markable_new(t123, (void (*)(void*)) &token_mark, (void (*)(void*)) &token_unmark);
+    /// or:
+    /// m = hcalloc( 1u, sizeof( struct markable ) );
+    /// m->object = t123;
+    /// m->mark = &token_mark;
+    /// m->unmark = &token_unmark;
+    if (lvaluevar.getType().isInterface()) {
+      final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvaluevar, lvaluevar.getType());
+
+      final String lvalueVarName = lvaluevar.getName().getName();
+      final String rvalueVarName = rvaluevar.getName().getName();
+
+      final StringBuilder funcPtrs = new StringBuilder();
+      funcPtrs.append(lvalueVarName + "->object = " + rvalueVarName + ";\n");
+
+      final ClassDeclaration interfaceClazz = lvaluevar.getType().getClassTypeFromRef();
+      final ClassDeclaration realClazz = rvaluevar.getType().getClassTypeFromRef();
+      final List<ClassMethodDeclaration> interfaceMethods = interfaceClazz.getMethods();
+      for (ClassMethodDeclaration m : interfaceMethods) {
+        final String methodName = m.getIdentifier().getName();
+        final String implMethodFullname = ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
+        funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
+      }
+      rv.add(new FlatCodeItem(assignVarAllocObject));
+      rv.add(new FlatCodeItem(new IntrinsicText(lvaluevar, funcPtrs.toString())));
+    }
+
+    else {
+
+      AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
+      rv.add(new FlatCodeItem(assignVarVar));
+    }
+
   }
 
   private FlatCodeItem getLast() {
