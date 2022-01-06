@@ -337,8 +337,17 @@ public class ApplyExpression {
 
     else {
       final ClassDeclaration clazz = sym.getClazz();
-      e.setResultType(new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT())));
-      primaryIdent.setStaticClass(clazz);
+      final Type resultType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()));
+
+      if (clazz.isEnum()) {
+        e.setResultType(resultType);
+        primaryIdent.setStaticEnumAccess(clazz);
+      }
+
+      else {
+        e.setResultType(resultType);
+        primaryIdent.setStaticClass(clazz);
+      }
     }
 
   }

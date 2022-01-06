@@ -22,6 +22,7 @@ import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
+import _st3_linearize_expr.items.AssignVarEnumConstant;
 import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -460,12 +461,12 @@ public class RewriterExpr {
       gen(fieldAccess.getObject());
 
       final VarDeclarator field = fieldAccess.getField();
-      final FlatCodeItem thisItem = popCode();
-      final Var obj = thisItem.getDest();
+      final ClassDeclaration clazz = field.getClazz();
 
       ///TODO:static_semantic
-      final ClassDeclaration clazz = obj.getType().getClassTypeFromRef();
+
       if (clazz.isNamespace()) {
+
         /// int f = constants.os_version;
         /// ::
         /// int t8 = constants->os_version;
@@ -480,7 +481,21 @@ public class RewriterExpr {
         genRaw(item);
       }
 
+      else if (clazz.isEnum()) {
+        final Var staticClassName = new Var(VarBase.STATIC_VAR, new Modifiers(), field.getType(),
+            clazz.getIdentifier());
+        final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
+        final Var lhsvar = VarCreator.justNewVar(field.getType());
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarEnumConstant(lhsvar, access));
+
+        genRaw(item);
+      }
+
       else {
+
+        final FlatCodeItem thisItem = popCode();
+        final Var obj = thisItem.getDest();
+
         final FieldAccess access = new FieldAccess(obj, VarCreator.copyVarDecl(field));
         final Var lhsvar = VarCreator.justNewVar(field.getType());
 

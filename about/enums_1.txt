@@ -1,0 +1,38 @@
+#include <assert.h>
+#include <ctype.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct toktype_enum {
+    int index;
+    char name[256];
+    int count;
+    struct toktype_enum *enumerators;
+};
+
+static struct toktype_enum toktype_enum_enumerators[2] = {
+    {.index = 0, .name = "T_STR", .count = 2, .enumerators = toktype_enum_enumerators},
+    {.index = 1, .name = "T_IDENT", .count = 2, .enumerators = toktype_enum_enumerators},
+};
+
+static struct toktype_enum T_STR_VALUE = { .index = 0, .name = "T_STR", .count = 2, .enumerators = toktype_enum_enumerators};
+static struct toktype_enum *T_STR = &T_STR_VALUE;
+
+int main(int argc, char **argv) {
+
+    struct toktype_enum *tp = T_STR;
+    for(int i=0; i<tp->count; i+=1) {
+        struct toktype_enum *e = &tp->enumerators[i];
+        printf("%d: %s\n", e->index, e->name);
+    }
+
+    printf("\n:ok:\n");
+    return 0;
+}
+

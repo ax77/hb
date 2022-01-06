@@ -22,4 +22,5 @@ public interface TypeApi {
   public boolean isFloating();
   public boolean isNamespace();
   public boolean isInterface();
+  public boolean isEnum();
 }

@@ -33,6 +33,7 @@ opcodes = """
     AssignVarUnop                      ,
     AssignVarVar                       ,
     AssignVarCastExpression            ,
+    AssignVarEnumConstant              ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
     FlatCallVoidStaticClassMethod      ,
@@ -96,6 +97,7 @@ assigns_ops = """
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 
+      || isAssignVarEnumConstant()
       ;
   }
 """

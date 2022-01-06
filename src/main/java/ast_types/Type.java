@@ -337,4 +337,9 @@ public class Type implements Serializable, TypeApi {
     return isClass() && classTypeRef.isInterface();
   }
 
+  @Override
+  public boolean isEnum() {
+    return isClass() && classTypeRef.isEnum();
+  }
+
 }

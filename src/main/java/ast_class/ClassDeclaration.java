@@ -516,4 +516,8 @@ public class ClassDeclaration implements Serializable, Location {
     return tests;
   }
 
+  public boolean isEnum() {
+    return keyword.equals(Keywords.enum_ident);
+  }
+
 }

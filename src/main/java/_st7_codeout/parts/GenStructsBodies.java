@@ -28,9 +28,58 @@ public abstract class GenStructsBodies {
         sb.append(interfaceToString(c));
         continue;
       }
+      if (c.isEnum()) {
+        sb.append(enumToString(c));
+        continue;
+      }
 
       sb.append(classToString(c));
       sb.append("\n");
+    }
+
+    return sb.toString();
+  }
+
+  //xxxxx
+  /// struct toktype_enum {
+  ///     int index;
+  ///     char *name;
+  /// };
+  /// 
+  /// static struct toktype_enum T_STR_VALUE = { .index = 0, .name = "T_STR" };
+  /// static struct toktype_enum *T_STR = &T_STR_VALUE;
+
+  private static Object enumToString(ClassDeclaration c) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("struct ");
+    sb.append(c.getIdentifier().getName());
+
+    if (!c.getTypeParametersT().isEmpty()) {
+      sb.append("_");
+      sb.append(ToStringsInternal.typeArgumentsToString(c.getTypeParametersT()));
+    }
+
+    sb.append("\n{\n");
+    sb.append("  int index;\n");
+    sb.append("  char *name;\n");
+    sb.append("\n};\n");
+    
+    final String hdr = ToStringsInternal.classHeaderToString(c);
+
+    int i = 0;
+    for (VarDeclarator var : c.getFields()) {
+      final String type = ToStringsInternal.typeToString(var.getType());
+      final String simpleName = var.getIdentifier().getName();
+      final String fullName = c.getIdentifier() + "_" + simpleName;
+      final String index = String.format("%d", i);
+      
+
+      //@formatter:off
+      sb.append("static struct " + hdr + " " + fullName + "_VALUE = { .index = " + index + ", .name = \"" + simpleName + "\"" + " };\n");
+      sb.append("static " + type + " " + fullName + " = &" + fullName + "_VALUE;\n");
+      //@formatter:on
+
+      i += 1;
     }
 
     return sb.toString();

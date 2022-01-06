@@ -207,7 +207,8 @@ public abstract class ImportsPreparer {
       }
 
       else if (parser.is(Keywords.native_ident) || parser.is(Keywords.class_ident)
-          || parser.is(Keywords.interface_ident) || parser.is(Keywords.namespace_ident)) {
+          || parser.is(Keywords.interface_ident) || parser.is(Keywords.namespace_ident)
+          || parser.is(Keywords.enum_ident)) {
         final Modifiers modifiers = new ParseModifiers(parser).parse();
         final Token keyword = parser.moveget(); // class/interface/enum
         final Ident identifier = parser.getIdent();

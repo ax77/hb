@@ -13,6 +13,7 @@ public class ExprIdent implements Serializable {
 
   //MIR:TREE
   private ClassDeclaration staticClass;
+  private ClassDeclaration staticEnumAccess;
   private VarDeclarator var;
 
   public ExprIdent(Ident identifier) {
@@ -39,12 +40,24 @@ public class ExprIdent implements Serializable {
     this.staticClass = staticClass;
   }
 
+  public ClassDeclaration getStaticEnumAccess() {
+    return staticEnumAccess;
+  }
+
+  public void setStaticEnumAccess(ClassDeclaration staticEnumAccess) {
+    this.staticEnumAccess = staticEnumAccess;
+  }
+
   public boolean isVar() {
     return var != null;
   }
 
   public boolean isStaticClass() {
     return staticClass != null;
+  }
+
+  public boolean isStaticEnumAccess() {
+    return staticEnumAccess != null;
   }
 
   @Override

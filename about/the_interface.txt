@@ -1,0 +1,175 @@
+#include <assert.h>
+#include <ctype.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static void* xmalloc(size_t size) {
+    assert(size);
+    assert(size <= INT_MAX);
+
+    void *ret = NULL;
+    ret = malloc(size);
+    if (ret == NULL) {
+        ret = malloc(size);
+        if (ret == NULL) {
+            ret = malloc(size);
+        }
+    }
+
+    assert(ret);
+    return ret;
+}
+
+/// interface
+
+struct markable {
+    /// Is an actual pointer to an implementor.
+    /// I.e. a real class, which implements this interface,
+    /// and 'hidden' under this skin right now.
+    ///
+    void *object;
+
+    /// This is an interface method.
+    /// Note: the parameter '__this' is a pointer to an
+    /// implementor, and NOT a pointer to this very structure.
+    /// Here's a difference you should know.
+    /// It's just a pointer to a real method from a real class.
+    /// The method from an interface is defined below,
+    /// and its signature is different.
+    ///
+    int (*mark)(void *__this);
+    void (*flush)(void *__this, int newvalue);
+};
+
+/// NOTE: it's quite possible to add a union
+/// with all the structures that implemented this interface.
+/// And then by using a flag choose the right method to invoke.
+/// But: it will be 'if' statement then, and a hidden control flow,
+/// and it's not a good idea.
+/// The second thought: it's to use a _Generic from C11, but:
+/// it works statically, think about this.
+///
+/// So: we have to use a pointer to void in this case,
+/// while I'm not prepared to implement a better design.
+/// It's not so bad, actually.
+/// It's a first place when we really need a void*.
+///
+int markable_mark(struct markable *__this) {
+    assert(__this);
+    assert(__this->object);
+    assert(__this->mark);
+    return __this->mark(__this->object);
+}
+
+void markable_flush(struct markable *__this, int newvalue) {
+    assert(__this);
+    assert(__this->object);
+    assert(__this->flush);
+    __this->flush(__this->object, newvalue);
+}
+
+/// NOTE: we must set all of the methods of the interface at this stage.
+/// There is no way to leave any pointer to function without a value.
+/// We know that each class has all of the methods from this interface.
+/// And we need to map them all.
+///
+struct markable* markable_new(void *object, int (*mark)(void*),
+        void (*flush)(void*, int)) {
+    assert(object);
+    assert(mark);
+    assert(flush);
+    struct markable *ret = xmalloc(sizeof(struct markable));
+    ret->object = object;
+    ret->mark = mark;
+    ret->flush = flush;
+    return ret;
+}
+
+/// implementations
+
+// Implementor 1
+struct strmark {
+    int f;
+};
+
+int strmark_mark(struct strmark *__this) {
+    assert(__this);
+    return __this->f;
+}
+
+void strmark_flush(struct strmark *__this, int newvalue) {
+    assert(__this);
+    __this->f = newvalue;
+}
+
+struct strmark* strmark_new(int f) {
+    struct strmark *ret = xmalloc(sizeof(struct strmark));
+    ret->f = f;
+    return ret;
+}
+
+// Implementor 2
+struct intmark {
+    int f;
+};
+
+int intmark_mark(struct intmark *__this) {
+    assert(__this);
+    return __this->f;
+}
+
+void intmark_flush(struct intmark *__this, int newvalue) {
+    assert(__this);
+    __this->f = newvalue;
+}
+
+struct intmark* intmark_new(int f) {
+    struct intmark *ret = xmalloc(sizeof(struct intmark));
+    ret->f = f;
+    return ret;
+}
+
+/// Tests...
+
+void print_result(size_t arrlen, struct markable *arr[]) {
+    for (size_t i = 0; i < arrlen; i += 1) {
+        struct markable *ptr = arr[i];
+        printf("%d\n", markable_mark(ptr));
+    }
+}
+
+int main(int argc, char **argv) {
+
+    struct strmark *tmp1 = strmark_new(32);
+    struct markable *a = markable_new(tmp1, (int (*)(void*)) &strmark_mark,
+            (void (*)(void*, int)) &strmark_flush);
+
+    struct intmark *tmp2 = intmark_new(64);
+    struct markable *b = markable_new(tmp2, (int (*)(void*)) &intmark_mark,
+            (void (*)(void*, int)) &intmark_flush);
+
+    // put all of the interfaces into the array, and try
+    // to invoke all of the methods into the loop.
+    struct markable *arr[] = { a, b };
+    size_t arrlen = sizeof(arr) / sizeof(*arr);
+
+    print_result(arrlen, arr);
+
+    // let's try to change the value through the interface
+    // into the real class.
+    markable_flush(a, 128);
+    markable_flush(b, 256);
+
+    printf("\n%s\n", "after flush");
+    print_result(arrlen, arr);
+
+    printf("\n:ok:\n");
+    return 0;
+}
+

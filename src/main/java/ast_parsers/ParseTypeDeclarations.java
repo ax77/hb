@@ -13,6 +13,7 @@ import ast_modifiers.Modifiers;
 import ast_modifiers.ModifiersChecker;
 import ast_stmt.StmtBlock;
 import ast_symtab.Keywords;
+import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_unit.CompilationUnit;
 import ast_vars.VarBase;
@@ -50,10 +51,47 @@ public class ParseTypeDeclarations {
       String importName = ParsePackageName.parse(parser, Keywords.import_ident);
     }
 
+    else if (parser.is(Keywords.enum_ident)) {
+      final ClassDeclaration clazz = parseEnum(parser.tok().getIdent());
+      unit.putClazz(clazz);
+    }
+
     else {
       parser.perror("unimpl");
     }
 
+  }
+
+  private ClassDeclaration parseEnum(Ident keyword) {
+    parser.checkedMove(keyword);
+    final Token beginPos = parser.checkedMove(T.TOKEN_IDENT);
+    final Ident ident = beginPos.getIdent();
+
+    // It MUST be there
+    ClassDeclaration clazz = GlobalSymtab.getClassType(parser, ident);
+    parser.setCurrentClass(clazz);
+    final Type type = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()));
+
+    parser.lbrace();
+
+    clazz.addField(getOneEnumerator(clazz, type));
+    while (parser.is(T.T_COMMA)) {
+      parser.move();
+      clazz.addField(getOneEnumerator(clazz, type));
+    }
+
+    parser.rbrace();
+    parser.setCurrentClass(null);
+
+    clazz.setComplete(true);
+    return clazz;
+  }
+
+  private VarDeclarator getOneEnumerator(ClassDeclaration clazz, final Type type) {
+    final Token pos = parser.tok();
+    VarDeclarator var = new VarDeclarator(VarBase.CLASS_FIELD, new Modifiers(), type, parser.getIdent(), pos);
+    var.setClazz(clazz);
+    return var;
   }
 
   private ClassDeclaration parseClassDeclaration(Ident keyword) {

@@ -18,6 +18,7 @@ public enum Opc {
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
   , AssignVarCastExpression            // cast(expression : to_this_type) -> cast(32:char)
+  , AssignVarEnumConstant              // TypeBase a = TypeBase.F_ALL;
   //
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void

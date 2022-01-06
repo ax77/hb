@@ -35,6 +35,10 @@ public class GenFunctions implements Ccode {
         genInterfaceMethod(c);
       }
 
+      else if (c.isEnum()) {
+
+      }
+
       else {
 
         List<Function> functions = LinearizeMethods.flat(c);

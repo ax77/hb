@@ -248,6 +248,10 @@ public class RewriteRaw {
       else if (item.isAssignVarDefaultValueFotType()) {
         rv.add(item);
       }
+      
+      else if(item.isAssignVarEnumConstant()) {
+        rv.add(item);
+      }
 
       else {
         throw new AstParseException("unknown item: " + item.toString());

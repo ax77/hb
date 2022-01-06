@@ -76,4 +76,8 @@ public class ClassTypeRef implements Serializable {
     return clazz.isInterface();
   }
 
+  public boolean isEnum() {
+    return clazz.isEnum();
+  }
+
 }
