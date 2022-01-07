@@ -2,17 +2,14 @@ package _st7_codeout.parts;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import _st3_linearize_expr.BuiltinsFnSet;
 import _st3_linearize_expr.CEscaper;
 import _st3_linearize_expr.leaves.Var;
-import _st7_codeout.ToStringsInternal;
-import ast_class.ClassDeclaration;
 
 public abstract class GenBuiltinStringStaticLabels {
 
-  public static String gen(ClassDeclaration charArray) {
+  public static String gen() {
 
     StringBuilder sb = new StringBuilder();
     Map<String, Var> strings = BuiltinsFnSet.getStringsmap();
@@ -35,12 +32,9 @@ public abstract class GenBuiltinStringStaticLabels {
       final String initBuffer = content.toString();
       final String buflen = "sizeof(\"" + initBuffer + "\")-1";
 
-      final String charArrayName = ToStringsInternal.classHeaderToString(charArray);
-      final String randomVarname = getRandomName();
-
-      sb.append("struct " + charArrayName + " " + randomVarname + " = { .data = \"" + initBuffer + "\", .size = "
-          + buflen + ", .alloc = " + buflen + " };\n");
-      sb.append("struct str * " + v.getName().getName() + " = &(struct str) { .buffer = &" + randomVarname + " };\n");
+      //struct str *t44 = &(struct str ) { .buf = "abc", .len = sizeof("abc")-1 };
+      sb.append("struct str * " + v.getName().getName() + " = &(struct str) { .buf = \"" + initBuffer + "\", .len = "
+          + buflen + " };\n");
 
     }
 
@@ -64,12 +58,6 @@ public abstract class GenBuiltinStringStaticLabels {
     }
 
     return sb.toString();
-  }
-
-  private static String getRandomName() {
-    String r = UUID.randomUUID().toString();
-    r = r.replace("-", "_");
-    return "a_" + r;
   }
 
 }

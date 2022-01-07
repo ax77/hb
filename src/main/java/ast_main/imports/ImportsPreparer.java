@@ -70,7 +70,7 @@ public abstract class ImportsPreparer {
     // Let's add all of the predefined classes.
     // We almost always need these classes to be imported.
     final String dir = System.getProperty("user.dir");
-    final String[] names = { "str", "std" };
+    final String[] names = { "std" };
     for (String s : names) {
       final String nativeFileName = Normalizer.normalize(dir + "/std/natives/" + s + ".hb");
       stack.add(nativeFileName);
@@ -155,9 +155,16 @@ public abstract class ImportsPreparer {
     sb.append("  native boolean is_empty();             \n");
     sb.append("  native boolean equals(arr<T> another); \n");
     sb.append("  native ~arr();                         \n");
-    sb.append("}                                        \n");
+    sb.append("}                                        \n\n");
 
-    tokens.addAll(getTokenlistNoEof("<builtin-array>", sb.toString()));
+    sb.append("native class str {              \n");
+    sb.append("  native str(str buffer);       \n");
+    sb.append("  native int len();             \n");
+    sb.append("  native char get(int index);   \n");
+    sb.append("  native ~str();                \n");
+    sb.append("}                               \n\n");
+
+    tokens.addAll(getTokenlistNoEof("<builtin-classes>", sb.toString()));
 
     for (String s : result.getResult()) {
       final String content = new FileWrapper(s).readToString(FileReadKind.APPEND_LF);

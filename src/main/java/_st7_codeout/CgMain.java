@@ -6,6 +6,7 @@ import java.util.List;
 
 import _st7_codeout.parts.GenEnums;
 import _st7_codeout.parts.GenBuiltinArray;
+import _st7_codeout.parts.GenBuiltinString;
 import _st7_codeout.parts.GenBuiltinStringStaticLabels;
 import _st7_codeout.parts.GenCommentHeader;
 import _st7_codeout.parts.GenEmpties;
@@ -65,6 +66,11 @@ public class CgMain {
     final String arraysProto = arraysCg.getProto();
     final String arraysImpls = arraysCg.getImpls();
 
+    final ClassDeclaration strClazz = cutString();
+    final GenBuiltinString stringCg = new GenBuiltinString(strClazz);
+    final String strProto = stringCg.getProto();
+    final String strImpls = stringCg.getImpls();
+
     final List<ClassDeclaration> interfaces = cutInterfaces();
     final GenInterfaces interfacesCg = new GenInterfaces(interfaces);
     final String interfacesProto = interfacesCg.getProto();
@@ -91,15 +97,6 @@ public class CgMain {
 
     // and the result
 
-    ClassDeclaration charArray = null;
-    for (ClassDeclaration c : arrays) {
-      if (c.getTypeParametersT().get(0).isChar()) {
-        charArray = c;
-        break;
-      }
-    }
-    NullChecker.check(charArray);
-
     resultBuffer.append(GenCommentHeader.gen("the runtime part"));
     resultBuffer.append(runtimeHeader);
 
@@ -112,6 +109,12 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("arrays proto"));
     resultBuffer.append(arraysProto);
 
+    resultBuffer.append(GenCommentHeader.gen("string proto"));
+    resultBuffer.append(strProto);
+
+    resultBuffer.append(GenCommentHeader.gen("string impls"));
+    resultBuffer.append(strImpls);
+
     resultBuffer.append(GenCommentHeader.gen("interfaces proto"));
     resultBuffer.append(interfacesProto);
 
@@ -121,7 +124,7 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("struct bodies"));
     resultBuffer.append(structsBodies);
 
-    String stringLabls = GenBuiltinStringStaticLabels.gen(charArray); // XXX: we MUST gen labels after we traversed all of the classes
+    String stringLabls = GenBuiltinStringStaticLabels.gen(); // XXX: we MUST gen labels after we traversed all of the classes
     resultBuffer.append(GenCommentHeader.gen("string labels"));
     resultBuffer.append(stringLabls);
 
@@ -224,6 +227,24 @@ public class CgMain {
     }
 
     return rv;
+  }
+
+  private ClassDeclaration cutString() {
+
+    ClassDeclaration str = null;
+    Iterator<ClassDeclaration> iter = classes.iterator();
+
+    while (iter.hasNext()) {
+      ClassDeclaration c = iter.next();
+      if (c.isNativeString()) {
+        str = c;
+        iter.remove();
+        break;
+      }
+    }
+
+    NullChecker.check(str);
+    return str;
   }
 
   private List<ClassDeclaration> cutArrays() {

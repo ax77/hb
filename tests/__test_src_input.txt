@@ -1,12 +1,6 @@
-void __before_call(struct string *str, int line)
-{
-  assert(str);
-  assert(str->buffer);
-  assert(str->buffer->data);
-  __pushf(str->buffer->data, line);
-}
-
-void __after_call(struct string *str, int line)
-{
-  __popf();
+native class str {
+	native str();
+	native str(str buffer);
+	native int len();
+	native char get(int index);
 }

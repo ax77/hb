@@ -1,14 +1,9 @@
     //@formatter:off
     StringBuilder sb = new StringBuilder();
-    sb.append("void __before_call(struct string *str, int line)   //001 \n");
-    sb.append("{                                                  //002 \n");
-    sb.append("  assert(str);                                     //003 \n");
-    sb.append("  assert(str->buffer);                             //004 \n");
-    sb.append("  assert(str->buffer->data);                       //005 \n");
-    sb.append("  __pushf(str->buffer->data, line);                //006 \n");
-    sb.append("}                                                  //007 \n");
-    sb.append("void __after_call(struct string *str, int line)    //008 \n");
-    sb.append("{                                                  //009 \n");
-    sb.append("  __popf();                                        //010 \n");
-    sb.append("}                                                  //011 \n");
+    sb.append("native class str {              //001 \n");
+    sb.append("  native str();                 //002 \n");
+    sb.append("  native str(str buffer);       //003 \n");
+    sb.append("  native int len();             //004 \n");
+    sb.append("  native char get(int index);   //005 \n");
+    sb.append("}                               //006 \n");
     //@formatter:on

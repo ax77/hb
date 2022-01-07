@@ -44,9 +44,8 @@ public abstract class GenNativeStdFunction {
     if (name.equals(BuiltinNames.native_open_ident)) {
       lineBuiltin(methodCallsHeader);
       lineBuiltin("    assert(filename);");
-      lineBuiltin("    assert(filename->buffer);");
-      lineBuiltin("    assert(filename->buffer->data);");
-      lineBuiltin("    return open(filename->buffer->data, O_RDONLY);");
+      lineBuiltin("    assert(filename->buf);");
+      lineBuiltin("    return open(filename->buf, O_RDONLY);");
       lineBuiltin("}");
     }
 
@@ -203,9 +202,8 @@ public abstract class GenNativeStdFunction {
       }
 
       if (tp.isString()) {
-        asserts.add(param.getIdentifier().getName() + "->buffer");
-        asserts.add(param.getIdentifier().getName() + "->buffer->data");
-        arg = param.getIdentifier().getName() + "->buffer->data";
+        asserts.add(param.getIdentifier().getName() + "->buf");
+        arg = param.getIdentifier().getName() + "->buf";
       }
     }
 
