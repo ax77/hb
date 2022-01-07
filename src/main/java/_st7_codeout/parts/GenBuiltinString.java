@@ -19,7 +19,7 @@ public class GenBuiltinString implements Ccode {
 
   public GenBuiltinString(ClassDeclaration str) {
     if (!str.isNativeString()) {
-      throw new AstParseException("expect array class, but was: " + str.toString());
+      throw new AstParseException("expect str class, but was: " + str.toString());
     }
 
     this.str = str;
@@ -72,6 +72,7 @@ public class GenBuiltinString implements Ccode {
     lineP("static " + methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters())
         + ";");
 
+    // TODO: optimize, because we calculate the length in strdup() and here too!
     if (signToStringCall.startsWith("str_init_")) {
 
       if (parameters.size() == 2) { // __this, buffer

@@ -28,9 +28,11 @@ class strbuf {
 class main {
   int main() {
     str s = "abc";
+    str x = "abc";
     fmt<str>.print(s);
     strbuf buf = new strbuf(s);
     fmt<arr<char>>.print(buf.buffer);
+    assert_true(x == s);
     return 0;
   }
 }

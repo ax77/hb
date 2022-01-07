@@ -38,25 +38,6 @@ public abstract class GenBuiltinStringStaticLabels {
 
     }
 
-    for (Entry<String, Var> ent : BuiltinsFnSet.getAuxStringsmap().entrySet()) {
-      String s = ent.getKey();
-      Var v = ent.getValue();
-
-      int[] esc = CEscaper.escape(s);
-      StringBuilder content = new StringBuilder();
-
-      for (int j = 0; j < esc.length; j += 1) {
-        final char c = (char) esc[j];
-        if (c == '\0') {
-          continue;
-        }
-        content.append(CEscaper.unesc(c));
-      }
-
-      final String initBuffer = content.toString();
-      sb.append("static char " + v.getName().getName() + "[] = \"" + initBuffer + "\";\n");
-    }
-
     return sb.toString();
   }
 

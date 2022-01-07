@@ -794,11 +794,11 @@ public class RewriterExpr {
   }
 
   private Var getStrlabel(String sconst) {
-    Var lvalue = BuiltinsFnSet.getAuxVar(sconst);
+    Var lvalue = BuiltinsFnSet.getVar(sconst);
     if (lvalue == null) {
       lvalue = VarCreator.justNewVar(TypeBindings.make_char()); // that's wrong :)
     }
-    BuiltinsFnSet.registerAuxStringLabel(sconst, lvalue);
+    BuiltinsFnSet.registerStringLabel(sconst, lvalue);
     return lvalue;
   }
 
