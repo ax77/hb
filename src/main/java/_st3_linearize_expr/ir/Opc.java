@@ -4,9 +4,9 @@ package _st3_linearize_expr.ir;
 public enum Opc {  
     AssignVarAllocObject               // type a = new a()
   , AssignVarBinop                     // type a = b + c
-  , AssignVarFalse                     // type a = false
+  , AssignVarBool                      // type a = false
   , AssignVarFieldAccess               // type a = b.c
-  , AssignVarStaticFieldAccess         // type f = constants.flag
+  , AssignVarFieldAccessStatic         // type f = constants.flag
   , AssignVarSizeof                    // size_t a = sizeof(b)
   , AssignVarFlatCallClassCreationTmp  // temporary
   , AssignVarFlatCallStringCreationTmp // temporary
@@ -14,22 +14,18 @@ public enum Opc {
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarNum                       // type a = 1
   , AssignVarDefaultValueFotType       // type a = default(type)
-  , AssignVarTrue                      // type a = true
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
   , AssignVarCastExpression            // cast(expression : to_this_type) -> cast(32:char)
-  , AssignVarEnumConstant              // TypeBase a = TypeBase.F_ALL;
   //
   , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
-  , FlatCallVoidStaticClassMethod      // constants.write_settings(32)
+  , FlatCallVoidStatic                 // constants.write_settings(32)
   //
   , StoreFieldVar                      // a.b = c
   , StoreVarField                      // a = b.c
   , StoreVarVar                        // a = b
   //
-  , IntrinsicText                      // everything internal
   , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
-  , CallListenerVoidMethod             // __before_fcall("main_class.main::another_class.f", 10)
-  , CallListenerResultMethod           // __before_fcall("main_class.main::another_class.f", 10)
+  , BuiltinFuncAssertTrue              // assert_true(cond, file, line, expr)
 }

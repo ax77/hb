@@ -2,13 +2,13 @@ package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarTrue {
+public class AssignVarBool {
   private final Var lvalue;
   private final String literal;
 
-  public AssignVarTrue(Var lvalue) {
+  public AssignVarBool(Var lvalue, String literal) {
     this.lvalue = lvalue;
-    this.literal = "true";
+    this.literal = literal;
   }
 
   public Var getLvalue() {

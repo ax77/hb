@@ -19,9 +19,9 @@ types = 'byte,char,short,int,long,float,double'
 opcodes = """
     AssignVarAllocObject               ,
     AssignVarBinop                     ,
-    AssignVarFalse                     ,
+    AssignVarBool                      ,
     AssignVarFieldAccess               ,
-    AssignVarStaticFieldAccess         ,
+    AssignVarFieldAccessStatic         ,
     AssignVarSizeof                    ,
     AssignVarFlatCallClassCreationTmp  ,
     AssignVarFlatCallStringCreationTmp ,
@@ -29,21 +29,17 @@ opcodes = """
     AssignVarFlatCallResultStatic      ,
     AssignVarNum                       ,
     AssignVarDefaultValueFotType       ,
-    AssignVarTrue                      ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
     AssignVarCastExpression            ,
-    AssignVarEnumConstant              ,
     FlatCallConstructor                ,
     FlatCallVoid                       ,
-    FlatCallVoidStaticClassMethod      ,
+    FlatCallVoidStatic                 ,
     StoreFieldVar                      ,
     StoreVarField                      ,
     StoreVarVar                        ,
-    IntrinsicText                      ,
     SelectionShortCircuit              ,
-    CallListenerVoidMethod             ,
-    CallListenerResultMethod           
+    BuiltinFuncAssertTrue
                             
 """
 opcodes_arr = []
@@ -84,20 +80,18 @@ assigns_ops = """
       return 
          isAssignVarAllocObject()  
       || isAssignVarBinop()  
-      || isAssignVarFalse()  
+      || isAssignVarBool()  
       || isAssignVarFieldAccess() 
-      || isAssignVarStaticFieldAccess()  
+      || isAssignVarFieldAccessStatic()  
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
-      || isAssignVarDefaultValueFotType()   
-      || isAssignVarTrue()   
+      || isAssignVarDefaultValueFotType()     
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 
-      || isAssignVarEnumConstant()
       ;
   }
 """

@@ -6,13 +6,13 @@ import _st3_linearize_expr.leaves.Var;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.ArgsListToString;
 
-public class FlatCallVoidStaticClassMethod {
+public class FlatCallVoidStatic {
 
   private final ClassMethodDeclaration method;
   private final String fullname;
   private final List<Var> args;
 
-  public FlatCallVoidStaticClassMethod(ClassMethodDeclaration method, String fullname, List<Var> args) {
+  public FlatCallVoidStatic(ClassMethodDeclaration method, String fullname, List<Var> args) {
     this.method = method;
     this.fullname = fullname;
     this.args = args;

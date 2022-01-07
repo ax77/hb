@@ -12,22 +12,17 @@ import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.FlatCallConstructor;
-import _st3_linearize_expr.items.IntrinsicText;
 import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
 import ast_expr.ExprExpression;
-import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_sourceloc.SourceLocation;
 import ast_symtab.BuiltinNames;
 import ast_types.Type;
-import ast_types.TypeBindings;
 import errors.AstParseException;
-import hashed.Hash_ident;
-import tokenize.Ident;
 
 public class RewriteRaw {
 
@@ -89,11 +84,11 @@ public class RewriteRaw {
 
       }
 
-      else if (item.isAssignVarFalse()) {
+      else if (item.isAssignVarBool()) {
         rv.add(item);
       } else if (item.isAssignVarFieldAccess()) {
         // a = b.c
-        rv.add(genAssert(item.getAssignVarFieldAccess().getRvalue().getObject()));
+        // rv.add(genAssert(item.getAssignVarFieldAccess().getRvalue().getObject()));
         rv.add(item);
       }
 
@@ -123,9 +118,9 @@ public class RewriteRaw {
         FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
         final String sign = ToStringsInternal.signToStringCallPushF(rvalue.getMethod());
 
-        rv.add(makeCallListenerWithDest(beforeCallIdent(), flatCallConstructor.getThisVar(), sign));
+        //  rv.add(makeCallListenerWithDest(beforeCallIdent(), flatCallConstructor.getThisVar(), sign));
         rv.add(new FlatCodeItem(flatCallConstructor));
-        rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
+        // rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
 
         //xxxxx
         if (lvalueVar.getType().isInterface()) {
@@ -139,14 +134,12 @@ public class RewriteRaw {
         final FunctionCallWithResult rvalue = fcall.getRvalue();
         final String sign = ToStringsInternal.signToStringCallPushF(rvalue.getMethod());
 
-        rv.add(makeCallListenerWithDest(beforeCallIdent(), item.getDest(), sign));
+        // rv.add(makeCallListenerWithDest(beforeCallIdent(), item.getDest(), sign));
         rv.add(item);
-        rv.add(makeCallListenerWithDest(afterCallIdent(), item.getDest(), sign));
+        // rv.add(makeCallListenerWithDest(afterCallIdent(), item.getDest(), sign));
       }
 
       else if (item.isAssignVarNum()) {
-        rv.add(item);
-      } else if (item.isAssignVarTrue()) {
         rv.add(item);
       } else if (item.isAssignVarUnop()) {
         rv.add(item);
@@ -165,19 +158,6 @@ public class RewriteRaw {
         }
 
         //xxxxx
-        /// markable m = new token();
-        /// will produce:
-        ///     struct token* t123 = (struct token*) hcalloc( 1u, sizeof(struct token) );
-        ///     token_init_112(t123);
-        ///     struct markable* m = t123;
-        /// while we need:
-        ///    struct markable *m = markable_new(t123, (void (*)(void*)) &token_mark, (void (*)(void*)) &token_unmark);
-        /// or:
-        /// m = hcalloc( 1u, sizeof( struct markable ) );
-        /// m->object = t123;
-        /// m->mark = &token_mark;
-        /// m->unmark = &token_unmark;
-
         if (ltype.isInterface() && !ltype.isEqualTo(rtype)) {
           throw new AstParseException("unimpl.0");
         }
@@ -188,14 +168,14 @@ public class RewriteRaw {
       else if (item.isFlatCallVoid()) {
         final String sign = ToStringsInternal.signToStringCallPushF(item.getFlatCallVoid().getMethod());
 
-        rv.add(makeCallListenerVoid(beforeCallIdent(), sign));
+        //rv.add(makeCallListenerVoid(beforeCallIdent(), sign));
         rv.add(item);
-        rv.add(makeCallListenerVoid(afterCallIdent(), sign));
+        //rv.add(makeCallListenerVoid(afterCallIdent(), sign));
       }
 
       else if (item.isStoreFieldVar()) {
         // a.b = c
-        rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
+        //rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
         rv.add(item);
       }
 
@@ -209,31 +189,16 @@ public class RewriteRaw {
 
       /// statics
       ///
-      else if (item.isAssignVarStaticFieldAccess()) {
+      else if (item.isAssignVarFieldAccessStatic()) {
         rv.add(item);
       }
 
-      else if (item.isFlatCallVoidStaticClassMethod()) {
+      else if (item.isFlatCallVoidStatic()) {
         rv.add(item);
       }
 
       else if (item.isAssignVarFlatCallResultStatic()) {
         rv.add(item);
-      }
-
-      /// builtins
-      ///
-
-      else if (item.isIntrinsicText()) {
-        if (item.getIntrinsicText().getText().startsWith("assert_true")) {
-          rv.add(makeCallListenerVoid(beforeCallIdent(), "assert_true"));
-        }
-
-        rv.add(item);
-
-        if (item.getIntrinsicText().getText().startsWith("assert_true")) {
-          rv.add(makeCallListenerVoid(afterCallIdent(), "assert_true"));
-        }
       }
 
       /// cast
@@ -248,8 +213,8 @@ public class RewriteRaw {
       else if (item.isAssignVarDefaultValueFotType()) {
         rv.add(item);
       }
-      
-      else if(item.isAssignVarEnumConstant()) {
+
+      else if (item.isBuiltinFuncAssertTrue()) {
         rv.add(item);
       }
 
@@ -292,7 +257,7 @@ public class RewriteRaw {
     if (!lhsType.isClass()) {
       return false;
     }
-    if(lhsType.isNamespace() || lhsType.isEnum()) {
+    if (lhsType.isNamespace() || lhsType.isEnum()) {
       return false;
     }
     return true;
@@ -336,71 +301,6 @@ public class RewriteRaw {
       final AssignVarUnop notEq = new AssignVarUnop(assignVarBinop.getLvalue(), unop);
       rv.add(new FlatCodeItem(notEq));
     }
-  }
-
-  private Ident beforeCallIdent() {
-    return Hash_ident.getHashedIdent("push_function");
-  }
-
-  private Ident afterCallIdent() {
-    return Hash_ident.getHashedIdent("pop_function");
-  }
-
-  private FlatCodeItem makeCallListenerVoid(Ident listenerName, String methodPureName) {
-    if (!ParserMainOptions.GENERATE_CALL_STACK) {
-      return new FlatCodeItem(new IntrinsicText(null, ""));
-    }
-
-    final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
-    IntrinsicText result = new IntrinsicText(null,
-        listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
-    return new FlatCodeItem(result);
-  }
-
-  private FlatCodeItem makeCallListenerWithDest(Ident listenerName, Var dest, String methodPureName) {
-    if (!ParserMainOptions.GENERATE_CALL_STACK) {
-      return new FlatCodeItem(new IntrinsicText(dest, ""));
-    }
-
-    final String methHeader = ToStringsInternal.signToStringCallPushF(method) + "::" + methodPureName;
-    IntrinsicText result = new IntrinsicText(dest,
-        listenerName.getName() + "(" + "\"" + methHeader + "\"" + ", " + String.format("%d", location.getLine()) + ")");
-    return new FlatCodeItem(result);
-  }
-
-  private FlatCodeItem genAssert(Var v) {
-    if (!ParserMainOptions.GENERATE_FIELD_ACCESS_ASSERTS) {
-      return new FlatCodeItem(new IntrinsicText(v, ""));
-    }
-
-    String e = labelName(expr("null pointer field-access"));
-    String m = labelName(ToStringsInternal.signToStringCallPushF(method));
-
-    IntrinsicText text = new IntrinsicText(v,
-        "assert_true(" + v.getName().getName() + " != NULL, " + m + ", " + line() + ", " + e + ")");
-    return new FlatCodeItem(text);
-  }
-
-  private String line() {
-    return String.format("%d", location.getLine());
-  }
-
-  private String expr(String msg) {
-    return "\"" + msg + ": " + inputExpression.toString() + "\"";
-  }
-
-  private String labelName(String sconst) {
-    String e = getStrlabel(sconst).getName().getName();
-    return e;
-  }
-
-  private Var getStrlabel(String sconst) {
-    Var lvalue = BuiltinsFnSet.getVar(sconst);
-    if (lvalue == null) {
-      lvalue = VarCreator.justNewVar(TypeBindings.make_char()); // that's wrong :)
-    }
-    BuiltinsFnSet.registerStringLabel(sconst, lvalue);
-    return lvalue;
   }
 
 }

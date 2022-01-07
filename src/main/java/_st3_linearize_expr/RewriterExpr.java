@@ -20,24 +20,22 @@ import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
+import _st3_linearize_expr.items.AssignVarBool;
 import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
-import _st3_linearize_expr.items.AssignVarEnumConstant;
-import _st3_linearize_expr.items.AssignVarFalse;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
+import _st3_linearize_expr.items.AssignVarFieldAccessStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
-import _st3_linearize_expr.items.AssignVarStaticFieldAccess;
-import _st3_linearize_expr.items.AssignVarTrue;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.BuiltinFuncAssertTrue;
 import _st3_linearize_expr.items.FlatCallVoid;
-import _st3_linearize_expr.items.FlatCallVoidStaticClassMethod;
-import _st3_linearize_expr.items.IntrinsicText;
+import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
@@ -165,7 +163,8 @@ public class RewriterExpr {
         oneFuncPtrInitializer(lvalueVarName, funcPtrs, realClazz, interfaceClazz.getDestructor());
       }
       rv.add(new FlatCodeItem(assignVarAllocObject));
-      rv.add(new FlatCodeItem(new IntrinsicText(lvaluevar, funcPtrs.toString())));
+      //xxxxx
+      //rv.add(new FlatCodeItem(new IntrinsicText(lvaluevar, funcPtrs.toString())));
     }
 
     else {
@@ -420,8 +419,8 @@ public class RewriterExpr {
 
         if (method.isVoid()) {
 
-          final FlatCallVoidStaticClassMethod call = new FlatCallVoidStaticClassMethod(method,
-              ToStringsInternal.signToStringCall(method), args);
+          final FlatCallVoidStatic call = new FlatCallVoidStatic(method, ToStringsInternal.signToStringCall(method),
+              args);
           final FlatCodeItem item = new FlatCodeItem(call);
           genRaw(item);
         }
@@ -479,7 +478,7 @@ public class RewriterExpr {
             clazz.getIdentifier());
         final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
         final Var lhsvar = VarCreator.justNewVar(field.getType());
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarStaticFieldAccess(lhsvar, access));
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccessStatic(lhsvar, access));
 
         genRaw(item);
       }
@@ -489,7 +488,7 @@ public class RewriterExpr {
             clazz.getIdentifier());
         final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
         final Var lhsvar = VarCreator.justNewVar(field.getType());
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarEnumConstant(lhsvar, access));
+        final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccessStatic(lhsvar, access));
 
         genRaw(item);
       }
@@ -557,57 +556,17 @@ public class RewriterExpr {
     else if (base == ExpressionBase.EBOOLEAN_LITERAL) {
       Boolean result = e.getBooleanLiteral();
       if (result) {
-        AssignVarTrue node = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+        AssignVarBool node = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "true");
         FlatCodeItem item = new FlatCodeItem(node);
         genRaw(item);
       } else {
-        AssignVarFalse node = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+        AssignVarBool node = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "false");
         FlatCodeItem item = new FlatCodeItem(node);
         genRaw(item);
       }
     }
 
     else if (base == ExpressionBase.ETERNARY_OPERATOR) {
-      // NO NO NO NO NO!
-      ///// ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
-      ///// gen(ternaryOperator.getCondition());
-      ///// gen(ternaryOperator.getTrueResult());
-      ///// gen(ternaryOperator.getFalseResult());
-      ///// 
-      ///// final FlatCodeItem Fitem = popCode();
-      ///// final FlatCodeItem Titem = popCode();
-      ///// final FlatCodeItem Citem = popCode();
-      ///// 
-      ///// final Var condition = Citem.getDest();
-      ///// final Var trueResult = Titem.getDest();
-      ///// final Var falseResult = Fitem.getDest();
-      ///// 
-      ///// Ternary ternary = new Ternary(condition, trueResult, falseResult);
-      ///// AssignVarTernaryOp assignVarTernaryOp = new AssignVarTernaryOp(VarCreator.justNewVar(e.getResultType()), ternary);
-      ///// FlatCodeItem item = new FlatCodeItem(assignVarTernaryOp);
-      ///// genRaw(item);
-
-      /// Remember about a short circuit!!!!!!!
-      /// This code is INCORRECT!!!!!!!
-      /// The plain and straight code-generation does not allowed here.
-      ///
-      /// int x = ?(1>0, 0, 1/0);
-      /// ->
-      /// int main_class_main_8()
-      /// {
-      ///     int t13 = 1;
-      ///     int t14 = 0;
-      ///     boolean t15 = (t13 > t14);
-      ///     int t16 = 0;
-      ///     int t17 = 1;
-      ///     int t18 = 0;
-      ///     int t19 = (t17 / t18);
-      ///     int t20 = ((t15) ? (t16) : (t19));
-      ///     int x = t20;
-      ///     
-      ///     int t21 = 0;
-      ///     return t21;
-      /// }
 
       ExprTernaryOperator ternaryOperator = e.getTernaryOperator();
 
@@ -716,11 +675,11 @@ public class RewriterExpr {
       final Type resultType = exprTypeof.getExpr().getResultType();
       final Type expectedType = exprTypeof.getType();
       if (resultType.isEqualTo(expectedType)) {
-        AssignVarTrue node = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+        AssignVarBool node = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "true");
         FlatCodeItem item = new FlatCodeItem(node);
         genRaw(item);
       } else {
-        AssignVarFalse node = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+        AssignVarBool node = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "false");
         FlatCodeItem item = new FlatCodeItem(node);
         genRaw(item);
       }
@@ -747,11 +706,11 @@ public class RewriterExpr {
 
         final boolean result = (res == 0) ? false : true;
         if (result) {
-          AssignVarTrue trueNode = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+          AssignVarBool trueNode = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "true");
           FlatCodeItem item = new FlatCodeItem(trueNode);
           genRaw(item);
         } else {
-          AssignVarFalse falseNode = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+          AssignVarBool falseNode = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "false");
           FlatCodeItem item = new FlatCodeItem(falseNode);
           genRaw(item);
         }
@@ -764,11 +723,11 @@ public class RewriterExpr {
       else if (name.equals(Keywords.types_are_same_ident)) {
         final boolean result = args.get(0).getType().isEqualTo(args.get(1).getType());
         if (result) {
-          AssignVarTrue trueNode = new AssignVarTrue(VarCreator.justNewVar(e.getResultType()));
+          AssignVarBool trueNode = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "true");
           FlatCodeItem item = new FlatCodeItem(trueNode);
           genRaw(item);
         } else {
-          AssignVarFalse falseNode = new AssignVarFalse(VarCreator.justNewVar(e.getResultType()));
+          AssignVarBool falseNode = new AssignVarBool(VarCreator.justNewVar(e.getResultType()), "false");
           FlatCodeItem item = new FlatCodeItem(falseNode);
           genRaw(item);
         }
@@ -819,25 +778,14 @@ public class RewriterExpr {
   private void genAssertTrueBuiltinFunc(ExprBuiltinFunc node, final List<Var> args) {
 
     /// void assert_true(int cnd, const char *file, int line, const char *expr)
-    /// assert_true(c == 'a', new struct string*(C:/Users/dvv/Desktop/pr/jsparse/hb/std/natives/string.hb), 10, new struct string*(c == 'a'))
 
+    String cond = args.get(0).getName().getName();
     String file = labelName(CEscaper.toCString(Normalizer.normalize(node.getFileToString())));
     String line = node.getLineToString();
     String expr = labelName(CEscaper.toCString(node.getExprToString()));
 
-    StringBuilder intrArgs = new StringBuilder();
-    intrArgs.append("assert_true(");
-    intrArgs.append(args.get(0).getName().getName());
-    intrArgs.append(", ");
-    intrArgs.append(file);
-    intrArgs.append(", ");
-    intrArgs.append(line);
-    intrArgs.append(", ");
-    intrArgs.append(expr);
-    intrArgs.append(")");
-
-    IntrinsicText intrinsicText = new IntrinsicText(args.get(0), intrArgs.toString());
-    genRaw(new FlatCodeItem(intrinsicText));
+    BuiltinFuncAssertTrue builtinFuncAssertTrue = new BuiltinFuncAssertTrue(cond, file, line, expr);
+    genRaw(new FlatCodeItem(builtinFuncAssertTrue));
   }
 
   private String labelName(String sconst) {
