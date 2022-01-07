@@ -68,9 +68,41 @@
 * a real position of the allocated object.
   we have to use this position for handle errors if the malloc fails for some reson or other.
 
-* an array have to be an embed class.
+*[V] an array have to be an embed class.
 
 
+
+
+///07.01.2022 ::
+
+1) Rewrite interface's FlatCodeItems. 
+For every implementor interface must have a constructor:
+	markable_init_for_token(mstruct markable *__this, void *object) {
+		__this->object = object;
+		__this->mark = &token_mark;
+		...
+	}
+	markable_init_for_literal(mstruct markable *__this, void *object) {
+		__this->object = object;
+		__this->mark = &literal_mark;
+		...
+	}
+
+2)[V] Remove IntrinsicText. Not a good idea, you cannot optimize this.
+
+3)[V] Add BuiltinAssertTrue item.
+
+4) Implement the 'str' as a builtin class. 
+	Clean the code-generation properly.
+	1 - 'str' class must initialize itself using 'char arr[]' labels.
+	2 - All of the methods from 'str' move to 'strbuf'(mutable string).
+	3 - Remove all static arrays and strings structs, a LOT of space.
+	
+5)[V] Rename and clean all of the items in IR.
+
+6) Try to realize: how to change the expression during the annotation
+stage - whether the field access is a static field access, method-call
+is a static method call, etc... ExprIdent is a static ExprIdent...
 
 
 

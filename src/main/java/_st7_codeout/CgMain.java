@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import _st7_codeout.parts.GenEnums;
 import _st7_codeout.parts.GenBuiltinArray;
 import _st7_codeout.parts.GenBuiltinStringStaticLabels;
 import _st7_codeout.parts.GenCommentHeader;
 import _st7_codeout.parts.GenEmpties;
 import _st7_codeout.parts.GenFunctions;
+import _st7_codeout.parts.GenInterfaces;
 import _st7_codeout.parts.GenRuntimeHeader;
 import _st7_codeout.parts.GenStaticFields;
 import _st7_codeout.parts.GenStructsBodies;
@@ -63,6 +65,15 @@ public class CgMain {
     final String arraysProto = arraysCg.getProto();
     final String arraysImpls = arraysCg.getImpls();
 
+    final List<ClassDeclaration> interfaces = cutInterfaces();
+    final GenInterfaces interfacesCg = new GenInterfaces(interfaces);
+    final String interfacesProto = interfacesCg.getProto();
+    final String interfacesImpls = interfacesCg.getImpls();
+
+    final List<ClassDeclaration> enums = cutEnums();
+    final GenEnums enumsCg = new GenEnums(enums);
+    final String enumsProto = enumsCg.getProto();
+
     // structs, except natives that we've handled before
     final String structsBodies = GenStructsBodies.gen(classes);
 
@@ -101,6 +112,12 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("arrays proto"));
     resultBuffer.append(arraysProto);
 
+    resultBuffer.append(GenCommentHeader.gen("interfaces proto"));
+    resultBuffer.append(interfacesProto);
+
+    resultBuffer.append(GenCommentHeader.gen("enums proto"));
+    resultBuffer.append(enumsProto);
+
     resultBuffer.append(GenCommentHeader.gen("struct bodies"));
     resultBuffer.append(structsBodies);
 
@@ -119,6 +136,9 @@ public class CgMain {
 
     resultBuffer.append(GenCommentHeader.gen("arrays methods impls"));
     resultBuffer.append(arraysImpls);
+
+    resultBuffer.append(GenCommentHeader.gen("interfaces methods impls"));
+    resultBuffer.append(interfacesImpls);
 
     resultBuffer.append(GenCommentHeader.gen("functions impls"));
     resultBuffer.append(funcsImpls);
@@ -172,6 +192,38 @@ public class CgMain {
     }
 
     throw new AstParseException("cannot find main class");
+  }
+
+  private List<ClassDeclaration> cutInterfaces() {
+
+    Iterator<ClassDeclaration> iter = classes.iterator();
+    List<ClassDeclaration> rv = new ArrayList<ClassDeclaration>();
+
+    while (iter.hasNext()) {
+      ClassDeclaration c = iter.next();
+      if (c.isInterface()) {
+        rv.add(c);
+        iter.remove();
+      }
+    }
+
+    return rv;
+  }
+
+  private List<ClassDeclaration> cutEnums() {
+
+    Iterator<ClassDeclaration> iter = classes.iterator();
+    List<ClassDeclaration> rv = new ArrayList<ClassDeclaration>();
+
+    while (iter.hasNext()) {
+      ClassDeclaration c = iter.next();
+      if (c.isEnum()) {
+        rv.add(c);
+        iter.remove();
+      }
+    }
+
+    return rv;
   }
 
   private List<ClassDeclaration> cutArrays() {
