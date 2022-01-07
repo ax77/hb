@@ -1,4 +1,4 @@
-import std.natives.str::str;
+import std.natives.str.str;
 
 namespace io {
   native int open(str filename, int mode);

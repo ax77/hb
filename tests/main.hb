@@ -1,7 +1,7 @@
 
 //@formatter:off
-import std.natives.str::str;
-import std.list::list;
+import std.natives.str.str;
+import std.list.list;
 
 class dummy_object {
   int i;

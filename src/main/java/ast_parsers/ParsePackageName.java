@@ -23,8 +23,7 @@ public abstract class ParsePackageName {
 
     while (!parser.isEof()) {
 
-      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON)
-          || parser.is(T.T_COLON_COLON);
+      boolean isOk = parser.is(T.TOKEN_IDENT) || parser.is(T.T_DOT) || parser.is(T.T_SEMI_COLON);
       if (!isOk) {
         parser.perror("expect import path like: [import package.file;]");
       }

@@ -419,68 +419,6 @@ public class ParseExpression {
     return new ExprExpression(new ExprCast(toType, expressionForCast), beginPos);
   }
 
-  //  private ExprExpression e_postfix() {
-  //
-  //    ExprExpression lhs = e_prim();
-  //
-  //    while (!parser.isEof()) {
-  //      if (parser.is(T.T_DOT)) {
-  //
-  //        ParseState parseState = new ParseState(parser);
-  //
-  //        parser.checkedMove(T.T_DOT);
-  //        final Token peek = parser.peek();
-  //
-  //        final boolean dot_ident_lparen = parser.isUserDefinedIdentNoKeyword(parser.tok())
-  //            && peek.ofType(T.T_LEFT_PAREN);
-  //
-  //        if (dot_ident_lparen) {
-  //          Ident ident = parser.getIdent();
-  //
-  //          // TODO: think about it, is it correct?
-  //          // the result tree is correct as I think, but I'm not sure.
-  //          // maybe I have to rebuild the node from field-access to func-call
-  //          // for example: the path like "a().b().c"
-  //          if (lhs.getBase() == ExpressionBase.EFIELD_ACCESS) {
-  //          }
-  //
-  //          lhs = methodInvocation(lhs, ident);
-  //        }
-  //
-  //        else {
-  //          parser.restoreState(parseState); // normal field access like: "a.b.c.d.e"
-  //          lhs = fieldAccess(lhs);
-  //        }
-  //
-  //      }
-  //
-  //      else if (parser.is(T_LEFT_PAREN)) {
-  //        Ident funcname = lhs.getIdent().getIdentifier();
-  //        if (funcname == null) {
-  //          parser.perror("expect function name");
-  //        }
-  //
-  //        lhs = methodInvocation(funcname); // TODO: more clean, more precise.
-  //      }
-  //
-  //      else if (parser.is(T.T_PLUS_PLUS) || parser.is(T.T_MINUS_MINUS)) {
-  //        parser.perror("post-increment/post-decrement are deprecated by design.");
-  //      }
-  //
-  //      // array-subscript
-  //      //
-  //      else if (parser.is(T.T_LEFT_BRACKET)) {
-  //        parser.errorArray();
-  //      }
-  //
-  //      else {
-  //        break;
-  //      }
-  //    }
-  //
-  //    return lhs;
-  //  }
-
   private ExprExpression e_postfix() {
     ExprExpression lhs = e_prim();
 
