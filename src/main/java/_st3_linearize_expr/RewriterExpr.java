@@ -34,6 +34,7 @@ import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.BuiltinFuncAssertTrue;
+import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
@@ -132,39 +133,20 @@ public class RewriterExpr {
     Var rvaluevar = getLast().getDest();
 
     //xxxxx
-    /// markable m = new token();
-    /// will produce:
-    ///     struct token* t123 = (struct token*) hcalloc( 1u, sizeof(struct token) );
-    ///     token_init_112(t123);
-    ///     struct markable* m = t123;
-    /// while we need:
-    ///    struct markable *m = markable_new(t123, (void (*)(void*)) &token_mark, (void (*)(void*)) &token_unmark);
-    /// or:
-    /// m = hcalloc( 1u, sizeof( struct markable ) );
-    /// m->object = t123;
-    /// m->mark = &token_mark;
-    /// m->unmark = &token_unmark;
     if (lvaluevar.getType().isInterface()) {
       final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvaluevar, lvaluevar.getType());
-
-      final String lvalueVarName = lvaluevar.getName().getName();
-      final String rvalueVarName = rvaluevar.getName().getName();
-
-      final StringBuilder funcPtrs = new StringBuilder();
-      funcPtrs.append(lvalueVarName + "->object = " + rvalueVarName + ";\n");
-
       final ClassDeclaration interfaceClazz = lvaluevar.getType().getClassTypeFromRef();
       final ClassDeclaration realClazz = rvaluevar.getType().getClassTypeFromRef();
-      final List<ClassMethodDeclaration> interfaceMethods = interfaceClazz.getMethods();
-      for (ClassMethodDeclaration m : interfaceMethods) {
-        oneFuncPtrInitializer(lvalueVarName, funcPtrs, realClazz, m);
-      }
-      if (interfaceClazz.getDestructor() != null) {
-        oneFuncPtrInitializer(lvalueVarName, funcPtrs, realClazz, interfaceClazz.getDestructor());
-      }
+
       rv.add(new FlatCodeItem(assignVarAllocObject));
-      //xxxxx
-      //rv.add(new FlatCodeItem(new IntrinsicText(lvaluevar, funcPtrs.toString())));
+
+      String funcname = interfaceClazz.getIdentifier() + "_init_for_" + realClazz.getIdentifier();
+      List<Var> args = new ArrayList<>();
+      args.add(lvaluevar);
+      args.add(rvaluevar);
+      FlatCallConstructor flatCallConstructor = new FlatCallConstructor(funcname, args, lvaluevar);
+      rv.add(new FlatCodeItem(flatCallConstructor));
+
     }
 
     else {
@@ -173,14 +155,6 @@ public class RewriterExpr {
       rv.add(new FlatCodeItem(assignVarVar));
     }
 
-  }
-
-  private void oneFuncPtrInitializer(final String lvalueVarName, final StringBuilder funcPtrs,
-      final ClassDeclaration realClazz, ClassMethodDeclaration m) {
-    final String methodName = m.getIdentifier().getName();
-    final String implMethodFullname = m.isDestructor() ? ToStringsInternal.getMethodName(realClazz.getDestructor())
-        : ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
-    funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
   }
 
   private FlatCodeItem getLast() {

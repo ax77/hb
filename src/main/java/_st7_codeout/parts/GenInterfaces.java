@@ -21,8 +21,72 @@ public class GenInterfaces implements Ccode {
 
     for (ClassDeclaration c : interfaces) {
       genInterfaceMethod(c);
+      genConstructorForEachImplementor(c);
       proto.append(genInterfaceBody(c));
     }
+  }
+
+  // markable_init_for_token(mstruct markable *__this, void *object) {
+  //   __this->object = object;
+  //   __this->mark = &token_mark;
+  //   ...
+  // }
+  // markable_init_for_literal(mstruct markable *__this, void *object) {
+  //   __this->object = object;
+  //   __this->mark = &literal_mark;
+  //   ...
+  // }
+
+  private void genConstructorForEachImplementor(ClassDeclaration interfaceClazz) {
+    List<ClassDeclaration> implementors = interfaceClazz.getImplementations();
+
+    StringBuilder result = new StringBuilder();
+
+    for (ClassDeclaration realClazz : implementors) {
+
+      final String hdrI = hdr(interfaceClazz);
+      result.append("static void " + interfaceClazz.getIdentifier() + "_init_for_" + realClazz.getIdentifier() + "("
+          + hdrI + " *__this, void *object)" + " {\n");
+
+      StringBuilder funcPtrs = new StringBuilder();
+      funcPtrs.append("assert(__this);\n");
+      funcPtrs.append("assert(object);\n");
+
+      funcPtrs.append("__this->object = object;\n");
+
+      //TODO: cast expression for function-pointer
+      final List<ClassMethodDeclaration> interfaceMethods = interfaceClazz.getMethods();
+      for (ClassMethodDeclaration m : interfaceMethods) {
+        oneFuncPtrInitializer("__this", funcPtrs, realClazz, m);
+      }
+      if (interfaceClazz.getDestructor() != null) {
+        oneFuncPtrInitializer("__this", funcPtrs, realClazz, interfaceClazz.getDestructor());
+      }
+      result.append(funcPtrs);
+      result.append("}\n\n");
+    }
+
+    impls.append(result);
+  }
+
+  private String hdr(ClassDeclaration c) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("struct ");
+    sb.append(c.getIdentifier().getName());
+
+    if (!c.getTypeParametersT().isEmpty()) {
+      sb.append("_");
+      sb.append(ToStringsInternal.typeArgumentsToString(c.getTypeParametersT()));
+    }
+    return sb.toString();
+  }
+
+  private void oneFuncPtrInitializer(final String lvalueVarName, final StringBuilder funcPtrs,
+      final ClassDeclaration realClazz, ClassMethodDeclaration m) {
+    final String methodName = m.getIdentifier().getName();
+    final String implMethodFullname = m.isDestructor() ? ToStringsInternal.getMethodName(realClazz.getDestructor())
+        : ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
+    funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
   }
 
   //xxxxx
