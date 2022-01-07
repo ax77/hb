@@ -74,7 +74,7 @@ public class RewriteRaw {
         final Type lhsType = lhs.getType();
 
         final String op = assignVarBinop.getRvalue().getOp();
-        if (itIsPossibleToReplaceEqNeWithCall(lhsType, op)) {
+        if (itIsPossibleToReplaceEqNeWithCall(rhs, lhsType, op)) {
           genEq(assignVarBinop, lhs, rhs, op);
         }
 
@@ -246,7 +246,7 @@ public class RewriteRaw {
   /// generate something like that by default: [return __this == another]
   /// and call that method time after time it's not fine.
   ///
-  private boolean itIsPossibleToReplaceEqNeWithCall(final Type lhsType, final String op) {
+  private boolean itIsPossibleToReplaceEqNeWithCall(Var RHS, final Type lhsType, final String op) {
     final boolean itIsEqOp = (op.equals("==") || op.equals("!="));
     if (!itIsEqOp) {
       return false;
@@ -259,6 +259,15 @@ public class RewriteRaw {
     }
     if (lhsType.isNamespace() || lhsType.isEnum()) {
       return false;
+    }
+    if (!rv.isEmpty()) {
+      FlatCodeItem last = rv.get(rv.size() - 1);
+      if (last.isAssignVarDefaultValueFotType()) {
+        Var dest = last.getDest();
+        if (dest.getName().equals(RHS.getName())) {
+          return false;
+        }
+      }
     }
     return true;
   }

@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_expr.ExprBinary;
+import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StmtBlock;
+import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
+import tokenize.T;
 import tokenize.Token;
 
 public abstract class BuildDefaultDestructor {
@@ -48,41 +52,42 @@ public abstract class BuildDefaultDestructor {
 
         if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
           if (ParserMainOptions.WARN_SELF_REFERENCED_DESTRUCTORS) {
-            System.out.println("warning: the default destructor-call for self-referenced field won't be created, \n"
-                + "you have to provide the correct deinitialization for the field, \n"
-                + "or it will cause a recursive call loop: " + field.getIdentifier() + " " + field.getLocationToString()
+            System.out.println("warning: Default destructor-call for self-referenced field! \n"
+                + "You have to provide the correct deinitialization for the field, \n"
+                + "or it may cause a deep recursion: " + field.getIdentifier() + " " + field.getLocationToString()
                 + "\n");
           }
-          continue;
+          //continue;
         }
 
-        ExprExpression deinit = deinitForField(object, field);
-        rv.add(new StmtStatement(deinit, object.getBeginPos()));
-
-        /// TODO:
-        /// if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
-        ///   StmtStatement recursiveCallIntoLoop = ExpandRecursiveCallIntoLoop.expandField(field);
-        ///   rv.add(recursiveCallIntoLoop);
-        /// }
-        /// 
-        /// else {
-        ///   ExprExpression deinit = deinitForField(object, field);
-        ///   rv.add(new StmtStatement(deinit, object.getBeginPos()));
-        /// }
+        StmtStatement deinit = guardedDeinitCallForField(object, field);
+        rv.add(deinit);
 
       }
     }
     return rv;
   }
 
-  private static ExprExpression deinitForField(ClassDeclaration object, VarDeclarator field) {
-    final List<ExprExpression> arguments = new ArrayList<>();
-    final ExprIdent id = new ExprIdent(field.getIdentifier());
+  // if(field != default(field_type) {
+  //     field.deinit();
+  // }
+  public static StmtStatement guardedDeinitCallForField(ClassDeclaration object, VarDeclarator field) {
+    final List<ExprExpression> args = new ArrayList<>();
     final Token beginPos = object.getBeginPos();
-    final ExprExpression idExpr = new ExprExpression(id, beginPos);
-    final ExprMethodInvocation exprMethodInvocation = new ExprMethodInvocation(idExpr, Keywords.deinit_ident,
-        arguments);
-    return new ExprExpression(exprMethodInvocation, beginPos);
+    final ExprExpression idExpr = new ExprExpression(new ExprIdent(field.getIdentifier()), beginPos);
+    final ExprMethodInvocation deinitInvoke = new ExprMethodInvocation(idExpr, Keywords.deinit_ident, args);
+
+    StmtBlock trueStatement = new StmtBlock();
+    trueStatement.pushItemBack(new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos));
+
+    Token op = new Token("!=", T.T_NE, beginPos.getLocation());
+    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(field.getType());
+    ExprBinary binary = new ExprBinary(op, idExpr, new ExprExpression(defaultValueForType, beginPos));
+
+    ExprExpression guard = new ExprExpression(binary, beginPos);
+    StmtSelect select = new StmtSelect(guard, trueStatement, null);
+
+    return new StmtStatement(select, beginPos);
   }
 
 }
