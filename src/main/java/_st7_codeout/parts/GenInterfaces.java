@@ -81,12 +81,55 @@ public class GenInterfaces implements Ccode {
     return sb.toString();
   }
 
+  /// static void markable_init_for_token(struct markable *__this, void *object) {
+  ///   assert(__this);
+  ///   assert(object);
+  ///   __this->object = object;
+  ///   __this->mark = (void (*)(void*)) &token_mark_30;
+  ///   __this->unmark = (void (*)(void*)) &token_unmark_33;
+  ///   __this->equals = (int (*)(void*, struct markable*)) &token_equals_61;
+  ///   __this->deinit = (void (*)(void*)) &token_deinit_63;
+  /// }
+
   private void oneFuncPtrInitializer(final String lvalueVarName, final StringBuilder funcPtrs,
       final ClassDeclaration realClazz, ClassMethodDeclaration m) {
     final String methodName = m.getIdentifier().getName();
-    final String implMethodFullname = m.isDestructor() ? ToStringsInternal.getMethodName(realClazz.getDestructor())
-        : ToStringsInternal.getMethodName(realClazz.getMethodForSure(methodName));
-    funcPtrs.append(lvalueVarName + "->" + methodName + " = &" + implMethodFullname + ";\n");
+
+    ClassMethodDeclaration method = null;
+    if (m.isDestructor()) {
+      method = realClazz.getDestructor();
+    } else {
+      method = realClazz.getMethodForSure(methodName);
+    }
+
+    final String implMethodFullname = ToStringsInternal.getMethodName(method);
+
+    List<VarDeclarator> params = new ArrayList<>(m.getParameters());
+    params.remove(0);
+    String paramsToStr = parametersToString(params);
+    if (paramsToStr.isEmpty()) {
+      paramsToStr = "(void*)";
+    } else {
+      paramsToStr = "(void*, " + paramsToStr + ")";
+    }
+    paramsToStr = "(" + ToStringsInternal.typeToString(m.getType()) + " (*) " + paramsToStr + ")";
+
+    funcPtrs.append(lvalueVarName + "->" + methodName + " = " + paramsToStr + " &" + implMethodFullname + ";\n");
+  }
+
+  private static String parametersToString(List<VarDeclarator> parameters) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < parameters.size(); i++) {
+      VarDeclarator param = parameters.get(i);
+      sb.append(ToStringsInternal.typeToString(param.getType()));
+
+      if (i + 1 < parameters.size()) {
+        sb.append(", ");
+      }
+    }
+
+    return sb.toString();
   }
 
   //xxxxx

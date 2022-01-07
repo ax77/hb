@@ -75,7 +75,7 @@
 
 ///07.01.2022 ::
 
-1) Rewrite interface's FlatCodeItems. 
+1)[V] Rewrite interface's FlatCodeItems. 
 For every implementor interface must have a constructor:
 	markable_init_for_token(mstruct markable *__this, void *object) {
 		__this->object = object;
