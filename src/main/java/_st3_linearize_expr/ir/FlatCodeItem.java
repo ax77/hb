@@ -4,7 +4,7 @@ import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarBool;
 import _st3_linearize_expr.items.AssignVarCastExpression;
-import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
+import _st3_linearize_expr.items.AssignVarDefaultValueForType;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFieldAccessStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -35,7 +35,7 @@ public class FlatCodeItem {
   private AssignVarBinop assignVarBinop;
   private AssignVarBool assignVarBool;
   private AssignVarCastExpression assignVarCastExpression;
-  private AssignVarDefaultValueFotType assignVarDefaultValueFotType;
+  private AssignVarDefaultValueForType assignVarDefaultValueFotType;
   private AssignVarFieldAccess assignVarFieldAccess;
   private AssignVarFieldAccessStatic assignVarFieldAccessStatic;
   private AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp;
@@ -59,7 +59,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
   public FlatCodeItem(AssignVarBool assignVarBool) { this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
   public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) { this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
-  public FlatCodeItem(AssignVarDefaultValueFotType assignVarDefaultValueFotType) { this.opcode = Opc.AssignVarDefaultValueFotType; this.assignVarDefaultValueFotType = assignVarDefaultValueFotType; }
+  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueFotType) { this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueFotType = assignVarDefaultValueFotType; }
   public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
   public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) { this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
   public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
@@ -83,7 +83,7 @@ public class FlatCodeItem {
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
   public boolean isAssignVarBool() { return this.opcode == Opc.AssignVarBool; }
   public boolean isAssignVarCastExpression() { return this.opcode == Opc.AssignVarCastExpression; }
-  public boolean isAssignVarDefaultValueFotType() { return this.opcode == Opc.AssignVarDefaultValueFotType; }
+  public boolean isAssignVarDefaultValueFotType() { return this.opcode == Opc.AssignVarDefaultValueForType; }
   public boolean isAssignVarFieldAccess() { return this.opcode == Opc.AssignVarFieldAccess; }
   public boolean isAssignVarFieldAccessStatic() { return this.opcode == Opc.AssignVarFieldAccessStatic; }
   public boolean isAssignVarFlatCallClassCreationTmp() { return this.opcode == Opc.AssignVarFlatCallClassCreationTmp; }
@@ -136,7 +136,7 @@ public class FlatCodeItem {
   public AssignVarBinop getAssignVarBinop() { return this.assignVarBinop; }
   public AssignVarBool getAssignVarBool() { return this.assignVarBool; }
   public AssignVarCastExpression getAssignVarCastExpression() { return this.assignVarCastExpression; }
-  public AssignVarDefaultValueFotType getAssignVarDefaultValueFotType() { return this.assignVarDefaultValueFotType; }
+  public AssignVarDefaultValueForType getAssignVarDefaultValueFotType() { return this.assignVarDefaultValueFotType; }
   public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
   public AssignVarFieldAccessStatic getAssignVarFieldAccessStatic() { return this.assignVarFieldAccessStatic; }
   public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }

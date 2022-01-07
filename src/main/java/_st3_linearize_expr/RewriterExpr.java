@@ -22,7 +22,7 @@ import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarBool;
 import _st3_linearize_expr.items.AssignVarCastExpression;
-import _st3_linearize_expr.items.AssignVarDefaultValueFotType;
+import _st3_linearize_expr.items.AssignVarDefaultValueForType;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFieldAccessStatic;
 import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
@@ -721,7 +721,7 @@ public class RewriterExpr {
 
       final Var lhsVar = VarCreator.justNewVar(tp);
       final Var rhsVar = VarCreator.varWithName(tp, ToStringsInternal.defaultVarNameForType(tp));
-      AssignVarDefaultValueFotType node = new AssignVarDefaultValueFotType(lhsVar, rhsVar);
+      AssignVarDefaultValueForType node = new AssignVarDefaultValueForType(lhsVar, rhsVar);
       FlatCodeItem item = new FlatCodeItem(node);
       genRaw(item);
     }
@@ -746,6 +746,7 @@ public class RewriterExpr {
     //TODO: this one should be a special ITEM-node...
     else if (e.is(ExpressionBase.EDELETE)) {
       // delete(sym)
+      //
       VarDeclarator var = e.getExprDelete().getVar();
       NullChecker.check(var);
 
@@ -753,10 +754,21 @@ public class RewriterExpr {
       if (vartype.isClass()) {
         ClassDeclaration clazz = vartype.getClassTypeFromRef();
         List<Var> args = new ArrayList<>();
-        args.add(VarCreator.copyVarDecl(var));
+        final Var varToDelete = VarCreator.copyVarDecl(var);
+        args.add(varToDelete);
         final ClassMethodDeclaration destructor = clazz.getDestructor();
         FlatCallVoid flatCallVoid = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
         genRaw(new FlatCodeItem(flatCallVoid));
+
+        // TODO: this should be an address (i.e. double-pointer), the assignment
+        // to default value should change the pointer wherever the pointer is now...
+        //
+        // varToDelete = default(varToDeleteType)
+        // it prevent double-deletions, at least in the current stack-frame :)
+        //
+        final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
+        StoreVarVar storeVarVar = new StoreVarVar(varToDelete, rhsVar);
+        genRaw(new FlatCodeItem(storeVarVar));
       }
     }
 

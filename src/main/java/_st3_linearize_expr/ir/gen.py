@@ -28,7 +28,7 @@ opcodes = """
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
     AssignVarNum                       ,
-    AssignVarDefaultValueFotType       ,
+    AssignVarDefaultValueForType       ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
     AssignVarCastExpression            ,

@@ -50,7 +50,9 @@ class main {
     
     node n = new node(default(node), new node(default(node), new node(default(node), new node(default(node), new node(default(node), default(node), 5), 4), 3), 2), 1);
     delete(n);
-    delete(i);
+    delete(n); // this is safe, because n now is pointed to default_ptr
+    //delete(default(node)); // this is also safe
+    delete(i); // this won't be in generated code, but we need this because of the templates...
 
     //    token tok = new token();
     //    markable m = tok;

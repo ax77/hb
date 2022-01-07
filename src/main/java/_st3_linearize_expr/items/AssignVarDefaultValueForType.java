@@ -2,11 +2,11 @@ package _st3_linearize_expr.items;
 
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarDefaultValueFotType {
+public class AssignVarDefaultValueForType {
   private final Var lvalue;
   private final Var rvalue;
 
-  public AssignVarDefaultValueFotType(Var lvalue, Var rvalue) {
+  public AssignVarDefaultValueForType(Var lvalue, Var rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
   }

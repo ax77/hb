@@ -13,7 +13,7 @@ public enum Opc {
   , AssignVarFlatCallResult            // type a = f(b, c)
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarNum                       // type a = 1
-  , AssignVarDefaultValueFotType       // type a = default(type)
+  , AssignVarDefaultValueForType       // type a = default(type)
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
   , AssignVarCastExpression            // cast(expression : to_this_type) -> cast(32:char)
