@@ -37,6 +37,13 @@ public class ExprExpression implements Serializable, Location {
   private ExprForLoopStepComma exprForLoopStepComma;
   private ExprStaticAccess exprStaticAccess;
   private ExprDefaultValueForType exprDefaultValueForType;
+  private ExprDelete exprDelete;
+
+  public ExprExpression(ExprDelete exprDelete, Token beginPos) {
+    this.base = ExpressionBase.EDELETE;
+    this.exprDelete = exprDelete;
+    this.beginPos = beginPos;
+  }
 
   public ExprExpression(ExprDefaultValueForType exprDefaultValueForType, Token beginPos) {
     this.base = ExpressionBase.EDEFAULT_VALUE_FOR_TYPE;
@@ -281,6 +288,9 @@ public class ExprExpression implements Serializable, Location {
     if (base == ExpressionBase.ESTATIC_ACCESS) {
       return exprStaticAccess.toString();
     }
+    if (base == ExpressionBase.EDELETE) {
+      return exprDelete.toString();
+    }
     return base.toString();
   }
 
@@ -325,6 +335,10 @@ public class ExprExpression implements Serializable, Location {
 
   public ExprDefaultValueForType getExprDefaultValueForType() {
     return exprDefaultValueForType;
+  }
+
+  public ExprDelete getExprDelete() {
+    return exprDelete;
   }
 
 }

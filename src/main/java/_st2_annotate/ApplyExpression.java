@@ -1,6 +1,6 @@
 package _st2_annotate;
 
-import static _st2_annotate.SymbolTable.F_ALL;
+import static _st2_annotate.SymbolTable.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
+import ast_expr.ExprDelete;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprForLoopStepComma;
@@ -30,6 +31,7 @@ import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_vars.VarDeclarator;
+import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
@@ -106,12 +108,28 @@ public class ApplyExpression {
       applyDefaultValueFotType(e);
     } else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
       applyStaticAccess(e);
+    } else if (e.is(ExpressionBase.EDELETE)) {
+      applyDeleteExpression(e);
     }
 
     else {
       ErrorLocation.errorExpression("unimpl.expression-type-applier", e);
     }
 
+  }
+
+  private void applyDeleteExpression(ExprExpression e) {
+    ExprDelete node = e.getExprDelete();
+    Ident name = node.getName();
+    Symbol sym = symtabApplier.findVar(name, F_METHOD);
+    if (sym == null) {
+      ErrorLocation.errorExpression("symbol was not declared in the scope", e);
+    }
+    if (!sym.isVariable()) {
+      ErrorLocation.errorExpression("delete expression may work only with variables", e);
+    }
+    node.setVar(sym.getVariable());
+    e.setResultType(new Type(e.getBeginPos())); // void
   }
 
   private void applyStaticAccess(ExprExpression e) {

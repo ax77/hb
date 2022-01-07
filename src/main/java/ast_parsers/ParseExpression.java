@@ -46,6 +46,7 @@ import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
 import ast_expr.ExprDefaultValueForType;
+import ast_expr.ExprDelete;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprForLoopStepComma;
@@ -552,6 +553,15 @@ public class ParseExpression {
     if (parser.is(Keywords.false_ident)) {
       Token saved = parser.moveget();
       return new ExprExpression(false, saved);
+    }
+
+    if (parser.is(Keywords.delete_ident)) {
+      Token beginPos = parser.moveget();
+      parser.lparen();
+      Token name = parser.checkedMove(T.TOKEN_IDENT);
+      parser.rparen();
+
+      return new ExprExpression(new ExprDelete(name.getIdent()), beginPos);
     }
 
     if (parser.is(Keywords.default_ident)) {

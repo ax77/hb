@@ -36,13 +36,21 @@ class node {
   mut node prev;
   mut node next;
   int item;
+  node(node p, node n, int i) {
+    prev=p;
+    next=n;
+    item=i;
+  }
 }
 
 class main {
   int main() {
     temp t = new temp();
+    int i = 32;
     
-    node n = new node();
+    node n = new node(default(node), new node(default(node), new node(default(node), new node(default(node), new node(default(node), default(node), 5), 4), 3), 2), 1);
+    delete(n);
+    delete(i);
 
     //    token tok = new token();
     //    markable m = tok;

@@ -743,6 +743,23 @@ public class RewriterExpr {
       genRaw(item);
     }
 
+    //TODO: this one should be a special ITEM-node...
+    else if (e.is(ExpressionBase.EDELETE)) {
+      // delete(sym)
+      VarDeclarator var = e.getExprDelete().getVar();
+      NullChecker.check(var);
+
+      Type vartype = var.getType();
+      if (vartype.isClass()) {
+        ClassDeclaration clazz = vartype.getClassTypeFromRef();
+        List<Var> args = new ArrayList<>();
+        args.add(VarCreator.copyVarDecl(var));
+        final ClassMethodDeclaration destructor = clazz.getDestructor();
+        FlatCallVoid flatCallVoid = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
+        genRaw(new FlatCodeItem(flatCallVoid));
+      }
+    }
+
     else {
       throw new AstParseException(base.toString() + ": unimplemented");
     }
