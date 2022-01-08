@@ -16,6 +16,7 @@ import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.BuiltinFuncAssertTrue;
+import _st3_linearize_expr.items.BuiltinFuncDropPtr;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
@@ -35,7 +36,7 @@ public class FlatCodeItem {
   private AssignVarBinop assignVarBinop;
   private AssignVarBool assignVarBool;
   private AssignVarCastExpression assignVarCastExpression;
-  private AssignVarDefaultValueForType assignVarDefaultValueFotType;
+  private AssignVarDefaultValueForType assignVarDefaultValueForType;
   private AssignVarFieldAccess assignVarFieldAccess;
   private AssignVarFieldAccessStatic assignVarFieldAccessStatic;
   private AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp;
@@ -47,6 +48,7 @@ public class FlatCodeItem {
   private AssignVarUnop assignVarUnop;
   private AssignVarVar assignVarVar;
   private BuiltinFuncAssertTrue builtinFuncAssertTrue;
+  private BuiltinFuncDropPtr builtinFuncDropPtr;
   private FlatCallConstructor flatCallConstructor;
   private FlatCallVoid flatCallVoid;
   private FlatCallVoidStatic flatCallVoidStatic;
@@ -59,7 +61,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
   public FlatCodeItem(AssignVarBool assignVarBool) { this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
   public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) { this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
-  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueFotType) { this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueFotType = assignVarDefaultValueFotType; }
+  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueForType) { this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueForType = assignVarDefaultValueForType; }
   public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
   public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) { this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
   public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
@@ -71,6 +73,7 @@ public class FlatCodeItem {
   public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
   public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
   public FlatCodeItem(BuiltinFuncAssertTrue builtinFuncAssertTrue) { this.opcode = Opc.BuiltinFuncAssertTrue; this.builtinFuncAssertTrue = builtinFuncAssertTrue; }
+  public FlatCodeItem(BuiltinFuncDropPtr builtinFuncDropPtr) { this.opcode = Opc.BuiltinFuncDropPtr; this.builtinFuncDropPtr = builtinFuncDropPtr; }
   public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
   public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
   public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
@@ -83,7 +86,7 @@ public class FlatCodeItem {
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
   public boolean isAssignVarBool() { return this.opcode == Opc.AssignVarBool; }
   public boolean isAssignVarCastExpression() { return this.opcode == Opc.AssignVarCastExpression; }
-  public boolean isAssignVarDefaultValueFotType() { return this.opcode == Opc.AssignVarDefaultValueForType; }
+  public boolean isAssignVarDefaultValueForType() { return this.opcode == Opc.AssignVarDefaultValueForType; }
   public boolean isAssignVarFieldAccess() { return this.opcode == Opc.AssignVarFieldAccess; }
   public boolean isAssignVarFieldAccessStatic() { return this.opcode == Opc.AssignVarFieldAccessStatic; }
   public boolean isAssignVarFlatCallClassCreationTmp() { return this.opcode == Opc.AssignVarFlatCallClassCreationTmp; }
@@ -95,6 +98,7 @@ public class FlatCodeItem {
   public boolean isAssignVarUnop() { return this.opcode == Opc.AssignVarUnop; }
   public boolean isAssignVarVar() { return this.opcode == Opc.AssignVarVar; }
   public boolean isBuiltinFuncAssertTrue() { return this.opcode == Opc.BuiltinFuncAssertTrue; }
+  public boolean isBuiltinFuncDropPtr() { return this.opcode == Opc.BuiltinFuncDropPtr; }
   public boolean isFlatCallConstructor() { return this.opcode == Opc.FlatCallConstructor; }
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isFlatCallVoidStatic() { return this.opcode == Opc.FlatCallVoidStatic; }
@@ -109,7 +113,7 @@ public class FlatCodeItem {
     if(isAssignVarBinop()) { return assignVarBinop.toString(); }
     if(isAssignVarBool()) { return assignVarBool.toString(); }
     if(isAssignVarCastExpression()) { return assignVarCastExpression.toString(); }
-    if(isAssignVarDefaultValueFotType()) { return assignVarDefaultValueFotType.toString(); }
+    if(isAssignVarDefaultValueForType()) { return assignVarDefaultValueForType.toString(); }
     if(isAssignVarFieldAccess()) { return assignVarFieldAccess.toString(); }
     if(isAssignVarFieldAccessStatic()) { return assignVarFieldAccessStatic.toString(); }
     if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.toString(); }
@@ -121,6 +125,7 @@ public class FlatCodeItem {
     if(isAssignVarUnop()) { return assignVarUnop.toString(); }
     if(isAssignVarVar()) { return assignVarVar.toString(); }
     if(isBuiltinFuncAssertTrue()) { return builtinFuncAssertTrue.toString(); }
+    if(isBuiltinFuncDropPtr()) { return builtinFuncDropPtr.toString(); }
     if(isFlatCallConstructor()) { return flatCallConstructor.toString(); }
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     if(isFlatCallVoidStatic()) { return flatCallVoidStatic.toString(); }
@@ -136,7 +141,7 @@ public class FlatCodeItem {
   public AssignVarBinop getAssignVarBinop() { return this.assignVarBinop; }
   public AssignVarBool getAssignVarBool() { return this.assignVarBool; }
   public AssignVarCastExpression getAssignVarCastExpression() { return this.assignVarCastExpression; }
-  public AssignVarDefaultValueForType getAssignVarDefaultValueFotType() { return this.assignVarDefaultValueFotType; }
+  public AssignVarDefaultValueForType getAssignVarDefaultValueForType() { return this.assignVarDefaultValueForType; }
   public AssignVarFieldAccess getAssignVarFieldAccess() { return this.assignVarFieldAccess; }
   public AssignVarFieldAccessStatic getAssignVarFieldAccessStatic() { return this.assignVarFieldAccessStatic; }
   public AssignVarFlatCallClassCreationTmp getAssignVarFlatCallClassCreationTmp() { return this.assignVarFlatCallClassCreationTmp; }
@@ -148,6 +153,7 @@ public class FlatCodeItem {
   public AssignVarUnop getAssignVarUnop() { return this.assignVarUnop; }
   public AssignVarVar getAssignVarVar() { return this.assignVarVar; }
   public BuiltinFuncAssertTrue getBuiltinFuncAssertTrue() { return this.builtinFuncAssertTrue; }
+  public BuiltinFuncDropPtr getBuiltinFuncDropPtr() { return this.builtinFuncDropPtr; }
   public FlatCallConstructor getFlatCallConstructor() { return this.flatCallConstructor; }
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
   public FlatCallVoidStatic getFlatCallVoidStatic() { return this.flatCallVoidStatic; }
@@ -169,7 +175,7 @@ public class FlatCodeItem {
       || isAssignVarFlatCallResult()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
-      || isAssignVarDefaultValueFotType()     
+      || isAssignVarDefaultValueForType()     
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 
@@ -189,8 +195,8 @@ public class FlatCodeItem {
     if(isAssignVarCastExpression()) {
       return assignVarCastExpression.getLvalue();
     }
-    if(isAssignVarDefaultValueFotType()) {
-      return assignVarDefaultValueFotType.getLvalue();
+    if(isAssignVarDefaultValueForType()) {
+      return assignVarDefaultValueForType.getLvalue();
     }
     if(isAssignVarFieldAccess()) {
       return assignVarFieldAccess.getLvalue();
@@ -223,6 +229,9 @@ public class FlatCodeItem {
       return assignVarVar.getLvalue();
     }
     if(isBuiltinFuncAssertTrue()) {
+      err();
+    }
+    if(isBuiltinFuncDropPtr()) {
       err();
     }
     if(isFlatCallConstructor()) {

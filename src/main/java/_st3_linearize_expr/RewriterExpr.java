@@ -34,6 +34,7 @@ import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.BuiltinFuncAssertTrue;
+import _st3_linearize_expr.items.BuiltinFuncDropPtr;
 import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
@@ -767,8 +768,13 @@ public class RewriterExpr {
         // it prevent double-deletions, at least in the current stack-frame :)
         //
         final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
-        StoreVarVar storeVarVar = new StoreVarVar(varToDelete, rhsVar);
-        genRaw(new FlatCodeItem(storeVarVar));
+
+        final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(varToDelete.getName().getName(),
+            rhsVar.getName().getName());
+        genRaw(new FlatCodeItem(builtinFuncDropPtr));
+
+        //StoreVarVar storeVarVar = new StoreVarVar(varToDelete, rhsVar);
+        //genRaw(new FlatCodeItem(storeVarVar));
       }
     }
 

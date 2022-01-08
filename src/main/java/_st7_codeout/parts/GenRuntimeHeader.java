@@ -25,7 +25,64 @@ public abstract class GenRuntimeHeader {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
-    sb.append("static void mark_ptr(void *ptr) { }\n\n");
+    //free
+    sb.append("static size_t MIN_HEAP_PTR_ADDR = SIZE_MAX;           \n");
+    sb.append("static size_t MAX_HEAP_PTR_ADDR = 0;                  \n");
+    
+    sb.append("static void *hcalloc(size_t count, size_t elsize) {   \n");
+    sb.append("    assert(count);                                    \n");
+    sb.append("    assert(elsize);                                   \n");
+    sb.append("    void *ret = NULL;                                 \n");
+    sb.append("    ret = calloc(count, elsize);                      \n");
+    sb.append("    if(ret == NULL) {                                 \n");
+    sb.append("        ret = calloc(count, elsize);                  \n");
+    sb.append("        if(ret == NULL) {                             \n");
+    sb.append("            ret = calloc(count, elsize);              \n");
+    sb.append("        }                                             \n");
+    sb.append("    }                                                 \n");
+    sb.append("    assert(ret);                                      \n");
+    sb.append("    size_t iptr = (size_t) ret;                       \n");
+    sb.append("    if(iptr < MIN_HEAP_PTR_ADDR) {                    \n");
+    sb.append("        MIN_HEAP_PTR_ADDR = iptr;                     \n");
+    sb.append("    }                                                 \n");
+    sb.append("    if(iptr > MAX_HEAP_PTR_ADDR) {                    \n");
+    sb.append("        MAX_HEAP_PTR_ADDR = iptr;                     \n");
+    sb.append("    }                                                 \n");
+    sb.append("    return ret;                                       \n");
+    sb.append("}                                                     \n\n");
+    
+    sb.append("static void drop_ptr(void **ptr, void *set) {         \n");
+    sb.append("    assert(ptr);                                      \n");
+    sb.append("    assert(*ptr);                                     \n");
+    sb.append("    assert(set);                                      \n");
+    sb.append("    // was set already, and possibly was freed too.   \n");
+    sb.append("    if(*ptr == set) {                                 \n");
+    sb.append("        return;                                       \n");
+    sb.append("    }                                                 \n");
+    sb.append("    // primitive checking -                           \n");
+    sb.append("    // whether the address come from the heap         \n");
+    sb.append("    size_t iptr = (size_t) *ptr;                      \n");
+    sb.append("    if(iptr < MIN_HEAP_PTR_ADDR) {                    \n");
+    sb.append("        return;                                       \n");
+    sb.append("    }                                                 \n");
+    sb.append("    if(iptr > MAX_HEAP_PTR_ADDR) {                    \n");
+    sb.append("        return;                                       \n");
+    sb.append("    }                                                 \n");
+    sb.append("    // drop                                           \n");
+    sb.append("    free(*ptr);                                       \n");
+    sb.append("    *ptr = set;                                       \n");
+    sb.append("}                                                     \n\n");
+    //free
+    
+    sb.append("char *hstrdup(char *str)                       \n");
+    sb.append("{                                              \n");
+    sb.append("    assert(str);                               \n");
+    sb.append("    size_t len = strlen(str);                  \n");
+    sb.append("    char* rv = (char*) hcalloc(1u, len + 1);   \n");
+    sb.append("    strcpy(rv, str);                           \n");
+    sb.append("    rv[len] = \'\\0\';                         \n");
+    sb.append("    return rv;                                 \n");
+    sb.append("}                                              \n\n");
     
     // call stack +
     sb.append("struct aux_fcall_stack {                                                 \n");
@@ -66,90 +123,8 @@ public abstract class GenRuntimeHeader {
     sb.append("        fprintf(stdout, \"  %s:%d\\n\", fc.func, fc.line);               \n");
     sb.append("    }                                                                    \n");
     sb.append("}                                                                        \n\n");
-
     // call stack -
-    
-    
-    sb.append("void* hmalloc(size_t size);                    \n");
-    sb.append("void* hrealloc(void* old, size_t newsize);     \n");
-    sb.append("void *hcalloc(size_t count, size_t eltsize);   \n");
-    sb.append("char *hstrdup(char *str);                      \n\n");
-
-    sb.append("void* hmalloc(size_t size)                     \n");
-    sb.append("{                                              \n");
-    sb.append("    if (size == 0) {                           \n");
-    sb.append("        size = 1;                              \n");
-    sb.append("    }                                          \n");
-    sb.append("    assert(size < INT_MAX);                    \n");
-    sb.append("    void *ptr = NULL;                          \n");
-    sb.append("    ptr = malloc(size);                        \n");
-    sb.append("    if (ptr == NULL) {                         \n");
-    sb.append("        ptr = malloc(size);                    \n");
-    sb.append("        if (ptr == NULL) {                     \n");
-    sb.append("            ptr = malloc(size);                \n");
-    sb.append("        }                                      \n");
-    sb.append("    }                                          \n");
-    sb.append("    assert(ptr);                               \n");
-    sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n\n");
-
-    sb.append("void* hrealloc(void* old, size_t newsize)      \n");
-    sb.append("{                                              \n");
-    sb.append("    void *ptr = NULL;                          \n");
-    sb.append("    ptr = realloc(old, newsize);               \n");
-    sb.append("    if (ptr == NULL) {                         \n");
-    sb.append("        ptr = realloc(old, newsize);           \n");
-    sb.append("        if (ptr == NULL) {                     \n");
-    sb.append("            ptr = realloc(old, newsize);       \n");
-    sb.append("        }                                      \n");
-    sb.append("    }                                          \n");
-    sb.append("    assert(ptr);                               \n");
-    sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n\n");
-
-    sb.append("void *hcalloc(size_t count, size_t eltsize)    \n");
-    sb.append("{                                              \n");
-    sb.append("    assert(count);                             \n");
-    sb.append("    assert(eltsize);                           \n");
-    sb.append("    void* ptr = NULL;                          \n");
-    sb.append("    ptr = calloc(count, eltsize);              \n");
-    sb.append("    if (ptr == NULL) {                         \n");
-    sb.append("        ptr = calloc(count, eltsize);          \n");
-    sb.append("        if (ptr == NULL) {                     \n");
-    sb.append("            ptr = calloc(count, eltsize);      \n");
-    sb.append("        }                                      \n");
-    sb.append("    }                                          \n");
-    sb.append("    assert(ptr);                               \n");
-    sb.append("    return ptr;                                \n");
-    sb.append("}                                              \n\n");
-
-    sb.append("char *hstrdup(char *str)                       \n");
-    sb.append("{                                              \n");
-    sb.append("    assert(str);                               \n");
-    sb.append("    size_t len = strlen(str);                  \n");
-    sb.append("    char* rv = (char*) hcalloc(1u, len + 1);   \n");
-    sb.append("    strcpy(rv, str);                           \n");
-    sb.append("    rv[len] = \'\\0\';                         \n");
-    sb.append("    return rv;                                 \n");
-    sb.append("}                                              \n\n");
-
-    sb.append("char *hstrncpy(char * const to, const char * const from, const size_t count) \n");
-    sb.append("{                                              \n");
-    sb.append("    assert(to);                                \n");
-    sb.append("    assert(from);                              \n");
-    sb.append("    assert(to[0] == \'\\0\');                  \n");
-    sb.append("    assert(count > 0);                         \n");
-    sb.append("    assert(count <= strlen(from));             \n");
-    sb.append("    for (size_t i = 0; i < count; i += 1) {    \n");
-    sb.append("        const char c = from[i];                \n");
-    sb.append("        if (c == \'\\0\') {                    \n");
-    sb.append("            break;                             \n");
-    sb.append("        }                                      \n");
-    sb.append("        to[i] = c;                             \n");
-    sb.append("    }                                          \n");
-    sb.append("    return to;                                 \n");
-    sb.append("}                                              \n\n");
-
+ 
     sb.append("static inline size_t __hash_char_ptr(char* key)      \n");
     sb.append("{                                                    \n");
     sb.append("    assert(key);                                     \n");

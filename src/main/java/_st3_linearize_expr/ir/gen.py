@@ -39,7 +39,8 @@ opcodes = """
     StoreVarField                      ,
     StoreVarVar                        ,
     SelectionShortCircuit              ,
-    BuiltinFuncAssertTrue
+    BuiltinFuncAssertTrue              ,
+    BuiltinFuncDropPtr
                             
 """
 opcodes_arr = []
@@ -88,7 +89,7 @@ assigns_ops = """
       || isAssignVarFlatCallResult()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
-      || isAssignVarDefaultValueFotType()     
+      || isAssignVarDefaultValueForType()     
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 

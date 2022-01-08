@@ -187,8 +187,8 @@ public class GenBuiltinArray implements Ccode {
         lineI("}");
       }
 
-      lineI("    mark_ptr(__this);");
-      lineI("    mark_ptr(__this->data);\n");
+      //lineI("    mark_ptr(__this);");
+      //lineI("    mark_ptr(__this->data);\n");
 
       lineI("}\n");
     }

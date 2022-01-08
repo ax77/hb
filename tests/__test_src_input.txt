@@ -1,6 +1,52 @@
-native class str {
-	native str();
-	native str(str buffer);
-	native int len();
-	native char get(int index);
+static size_t MIN_HEAP_PTR_ADDR = SIZE_MAX;
+static size_t MAX_HEAP_PTR_ADDR = 0;
+
+static void *hcalloc(size_t count, size_t elsize) {
+    assert(count);
+    assert(elsize);
+    
+    void *ret = NULL;
+    ret = calloc(count, elsize);
+    if(ret == NULL) {
+        ret = calloc(count, elsize);
+        if(ret == NULL) {
+            ret = calloc(count, elsize);
+        }
+    }
+    assert(ret);
+    
+    size_t iptr = (size_t) ret;
+    if(iptr < MIN_HEAP_PTR_ADDR) {
+        MIN_HEAP_PTR_ADDR = iptr;
+    }
+    if(iptr > MAX_HEAP_PTR_ADDR) {
+        MAX_HEAP_PTR_ADDR = iptr;
+    }
+    
+    return ret;
+}
+
+static void drop_ptr(void **ptr, void *set) {
+    assert(ptr);
+    assert(*ptr);
+    assert(set);
+    
+    // was set already, and possibly was freed too.
+    if(*ptr == set) {
+        return;
+    }
+    
+    // primitive checking -
+    // whether the address come from the heap
+    size_t iptr = (size_t) *ptr;
+    if(iptr < MIN_HEAP_PTR_ADDR) {
+        return;
+    }
+    if(iptr > MAX_HEAP_PTR_ADDR) {
+        return;
+    }
+    
+    // drop
+    free(*ptr);
+    *ptr = set;
 }

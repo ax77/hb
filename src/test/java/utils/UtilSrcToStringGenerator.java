@@ -89,7 +89,7 @@ public class UtilSrcToStringGenerator {
       if (tmp.isEmpty()) {
         continue;
       }
-      fw.write("    sb.append(" + q + line + pad(line, mlen + 3) + lineno(cnt++) + n + q + ");\n");
+      fw.write("    sb.append(" + q + line + pad(line, mlen + 3) + /*lineno(cnt++) +*/ n + q + ");\n");
     }
     fw.write("    //@formatter:on\n");
     fw.close();

@@ -210,11 +210,15 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isAssignVarDefaultValueFotType()) {
+      else if (item.isAssignVarDefaultValueForType()) {
         rv.add(item);
       }
 
       else if (item.isBuiltinFuncAssertTrue()) {
+        rv.add(item);
+      }
+
+      else if (item.isBuiltinFuncDropPtr()) {
         rv.add(item);
       }
 
@@ -262,7 +266,7 @@ public class RewriteRaw {
     }
     if (!rv.isEmpty()) {
       FlatCodeItem last = rv.get(rv.size() - 1);
-      if (last.isAssignVarDefaultValueFotType()) {
+      if (last.isAssignVarDefaultValueForType()) {
         Var dest = last.getDest();
         if (dest.getName().equals(RHS.getName())) {
           return false;
