@@ -95,7 +95,7 @@ public class GenBuiltinArray implements Ccode {
     if (arrayOf.isPrimitive()) {
       lineI("        drop_ptr((void**)&__this->data, " + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
     } else {
-      lineI("        drop_ptr((void**)__this->data, &" + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
+      lineI("        drop_ptr((void**)&__this->data, &" + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
     }
   }
 
@@ -197,6 +197,8 @@ public class GenBuiltinArray implements Ccode {
       lineI(methodCallsHeader);
       lineI("    assert(__this);\n");
 
+      // drop_ptr((void**) &__element, str_default_empty_ptr);
+      //
       if (arrayOf.isClass()) {
         ClassDeclaration cd = arrayOf.getClassTypeFromRef();
         ClassMethodDeclaration meth = cd.getDestructor();
@@ -204,6 +206,7 @@ public class GenBuiltinArray implements Ccode {
         lineI("for( size_t i = 0; i < __this->size; i += 1 ) {");
         lineI("    " + subTypeName + " __element = __this->data[i];");
         lineI("    " + ToStringsInternal.signToStringCall(meth) + "(__element);");
+        lineI("    drop_ptr((void**) &__element, " + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
         lineI("}");
       }
 

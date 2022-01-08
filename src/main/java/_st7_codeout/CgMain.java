@@ -112,9 +112,6 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("string proto"));
     resultBuffer.append(strProto);
 
-    resultBuffer.append(GenCommentHeader.gen("string impls"));
-    resultBuffer.append(strImpls);
-
     resultBuffer.append(GenCommentHeader.gen("interfaces proto"));
     resultBuffer.append(interfacesProto);
 
@@ -133,6 +130,9 @@ public class CgMain {
 
     resultBuffer.append(GenCommentHeader.gen("empties proto"));
     resultBuffer.append(emptiesProto);
+
+    resultBuffer.append(GenCommentHeader.gen("string impls"));
+    resultBuffer.append(strImpls);
 
     resultBuffer.append(GenCommentHeader.gen("assert true impl"));
     resultBuffer.append(assertTrueFunction);
