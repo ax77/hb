@@ -79,6 +79,26 @@ public class GenBuiltinArray implements Ccode {
     return sb.toString();
   }
 
+  private static String defaultVarNameForTypeForArrayTab(Type tp) {
+    if (tp.isClass()) {
+      final String hdr = ToStringsInternal.classHeaderToString(tp.getClassTypeFromRef());
+      final String varname = hdr + GenEmpties.DEFAULT_EMPTY_PTR;
+      return varname;
+    }
+    if (tp.isPrimitive()) {
+      return tp.toString() + GenEmpties.DEFAULT_EMPTY_PTR;
+    }
+    return "?[";
+  }
+
+  private void appendDropArrayTable(Type arrayOf) {
+    if (arrayOf.isPrimitive()) {
+      lineI("        drop_ptr((void**)&__this->data, " + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
+    } else {
+      lineI("        drop_ptr((void**)__this->data, &" + defaultVarNameForTypeForArrayTab(arrayOf) + ");");
+    }
+  }
+
   private void genMethod(Function func) {
 
     final ClassMethodDeclaration method = func.getMethodSignature();
@@ -126,7 +146,7 @@ public class GenBuiltinArray implements Ccode {
       lineI("        for(size_t i = 0; i < __this->size; i += 1) {  ");
       lineI("          ndata[i] = __this->data[i];                  ");
       lineI("        }                                              ");
-      lineI("        free(__this->data);                            ");
+      appendDropArrayTable(arrayOf);
       lineI("        __this->data = ndata;                          ");
       lineI("    }                                                  ");
       lineI("    __this->data[__this->size] = element;              ");
@@ -187,8 +207,7 @@ public class GenBuiltinArray implements Ccode {
         lineI("}");
       }
 
-      //lineI("    mark_ptr(__this);");
-      //lineI("    mark_ptr(__this->data);\n");
+      appendDropArrayTable(arrayOf);
 
       lineI("}\n");
     }
