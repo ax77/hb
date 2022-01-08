@@ -30,6 +30,9 @@
 
 class temp {
   mut str i;
+  ~temp() {
+    delete(i);
+  }
 }
 
 class node {

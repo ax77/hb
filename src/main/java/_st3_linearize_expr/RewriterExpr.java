@@ -745,36 +745,32 @@ public class RewriterExpr {
     }
 
     //TODO: this one should be a special ITEM-node...
+    //TODO:TODO:TODO:delete_expr
     else if (e.is(ExpressionBase.EDELETE)) {
       // delete(sym)
       //
       VarDeclarator var = e.getExprDelete().getVar();
       NullChecker.check(var);
 
+      String name = var.getIdentifier().getName();
+      if (var.is(VarBase.CLASS_FIELD)) {
+        name = "__this->" + name;
+      }
+
       Type vartype = var.getType();
       if (vartype.isClass()) {
+
         ClassDeclaration clazz = vartype.getClassTypeFromRef();
         List<Var> args = new ArrayList<>();
-        final Var varToDelete = VarCreator.copyVarDecl(var);
+        final Var varToDelete = VarCreator.varWithName(vartype, name);
         args.add(varToDelete);
         final ClassMethodDeclaration destructor = clazz.getDestructor();
         FlatCallVoid flatCallVoid = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
         genRaw(new FlatCodeItem(flatCallVoid));
 
-        // TODO: this should be an address (i.e. double-pointer), the assignment
-        // to default value should change the pointer wherever the pointer is now...
-        //
-        // varToDelete = default(varToDeleteType)
-        // it prevent double-deletions, at least in the current stack-frame :)
-        //
         final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
-
-        final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(varToDelete.getName().getName(),
-            rhsVar.getName().getName());
+        final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(name, rhsVar.getName().getName());
         genRaw(new FlatCodeItem(builtinFuncDropPtr));
-
-        //StoreVarVar storeVarVar = new StoreVarVar(varToDelete, rhsVar);
-        //genRaw(new FlatCodeItem(storeVarVar));
       }
     }
 

@@ -20,7 +20,7 @@ public class BuiltinFuncDropPtr {
 
   @Override
   public String toString() {
-    return "drop_ptr(&" + name + ", " + defaultEmptyPtr + ")";
+    return "drop_ptr((void**)&" + name + ", " + defaultEmptyPtr + ")";
   }
 
 }

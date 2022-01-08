@@ -6,7 +6,9 @@ import java.util.List;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprBinary;
 import ast_expr.ExprDefaultValueForType;
+import ast_expr.ExprDelete;
 import ast_expr.ExprExpression;
+import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_main.ParserMainOptions;
@@ -75,10 +77,18 @@ public abstract class BuildDefaultDestructor {
     final List<ExprExpression> args = new ArrayList<>();
     final Token beginPos = object.getBeginPos();
     final ExprExpression idExpr = new ExprExpression(new ExprIdent(field.getIdentifier()), beginPos);
+
+    @SuppressWarnings("unused")
     final ExprMethodInvocation deinitInvoke = new ExprMethodInvocation(idExpr, Keywords.deinit_ident, args);
 
+    //TODO:TODO:TODO:delete_expr
+    ExprDelete exprDelete = new ExprDelete(field.getIdentifier());
+    ExprExpression exptDropPtr = new ExprExpression(exprDelete, beginPos);
+    //
+
     StmtBlock trueStatement = new StmtBlock();
-    trueStatement.pushItemBack(new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos));
+    trueStatement.pushItemBack(new StmtStatement(exptDropPtr, beginPos));
+    //trueStatement.pushItemBack(new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos));
 
     Token op = new Token("!=", T.T_NE, beginPos.getLocation());
     ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(field.getType());

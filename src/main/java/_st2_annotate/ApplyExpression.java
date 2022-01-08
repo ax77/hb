@@ -121,7 +121,7 @@ public class ApplyExpression {
   private void applyDeleteExpression(ExprExpression e) {
     ExprDelete node = e.getExprDelete();
     Ident name = node.getName();
-    Symbol sym = symtabApplier.findVar(name, F_METHOD);
+    Symbol sym = symtabApplier.findVar(name, F_ALL);
     if (sym == null) {
       ErrorLocation.errorExpression("symbol was not declared in the scope", e);
     }
