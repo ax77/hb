@@ -148,6 +148,12 @@ public class GenEmpties implements Ccode {
       }
     }
 
+    else if(c.isNativeString()) {
+      sb.append("    // INIT: " + varname + "\n");
+      sb.append("    str_default_empty_ptr->buf = char_default_empty_ptr;\n");
+      sb.append("    str_default_empty_ptr->len = 0;\n");
+    }
+    
     else {
       sb.append("    // INIT: " + varname + "\n");
       for (VarDeclarator field : c.getFields()) {
