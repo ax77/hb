@@ -1,3 +1,15 @@
+#include <assert.h>
+#include <ctype.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "hashmap.h"
+
 struct hb_ptr {
     void *ptr;
     size_t size;
@@ -94,3 +106,19 @@ char* hstrdup(char *str) {
     rv[len] = '\0';
     return rv;
 }
+
+int main(int argc, char **argv) {
+    MANAGED_HEAP = map_new(hashmap_hash_ptr, hashmap_equal_ptr);
+
+    char sentinel[1];
+    char *str = hb_alloc(32);
+    printf("%lu\n", MANAGED_HEAP_CURRENT_SIZE);
+
+    drop_ptr((void**) &str, &sentinel);
+    printf("%lu\n", MANAGED_HEAP_CURRENT_SIZE);
+    assert(str == sentinel);
+
+    printf("\n:ok:\n");
+    return 0;
+}
+

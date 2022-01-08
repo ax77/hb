@@ -162,6 +162,7 @@ public class CgMain {
 
     resultBuffer.append(mainMethodImpl);
     resultBuffer.append("int main(int argc, char** argv) \n{\n");
+    resultBuffer.append("    MANAGED_HEAP = map_new(hashmap_hash_ptr, hashmap_equal_ptr);\n\n");
 
     if (ParserMainOptions.GENERATE_CALL_STACK) {
       resultBuffer.append("    push_function(__func__, -1);\n");

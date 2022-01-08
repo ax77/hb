@@ -28,7 +28,7 @@ public class AssignVarAllocObject {
     final String headerToString = ToStringsInternal.classHeaderToString(clazz);
 
     return lvalue.typeNameToString() + " = (" + ToStringsInternal.typeToString(lvalue.getType())
-        + ") hcalloc( 1u, sizeof(struct " + headerToString + ") )";
+        + ") hb_alloc( sizeof(struct " + headerToString + ") )";
   }
 
 }

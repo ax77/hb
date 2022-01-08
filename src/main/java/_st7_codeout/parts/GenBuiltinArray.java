@@ -93,7 +93,7 @@ public class GenBuiltinArray implements Ccode {
     final String methodCallsHeader = "static " + methodType + " " + signToStringCall
         + ToStringsInternal.parametersToString(method.getParameters()) + " {";
     final String sizeofElem = "sizeof(" + arrayOfToString + ")";
-    final String sizeofMulAlloc = "(" + arrayOfToString + "*) hcalloc( 1u, (" + sizeofElem + " * __this->alloc) );";
+    final String sizeofMulAlloc = "(" + arrayOfToString + "*) hb_alloc( (" + sizeofElem + " * __this->alloc) );";
 
     lineP("static " + methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters())
         + ";");
