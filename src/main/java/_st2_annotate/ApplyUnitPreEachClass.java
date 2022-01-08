@@ -7,9 +7,12 @@ import java.util.List;
 
 import ast_class.ClassDeclaration;
 import ast_expr.ExprBinary;
+import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
+import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
+import ast_expr.ExprUnary;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
@@ -18,6 +21,7 @@ import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_symtab.BuiltinNames;
+import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
@@ -173,14 +177,15 @@ public class ApplyUnitPreEachClass {
   private void addDestructor(ClassDeclaration object) {
     if (object.getDestructor() == null) {
       final ClassMethodDeclaration defaultDestructor = BuildDefaultDestructor.build(object);
-      addGuard(defaultDestructor);
+      addGuardFront(defaultDestructor);
       object.setDestructor(defaultDestructor);
     } else {
-      addGuard(object.getDestructor());
+      addGuardFront(object.getDestructor());
+      addGuardBack(object.getDestructor());
     }
   }
 
-  private void addGuard(ClassMethodDeclaration destructor) {
+  private void addGuardFront(ClassMethodDeclaration destructor) {
     final ClassDeclaration object = destructor.getClazz();
     final Type type = new Type(new ClassTypeRef(object, destructor.getClazz().getTypeParametersT()));
 
@@ -196,7 +201,46 @@ public class ApplyUnitPreEachClass {
 
     ExprExpression guard = new ExprExpression(binary, beginPos);
     StmtStatement select = new StmtStatement(new StmtSelect(guard, trueStatement, null), beginPos);
-    destructor.getBlock().pushItemFront(select);
+    //destructor.getBlock().pushItemFront(select);
+
+    // check whether it has deletion bit
+    List<ExprExpression> fnamearg = new ArrayList<>();
+    fnamearg.add(idExpr);
+    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
+    ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.has_deletion_bit_ident, fnamearg);
+    StmtStatement select2 = new StmtStatement(new StmtSelect(new ExprExpression(hasBit, beginPos), trueStatement, null),
+        beginPos);
+
+    // hide the generated code in {  }
+    final StmtBlock guardBlock = new StmtBlock();
+    guardBlock.pushItemBack(select);
+    guardBlock.pushItemBack(select2);
+
+    destructor.getBlock().pushItemFront(new StmtStatement(guardBlock, beginPos));
+  }
+
+  private void addGuardBack(ClassMethodDeclaration destructor) {
+    final ClassDeclaration object = destructor.getClazz();
+    final Type type = new Type(new ClassTypeRef(object, destructor.getClazz().getTypeParametersT()));
+
+    final Token beginPos = object.getBeginPos();
+    final ExprExpression idExpr = new ExprExpression(object, beginPos);
+    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
+
+    // check whether it has deletion bit
+    List<ExprExpression> fnamearg = new ArrayList<>();
+    fnamearg.add(idExpr);
+    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
+
+    /// mark __this itself
+    ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
+    final StmtStatement item = new StmtStatement(new ExprExpression(setBit, beginPos), beginPos);
+
+    // hide the generated code in {  }
+    final StmtBlock guardBlock = new StmtBlock();
+    guardBlock.pushItemBack(item);
+
+    destructor.getBlock().pushItemBack(new StmtStatement(guardBlock, beginPos));
   }
 
   private void addConstructor(ClassDeclaration object) {

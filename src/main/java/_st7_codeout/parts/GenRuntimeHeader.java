@@ -31,6 +31,7 @@ public abstract class GenRuntimeHeader {
     sb.append("struct hb_ptr {                                                     \n");
     sb.append("    void *ptr;                                                      \n");
     sb.append("    size_t size;                                                    \n");
+    sb.append("    int deletion_bit;                                               \n");
     sb.append("};                                                                  \n\n");
     
     sb.append("static struct hashmap *MANAGED_HEAP = NULL;                         \n");
@@ -118,7 +119,26 @@ public abstract class GenRuntimeHeader {
     sb.append("    rv[len] = \'\\0\';                                              \n");
     sb.append("    return rv;                                                      \n");
     sb.append("}                                                                   \n\n");
-    //free
+    
+    sb.append("static int has_deletion_bit(void *ptr, void *def) {                   \n");
+    sb.append("    if(ptr == def) {                                                  \n");
+    sb.append("        return 1;                                                     \n");
+    sb.append("    }                                                                 \n");
+    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);            \n");
+    sb.append("    assert(mem_chunk);                                                \n");
+    sb.append("    return mem_chunk->deletion_bit;                                   \n");
+    sb.append("}                                                                     \n\n");
+    
+    sb.append("static int set_deletion_bit(void *ptr, void *def) {                   \n");
+    sb.append("    if(ptr == def) {                                                  \n");
+    sb.append("        return 0;                                                     \n");
+    sb.append("    }                                                                 \n");
+    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);            \n");
+    sb.append("    assert(mem_chunk);                                                \n");
+    sb.append("    mem_chunk->deletion_bit = 1;                                      \n");
+    sb.append("    return 1;                                                         \n");
+    sb.append("}                                                                     \n\n");
+    //free                                                                          
     
     
     // call stack +

@@ -708,6 +708,15 @@ public class RewriterExpr {
         }
       }
 
+      else if (name.equals(Keywords.has_deletion_bit_ident) || name.equals(Keywords.set_deletion_bit_ident)) {
+        Var tmp = VarCreator.justNewVar(e.getResultType());
+
+        FunctionCallWithResult fcallres = new FunctionCallWithResult(method, name.getName(),
+            TypeBindings.make_boolean(), args);
+        AssignVarFlatCallResult assignVarFlatCallResult = new AssignVarFlatCallResult(tmp, fcallres);
+        genRaw(new FlatCodeItem(assignVarFlatCallResult));
+      }
+
       else {
         ErrorLocation.errorExpression("unimpl.builtin function:", e);
       }

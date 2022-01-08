@@ -1,6 +1,32 @@
 
+class doc {
+  mut str xxx;
+  doc() {
+    xxx = "xxx";
+  }
+  ~doc() {
+    delete(xxx);
+  }
+}
+
+class node {
+  mut node prev;
+  mut node next;
+  mut str item;
+  node () {
+    item = "item";
+  }
+}
+
 class tag {
-  mut int i;
+  mut str i;
+  mut node args;
+  mut doc dc;
+  tag() {
+    i = "i";
+    args = new node();
+    dc = new doc();
+  }
 }
 
 
@@ -8,11 +34,6 @@ class main {
   int main() {
     tag t = new tag();
     delete(t);
-    
-    arr<str> argv = new arr<str>();
-    argv.add("1");
-    argv.add("2");
-    delete(argv);
 
     return 0;
   }

@@ -527,6 +527,8 @@ public class ParseExpression {
     if (   parser.is(Keywords.static_assert_ident) 
         || parser.is(Keywords.assert_true_ident)
         || parser.is(Keywords.types_are_same_ident)
+        || parser.is(Keywords.has_deletion_bit_ident)
+        || parser.is(Keywords.set_deletion_bit_ident)
         || TypeTraitsUtil.isBuiltinTypeTraitsIdent(parser.tok())
     //@formatter:on
     ) {
