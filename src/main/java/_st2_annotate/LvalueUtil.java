@@ -19,7 +19,7 @@ public abstract class LvalueUtil {
       ErrorLocation.errorExpression("not an lvalue", theWholeAssignExpression);
     }
 
-    if (!methodHolder.isConstructor()) {
+    if (!methodHolder.isConstructor() && !methodHolder.isDestructor()) {
       if (isAnyIdentifier) {
         VarDeclarator var = lvalue.getIdent().getVar();
         if (!var.getMods().isMutable()) {

@@ -1,37 +1,28 @@
-
 class doc {
-  mut str i;
-  doc() {
-    i = "i";
+  mut str zzz;
+  ~doc() {
+    delete(zzz);
   }
 }
 
 class node {
-  str x;
-  str y;
+  mut str value;
+  mut node next;
+  mut str xxx;
+  mut str yyy;
   doc d;
   node() {
-    x = "x";
-    y = "y";
     d = new doc();
+    value = "abc";
+    next = this;
   }
 }
 
-class tok {
-  doc d;
-  node n;
-  str s;
-  tok() {
-    d = new doc();
-    n = new node();
-    s = "1";
-  }
-}
 
 class main {
   int main() {
-    tok t = new tok();
-    delete(t);
+    node n = new node();
+    delete(n);
     return 0;
   }
 }

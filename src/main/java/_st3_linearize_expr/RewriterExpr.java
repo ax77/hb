@@ -777,9 +777,9 @@ public class RewriterExpr {
         FlatCallVoid flatCallVoid = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
         genRaw(new FlatCodeItem(flatCallVoid));
 
-        final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
-        final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(name, rhsVar.getName().getName());
-        genRaw(new FlatCodeItem(builtinFuncDropPtr));
+        /// final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
+        /// final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(name, rhsVar.getName().getName());
+        /// genRaw(new FlatCodeItem(builtinFuncDropPtr));
       }
     }
 
