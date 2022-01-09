@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprAssign;
 import ast_expr.ExprBuiltinFunc;
-import ast_expr.ExprDefaultValueForType;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
@@ -19,7 +17,6 @@ import ast_stmt.StmtStatement;
 import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
-import tokenize.T;
 import tokenize.Token;
 
 public abstract class BuildDefaultDestructor {
@@ -72,43 +69,10 @@ public abstract class BuildDefaultDestructor {
     }
 
     // and here: drop all of the fields
-    StmtBlock emptifiers = new StmtBlock();
-    if (!fields.isEmpty()) {
-      for (int i = fields.size() - 1; i >= 0; i -= 1) {
-        final VarDeclarator field = fields.get(i);
-        final Type type = field.getType();
-        final boolean needIt = type.isClass() || type.isInterface();
-        if (!needIt) {
-          continue;
-        }
-        //TODO:
-        //drop(field)
-        emptifiers.pushItemBack(emptifier(field));
-      }
-    }
-    rv.add(new StmtStatement(emptifiers, null));
+    final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
+    rv.add(new StmtStatement(emptifiers, object.getBeginPos()));
 
     return rv;
-  }
-
-  private static StmtStatement emptifier(VarDeclarator field) {
-    // this.field = default(type)
-    ///
-
-    ExprDefaultValueForType exprDefaultValueForType = new ExprDefaultValueForType(field.getType());
-
-    final ClassDeclaration object = field.getClazz();
-    final Token beginPos = object.getBeginPos();
-
-    final ExprFieldAccess thisDotField = new ExprFieldAccess(new ExprExpression(object, beginPos),
-        field.getIdentifier());
-
-    final Token operator = new Token("=", T.T_ASSIGN, beginPos.getLocation());
-    final ExprExpression lvalue = new ExprExpression(thisDotField, beginPos);
-    final ExprExpression rvalue = new ExprExpression(exprDefaultValueForType, beginPos);
-    final ExprAssign assign = new ExprAssign(operator, lvalue, rvalue);
-
-    return new StmtStatement(new ExprExpression(assign, beginPos), beginPos);
   }
 
   /// static void node_deinit_69_1025(struct node_1025* __this)

@@ -11,6 +11,8 @@ class node {
   mut str xxx;
   mut str yyy;
   doc d;
+  mut int flag;
+  mut char cc;
   node() {
     d = new doc();
     value = "abc";

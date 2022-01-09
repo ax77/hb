@@ -179,6 +179,8 @@ public class ApplyUnitPreEachClass {
       object.setDestructor(defaultDestructor);
     } else {
       addGuardFront(object.getDestructor());
+      final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
+      object.getDestructor().getBlock().pushItemBack(new StmtStatement(emptifiers, object.getBeginPos()));
     }
   }
 
@@ -224,8 +226,8 @@ public class ApplyUnitPreEachClass {
       /// And this statement must be the first in the constructor block.
       /// After this statement a normal initizlizers will follow.
       for (ClassMethodDeclaration constr : object.getConstructors()) {
-        constr.getBlock().pushItemFront(new StmtStatement(
-            BuildDefaultConstructor.genBlockForWithAllFieldsAreInitialized(object), object.getBeginPos()));
+        final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
+        constr.getBlock().pushItemFront(new StmtStatement(emptifiers, object.getBeginPos()));
       }
     }
 

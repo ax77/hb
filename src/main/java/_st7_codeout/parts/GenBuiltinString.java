@@ -119,7 +119,7 @@ public class GenBuiltinString implements Ccode {
       lineI("    if(is_alive(__this->buf)) {                                ");
       lineI("        set_deletion_bit(__this->buf);                         ");
       lineI("    }                                                          ");
-      lineI("    drop_ptr((void**)&__this->buf, char_default_empty_ptr);    ");
+      //lineI("    drop_ptr((void**)&__this->buf, char_default_empty_ptr);    ");
 
       lineI("}\n");
     }

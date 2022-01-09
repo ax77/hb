@@ -1,0 +1,193 @@
+package _st3_linearize_expr;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.items.AssignVarAllocObject;
+import _st3_linearize_expr.items.AssignVarFieldAccess;
+import _st3_linearize_expr.items.AssignVarVar;
+import _st3_linearize_expr.items.FlatCallConstructor;
+import _st3_linearize_expr.items.StoreFieldVar;
+import _st3_linearize_expr.leaves.FieldAccess;
+import _st3_linearize_expr.leaves.Var;
+import ast_symtab.BuiltinNames;
+
+public abstract class Peep {
+
+  //  static boolean literal_equals_440(struct literal *__this, struct literal *another) {
+  //    struct literal *t759 = __this;
+  //    struct literal *t760 = another;
+  //    boolean t761 = (t759 == t760);
+  //    return t761;
+  //  }
+  //  static int literal_flag_388(struct literal *__this) {
+  //    const int t758 = 64;
+  //    return t758;
+  //  }
+  //  static void literal_init_444(struct literal *__this) {
+  //    struct literal *t749 = __this;
+  //    boolean t750 = t749->is_marked;
+  //    boolean t751 = boolean_default_empty_val;
+  //    t749->is_marked = t751;
+  //  
+  //  }
+  //  static void literal_mark_382(struct literal *__this) {
+  //    struct literal *t752 = __this;
+  //    boolean t753 = t752->is_marked;
+  //    boolean t754 = true;
+  //    t752->is_marked = t754;
+  //  }
+  //  static void literal_unmark_385(struct literal *__this) {
+  //    struct literal *t755 = __this;
+  //    boolean t756 = t755->is_marked;
+  //    boolean t757 = false;
+  //    t755->is_marked = t757;
+  //  }
+
+  public static List<FlatCodeItem> tryPeep(final List<FlatCodeItem> rv) {
+    List<FlatCodeItem> peepObjectAllocation = itIsPossibleToPeepObjectAllocation(rv);
+    if (peepObjectAllocation != null) {
+      return peepObjectAllocation;
+    }
+
+    List<FlatCodeItem> peepStoreFieldVar = itIsPossibleToPeepStoreFieldVar(rv);
+    if (peepStoreFieldVar != null) {
+      return peepStoreFieldVar;
+    }
+
+    return rv;
+  }
+
+  // 1) A wildly used object creation.
+  // 
+  // struct test_peep* t109 = (struct test_peep*) hcalloc( 1u, sizeof(struct test_peep) );
+  // test_peep_init_18(t109); 
+  // struct test_peep* p = t109;
+  //
+  // 3 items, assVarAlloc, flatCallConstructor, assVarVar
+  // !!! types are the same
+  //
+  // struct test_peep* p = (struct test_peep*) hcalloc( 1u, sizeof(struct test_peep) );
+  // test_peep_init_18(p); 
+  //
+
+  private static List<FlatCodeItem> itIsPossibleToPeepObjectAllocation(List<FlatCodeItem> rv) {
+    if (rv.size() != 3) {
+      return null;
+    }
+    boolean flag = rv.get(0).isAssignVarAllocObject() && rv.get(1).isFlatCallConstructor()
+        && rv.get(2).isAssignVarVar();
+    if (!flag) {
+      return null;
+    }
+
+    AssignVarAllocObject origAssignVarAllocObject = rv.get(0).getAssignVarAllocObject();
+    FlatCallConstructor origFlatCallConstructor = rv.get(1).getFlatCallConstructor();
+    AssignVarVar origAssignVarVar = rv.get(2).getAssignVarVar();
+
+    if (!origAssignVarAllocObject.getLvalue().getType().isEqualTo(origAssignVarVar.getLvalue().getType())) {
+      return null;
+    }
+
+    /// OK:
+
+    List<FlatCodeItem> result = new ArrayList<>();
+    AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(origAssignVarVar.getLvalue(),
+        origAssignVarAllocObject.getTypename());
+
+    List<Var> args = new ArrayList<>(origFlatCallConstructor.getArgs());
+    args.remove(0);
+    args.add(0, origAssignVarVar.getLvalue());
+
+    FlatCallConstructor flatCallConstructor = new FlatCallConstructor(origFlatCallConstructor.getFullname(), args,
+        args.get(0));
+
+    result.add(new FlatCodeItem(assignVarAllocObject));
+    result.add(new FlatCodeItem(flatCallConstructor));
+
+    return result;
+  }
+
+  // 2) A wildly used store_field_var
+  //
+  // 1. struct str *t138 = __this;
+  // 2. struct arr_1024 *t139 = t138->buffer;
+  // 3. struct arr_1024 *t140 = arr;
+  // 4. t138->buffer = t140;
+  //
+  // 4 items, lvalue4==rvalue2, rvalue1==__this
+  //   assVarVar, 
+  //   assVarFieldAccess, 
+  //   something, 
+  //   storeFieldVar
+  //
+  // struct arr_1024 *t140 = arr;
+  // __this->buffer = t140;
+  //
+  // We cannot optimize it into the form like:
+  // __this->buffer = arr;
+  // Because: we do not want to spread the 'store' items, we have storeVarVar, storeVarField, storeFieldVar.
+  // And if we want to improve this - we should add the rest like: storeFieldDefaultValueForType, storeFieldTrue, storeFieldNum, etc.
+
+  private static List<FlatCodeItem> itIsPossibleToPeepStoreFieldVar(List<FlatCodeItem> rv) {
+    if (rv.size() != 4) {
+      return null;
+    }
+    boolean flag = rv.get(0).isAssignVarVar() && rv.get(1).isAssignVarFieldAccess() && rv.get(3).isStoreFieldVar();
+    if (!flag) {
+      return null;
+    }
+
+    AssignVarVar origAssignVarVar = rv.get(0).getAssignVarVar();
+    AssignVarFieldAccess origAssignVarFieldAccess = rv.get(1).getAssignVarFieldAccess();
+    Var variableToStore = rv.get(2).getDest();
+    StoreFieldVar origStoreFieldVar = rv.get(3).getStoreFieldVar();
+
+    if (!origAssignVarVar.getRvalue().getName().equals(BuiltinNames.__this_ident)) {
+      return null;
+    }
+
+    /// OK:
+
+    List<FlatCodeItem> result = new ArrayList<>();
+    result.add(rv.get(2));
+
+    FieldAccess dst = new FieldAccess(origAssignVarVar.getRvalue(), origStoreFieldVar.getDst().getField());
+    StoreFieldVar storeFieldVar = new StoreFieldVar(dst, variableToStore);
+    result.add(new FlatCodeItem(storeFieldVar));
+
+    return result;
+  }
+  
+  // 3)
+  // struct test_peep *t420 = __this;
+  // struct str *t421 = t420->s;
+  // struct str *t423 = (struct str*) hcalloc(1u, sizeof(struct str));
+  // str_init_26(t423, t422);
+  // t420->s = t423;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

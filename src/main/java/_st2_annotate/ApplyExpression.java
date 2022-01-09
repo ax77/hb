@@ -1,6 +1,6 @@
 package _st2_annotate;
 
-import static _st2_annotate.SymbolTable.*;
+import static _st2_annotate.SymbolTable.F_ALL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,6 @@ import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_types.TypeBindings;
 import ast_vars.VarDeclarator;
-import errors.AstParseException;
 import errors.ErrorLocation;
 import tokenize.Ident;
 
