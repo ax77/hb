@@ -1,11 +1,37 @@
-import std.list.list;
+
+class doc {
+  mut str i;
+  doc() {
+    i = "i";
+  }
+}
+
+class node {
+  str x;
+  str y;
+  doc d;
+  node() {
+    x = "x";
+    y = "y";
+    d = new doc();
+  }
+}
+
+class tok {
+  doc d;
+  node n;
+  str s;
+  tok() {
+    d = new doc();
+    n = new node();
+    s = "1";
+  }
+}
 
 class main {
   int main() {
-    list<int> root = new list<int>();
-    root.push_front(1);
-    root.push_front(2);
-    delete(root);
+    tok t = new tok();
+    delete(t);
     return 0;
   }
 }

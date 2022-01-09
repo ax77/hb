@@ -4,26 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
-import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
-import ast_expr.ExprDefaultValueForType;
-import ast_expr.ExprDelete;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
-import ast_expr.ExprUnary;
 import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_stmt.StmtBlock;
-import ast_stmt.StmtReturn;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
 import ast_symtab.Keywords;
-import ast_types.ClassTypeRef;
 import ast_types.Type;
 import ast_vars.VarDeclarator;
-import tokenize.T;
 import tokenize.Token;
 
 public abstract class BuildDefaultDestructor {
@@ -42,6 +35,9 @@ public abstract class BuildDefaultDestructor {
     return destructor;
 
   }
+
+  // TODO: apply destructors for all plain fields.
+  // and after that apply destructors for self-referenced fields.
 
   private static List<StmtStatement> deinits(ClassDeclaration object) {
     final List<VarDeclarator> fields = object.getFields();
@@ -72,24 +68,19 @@ public abstract class BuildDefaultDestructor {
       }
     }
 
-    //    final Token beginPos = object.getBeginPos();
-    //    final ExprExpression idExpr = new ExprExpression(object, beginPos);
-    //
-    //    final Type type = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
-    //    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
-    //
-    //    List<ExprExpression> fnamearg = new ArrayList<>();
-    //    fnamearg.add(idExpr);
-    //    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
-    //
-    //    ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
-    //    final StmtStatement item = new StmtStatement(new ExprExpression(setBit, beginPos), beginPos);
-    //
-    //    // hide the generated code in {  }
-    //    final StmtBlock guardBlock = new StmtBlock();
-    //    guardBlock.pushItemBack(item);
-    //
-    //    rv.add(new StmtStatement(guardBlock, beginPos));
+    // and here: drop all of the fields
+    if (!fields.isEmpty()) {
+      for (int i = fields.size() - 1; i >= 0; i -= 1) {
+        final VarDeclarator field = fields.get(i);
+        final Type type = field.getType();
+        final boolean needIt = type.isClass() || type.isInterface();
+        if (!needIt) {
+          continue;
+        }
+        //TODO:
+        //drop(field)
+      }
+    }
 
     return rv;
   }
@@ -131,20 +122,22 @@ public abstract class BuildDefaultDestructor {
     final ExprMethodInvocation deinitInvoke = new ExprMethodInvocation(idExpr, Keywords.deinit_ident, args);
     final StmtStatement deinitCallStmt = new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos);
 
-    final ExprFieldAccess exprFieldAccess = new ExprFieldAccess(new ExprExpression(object, beginPos),
+    final ExprFieldAccess thisDotField = new ExprFieldAccess(new ExprExpression(object, beginPos),
         field.getIdentifier());
     final List<ExprExpression> fnamearg = new ArrayList<>();
-    fnamearg.add(new ExprExpression(exprFieldAccess, beginPos));
-    final ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.is_alive_ident, fnamearg);
+    fnamearg.add(new ExprExpression(thisDotField, beginPos));
 
+    // the block of the 'if-statement'
     final StmtBlock trueStatement = new StmtBlock();
-    final StmtSelect select = new StmtSelect(new ExprExpression(hasBit, beginPos), trueStatement, null);
     trueStatement.pushItemBack(deinitCallStmt);
 
     final ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
     trueStatement.pushItemBack(new StmtStatement(new ExprExpression(setBit, beginPos), beginPos));
 
+    final ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.is_alive_ident, fnamearg);
+    final StmtSelect select = new StmtSelect(new ExprExpression(hasBit, beginPos), trueStatement, null);
     resultBlock.pushItemBack(new StmtStatement(select, beginPos));
+
     return new StmtStatement(resultBlock, beginPos);
   }
 

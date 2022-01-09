@@ -115,8 +115,10 @@ is a static method call, etc... ExprIdent is a static ExprIdent...
 * 
 
 
+///09.01.2022 ::
 
-
+* parse a raw text, and build a statement/expression, for example: 
+this technique may be useful when building a default destructors.
 
 
 
