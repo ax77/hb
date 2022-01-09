@@ -51,7 +51,7 @@ public final class Keywords {
   public static final Ident static_assert_ident  = g("static_assert");
   public static final Ident assert_true_ident    = g("assert_true");
   
-  public static final Ident has_deletion_bit_ident    = g("has_deletion_bit");
+  public static final Ident is_alive_ident            = g("is_alive");
   public static final Ident set_deletion_bit_ident    = g("set_deletion_bit");
   
   // types:

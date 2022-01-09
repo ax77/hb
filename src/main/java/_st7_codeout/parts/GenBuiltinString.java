@@ -111,7 +111,16 @@ public class GenBuiltinString implements Ccode {
     else if (signToStringCall.startsWith("str_deinit_")) {
       lineI(methodCallsHeader);
       lineI("    assert(__this);\n");
-      lineI("    drop_ptr((void**)&__this->buf, char_default_empty_ptr);\n");
+
+      lineI("    if(!is_alive(__this)) {                                    ");
+      lineI("        return;                                                ");
+      lineI("    }                                                          ");
+      lineI("    set_deletion_bit(__this);                                  ");
+      lineI("    if(is_alive(__this->buf)) {                                ");
+      lineI("        set_deletion_bit(__this->buf);                         ");
+      lineI("    }                                                          ");
+      lineI("    drop_ptr((void**)&__this->buf, char_default_empty_ptr);    ");
+
       lineI("}\n");
     }
 

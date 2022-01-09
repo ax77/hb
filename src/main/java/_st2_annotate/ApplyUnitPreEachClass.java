@@ -180,41 +180,38 @@ public class ApplyUnitPreEachClass {
       addGuardFront(defaultDestructor);
       object.setDestructor(defaultDestructor);
     } else {
-      addGuardFront(object.getDestructor());
-      addGuardBack(object.getDestructor());
+      //TODO:
+      //addGuardFront(object.getDestructor());
+      //addGuardBack(object.getDestructor());
     }
   }
 
   private void addGuardFront(ClassMethodDeclaration destructor) {
     final ClassDeclaration object = destructor.getClazz();
-    final Type type = new Type(new ClassTypeRef(object, destructor.getClazz().getTypeParametersT()));
-
     final Token beginPos = object.getBeginPos();
     final ExprExpression idExpr = new ExprExpression(object, beginPos);
+    final List<ExprExpression> fnamearg = new ArrayList<>();
+    fnamearg.add(idExpr);
 
-    StmtBlock trueStatement = new StmtBlock();
+    final StmtBlock trueStatement = new StmtBlock();
     trueStatement.pushItemBack(new StmtStatement(new StmtReturn(), beginPos));
 
-    Token op = new Token("==", T.T_EQ, beginPos.getLocation());
-    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
-    ExprBinary binary = new ExprBinary(op, idExpr, new ExprExpression(defaultValueForType, beginPos));
-
-    ExprExpression guard = new ExprExpression(binary, beginPos);
-    StmtStatement select = new StmtStatement(new StmtSelect(guard, trueStatement, null), beginPos);
-    //destructor.getBlock().pushItemFront(select);
-
     // check whether it has deletion bit
-    List<ExprExpression> fnamearg = new ArrayList<>();
-    fnamearg.add(idExpr);
-    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
-    ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.has_deletion_bit_ident, fnamearg);
-    StmtStatement select2 = new StmtStatement(new StmtSelect(new ExprExpression(hasBit, beginPos), trueStatement, null),
+
+    final ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.is_alive_ident, fnamearg);
+
+    final ExprUnary nothas = new ExprUnary(new Token("!", T.T_EXCLAMATION, beginPos.getLocation()),
+        new ExprExpression(hasBit, beginPos));
+
+    StmtStatement select2 = new StmtStatement(new StmtSelect(new ExprExpression(nothas, beginPos), trueStatement, null),
         beginPos);
 
     // hide the generated code in {  }
     final StmtBlock guardBlock = new StmtBlock();
-    guardBlock.pushItemBack(select);
     guardBlock.pushItemBack(select2);
+
+    final ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
+    guardBlock.pushItemBack(new StmtStatement(new ExprExpression(setBit, beginPos), beginPos));
 
     destructor.getBlock().pushItemFront(new StmtStatement(guardBlock, beginPos));
   }

@@ -1,40 +1,11 @@
-
-class doc {
-  mut str xxx;
-  doc() {
-    xxx = "xxx";
-  }
-  ~doc() {
-    delete(xxx);
-  }
-}
-
-class node {
-  mut node prev;
-  mut node next;
-  mut str item;
-  node () {
-    item = "item";
-  }
-}
-
-class tag {
-  mut str i;
-  mut node args;
-  mut doc dc;
-  tag() {
-    i = "i";
-    args = new node();
-    dc = new doc();
-  }
-}
-
+import std.list.list;
 
 class main {
   int main() {
-    tag t = new tag();
-    delete(t);
-
+    list<int> root = new list<int>();
+    root.push_front(1);
+    root.push_front(2);
+    delete(root);
     return 0;
   }
 }

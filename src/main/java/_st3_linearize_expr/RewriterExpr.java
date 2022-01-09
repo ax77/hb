@@ -708,7 +708,7 @@ public class RewriterExpr {
         }
       }
 
-      else if (name.equals(Keywords.has_deletion_bit_ident) || name.equals(Keywords.set_deletion_bit_ident)) {
+      else if (name.equals(Keywords.is_alive_ident) || name.equals(Keywords.set_deletion_bit_ident)) {
         Var tmp = VarCreator.justNewVar(e.getResultType());
 
         FunctionCallWithResult fcallres = new FunctionCallWithResult(method, name.getName(),

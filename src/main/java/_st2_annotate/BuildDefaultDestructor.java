@@ -72,88 +72,80 @@ public abstract class BuildDefaultDestructor {
       }
     }
 
-    final Token beginPos = object.getBeginPos();
-    final ExprExpression idExpr = new ExprExpression(object, beginPos);
-
-    final Type type = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
-    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
-
-    List<ExprExpression> fnamearg = new ArrayList<>();
-    fnamearg.add(idExpr);
-    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
-
-    ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
-    final StmtStatement item = new StmtStatement(new ExprExpression(setBit, beginPos), beginPos);
-
-    // hide the generated code in {  }
-    final StmtBlock guardBlock = new StmtBlock();
-    guardBlock.pushItemBack(item);
-
-    rv.add(new StmtStatement(guardBlock, beginPos));
+    //    final Token beginPos = object.getBeginPos();
+    //    final ExprExpression idExpr = new ExprExpression(object, beginPos);
+    //
+    //    final Type type = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
+    //    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(type);
+    //
+    //    List<ExprExpression> fnamearg = new ArrayList<>();
+    //    fnamearg.add(idExpr);
+    //    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
+    //
+    //    ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
+    //    final StmtStatement item = new StmtStatement(new ExprExpression(setBit, beginPos), beginPos);
+    //
+    //    // hide the generated code in {  }
+    //    final StmtBlock guardBlock = new StmtBlock();
+    //    guardBlock.pushItemBack(item);
+    //
+    //    rv.add(new StmtStatement(guardBlock, beginPos));
 
     return rv;
   }
 
+  /// static void node_deinit_69_1025(struct node_1025* __this)
+  /// {
+  ///     if(!is_alive(__this)) {
+  ///         return;
+  ///     }
+  ///     set_deletion_bit(__this);
+  ///     
+  ///     if(is_alive(__this->item)) {
+  ///         str_deinit_23(__this->item);
+  ///         set_deletion_bit(__this->item);
+  ///     }
+  ///     
+  ///     if(is_alive(__this->next)) {
+  ///         node_deinit_69_1025(__this->next);
+  ///         set_deletion_bit(__this->next);
+  ///     }
+  ///     
+  ///     
+  ///     if(is_alive(__this->prev)) {
+  ///         node_deinit_69_1025(__this->prev);
+  ///         set_deletion_bit(__this->prev);
+  ///     }
+  ///     
+  ///     drop_ptr((void**)&__this->item, str_default_empty_ptr);
+  ///     drop_ptr((void**)&__this->next, node_1025_default_empty_ptr);
+  ///     drop_ptr((void**)&__this->prev, node_1025_default_empty_ptr);
+  /// }
+
   public static StmtStatement guardedDeinitCallForField(ClassDeclaration object, VarDeclarator field) {
-    // if(!has_deletion_bit(field)) {
-    //     set_deletion_bit(field);
-    // }
-    // set_deletion_bit(__this);
 
     final StmtBlock resultBlock = new StmtBlock();
     final Token beginPos = object.getBeginPos();
     final ExprExpression idExpr = new ExprExpression(new ExprIdent(field.getIdentifier()), beginPos);
-
-    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(field.getType());
-
     final List<ExprExpression> args = new ArrayList<>();
     final ExprMethodInvocation deinitInvoke = new ExprMethodInvocation(idExpr, Keywords.deinit_ident, args);
     final StmtStatement deinitCallStmt = new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos);
 
-    // 1
-    ExprFieldAccess exprFieldAccess = new ExprFieldAccess(new ExprExpression(object, beginPos), field.getIdentifier());
-    List<ExprExpression> fnamearg = new ArrayList<>();
+    final ExprFieldAccess exprFieldAccess = new ExprFieldAccess(new ExprExpression(object, beginPos),
+        field.getIdentifier());
+    final List<ExprExpression> fnamearg = new ArrayList<>();
     fnamearg.add(new ExprExpression(exprFieldAccess, beginPos));
-    fnamearg.add(new ExprExpression(defaultValueForType, beginPos));
-    ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.has_deletion_bit_ident, fnamearg);
-    ExprUnary nothas = new ExprUnary(new Token("!", T.T_EXCLAMATION, beginPos.getLocation()),
-        new ExprExpression(hasBit, beginPos));
+    final ExprBuiltinFunc hasBit = new ExprBuiltinFunc(Keywords.is_alive_ident, fnamearg);
 
-    StmtBlock trueStatement = new StmtBlock();
-    StmtSelect select = new StmtSelect(new ExprExpression(nothas, beginPos), trueStatement, null);
+    final StmtBlock trueStatement = new StmtBlock();
+    final StmtSelect select = new StmtSelect(new ExprExpression(hasBit, beginPos), trueStatement, null);
     trueStatement.pushItemBack(deinitCallStmt);
+
+    final ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
+    trueStatement.pushItemBack(new StmtStatement(new ExprExpression(setBit, beginPos), beginPos));
+
     resultBlock.pushItemBack(new StmtStatement(select, beginPos));
-
-    // 2
-    ExprBuiltinFunc setBit = new ExprBuiltinFunc(Keywords.set_deletion_bit_ident, fnamearg);
-    resultBlock.pushItemBack(new StmtStatement(new ExprExpression(setBit, beginPos), beginPos));
-
     return new StmtStatement(resultBlock, beginPos);
-
-    //    final List<ExprExpression> args = new ArrayList<>();
-    //    final Token beginPos = object.getBeginPos();
-    //    final ExprExpression idExpr = new ExprExpression(new ExprIdent(field.getIdentifier()), beginPos);
-    //
-    //    @SuppressWarnings("unused")
-    //    final ExprMethodInvocation deinitInvoke = new ExprMethodInvocation(idExpr, Keywords.deinit_ident, args);
-    //
-    //    //TODO:TODO:TODO:delete_expr
-    //    ExprDelete exprDelete = new ExprDelete(field.getIdentifier());
-    //    ExprExpression exptDropPtr = new ExprExpression(exprDelete, beginPos);
-    //    //
-    //
-    //    StmtBlock trueStatement = new StmtBlock();
-    //    trueStatement.pushItemBack(new StmtStatement(exptDropPtr, beginPos));
-    //    //trueStatement.pushItemBack(new StmtStatement(new ExprExpression(deinitInvoke, beginPos), beginPos));
-    //
-    //    Token op = new Token("!=", T.T_NE, beginPos.getLocation());
-    //    ExprDefaultValueForType defaultValueForType = new ExprDefaultValueForType(field.getType());
-    //    ExprBinary binary = new ExprBinary(op, idExpr, new ExprExpression(defaultValueForType, beginPos));
-    //
-    //    ExprExpression guard = new ExprExpression(binary, beginPos);
-    //    StmtSelect select = new StmtSelect(guard, trueStatement, null);
-    //
-    //    return new StmtStatement(select, beginPos);
   }
 
 }

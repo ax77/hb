@@ -25,21 +25,21 @@ public abstract class GenRuntimeHeader {
     sb.append("#define false 0                                \n");
     sb.append("#define true (!(false))                        \n\n");
     
-    //free
+  //free
     sb.append("#include \"hashmap.h\"                                              \n\n");
     
     sb.append("struct hb_ptr {                                                     \n");
     sb.append("    void *ptr;                                                      \n");
     sb.append("    size_t size;                                                    \n");
     sb.append("    int deletion_bit;                                               \n");
-    sb.append("};                                                                  \n\n");
+    sb.append("};                                                                  \n");
     
     sb.append("static struct hashmap *MANAGED_HEAP = NULL;                         \n");
     sb.append("static size_t MIN_HEAP_PTR_ADDR = SIZE_MAX;                         \n");
     sb.append("static size_t MAX_HEAP_PTR_ADDR = 0;                                \n");
     sb.append("static size_t MANAGED_HEAP_CURRENT_SIZE = 0;                        \n");
     sb.append("static size_t MANAGED_HEAP_BYTES_ALLOCATED_TOTAL = 0;               \n");
-    sb.append("static size_t MANAGED_HEAP_BYTES_DEALLOCATED_TOTAL = 0;             \n\n");
+    sb.append("static size_t MANAGED_HEAP_BYTES_DEALLOCATED_TOTAL = 0;             \n");
     
     sb.append("static void* hb_alloc(size_t size) {                                \n");
     sb.append("    assert(size > 0);                                               \n");
@@ -66,17 +66,21 @@ public abstract class GenRuntimeHeader {
     sb.append("    assert(mem_chunk);                                              \n");
     sb.append("    mem_chunk->ptr = ret;                                           \n");
     sb.append("    mem_chunk->size = size;                                         \n");
+    sb.append("    mem_chunk->deletion_bit = 0;                                    \n");
     sb.append("    void *overwritten = map_put(MANAGED_HEAP, ret, mem_chunk);      \n");
     sb.append("    assert(overwritten == NULL);                                    \n");
     sb.append("    MANAGED_HEAP_CURRENT_SIZE += size;                              \n");
     sb.append("    MANAGED_HEAP_BYTES_ALLOCATED_TOTAL += size;                     \n");
     sb.append("    return ret;                                                     \n");
-    sb.append("}                                                                   \n\n");
+    sb.append("}                                                                   \n");
     
     sb.append("static void drop_ptr(void **ptr, void *set) {                       \n");
     sb.append("    assert(ptr);                                                    \n");
-    sb.append("    assert(*ptr);                                                   \n");
     sb.append("    assert(set);                                                    \n");
+    sb.append("  // TODO                                                           \n");
+    sb.append("    if(!*ptr) {                                                     \n");
+    sb.append("        return;                                                     \n");
+    sb.append("    }                                                               \n");
     sb.append("    // was set already, and possibly was freed too.                 \n");
     sb.append("    if (*ptr == set) {                                              \n");
     sb.append("        return;                                                     \n");
@@ -109,7 +113,33 @@ public abstract class GenRuntimeHeader {
     sb.append("    free(mem_chunk->ptr);                                           \n");
     sb.append("    free(mem_chunk);                                                \n");
     sb.append("    *ptr = set;                                                     \n");
-    sb.append("}                                                                   \n\n");
+    sb.append("}                                                                   \n");
+    
+    sb.append("static int is_alive(void *ptr) {                                    \n");
+    sb.append("    if(!ptr) {                                                      \n");
+    sb.append("        return false;                                               \n");
+    sb.append("    }                                                               \n");
+    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);          \n");
+    sb.append("    if(mem_chunk == NULL) {                                         \n");
+    sb.append("        return false;                                               \n");
+    sb.append("    }                                                               \n");
+    sb.append("    if(mem_chunk->deletion_bit) {                                   \n");
+    sb.append("        return false;                                               \n");
+    sb.append("    }                                                               \n");
+    sb.append("    return true;                                                    \n");
+    sb.append("}                                                                   \n");
+    
+    sb.append("static int set_deletion_bit(void *ptr) {                            \n");
+    sb.append("    if(!ptr) {                                                      \n");
+    sb.append("        return 0;                                                   \n");
+    sb.append("    }                                                               \n");
+    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);          \n");
+    sb.append("    if(mem_chunk == NULL) {                                         \n");
+    sb.append("        return 0;                                                   \n");
+    sb.append("    }                                                               \n");
+    sb.append("    mem_chunk->deletion_bit = 1;                                    \n");
+    sb.append("    return 1;                                                       \n");
+    sb.append("}                                                                   \n");
     
     sb.append("char* hstrdup(char *str) {                                          \n");
     sb.append("    assert(str);                                                    \n");
@@ -119,26 +149,7 @@ public abstract class GenRuntimeHeader {
     sb.append("    rv[len] = \'\\0\';                                              \n");
     sb.append("    return rv;                                                      \n");
     sb.append("}                                                                   \n\n");
-    
-    sb.append("static int has_deletion_bit(void *ptr, void *def) {                   \n");
-    sb.append("    if(ptr == def) {                                                  \n");
-    sb.append("        return 1;                                                     \n");
-    sb.append("    }                                                                 \n");
-    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);            \n");
-    sb.append("    assert(mem_chunk);                                                \n");
-    sb.append("    return mem_chunk->deletion_bit;                                   \n");
-    sb.append("}                                                                     \n\n");
-    
-    sb.append("static int set_deletion_bit(void *ptr, void *def) {                   \n");
-    sb.append("    if(ptr == def) {                                                  \n");
-    sb.append("        return 0;                                                     \n");
-    sb.append("    }                                                                 \n");
-    sb.append("    struct hb_ptr *mem_chunk = map_get(MANAGED_HEAP, ptr);            \n");
-    sb.append("    assert(mem_chunk);                                                \n");
-    sb.append("    mem_chunk->deletion_bit = 1;                                      \n");
-    sb.append("    return 1;                                                         \n");
-    sb.append("}                                                                     \n\n");
-    //free                                                                          
+    //free                                                                       
     
     
     // call stack +

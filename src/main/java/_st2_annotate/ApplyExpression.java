@@ -203,8 +203,8 @@ public class ApplyExpression {
       e.setResultType(TypeBindings.make_boolean());
     }
 
-    else if (name.equals(Keywords.has_deletion_bit_ident) || name.equals(Keywords.set_deletion_bit_ident)) {
-      if (node.getArgs().size() != 2) {
+    else if (name.equals(Keywords.is_alive_ident) || name.equals(Keywords.set_deletion_bit_ident)) {
+      if (node.getArgs().size() != 1) {
         ErrorLocation.errorExpression(name.toString() + " expects one argument", e);
       }
       e.setResultType(TypeBindings.make_boolean()); // TODO: has=boolean, set=void
