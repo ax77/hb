@@ -51,6 +51,9 @@ public abstract class BuildDefaultDestructor {
         if (!needIt) {
           continue;
         }
+        if (type.isEnum()) {
+          continue;
+        }
 
         if (type.getClassTypeFromRef().isEqualTo(object)) { // self-referenced struct
           if (ParserMainOptions.WARN_SELF_REFERENCED_DESTRUCTORS) {

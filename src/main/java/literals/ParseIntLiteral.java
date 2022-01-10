@@ -172,10 +172,10 @@ public abstract class ParseIntLiteral {
     ///////
 
     boolean isFloating = false;
-    if (!mnt.isEmpty()) {
+    if (mnt.length() != 0) {
       isFloating = true;
     }
-    if (!exp.isEmpty()) {
+    if (exp.length() != 0) {
       isFloating = true;
     }
 
@@ -210,7 +210,7 @@ public abstract class ParseIntLiteral {
     }
 
     Type type = null;
-    if (!suf.isEmpty()) {
+    if (suf.length() != 0) {
       type = TypeBindings.getTypeBySuffix(suf.toString());
     } else {
       if (isFloating) {
