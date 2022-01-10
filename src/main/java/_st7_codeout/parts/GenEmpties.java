@@ -55,6 +55,7 @@ public class GenEmpties implements Ccode {
         continue;
       }
       if (c.isEnum()) {
+        proto.append(genEmptiesProto(c));
         continue;
       }
 

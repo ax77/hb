@@ -129,6 +129,9 @@ public class ApplyUnitPreEachClass {
     if (object.isNamespace()) {
       return;
     }
+    if (object.isEnum()) {
+      return;
+    }
 
     addEqualsMethod(object);
     addDestructor(object);

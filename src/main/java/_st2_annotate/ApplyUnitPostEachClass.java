@@ -47,6 +47,9 @@ public class ApplyUnitPostEachClass {
     if (c.isNamespace()) {
       return;
     }
+    if (c.isEnum()) {
+      return;
+    }
 
     /// we 100% know that class has at least one constructor
     for (ClassMethodDeclaration constructor : c.getConstructors()) {
@@ -127,6 +130,9 @@ public class ApplyUnitPostEachClass {
     }
     ///TODO:static_semantic
     if (object.isNamespace()) {
+      return;
+    }
+    if (object.isEnum()) {
       return;
     }
 
