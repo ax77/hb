@@ -12,10 +12,7 @@ public abstract class GenStructsForwards {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : pods) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (c.isNamespace()) {
+      if (c.isStaticClass()) {
         continue;
       }
       sb.append("struct " + ToStringsInternal.classHeaderToString(c) + ";\n");

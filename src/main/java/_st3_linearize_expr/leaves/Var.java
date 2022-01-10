@@ -73,9 +73,6 @@ public class Var implements Comparable<Var> {
   private String modsToString() {
     StringBuilder sb = new StringBuilder();
     for (Ident id : mods.getModifiers()) {
-      if (id.equals(Keywords.mut_ident)) {
-        continue;
-      }
       sb.append(id.getName());
       sb.append(" ");
     }

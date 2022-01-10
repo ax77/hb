@@ -25,14 +25,15 @@ public final class Keywords {
   public static final Ident implements_ident     = g("implements");
   public static final Ident import_ident         = g("import");
   public static final Ident new_ident            = g("new");
-  public static final Ident private_ident        = g("private");
-  public static final Ident public_ident         = g("public");
   public static final Ident return_ident         = g("return");
   public static final Ident while_ident          = g("while");
   
   // modifiers
   public static final Ident native_ident         = g("native");
-  public static final Ident mut_ident            = g("mut");
+  public static final Ident static_ident         = g("static");
+  public static final Ident final_ident          = g("final");
+  public static final Ident private_ident        = g("private");
+  public static final Ident public_ident         = g("public");
   
   // literals
   public static final Ident true_ident           = g("true");
@@ -66,7 +67,6 @@ public final class Keywords {
   public static final Ident class_ident          = g("class");
   public static final Ident interface_ident      = g("interface");
   public static final Ident enum_ident           = g("enum");
-  public static final Ident namespace_ident      = g("namespace");
   
   // type-traits
   public static final Ident is_void_ident        = g("is_void");

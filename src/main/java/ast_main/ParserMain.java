@@ -82,6 +82,9 @@ public class ParserMain implements ParserMainApi {
     if (mainClass == null) {
       throw new AstParseException("main class not found");
     }
+    if (!mainClass.isStaticClass()) {
+      throw new AstParseException("main class should be static");
+    }
 
     return result;
   }

@@ -153,7 +153,7 @@ public class RewriteRaw {
         final Type ltype = lvalue.getType();
         final Type rtype = rvalue.getType();
 
-        if (ltype.isNamespace()) {
+        if (ltype.isStaticClass()) {
           continue;
         }
 
@@ -261,7 +261,7 @@ public class RewriteRaw {
     if (!lhsType.isClass()) {
       return false;
     }
-    if (lhsType.isNamespace() || lhsType.isEnum()) {
+    if (lhsType.isStaticClass() || lhsType.isEnum()) {
       return false;
     }
     if (!rv.isEmpty()) {

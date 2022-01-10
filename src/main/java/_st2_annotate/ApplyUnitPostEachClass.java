@@ -33,18 +33,12 @@ public class ApplyUnitPostEachClass {
     for (ClassDeclaration c : instantiationUnit.getClasses()) {
       InterfaceChecker.checkImplementations(c);
       applyMethodsSpecial(c);
-
       checkAllFieldsAreInitialized(c);
     }
   }
 
   private void checkAllFieldsAreInitialized(final ClassDeclaration c) {
-    if (c.isMainClass()) {
-      return;
-    }
-
-    ///TODO:static_semantic
-    if (c.isNamespace()) {
+    if (c.isStaticClass()) {
       return;
     }
     if (c.isEnum()) {
@@ -79,7 +73,8 @@ public class ApplyUnitPostEachClass {
       boolean hasErrors = false;
       for (VarDeclarator var : fields) {
         // TODO: much more clean with native array.
-        if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray() && !var.getMods().isMutable()) {
+        if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray()
+            && var.getMods().isFinal() /*&& !var.getMods().isMutable()*/) {
           hasErrors = true;
           System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
               + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());
@@ -125,11 +120,7 @@ public class ApplyUnitPostEachClass {
   }
 
   private void addThisParamToEachMethod(ClassDeclaration object) {
-    if (object.isMainClass()) {
-      return;
-    }
-    ///TODO:static_semantic
-    if (object.isNamespace()) {
+    if (object.isStaticClass()) {
       return;
     }
     if (object.isEnum()) {

@@ -36,7 +36,7 @@ public class ParseTypeDeclarations {
     @SuppressWarnings("unused")
     final Modifiers modifiers = new ParseModifiers(parser).parse();
 
-    if (parser.is(Keywords.class_ident) || parser.is(Keywords.interface_ident) || parser.is(Keywords.namespace_ident)) {
+    if (parser.is(Keywords.class_ident) || parser.is(Keywords.interface_ident)) {
       final ClassDeclaration clazz = parseClassDeclaration(parser.tok().getIdent());
 
       if (clazz.isTemplate()) {
@@ -133,7 +133,7 @@ public class ParseTypeDeclarations {
       return clazz;
     }
 
-    if (keyword.equals(Keywords.class_ident) || keyword.equals(Keywords.namespace_ident)) {
+    if (keyword.equals(Keywords.class_ident)) {
       while (!parser.isEof()) {
         putConstructorOrFieldOrMethodIntoClass(clazz);
         if (parser.is(T.T_RIGHT_BRACE)) {

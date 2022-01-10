@@ -3,9 +3,9 @@ enum test_type {
   t_plain, t_suite
 }
 
-namespace tests {
-  int version = 32;
-  int version() {
+static class tests {
+  static int version = 32;
+  static int version() {
     return version;
   }
 }
@@ -21,8 +21,8 @@ class utest {
   }
 }
 
-class main {
-  int main() {
+static class main {
+  static int main() {
     utest t = new utest();
     if(t.typ == test_type.t_plain) {}
     assert_true(t.ver == 64);

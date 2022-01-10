@@ -1,14 +1,14 @@
 
-namespace io {
+static class io {
   native int open(str filename, int mode);
   native int close(int fd);
   native int read(int fd, arr<char> buffer, int size); 
 }
 
-namespace fmt<T> {
+static class fmt<T> {
   native void print(T arg);
 }
 
-namespace hash<T> {
+static class hash<T> {
   native int hashcode(T arg);
 }

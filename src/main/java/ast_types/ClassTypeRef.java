@@ -68,10 +68,6 @@ public class ClassTypeRef implements Serializable {
     return clazz.isTemplate();
   }
 
-  public boolean isNamespace() {
-    return clazz.isNamespace();
-  }
-
   public boolean isInterface() {
     return clazz.isInterface();
   }

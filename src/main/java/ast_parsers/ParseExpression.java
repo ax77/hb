@@ -615,7 +615,7 @@ public class ParseExpression {
   private ExprExpression possibleGenericStaticClassInstantiationAccess(Token saved) {
     ClassDeclaration cd = GlobalSymtab.getClassTypeNoErr(parser, saved.getIdent());
     if (parser.is(T_LT) || parser.is(T_LSHIFT)) {
-      if (cd != null && cd.isTemplate() && cd.isNamespace()) {
+      if (cd != null && cd.isTemplate() && cd.isStaticClass()) {
         // the specialization and access to the templated namespace method
         // somefunc<int>.print(1);
         //

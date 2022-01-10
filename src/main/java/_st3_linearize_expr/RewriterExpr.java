@@ -388,7 +388,7 @@ public class RewriterExpr {
       args.add(0, obj.getDest());
 
       ///TODO:static_semantic
-      if (clazz.isNamespace()) {
+      if (clazz.isStaticClass()) {
 
         args.remove(0); // __this
 
@@ -439,7 +439,7 @@ public class RewriterExpr {
 
       ///TODO:static_semantic
 
-      if (clazz.isNamespace()) {
+      if (clazz.isStaticClass()) {
 
         final FlatCodeItem thisItem = popCode();
         final Var obj = thisItem.getDest();

@@ -48,10 +48,7 @@ public class GenEmpties implements Ccode {
     impls.append("static void " + DEFAULT_INIT_ALL_EMPTIES_METHOD_CALL_NAME + "() {\n");
 
     for (ClassDeclaration c : classes) {
-      if (c.isNamespace()) {
-        continue;
-      }
-      if (c.isMainClass()) {
+      if (c.isStaticClass()) {
         continue;
       }
       if (c.isEnum()) {

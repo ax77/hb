@@ -13,10 +13,7 @@ public abstract class GenStaticFields {
     StringBuilder sb = new StringBuilder();
 
     for (ClassDeclaration c : classes) {
-      if (c.isMainClass()) {
-        continue;
-      }
-      if (!c.isNamespace()) {
+      if (!c.isStaticClass()) {
         continue;
       }
       if (c.getFields().isEmpty()) {

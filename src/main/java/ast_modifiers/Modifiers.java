@@ -66,9 +66,6 @@ public class Modifiers implements Serializable {
       sb.append(id.getName());
       sb.append(" ");
     }
-    if (modifiers.isEmpty()) {
-      sb.append("const ");
-    }
     return sb.toString().trim();
   }
 
@@ -84,8 +81,12 @@ public class Modifiers implements Serializable {
     return modifiers.contains(Keywords.native_ident);
   }
 
-  public boolean isMutable() {
-    return modifiers.contains(Keywords.mut_ident);
+  public boolean isFinal() {
+    return modifiers.contains(Keywords.final_ident);
+  }
+
+  public boolean isStatic() {
+    return modifiers.contains(Keywords.static_ident);
   }
 
   public boolean isNativeOnly() {

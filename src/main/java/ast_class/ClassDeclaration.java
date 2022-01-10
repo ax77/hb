@@ -409,6 +409,7 @@ public class ClassDeclaration implements Serializable, Location {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
+    sb.append(modifiers.toString() + " ");
     sb.append(keyword.toString() + " ");
     sb.append(identifier.getName());
 
@@ -490,8 +491,8 @@ public class ClassDeclaration implements Serializable, Location {
     return identifier.equals(BuiltinNames.arr_ident);
   }
 
-  public boolean isNamespace() {
-    return keyword.equals(Keywords.namespace_ident);
+  public boolean isStaticClass() {
+    return modifiers.isStatic();
   }
 
   public boolean isNativeClass() {

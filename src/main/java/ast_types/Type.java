@@ -328,11 +328,6 @@ public class Type implements Serializable, TypeApi {
   }
 
   @Override
-  public boolean isNamespace() {
-    return isClass() && classTypeRef.isNamespace();
-  }
-
-  @Override
   public boolean isInterface() {
     return isClass() && classTypeRef.isInterface();
   }
@@ -340,6 +335,10 @@ public class Type implements Serializable, TypeApi {
   @Override
   public boolean isEnum() {
     return isClass() && classTypeRef.isEnum();
+  }
+
+  public boolean isStaticClass() {
+    return isClass() && classTypeRef.getClazz().isStaticClass();
   }
 
 }

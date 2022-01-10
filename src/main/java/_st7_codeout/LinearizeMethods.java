@@ -31,7 +31,7 @@ public abstract class LinearizeMethods {
 
     // TODO:static_semantic
     if (c.getDestructor() == null) {
-      final boolean isOk = c.isNamespace() || c.isMainClass();
+      final boolean isOk = c.isStaticClass() || c.isEnum();
       if (!isOk) {
         throw new AstParseException("something wrong. destructor is missing.");
       }

@@ -51,19 +51,12 @@ public class ApplyUnitPreEachClass {
   }
 
   private void checkClazz(ClassDeclaration object) {
-
-    if (object.isMainClass()) {
-      return;
-    }
-
-    if (!object.isNamespace()) {
+    if (!object.isStaticClass()) {
       checkPlainClassSem(object);
     }
-
-    if (object.isNamespace()) {
-      checkNamespace(object);
+    if (object.isStaticClass()) {
+      checkStaticClassSem(object);
     }
-
   }
 
   private void checkPlainClassSem(ClassDeclaration object) {
@@ -73,9 +66,9 @@ public class ApplyUnitPreEachClass {
         throw new AstParseException("field initializer unexpected: " + object.getIdentifier().toString() + "."
             + field.getIdentifier().toString());
       }
-      if (field.getType().isNamespace()) {
-        throw new AstParseException("field cannot be a namespace name type: " + object.getIdentifier().toString() + "."
-            + field.getIdentifier().toString());
+      if (field.getType().isStaticClass()) {
+        throw new AstParseException("field cannot be a static-class name type: " + object.getIdentifier().toString()
+            + "." + field.getIdentifier().toString());
       }
     }
 
@@ -90,7 +83,7 @@ public class ApplyUnitPreEachClass {
 
   }
 
-  private void checkNamespace(ClassDeclaration object) {
+  private void checkStaticClassSem(ClassDeclaration object) {
 
     // we cannot use fields in a static class.
     // it has no constructors, destructors, etc.
@@ -99,13 +92,26 @@ public class ApplyUnitPreEachClass {
     // we need these constants, and we will generate simple c-code using static data.
 
     for (VarDeclarator field : object.getFields()) {
-      final String msg = object.getIdentifier().toString() + "." + field.getIdentifier().toString();
+      final String msg = object.getIdentifier().toString() + "." + field.getIdentifier().toString() + ", "
+          + field.getLocationToString();
 
       if (field.getSimpleInitializer() == null) {
         throw new AstParseException("field in static class is not initialized: " + msg);
       }
       if (!field.getType().isPrimitive()) {
         throw new AstParseException("field in static class can only be a primitive type: " + msg);
+      }
+      if (!field.getMods().isStatic()) {
+        throw new AstParseException("field in static class should be static: " + msg);
+      }
+    }
+
+    for (ClassMethodDeclaration m : object.getMethods()) {
+      final String msg = object.getIdentifier().toString() + "." + m.getIdentifier().toString() + ", "
+          + m.getLocationToString();
+      
+      if (!m.getModifiers().isStatic() && !m.getModifiers().isNative()) {
+        throw new AstParseException("method in static class should be static: " + msg);
       }
     }
 
@@ -120,13 +126,7 @@ public class ApplyUnitPreEachClass {
   }
 
   private void addDefaultMethods(ClassDeclaration object) throws IOException {
-
-    if (object.isMainClass()) {
-      return;
-    }
-
-    // TODO:static_semantic
-    if (object.isNamespace()) {
+    if (object.isStaticClass()) {
       return;
     }
     if (object.isEnum()) {
@@ -136,7 +136,6 @@ public class ApplyUnitPreEachClass {
     addEqualsMethod(object);
     addDestructor(object);
     addConstructor(object);
-
   }
 
   private void addEqualsMethod(ClassDeclaration object) {

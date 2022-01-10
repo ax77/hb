@@ -41,8 +41,6 @@ public class TestVisitor {
   public void traverseClazz(ClassDeclaration clazz) {
     if (clazz.isInterface()) {
       visitInterface(clazz);
-    } else if (clazz.isNamespace()) {
-      visitNamespace(clazz);
     } else if (clazz.isMainClass()) {
       visitMainClass(clazz);
     } else if (clazz.isNativeClass()) {

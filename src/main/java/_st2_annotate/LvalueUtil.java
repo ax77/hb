@@ -19,20 +19,20 @@ public abstract class LvalueUtil {
       ErrorLocation.errorExpression("not an lvalue", theWholeAssignExpression);
     }
 
-    if (!methodHolder.isConstructor() && !methodHolder.isDestructor()) {
-      if (isAnyIdentifier) {
-        VarDeclarator var = lvalue.getIdent().getVar();
-        if (!var.getMods().isMutable()) {
-          ErrorLocation.errorExpression("const variable is not assignable", theWholeAssignExpression);
-        }
-      }
-      if (isFieldAccess) {
-        VarDeclarator var = lvalue.getFieldAccess().getField();
-        if (!var.getMods().isMutable()) {
-          ErrorLocation.errorExpression("const variable is not assignable", theWholeAssignExpression);
-        }
-      }
-    }
+    /// if (!methodHolder.isConstructor() && !methodHolder.isDestructor()) {
+    ///   if (isAnyIdentifier) {
+    ///     VarDeclarator var = lvalue.getIdent().getVar();
+    ///     if (!var.getMods().isMutable()) {
+    ///       ErrorLocation.errorExpression("const variable is not assignable", theWholeAssignExpression);
+    ///     }
+    ///   }
+    ///   if (isFieldAccess) {
+    ///     VarDeclarator var = lvalue.getFieldAccess().getField();
+    ///     if (!var.getMods().isMutable()) {
+    ///       ErrorLocation.errorExpression("const variable is not assignable", theWholeAssignExpression);
+    ///     }
+    ///   }
+    /// }
   }
 
 }
