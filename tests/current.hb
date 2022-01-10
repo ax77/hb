@@ -10,7 +10,11 @@ static class tests {
   }
 }
 
-class utest {
+interface markable {
+  void mark();
+}
+
+class utest implements markable {
   test_type typ;
   str name;
   int ver;
@@ -19,6 +23,9 @@ class utest {
     name = "unit test";
     ver = tests.version + tests.version();
   }
+  void mark() {
+    ver = 128;
+  }
 }
 
 static class main {
@@ -26,6 +33,9 @@ static class main {
     utest t = new utest();
     if(t.typ == test_type.t_plain) {}
     assert_true(t.ver == 64);
+    markable m = t;
+    m.mark();
+    assert_true(t.ver == 128);
     return 0;
   }
 }

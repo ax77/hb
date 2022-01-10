@@ -101,7 +101,7 @@ public class ApplyUnitPreEachClass {
       if (!field.getType().isPrimitive()) {
         throw new AstParseException("field in static class can only be a primitive type: " + msg);
       }
-      if (!field.getMods().isStatic()) {
+      if (!field.getModifiers().isStatic()) {
         throw new AstParseException("field in static class should be static: " + msg);
       }
     }

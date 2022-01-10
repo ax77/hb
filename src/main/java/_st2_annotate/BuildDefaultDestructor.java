@@ -11,6 +11,7 @@ import ast_expr.ExprIdent;
 import ast_expr.ExprMethodInvocation;
 import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
+import ast_modifiers.Modifiers;
 import ast_stmt.StmtBlock;
 import ast_stmt.StmtSelect;
 import ast_stmt.StmtStatement;
@@ -29,7 +30,7 @@ public abstract class BuildDefaultDestructor {
     }
 
     final Token beginPos = object.getBeginPos();
-    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(object, block, beginPos);
+    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(new Modifiers(), object, block, beginPos);
 
     destructor.setGeneratedByDefault();
     return destructor;

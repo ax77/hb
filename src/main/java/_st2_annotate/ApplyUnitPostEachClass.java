@@ -74,7 +74,7 @@ public class ApplyUnitPostEachClass {
       for (VarDeclarator var : fields) {
         // TODO: much more clean with native array.
         if (!initialized.contains(var.getIdentifier().getName()) && !c.isNativeArray()
-            && var.getMods().isFinal() /*&& !var.getMods().isMutable()*/) {
+            && var.getModifiers().isFinal() /*&& !var.getMods().isMutable()*/) {
           hasErrors = true;
           System.out.println(var.getLocationToString() + ", error: class-field has no initializer: "
               + c.getIdentifier().toString() + ":" + var.getIdentifier().toString());

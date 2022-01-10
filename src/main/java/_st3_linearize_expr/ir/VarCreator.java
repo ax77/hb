@@ -17,7 +17,7 @@ public abstract class VarCreator {
   }
 
   public static Var copyVarDecl(VarDeclarator src) {
-    final Var result = new Var(src.getBase(), src.getMods(), src.getType(), src.getIdentifier());
+    final Var result = new Var(src.getBase(), src.getModifiers(), src.getType(), src.getIdentifier());
     result.setOriginalNoTempVar(true);
     return result;
   }

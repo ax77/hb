@@ -24,7 +24,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private static final long serialVersionUID = 2982374768194205119L;
 
   private final ClassMethodBase base;
-  private final Modifiers mod;
+  private final Modifiers modifiers;
   private final Token beginPos;
   private final ClassDeclaration clazz;
   private final Ident identifier;
@@ -48,13 +48,13 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   private boolean isGeneratedByDefault;
 
   // function/init
-  public ClassMethodDeclaration(ClassMethodBase base, Modifiers mod, ClassDeclaration clazz, Ident identifier,
+  public ClassMethodDeclaration(ClassMethodBase base, Modifiers modifiers, ClassDeclaration clazz, Ident identifier,
       List<VarDeclarator> parameters, Type returnType, StmtBlock block, Token beginPos) {
 
-    NullChecker.check(base, clazz, mod, identifier, parameters, returnType, block, beginPos);
+    NullChecker.check(base, clazz, modifiers, identifier, parameters, returnType, block, beginPos);
 
     this.base = base;
-    this.mod = mod;
+    this.modifiers = modifiers;
     this.clazz = clazz;
     this.identifier = identifier;
     this.parameters = parameters;
@@ -68,12 +68,12 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   }
 
   // deinit
-  public ClassMethodDeclaration(ClassDeclaration clazz, StmtBlock block, Token beginPos) {
+  public ClassMethodDeclaration(Modifiers modifiers, ClassDeclaration clazz, StmtBlock block, Token beginPos) {
 
     NullChecker.check(clazz, block, beginPos);
 
     this.base = ClassMethodBase.IS_DESTRUCTOR;
-    this.mod = new Modifiers();
+    this.modifiers = modifiers;
     this.clazz = clazz;
     this.identifier = Keywords.deinit_ident;
     this.parameters = new ArrayList<>();
@@ -90,7 +90,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     NullChecker.check(clazz, testName, block, beginPos);
 
     this.base = ClassMethodBase.IS_TEST;
-    this.mod = new Modifiers();
+    this.modifiers = new Modifiers();
     this.clazz = clazz;
     this.identifier = Keywords.test_ident;
     this.parameters = new ArrayList<>();
@@ -174,8 +174,9 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   public String toString() {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(mod.toString());
+    sb.append(modifiers.toString());
     sb.append(" ");
+
     sb.append(returnType.toString());
     sb.append(" ");
     sb.append(identifier);
@@ -187,7 +188,13 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
     }
 
     sb.append(parametersToString());
-    sb.append(block.toString());
+
+    if (clazz.isInterface() || modifiers.isNative()) {
+      sb.append(";");
+    } else {
+      sb.append(block.toString());
+    }
+
     return sb.toString();
   }
 
@@ -219,7 +226,7 @@ public class ClassMethodDeclaration implements Serializable, TypeSetter, Locatio
   }
 
   public Modifiers getModifiers() {
-    return mod;
+    return modifiers;
   }
 
   public boolean isMain() {

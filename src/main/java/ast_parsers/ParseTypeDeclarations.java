@@ -284,7 +284,7 @@ public class ParseTypeDeclarations {
       parser.semicolon();
     }
 
-    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(clazz, block, beginPos);
+    final ClassMethodDeclaration destructor = new ClassMethodDeclaration(modifiers, clazz, block, beginPos);
 
     if (clazz.getDestructor() != null) {
       parser.perror("duplicate destructor");
