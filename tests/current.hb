@@ -36,6 +36,7 @@ static class main {
     }
     int count1 = a.s.count;
     int count2 = a.s.count();
+    int zzz = 23+64*3;
     return x < a.version;
   }
 }

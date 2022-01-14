@@ -225,6 +225,8 @@ public class RewriterExpr {
       throw new AstParseException("unimplimented store for dst: " + dstItem.toString());
     }
 
+    dstItem.setIgnore(dstItem.getDest()); // we can easily ignore this one
+
   }
 
   private void gen(ExprExpression e) {

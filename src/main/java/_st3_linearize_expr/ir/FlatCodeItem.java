@@ -1,6 +1,8 @@
 package _st3_linearize_expr.ir;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
@@ -58,12 +60,13 @@ public class FlatCodeItem {
   private StoreVarVar storeVarVar;
   
   // new code
+  private final String uid;
   private boolean ignore;
   private Var rvalueDestWrapper;
   public boolean isIgnore() {
     return ignore;
   }
-  public void setIgnore(Var rvalueDestWrapper) {
+  public void setIgnore(Var rvalueDestWrapper) { // this dest is only for returns, the result
     this.ignore = true;
     this.rvalueDestWrapper = rvalueDestWrapper;
   }
@@ -112,31 +115,49 @@ public class FlatCodeItem {
     err();
     return null;
   }
+  private String genUid() {
+    return UUID.randomUUID().toString();
+  }
+  @Override
+  public int hashCode() {
+    return Objects.hash(uid);
+  }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    FlatCodeItem other = (FlatCodeItem) obj;
+    return Objects.equals(uid, other.uid);
+  }
   //new code
-  
-  public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
-  public FlatCodeItem(AssignVarBinop assignVarBinop) { this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
-  public FlatCodeItem(AssignVarBool assignVarBool) { this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
-  public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) { this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
-  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueForType) { this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueForType = assignVarDefaultValueForType; }
-  public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
-  public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) { this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
-  public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
-  public FlatCodeItem(AssignVarFlatCallResult assignVarFlatCallResult) { this.opcode = Opc.AssignVarFlatCallResult; this.assignVarFlatCallResult = assignVarFlatCallResult; }
-  public FlatCodeItem(AssignVarFlatCallResultStatic assignVarFlatCallResultStatic) { this.opcode = Opc.AssignVarFlatCallResultStatic; this.assignVarFlatCallResultStatic = assignVarFlatCallResultStatic; }
-  public FlatCodeItem(AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp) { this.opcode = Opc.AssignVarFlatCallStringCreationTmp; this.assignVarFlatCallStringCreationTmp = assignVarFlatCallStringCreationTmp; }
-  public FlatCodeItem(AssignVarNum assignVarNum) { this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
-  public FlatCodeItem(AssignVarSizeof assignVarSizeof) { this.opcode = Opc.AssignVarSizeof; this.assignVarSizeof = assignVarSizeof; }
-  public FlatCodeItem(AssignVarUnop assignVarUnop) { this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
-  public FlatCodeItem(AssignVarVar assignVarVar) { this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
-  public FlatCodeItem(BuiltinFuncAssertTrue builtinFuncAssertTrue) { this.opcode = Opc.BuiltinFuncAssertTrue; this.builtinFuncAssertTrue = builtinFuncAssertTrue; }
-  public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
-  public FlatCodeItem(FlatCallVoid flatCallVoid) { this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
-  public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
-  public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) { this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
-  public FlatCodeItem(StoreFieldVar storeFieldVar) { this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
-  public FlatCodeItem(StoreVarField storeVarField) { this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
-  public FlatCodeItem(StoreVarVar storeVarVar) { this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
+
+  public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.uid = genUid(); this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
+  public FlatCodeItem(AssignVarBinop assignVarBinop) {this.uid = genUid(); this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
+  public FlatCodeItem(AssignVarBool assignVarBool) { this.uid = genUid();this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
+  public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) {this.uid = genUid(); this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
+  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueForType) {this.uid = genUid(); this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueForType = assignVarDefaultValueForType; }
+  public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.uid = genUid();this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
+  public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) {this.uid = genUid(); this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
+  public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
+  public FlatCodeItem(AssignVarFlatCallResult assignVarFlatCallResult) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResult; this.assignVarFlatCallResult = assignVarFlatCallResult; }
+  public FlatCodeItem(AssignVarFlatCallResultStatic assignVarFlatCallResultStatic) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResultStatic; this.assignVarFlatCallResultStatic = assignVarFlatCallResultStatic; }
+  public FlatCodeItem(AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallStringCreationTmp; this.assignVarFlatCallStringCreationTmp = assignVarFlatCallStringCreationTmp; }
+  public FlatCodeItem(AssignVarNum assignVarNum) {this.uid = genUid(); this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
+  public FlatCodeItem(AssignVarSizeof assignVarSizeof) {this.uid = genUid(); this.opcode = Opc.AssignVarSizeof; this.assignVarSizeof = assignVarSizeof; }
+  public FlatCodeItem(AssignVarUnop assignVarUnop) {this.uid = genUid(); this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
+  public FlatCodeItem(AssignVarVar assignVarVar) {this.uid = genUid(); this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
+  public FlatCodeItem(BuiltinFuncAssertTrue builtinFuncAssertTrue) { this.uid = genUid();this.opcode = Opc.BuiltinFuncAssertTrue; this.builtinFuncAssertTrue = builtinFuncAssertTrue; }
+  public FlatCodeItem(FlatCallConstructor flatCallConstructor) {this.uid = genUid(); this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
+  public FlatCodeItem(FlatCallVoid flatCallVoid) {this.uid = genUid(); this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
+  public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.uid = genUid();this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
+  public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) {this.uid = genUid(); this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
+  public FlatCodeItem(StoreFieldVar storeFieldVar) {this.uid = genUid();this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
+  public FlatCodeItem(StoreVarField storeVarField) {this.uid = genUid(); this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
+  public FlatCodeItem(StoreVarVar storeVarVar) {this.uid = genUid();this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
