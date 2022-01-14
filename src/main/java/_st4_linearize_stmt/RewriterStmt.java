@@ -5,6 +5,8 @@ import java.util.List;
 
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.LinearExpressionBuilder;
+import _st3_linearize_expr.ir.FlatCodeItem;
+import _st3_linearize_expr.leaves.Var;
 import _st4_linearize_stmt.items.LinearBreak;
 import _st4_linearize_stmt.items.LinearContinue;
 import _st4_linearize_stmt.items.LinearLoop;
@@ -119,10 +121,25 @@ public class RewriterStmt {
 
       /// 1) linearize the if-expression, and put it into the block
       LinearExpression lexpr = LinearExpressionBuilder.build(stmtReturn.getExpression(), method.getClazz(), method);
-      currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
+
+      Var dest = lexpr.getDest();
+      boolean isSimple = false;
+      final List<FlatCodeItem> items = lexpr.getItems();
+      final int size = items.size();
+      if (size == 1) {
+        final FlatCodeItem last = items.get(size - 1);
+        if (last.isAssignVarVar()) {
+          isSimple = true;
+          dest = last.getAssignVarVar().getRvalue();
+        }
+      }
+
+      if (!isSimple) {
+        currentBlockPtr.pushItemBack(new LinearStatement(StatementBase.SEXPR, lexpr));
+      }
 
       /// 2) create the if-statement with the result variable
-      LinearReturn linearReturn = new LinearReturn(lexpr.getDest());
+      LinearReturn linearReturn = new LinearReturn(dest);
       currentBlockPtr.pushItemBack(new LinearStatement(linearReturn));
     }
 
