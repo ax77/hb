@@ -7,11 +7,9 @@ import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
-import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
-import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.Unop;
@@ -97,38 +95,7 @@ public class RewriteRaw {
       }
 
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
-
         rv.add(item);
-        
-//        // strtemp __t15 = strtemp_init_0(__t14)
-//        // ::
-//        // strtemp __t15 = get_memory(sizeof(struct string, TD_STRING))
-//        // strtemp_init_0(__t15, __t14)
-//
-//        // 1
-//        final AssignVarFlatCallClassCreationTmp node = item.getAssignVarFlatCallClassCreationTmp();
-//        final Var lvalueVar = node.getLvalue();
-//
-//        AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalueVar, lvalueVar.getType());
-//        rv.add(new FlatCodeItem(assignVarAllocObject)); // TODO: here we have to trace the location of the memory allocation, if OOM error will occur.
-//
-//        final FunctionCallWithResult rvalue = node.getRvalue();
-//        final List<Var> args = rvalue.getArgs();
-//        args.add(0, lvalueVar);
-//
-//        // 3
-//        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(rvalue.getFullname(), args, lvalueVar);
-//        final String sign = ToStringsInternal.signToStringCallPushF(rvalue.getMethod());
-//
-//        //  rv.add(makeCallListenerWithDest(beforeCallIdent(), flatCallConstructor.getThisVar(), sign));
-//        rv.add(new FlatCodeItem(flatCallConstructor));
-//        // rv.add(makeCallListenerWithDest(afterCallIdent(), flatCallConstructor.getThisVar(), sign));
-//
-//        //xxxxx
-//        if (lvalueVar.getType().isInterface()) {
-//          throw new AstParseException("unimpl.2");
-//        }
-
       }
 
       else if (item.isAssignVarFlatCallResult()) {
