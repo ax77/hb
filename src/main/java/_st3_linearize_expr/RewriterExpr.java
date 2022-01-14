@@ -38,6 +38,7 @@ import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
+import _st3_linearize_expr.items.StoreFieldLiteral;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
@@ -217,8 +218,47 @@ public class RewriterExpr {
       final FieldAccess dst = dstItem.getAssignVarFieldAccess().getRvalue();
       final Var src = srcItem.getDest();
 
-      FlatCodeItem item = new FlatCodeItem(new StoreFieldVar(dst, src));
-      genRaw(item);
+      if (srcItem.isAssignVarBool() || srcItem.isAssignVarNum() || srcItem.isAssignVarDefaultValueForType()
+          || srcItem.isAssignVarVar()) {
+
+        srcItem.setIgnore(srcItem.getDest());
+
+        if (srcItem.isAssignVarBool()) {
+          String literal = srcItem.getAssignVarBool().getLiteral();
+          Leaf u = new Leaf(literal.equals("false") ? false : true);
+          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
+          FlatCodeItem i = new FlatCodeItem(s);
+          genRaw(i);
+        }
+
+        if (srcItem.isAssignVarNum()) {
+          Leaf u = new Leaf(srcItem.getAssignVarNum().getLiteral());
+          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
+          FlatCodeItem i = new FlatCodeItem(s);
+          genRaw(i);
+        }
+
+        if (srcItem.isAssignVarDefaultValueForType()) {
+          Leaf u = new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
+          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
+          FlatCodeItem i = new FlatCodeItem(s);
+          genRaw(i);
+        }
+
+        if (srcItem.isAssignVarVar()) {
+          Leaf u = new Leaf(srcItem.getAssignVarVar().getLvalue());
+          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
+          FlatCodeItem i = new FlatCodeItem(s);
+          genRaw(i);
+        }
+
+      }
+
+      else {
+        FlatCodeItem item = new FlatCodeItem(new StoreFieldVar(dst, src));
+        genRaw(item);
+      }
+
     }
 
     else {

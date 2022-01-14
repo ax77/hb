@@ -24,6 +24,7 @@ import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
+import _st3_linearize_expr.items.StoreFieldLiteral;
 import _st3_linearize_expr.items.StoreFieldVar;
 import _st3_linearize_expr.items.StoreVarField;
 import _st3_linearize_expr.items.StoreVarVar;
@@ -33,7 +34,7 @@ import errors.AstParseException;
 public class FlatCodeItem {
   private final Opc opcode;
 
-  //generated code begin
+//generated code begin
   //@formatter:off
   private AssignVarAllocObject assignVarAllocObject;
   private AssignVarBinop assignVarBinop;
@@ -55,11 +56,11 @@ public class FlatCodeItem {
   private FlatCallVoid flatCallVoid;
   private FlatCallVoidStatic flatCallVoidStatic;
   private SelectionShortCircuit selectionShortCircuit;
+  private StoreFieldLiteral storeFieldLiteral;
   private StoreFieldVar storeFieldVar;
   private StoreVarField storeVarField;
   private StoreVarVar storeVarVar;
-  
-  // new code
+
   private final String uid;
   private boolean ignore;
   private Var rvalueDestWrapper;
@@ -69,51 +70,6 @@ public class FlatCodeItem {
   public void setIgnore(Var rvalueDestWrapper) { // this dest is only for returns, the result
     this.ignore = true;
     this.rvalueDestWrapper = rvalueDestWrapper;
-  }
-  public Var getLvalue() {
-    if( isAssignVarAllocObject()               ) { return  assignVarAllocObject              .getLvalue(); }
-    if( isAssignVarBinop()                     ) { return  assignVarBinop                    .getLvalue(); }
-    if( isAssignVarBool()                      ) { return  assignVarBool                     .getLvalue(); }
-    if( isAssignVarFieldAccess()               ) { return  assignVarFieldAccess              .getLvalue(); }
-    if( isAssignVarFieldAccessStatic()         ) { return  assignVarFieldAccessStatic        .getLvalue(); }
-    if( isAssignVarFlatCallClassCreationTmp()  ) { return  assignVarFlatCallClassCreationTmp .getLvalue(); }
-    if( isAssignVarFlatCallStringCreationTmp() ) { return  assignVarFlatCallStringCreationTmp.getLvalue(); }
-    if( isAssignVarFlatCallResult()            ) { return  assignVarFlatCallResult           .getLvalue(); }
-    if( isAssignVarFlatCallResultStatic()      ) { return  assignVarFlatCallResultStatic     .getLvalue(); }
-    if( isAssignVarNum()                       ) { return  assignVarNum                      .getLvalue(); }
-    if( isAssignVarDefaultValueForType()       ) { return  assignVarDefaultValueForType      .getLvalue(); }
-    if( isAssignVarUnop()                      ) { return  assignVarUnop                     .getLvalue(); }
-    if( isAssignVarVar()                       ) { return  assignVarVar                      .getLvalue(); }
-    if( isAssignVarCastExpression()            ) { return  assignVarCastExpression           .getLvalue(); }
-    err();
-    return null;
-  }
-  public List<Var> getAllVars() {
-    if ( isAssignVarAllocObject()               ) { return  assignVarAllocObject               .getAllVars(); }
-    if ( isAssignVarBinop()                     ) { return  assignVarBinop                     .getAllVars(); }
-    if ( isAssignVarBool()                      ) { return  assignVarBool                      .getAllVars(); }
-    if ( isAssignVarCastExpression()            ) { return  assignVarCastExpression            .getAllVars(); }
-    if ( isAssignVarDefaultValueForType()       ) { return  assignVarDefaultValueForType       .getAllVars(); }
-    if ( isAssignVarFieldAccess()               ) { return  assignVarFieldAccess               .getAllVars(); }
-    if ( isAssignVarFieldAccessStatic()         ) { return  assignVarFieldAccessStatic         .getAllVars(); }
-    if ( isAssignVarFlatCallClassCreationTmp()  ) { return  assignVarFlatCallClassCreationTmp  .getAllVars(); }
-    if ( isAssignVarFlatCallResult()            ) { return  assignVarFlatCallResult            .getAllVars(); }
-    if ( isAssignVarFlatCallResultStatic()      ) { return  assignVarFlatCallResultStatic      .getAllVars(); }
-    if ( isAssignVarFlatCallStringCreationTmp() ) { return  assignVarFlatCallStringCreationTmp .getAllVars(); }
-    if ( isAssignVarNum()                       ) { return  assignVarNum                       .getAllVars(); }
-    if ( isAssignVarSizeof()                    ) { return  assignVarSizeof                    .getAllVars(); }
-    if ( isAssignVarUnop()                      ) { return  assignVarUnop                      .getAllVars(); }
-    if ( isAssignVarVar()                       ) { return  assignVarVar                       .getAllVars(); }
-    if ( isBuiltinFuncAssertTrue()              ) { return  builtinFuncAssertTrue              .getAllVars(); }
-    if ( isFlatCallConstructor()                ) { return  flatCallConstructor                .getAllVars(); }
-    if ( isFlatCallVoid()                       ) { return  flatCallVoid                       .getAllVars(); }
-    if ( isFlatCallVoidStatic()                 ) { return  flatCallVoidStatic                 .getAllVars(); }
-    if ( isSelectionShortCircuit()              ) { return  selectionShortCircuit              .getAllVars(); }
-    if ( isStoreFieldVar()                      ) { return  storeFieldVar                      .getAllVars(); }
-    if ( isStoreVarField()                      ) { return  storeVarField                      .getAllVars(); }
-    if ( isStoreVarVar()                        ) { return  storeVarVar                        .getAllVars(); }
-    err();
-    return null;
   }
   private String genUid() {
     return UUID.randomUUID().toString();
@@ -133,31 +89,31 @@ public class FlatCodeItem {
     FlatCodeItem other = (FlatCodeItem) obj;
     return Objects.equals(uid, other.uid);
   }
-  //new code
 
   public FlatCodeItem(AssignVarAllocObject assignVarAllocObject) { this.uid = genUid(); this.opcode = Opc.AssignVarAllocObject; this.assignVarAllocObject = assignVarAllocObject; }
-  public FlatCodeItem(AssignVarBinop assignVarBinop) {this.uid = genUid(); this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
-  public FlatCodeItem(AssignVarBool assignVarBool) { this.uid = genUid();this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
-  public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) {this.uid = genUid(); this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
-  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueForType) {this.uid = genUid(); this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueForType = assignVarDefaultValueForType; }
-  public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.uid = genUid();this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
-  public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) {this.uid = genUid(); this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
-  public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
-  public FlatCodeItem(AssignVarFlatCallResult assignVarFlatCallResult) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResult; this.assignVarFlatCallResult = assignVarFlatCallResult; }
-  public FlatCodeItem(AssignVarFlatCallResultStatic assignVarFlatCallResultStatic) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResultStatic; this.assignVarFlatCallResultStatic = assignVarFlatCallResultStatic; }
-  public FlatCodeItem(AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp) {this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallStringCreationTmp; this.assignVarFlatCallStringCreationTmp = assignVarFlatCallStringCreationTmp; }
-  public FlatCodeItem(AssignVarNum assignVarNum) {this.uid = genUid(); this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
-  public FlatCodeItem(AssignVarSizeof assignVarSizeof) {this.uid = genUid(); this.opcode = Opc.AssignVarSizeof; this.assignVarSizeof = assignVarSizeof; }
-  public FlatCodeItem(AssignVarUnop assignVarUnop) {this.uid = genUid(); this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
-  public FlatCodeItem(AssignVarVar assignVarVar) {this.uid = genUid(); this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
-  public FlatCodeItem(BuiltinFuncAssertTrue builtinFuncAssertTrue) { this.uid = genUid();this.opcode = Opc.BuiltinFuncAssertTrue; this.builtinFuncAssertTrue = builtinFuncAssertTrue; }
-  public FlatCodeItem(FlatCallConstructor flatCallConstructor) {this.uid = genUid(); this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
-  public FlatCodeItem(FlatCallVoid flatCallVoid) {this.uid = genUid(); this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
-  public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.uid = genUid();this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
-  public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) {this.uid = genUid(); this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
-  public FlatCodeItem(StoreFieldVar storeFieldVar) {this.uid = genUid();this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
-  public FlatCodeItem(StoreVarField storeVarField) {this.uid = genUid(); this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
-  public FlatCodeItem(StoreVarVar storeVarVar) {this.uid = genUid();this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
+  public FlatCodeItem(AssignVarBinop assignVarBinop) { this.uid = genUid(); this.opcode = Opc.AssignVarBinop; this.assignVarBinop = assignVarBinop; }
+  public FlatCodeItem(AssignVarBool assignVarBool) { this.uid = genUid(); this.opcode = Opc.AssignVarBool; this.assignVarBool = assignVarBool; }
+  public FlatCodeItem(AssignVarCastExpression assignVarCastExpression) { this.uid = genUid(); this.opcode = Opc.AssignVarCastExpression; this.assignVarCastExpression = assignVarCastExpression; }
+  public FlatCodeItem(AssignVarDefaultValueForType assignVarDefaultValueForType) { this.uid = genUid(); this.opcode = Opc.AssignVarDefaultValueForType; this.assignVarDefaultValueForType = assignVarDefaultValueForType; }
+  public FlatCodeItem(AssignVarFieldAccess assignVarFieldAccess) { this.uid = genUid(); this.opcode = Opc.AssignVarFieldAccess; this.assignVarFieldAccess = assignVarFieldAccess; }
+  public FlatCodeItem(AssignVarFieldAccessStatic assignVarFieldAccessStatic) { this.uid = genUid(); this.opcode = Opc.AssignVarFieldAccessStatic; this.assignVarFieldAccessStatic = assignVarFieldAccessStatic; }
+  public FlatCodeItem(AssignVarFlatCallClassCreationTmp assignVarFlatCallClassCreationTmp) { this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallClassCreationTmp; this.assignVarFlatCallClassCreationTmp = assignVarFlatCallClassCreationTmp; }
+  public FlatCodeItem(AssignVarFlatCallResult assignVarFlatCallResult) { this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResult; this.assignVarFlatCallResult = assignVarFlatCallResult; }
+  public FlatCodeItem(AssignVarFlatCallResultStatic assignVarFlatCallResultStatic) { this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallResultStatic; this.assignVarFlatCallResultStatic = assignVarFlatCallResultStatic; }
+  public FlatCodeItem(AssignVarFlatCallStringCreationTmp assignVarFlatCallStringCreationTmp) { this.uid = genUid(); this.opcode = Opc.AssignVarFlatCallStringCreationTmp; this.assignVarFlatCallStringCreationTmp = assignVarFlatCallStringCreationTmp; }
+  public FlatCodeItem(AssignVarNum assignVarNum) { this.uid = genUid(); this.opcode = Opc.AssignVarNum; this.assignVarNum = assignVarNum; }
+  public FlatCodeItem(AssignVarSizeof assignVarSizeof) { this.uid = genUid(); this.opcode = Opc.AssignVarSizeof; this.assignVarSizeof = assignVarSizeof; }
+  public FlatCodeItem(AssignVarUnop assignVarUnop) { this.uid = genUid(); this.opcode = Opc.AssignVarUnop; this.assignVarUnop = assignVarUnop; }
+  public FlatCodeItem(AssignVarVar assignVarVar) { this.uid = genUid(); this.opcode = Opc.AssignVarVar; this.assignVarVar = assignVarVar; }
+  public FlatCodeItem(BuiltinFuncAssertTrue builtinFuncAssertTrue) { this.uid = genUid(); this.opcode = Opc.BuiltinFuncAssertTrue; this.builtinFuncAssertTrue = builtinFuncAssertTrue; }
+  public FlatCodeItem(FlatCallConstructor flatCallConstructor) { this.uid = genUid(); this.opcode = Opc.FlatCallConstructor; this.flatCallConstructor = flatCallConstructor; }
+  public FlatCodeItem(FlatCallVoid flatCallVoid) { this.uid = genUid(); this.opcode = Opc.FlatCallVoid; this.flatCallVoid = flatCallVoid; }
+  public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.uid = genUid(); this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
+  public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) { this.uid = genUid(); this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
+  public FlatCodeItem(StoreFieldLiteral storeFieldLiteral) { this.uid = genUid(); this.opcode = Opc.StoreFieldLiteral; this.storeFieldLiteral = storeFieldLiteral; }
+  public FlatCodeItem(StoreFieldVar storeFieldVar) { this.uid = genUid(); this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
+  public FlatCodeItem(StoreVarField storeVarField) { this.uid = genUid(); this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
+  public FlatCodeItem(StoreVarVar storeVarVar) { this.uid = genUid(); this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
@@ -179,16 +135,63 @@ public class FlatCodeItem {
   public boolean isFlatCallVoid() { return this.opcode == Opc.FlatCallVoid; }
   public boolean isFlatCallVoidStatic() { return this.opcode == Opc.FlatCallVoidStatic; }
   public boolean isSelectionShortCircuit() { return this.opcode == Opc.SelectionShortCircuit; }
+  public boolean isStoreFieldLiteral() { return this.opcode == Opc.StoreFieldLiteral; }
   public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
   public boolean isStoreVarField() { return this.opcode == Opc.StoreVarField; }
   public boolean isStoreVarVar() { return this.opcode == Opc.StoreVarVar; }
 
+  public List<Var> getAllVars() {
+    if ( isAssignVarAllocObject() ) { return assignVarAllocObject.getAllVars(); }
+    if ( isAssignVarBinop() ) { return assignVarBinop.getAllVars(); }
+    if ( isAssignVarBool() ) { return assignVarBool.getAllVars(); }
+    if ( isAssignVarCastExpression() ) { return assignVarCastExpression.getAllVars(); }
+    if ( isAssignVarDefaultValueForType() ) { return assignVarDefaultValueForType.getAllVars(); }
+    if ( isAssignVarFieldAccess() ) { return assignVarFieldAccess.getAllVars(); }
+    if ( isAssignVarFieldAccessStatic() ) { return assignVarFieldAccessStatic.getAllVars(); }
+    if ( isAssignVarFlatCallClassCreationTmp() ) { return assignVarFlatCallClassCreationTmp.getAllVars(); }
+    if ( isAssignVarFlatCallResult() ) { return assignVarFlatCallResult.getAllVars(); }
+    if ( isAssignVarFlatCallResultStatic() ) { return assignVarFlatCallResultStatic.getAllVars(); }
+    if ( isAssignVarFlatCallStringCreationTmp() ) { return assignVarFlatCallStringCreationTmp.getAllVars(); }
+    if ( isAssignVarNum() ) { return assignVarNum.getAllVars(); }
+    if ( isAssignVarSizeof() ) { return assignVarSizeof.getAllVars(); }
+    if ( isAssignVarUnop() ) { return assignVarUnop.getAllVars(); }
+    if ( isAssignVarVar() ) { return assignVarVar.getAllVars(); }
+    if ( isBuiltinFuncAssertTrue() ) { return builtinFuncAssertTrue.getAllVars(); }
+    if ( isFlatCallConstructor() ) { return flatCallConstructor.getAllVars(); }
+    if ( isFlatCallVoid() ) { return flatCallVoid.getAllVars(); }
+    if ( isFlatCallVoidStatic() ) { return flatCallVoidStatic.getAllVars(); }
+    if ( isSelectionShortCircuit() ) { return selectionShortCircuit.getAllVars(); }
+    if ( isStoreFieldLiteral() ) { return storeFieldLiteral.getAllVars(); }
+    if ( isStoreFieldVar() ) { return storeFieldVar.getAllVars(); }
+    if ( isStoreVarField() ) { return storeVarField.getAllVars(); }
+    if ( isStoreVarVar() ) { return storeVarVar.getAllVars(); }
+    err();
+    return null;
+  }
+
+  public Var getLvalue() {
+    if ( isAssignVarAllocObject() ) { return assignVarAllocObject.getLvalue(); }
+    if ( isAssignVarBinop() ) { return assignVarBinop.getLvalue(); }
+    if ( isAssignVarBool() ) { return assignVarBool.getLvalue(); }
+    if ( isAssignVarCastExpression() ) { return assignVarCastExpression.getLvalue(); }
+    if ( isAssignVarDefaultValueForType() ) { return assignVarDefaultValueForType.getLvalue(); }
+    if ( isAssignVarFieldAccess() ) { return assignVarFieldAccess.getLvalue(); }
+    if ( isAssignVarFieldAccessStatic() ) { return assignVarFieldAccessStatic.getLvalue(); }
+    if ( isAssignVarFlatCallClassCreationTmp() ) { return assignVarFlatCallClassCreationTmp.getLvalue(); }
+    if ( isAssignVarFlatCallResult() ) { return assignVarFlatCallResult.getLvalue(); }
+    if ( isAssignVarFlatCallResultStatic() ) { return assignVarFlatCallResultStatic.getLvalue(); }
+    if ( isAssignVarFlatCallStringCreationTmp() ) { return assignVarFlatCallStringCreationTmp.getLvalue(); }
+    if ( isAssignVarNum() ) { return assignVarNum.getLvalue(); }
+    if ( isAssignVarSizeof() ) { return assignVarSizeof.getLvalue(); }
+    if ( isAssignVarUnop() ) { return assignVarUnop.getLvalue(); }
+    if ( isAssignVarVar() ) { return assignVarVar.getLvalue(); }
+    err();
+    return null;
+  }
+
   @Override
   public String toString() {
-    if(ignore) {
-      return "";
-    }
-    
+    if(ignore) { return ""; }
     if(isAssignVarAllocObject()) { return assignVarAllocObject.toString(); }
     if(isAssignVarBinop()) { return assignVarBinop.toString(); }
     if(isAssignVarBool()) { return assignVarBool.toString(); }
@@ -209,6 +212,7 @@ public class FlatCodeItem {
     if(isFlatCallVoid()) { return flatCallVoid.toString(); }
     if(isFlatCallVoidStatic()) { return flatCallVoidStatic.toString(); }
     if(isSelectionShortCircuit()) { return selectionShortCircuit.toString(); }
+    if(isStoreFieldLiteral()) { return storeFieldLiteral.toString(); }
     if(isStoreFieldVar()) { return storeFieldVar.toString(); }
     if(isStoreVarField()) { return storeVarField.toString(); }
     if(isStoreVarVar()) { return storeVarVar.toString(); }
@@ -236,6 +240,7 @@ public class FlatCodeItem {
   public FlatCallVoid getFlatCallVoid() { return this.flatCallVoid; }
   public FlatCallVoidStatic getFlatCallVoidStatic() { return this.flatCallVoidStatic; }
   public SelectionShortCircuit getSelectionShortCircuit() { return this.selectionShortCircuit; }
+  public StoreFieldLiteral getStoreFieldLiteral() { return this.storeFieldLiteral; }
   public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
   public StoreVarField getStoreVarField() { return this.storeVarField; }
   public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
@@ -261,79 +266,31 @@ public class FlatCodeItem {
   }
 
   public Var getDest() {
-    if(isIgnore()) {
-      return rvalueDestWrapper;
-    }
-    
-    if(isAssignVarAllocObject()) {
-      return assignVarAllocObject.getLvalue();
-    }
-    if(isAssignVarBinop()) {
-      return assignVarBinop.getLvalue();
-    }
-    if(isAssignVarBool()) {
-      return assignVarBool.getLvalue();
-    }
-    if(isAssignVarCastExpression()) {
-      return assignVarCastExpression.getLvalue();
-    }
-    if(isAssignVarDefaultValueForType()) {
-      return assignVarDefaultValueForType.getLvalue();
-    }
-    if(isAssignVarFieldAccess()) {
-      return assignVarFieldAccess.getLvalue();
-    }
-    if(isAssignVarFieldAccessStatic()) {
-      return assignVarFieldAccessStatic.getLvalue();
-    }
-    if(isAssignVarFlatCallClassCreationTmp()) {
-      return assignVarFlatCallClassCreationTmp.getLvalue();
-    }
-    if(isAssignVarFlatCallResult()) {
-      return assignVarFlatCallResult.getLvalue();
-    }
-    if(isAssignVarFlatCallResultStatic()) {
-      return assignVarFlatCallResultStatic.getLvalue();
-    }
-    if(isAssignVarFlatCallStringCreationTmp()) {
-      return assignVarFlatCallStringCreationTmp.getLvalue();
-    }
-    if(isAssignVarNum()) {
-      return assignVarNum.getLvalue();
-    }
-    if(isAssignVarSizeof()) {
-      return assignVarSizeof.getLvalue();
-    }
-    if(isAssignVarUnop()) {
-      return assignVarUnop.getLvalue();
-    }
-    if(isAssignVarVar()) {
-      return assignVarVar.getLvalue();
-    }
-    if(isBuiltinFuncAssertTrue()) {
-      err();
-    }
-    if(isFlatCallConstructor()) {
-      return flatCallConstructor.getThisVar();
-    }
-    if(isFlatCallVoid()) {
-      err();
-    }
-    if(isFlatCallVoidStatic()) {
-      err();
-    }
-    if(isSelectionShortCircuit()) {
-      return selectionShortCircuit.getDest();
-    }
-    if(isStoreFieldVar()) {
-      err();
-    }
-    if(isStoreVarField()) {
-      err();
-    }
-    if(isStoreVarVar()) {
-      err();
-    }
+    if(ignore) { return rvalueDestWrapper; }
+    if(isAssignVarAllocObject()) { return assignVarAllocObject.getLvalue(); }
+    if(isAssignVarBinop()) { return assignVarBinop.getLvalue(); }
+    if(isAssignVarBool()) { return assignVarBool.getLvalue(); }
+    if(isAssignVarCastExpression()) { return assignVarCastExpression.getLvalue(); }
+    if(isAssignVarDefaultValueForType()) { return assignVarDefaultValueForType.getLvalue(); }
+    if(isAssignVarFieldAccess()) { return assignVarFieldAccess.getLvalue(); }
+    if(isAssignVarFieldAccessStatic()) { return assignVarFieldAccessStatic.getLvalue(); }
+    if(isAssignVarFlatCallClassCreationTmp()) { return assignVarFlatCallClassCreationTmp.getLvalue(); }
+    if(isAssignVarFlatCallResult()) { return assignVarFlatCallResult.getLvalue(); }
+    if(isAssignVarFlatCallResultStatic()) { return assignVarFlatCallResultStatic.getLvalue(); }
+    if(isAssignVarFlatCallStringCreationTmp()) { return assignVarFlatCallStringCreationTmp.getLvalue(); }
+    if(isAssignVarNum()) { return assignVarNum.getLvalue(); }
+    if(isAssignVarSizeof()) { return assignVarSizeof.getLvalue(); }
+    if(isAssignVarUnop()) { return assignVarUnop.getLvalue(); }
+    if(isAssignVarVar()) { return assignVarVar.getLvalue(); }
+    if(isBuiltinFuncAssertTrue()) { err(); }
+    if(isFlatCallConstructor()) { return flatCallConstructor.getThisVar(); }
+    if(isFlatCallVoid()) { err(); }
+    if(isFlatCallVoidStatic()) { err(); }
+    if(isSelectionShortCircuit()) { return selectionShortCircuit.getDest(); }
+    if(isStoreFieldLiteral()) { err(); }
+    if(isStoreFieldVar()) { err(); }
+    if(isStoreVarField()) { err(); }
+    if(isStoreVarVar()) { err(); }
     throw new AstParseException("unknown item for result: " + toString());
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }
