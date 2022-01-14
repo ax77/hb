@@ -1,6 +1,11 @@
 package _st3_linearize_expr.leaves;
 
-public class FieldAccess {
+import java.util.ArrayList;
+import java.util.List;
+
+import _st3_linearize_expr.items.VarCollector;
+
+public class FieldAccess implements VarCollector {
   private final Var object;
   private final Var field;
 
@@ -20,6 +25,14 @@ public class FieldAccess {
   @Override
   public String toString() {
     return object.toString() + "->" + field.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(object);
+    vars.add(field);
+    return vars;
   }
 
 }

@@ -1,9 +1,12 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarFlatCallResult {
+public class AssignVarFlatCallResult implements VarCollector {
   private final Var lvalue;
   private final FunctionCallWithResult rvalue;
 
@@ -23,5 +26,13 @@ public class AssignVarFlatCallResult {
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = " + rvalue.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lvalue);
+    vars.addAll(rvalue.getAllVars());
+    return vars;
   }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprExpression;
+import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
 import ast_vars.VarDeclarator;
 
@@ -16,8 +17,18 @@ public abstract class LinearExpressionBuilder {
     }
     final RewriterExpr tcg = new RewriterExpr(from, method);
     final List<FlatCodeItem> result = tcg.getRv();
-    final List<FlatCodeItem> tryPeep = Peep.tryPeep(result);
-    return new LinearExpression(tryPeep);
+
+    if (ParserMainOptions.FOLD_LINEARIZED_EXPRESSIONS) {
+      final List<FlatCodeItem> tryPeep = Peep.tryPeep(result);
+      //    System.out.println("------------------------------------------");
+      //    for (FlatCodeItem item : tryPeep) {
+      //      System.out.println(item);
+      //    }
+      //    System.out.println("------------------------------------------");
+      return new LinearExpression(tryPeep);
+    }
+
+    return new LinearExpression(result);
   }
 
   public static LinearExpression build(VarDeclarator from, ClassDeclaration clazz, ClassMethodDeclaration method) {
@@ -26,8 +37,18 @@ public abstract class LinearExpressionBuilder {
     }
     final RewriterExpr tcg = new RewriterExpr(from, method);
     final List<FlatCodeItem> result = tcg.getRv();
-    final List<FlatCodeItem> tryPeep = Peep.tryPeep(result);
-    return new LinearExpression(tryPeep);
+
+    if (ParserMainOptions.FOLD_LINEARIZED_EXPRESSIONS) {
+      final List<FlatCodeItem> tryPeep = Peep.tryPeep(result);
+      //    System.out.println("------------------------------------------");
+      //    for (FlatCodeItem item : tryPeep) {
+      //      System.out.println(item);
+      //    }
+      //    System.out.println("------------------------------------------");
+      return new LinearExpression(tryPeep);
+    }
+
+    return new LinearExpression(result);
   }
 
 }

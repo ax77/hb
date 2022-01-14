@@ -50,6 +50,10 @@ public class LinearExpression {
       if (item.isSelectionShortCircuit()) {
         needSemicolon = false;
       }
+      if (item.isIgnore()) {
+        needSemicolon = false;
+        needNewline = false;
+      }
 
       if (needSemicolon) {
         sb.append(";");

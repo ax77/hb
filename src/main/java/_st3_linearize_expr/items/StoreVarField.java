@@ -1,9 +1,12 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.FieldAccess;
 import _st3_linearize_expr.leaves.Var;
 
-public class StoreVarField {
+public class StoreVarField implements VarCollector {
   private final Var dst;
   private final FieldAccess src;
 
@@ -23,6 +26,14 @@ public class StoreVarField {
   @Override
   public String toString() {
     return dst.toString() + " = " + src.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(dst);
+    vars.addAll(src.getAllVars());
+    return vars;
   }
 
 }

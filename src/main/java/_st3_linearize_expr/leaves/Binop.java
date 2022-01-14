@@ -1,6 +1,11 @@
 package _st3_linearize_expr.leaves;
 
-public class Binop {
+import java.util.ArrayList;
+import java.util.List;
+
+import _st3_linearize_expr.items.VarCollector;
+
+public class Binop implements VarCollector {
   private final Var lhs;
   private final String op;
   private final Var rhs;
@@ -26,6 +31,14 @@ public class Binop {
   @Override
   public String toString() {
     return "(" + lhs.toString() + " " + op + " " + rhs.toString() + ")";
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lhs);
+    vars.add(rhs);
+    return vars;
   }
 
 }

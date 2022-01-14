@@ -1,6 +1,11 @@
 package _st3_linearize_expr.items;
 
-public class BuiltinFuncAssertTrue {
+import java.util.ArrayList;
+import java.util.List;
+
+import _st3_linearize_expr.leaves.Var;
+
+public class BuiltinFuncAssertTrue implements VarCollector {
 
   // void assert_true(int cnd, const char *file, int line, const char *expr)
 
@@ -35,6 +40,11 @@ public class BuiltinFuncAssertTrue {
   @Override
   public String toString() {
     return "assert_true(" + cond + ", " + file + ", " + line + ", " + expr + ")";
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    return new ArrayList<Var>();
   }
 
 }

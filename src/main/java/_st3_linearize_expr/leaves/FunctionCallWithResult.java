@@ -1,12 +1,14 @@
 package _st3_linearize_expr.leaves;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import _st3_linearize_expr.items.VarCollector;
 import ast_method.ClassMethodDeclaration;
 import ast_printers.ArgsListToString;
 import ast_types.Type;
 
-public class FunctionCallWithResult {
+public class FunctionCallWithResult implements VarCollector {
   private final ClassMethodDeclaration method;
   private final String fullname;
   private final Type type;
@@ -38,6 +40,13 @@ public class FunctionCallWithResult {
   @Override
   public String toString() {
     return fullname + ArgsListToString.paramsToStringWithBraces(args, '(');
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.addAll(args);
+    return vars;
   }
 
 }

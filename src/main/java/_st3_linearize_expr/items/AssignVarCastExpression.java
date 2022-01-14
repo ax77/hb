@@ -1,9 +1,12 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.Var;
 import ast_types.Type;
 
-public class AssignVarCastExpression {
+public class AssignVarCastExpression implements VarCollector {
   private final Var lvalue;
   private final Var rvalue;
   private final Type type;
@@ -29,6 +32,14 @@ public class AssignVarCastExpression {
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = ((" + type.toString() + ")" + rvalue.toString() + ")";
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lvalue);
+    vars.add(rvalue);
+    return vars;
   }
 
 }

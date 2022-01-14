@@ -1,6 +1,11 @@
 package _st3_linearize_expr.leaves;
 
-public class Unop {
+import java.util.ArrayList;
+import java.util.List;
+
+import _st3_linearize_expr.items.VarCollector;
+
+public class Unop implements VarCollector {
   private final String op;
   private final Var operand;
 
@@ -20,6 +25,13 @@ public class Unop {
   @Override
   public String toString() {
     return op + operand.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(operand);
+    return vars;
   }
 
 }

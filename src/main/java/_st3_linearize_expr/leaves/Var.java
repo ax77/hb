@@ -13,7 +13,7 @@ public class Var implements Comparable<Var> {
   private final VarBase base;
   private final Modifiers mods;
   private final Type type;
-  private final Ident name;
+  private Ident name;
   private final int theOrderOfAppearance;
 
   /// a bit which indicates that this is
@@ -22,6 +22,10 @@ public class Var implements Comparable<Var> {
   /// var when we will generate destructors.
   /// 
   private boolean isOriginalNoTempVar;
+
+  public void replaceName(Ident with) {
+    this.name = with;
+  }
 
   public Var(VarBase base, Modifiers mods, Type type, Ident name) {
     this.base = base;

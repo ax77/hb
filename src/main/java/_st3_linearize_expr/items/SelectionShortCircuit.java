@@ -1,11 +1,12 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.leaves.Var;
 
-public class SelectionShortCircuit {
+public class SelectionShortCircuit implements VarCollector {
 
   private final Var dest;
 
@@ -73,6 +74,16 @@ public class SelectionShortCircuit {
     sb.append("\n}\n");
 
     return sb.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(dest);
+    vars.add(condVar);
+    vars.add(trueVar);
+    vars.add(elseVar);
+    return vars;
   }
 
 }

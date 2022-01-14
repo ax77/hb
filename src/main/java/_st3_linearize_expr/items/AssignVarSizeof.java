@@ -1,9 +1,12 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.Var;
 import ast_types.Type;
 
-public class AssignVarSizeof {
+public class AssignVarSizeof implements VarCollector {
   private final Var lvalue;
   private final Type typename;
 
@@ -23,6 +26,13 @@ public class AssignVarSizeof {
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = sizeof(" + typename.toString() + ")";
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lvalue);
+    return vars;
   }
 
 }

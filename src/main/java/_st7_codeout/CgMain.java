@@ -60,16 +60,25 @@ public class CgMain {
     // assert true function which depends on the string class
     final String assertTrueFunction = GenRuntimeHeader.genAssertTrueFunction();
 
-    // arrays, must have
-    final List<ClassDeclaration> arrays = cutArrays();
-    final GenBuiltinArray arraysCg = new GenBuiltinArray(arrays);
-    final String arraysProto = arraysCg.getProto();
-    final String arraysImpls = arraysCg.getImpls();
+    String arraysProto = "";
+    String arraysImpls = "";
+    String strProto = "";
+    String strImpls = "";
 
-    final ClassDeclaration strClazz = cutString();
-    final GenBuiltinString stringCg = new GenBuiltinString(strClazz);
-    final String strProto = stringCg.getProto();
-    final String strImpls = stringCg.getImpls();
+    if (ParserMainOptions.INJECT_BUILTIN_ARR) {
+      // arrays, must have
+      final List<ClassDeclaration> arrays = cutArrays();
+      final GenBuiltinArray arraysCg = new GenBuiltinArray(arrays);
+      arraysProto = arraysCg.getProto();
+      arraysImpls = arraysCg.getImpls();
+    }
+
+    if (ParserMainOptions.INJECT_BUILTIN_STR) {
+      final ClassDeclaration strClazz = cutString();
+      final GenBuiltinString stringCg = new GenBuiltinString(strClazz);
+      strProto = stringCg.getProto();
+      strImpls = stringCg.getImpls();
+    }
 
     final List<ClassDeclaration> interfaces = cutInterfaces();
     final GenInterfaces interfacesCg = new GenInterfaces(interfaces);
@@ -134,8 +143,10 @@ public class CgMain {
     resultBuffer.append(GenCommentHeader.gen("string impls"));
     resultBuffer.append(strImpls);
 
-    resultBuffer.append(GenCommentHeader.gen("assert true impl"));
-    resultBuffer.append(assertTrueFunction);
+    if (ParserMainOptions.INJECT_BUILTIN_STR) {
+      resultBuffer.append(GenCommentHeader.gen("assert true impl"));
+      resultBuffer.append(assertTrueFunction);
+    }
 
     resultBuffer.append(GenCommentHeader.gen("arrays methods impls"));
     resultBuffer.append(arraysImpls);

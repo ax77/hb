@@ -39,8 +39,7 @@ opcodes = """
     StoreVarField                      ,
     StoreVarVar                        ,
     SelectionShortCircuit              ,
-    BuiltinFuncAssertTrue              ,
-    BuiltinFuncDropPtr
+    BuiltinFuncAssertTrue              
                             
 """
 opcodes_arr = []

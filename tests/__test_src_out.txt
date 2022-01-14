@@ -1,89 +1,23 @@
-    //@formatter:off
-    StringBuilder sb = new StringBuilder();
-    sb.append("struct hb_ptr {                                                     \n");
-    sb.append("    void *ptr;                                                      \n");
-    sb.append("    size_t size;                                                    \n");
-    sb.append("};                                                                  \n");
-    sb.append("static struct hashmap *MANAGED_HEAP = NULL;                         \n");
-    sb.append("static size_t MIN_HEAP_PTR_ADDR = SIZE_MAX;                         \n");
-    sb.append("static size_t MAX_HEAP_PTR_ADDR = 0;                                \n");
-    sb.append("static size_t MANAGED_HEAP_CURRENT_SIZE = 0;                        \n");
-    sb.append("static size_t MANAGED_HEAP_BYTES_ALLOCATED_TOTAL = 0;               \n");
-    sb.append("static size_t MANAGED_HEAP_BYTES_DEALLOCATED_TOTAL = 0;             \n");
-    sb.append("static void* hb_alloc(size_t size) {                                \n");
-    sb.append("    assert(size > 0);                                               \n");
-    sb.append("    assert(size < INT_MAX);                                         \n");
-    sb.append("    void *ret = NULL;                                               \n");
-    sb.append("    ret = calloc(1u, size);                                         \n");
-    sb.append("    if (ret == NULL) {                                              \n");
-    sb.append("        ret = calloc(1u, size);                                     \n");
-    sb.append("        if (ret == NULL) {                                          \n");
-    sb.append("            ret = calloc(1u, size);                                 \n");
-    sb.append("        }                                                           \n");
-    sb.append("    }                                                               \n");
-    sb.append("    assert(ret);                                                    \n");
-    sb.append("    /// let\'s save the simple filter for future use.               \n");
-    sb.append("    size_t iptr = (size_t) ret;                                     \n");
-    sb.append("    if (iptr < MIN_HEAP_PTR_ADDR) {                                 \n");
-    sb.append("        MIN_HEAP_PTR_ADDR = iptr;                                   \n");
-    sb.append("    }                                                               \n");
-    sb.append("    if (iptr > MAX_HEAP_PTR_ADDR) {                                 \n");
-    sb.append("        MAX_HEAP_PTR_ADDR = iptr;                                   \n");
-    sb.append("    }                                                               \n");
-    sb.append("    /// put the pointer into the heap                               \n");
-    sb.append("    struct hb_ptr *mem_chunk = calloc(1u, sizeof(struct hb_ptr));   \n");
-    sb.append("    assert(mem_chunk);                                              \n");
-    sb.append("    mem_chunk->ptr = ret;                                           \n");
-    sb.append("    mem_chunk->size = size;                                         \n");
-    sb.append("    void *overwritten = map_put(MANAGED_HEAP, ret, mem_chunk);      \n");
-    sb.append("    assert(overwritten == NULL);                                    \n");
-    sb.append("    MANAGED_HEAP_CURRENT_SIZE += size;                              \n");
-    sb.append("    MANAGED_HEAP_BYTES_ALLOCATED_TOTAL += size;                     \n");
-    sb.append("    return ret;                                                     \n");
-    sb.append("}                                                                   \n");
-    sb.append("static void drop_ptr(void **ptr, void *set) {                       \n");
-    sb.append("    assert(ptr);                                                    \n");
-    sb.append("    assert(*ptr);                                                   \n");
-    sb.append("    assert(set);                                                    \n");
-    sb.append("    // was set already, and possibly was freed too.                 \n");
-    sb.append("    if (*ptr == set) {                                              \n");
-    sb.append("        return;                                                     \n");
-    sb.append("    }                                                               \n");
-    sb.append("    // primitive checking -                                         \n");
-    sb.append("    // whether the address come from the heap                       \n");
-    sb.append("    size_t iptr = (size_t) *ptr;                                    \n");
-    sb.append("    if (iptr < MIN_HEAP_PTR_ADDR) {                                 \n");
-    sb.append("        return;                                                     \n");
-    sb.append("    }                                                               \n");
-    sb.append("    if (iptr > MAX_HEAP_PTR_ADDR) {                                 \n");
-    sb.append("        return;                                                     \n");
-    sb.append("    }                                                               \n");
-    sb.append("    if (iptr == 0) {                                                \n");
-    sb.append("        return;                                                     \n");
-    sb.append("    }                                                               \n");
-    sb.append("    // it must be a heap-allocated pointer.                         \n");
-    sb.append("    if (!map_contains(MANAGED_HEAP, *ptr)) {                        \n");
-    sb.append("        return;                                                     \n");
-    sb.append("    }                                                               \n");
-    sb.append("    // remove the chunk from the heap.                              \n");
-    sb.append("    struct hb_ptr *mem_chunk = map_remove(MANAGED_HEAP, *ptr);      \n");
-    sb.append("    assert(mem_chunk);                                              \n");
-    sb.append("    assert(mem_chunk->ptr);                                         \n");
-    sb.append("    assert(mem_chunk->ptr == *ptr);                                 \n");
-    sb.append("    assert(MANAGED_HEAP_CURRENT_SIZE > 0);                          \n");
-    sb.append("    MANAGED_HEAP_CURRENT_SIZE -= mem_chunk->size;                   \n");
-    sb.append("    MANAGED_HEAP_BYTES_DEALLOCATED_TOTAL += mem_chunk->size;        \n");
-    sb.append("    // drop                                                         \n");
-    sb.append("    free(mem_chunk->ptr);                                           \n");
-    sb.append("    free(mem_chunk);                                                \n");
-    sb.append("    *ptr = set;                                                     \n");
-    sb.append("}                                                                   \n");
-    sb.append("char* hstrdup(char *str) {                                          \n");
-    sb.append("    assert(str);                                                    \n");
-    sb.append("    size_t len = strlen(str);                                       \n");
-    sb.append("    char *rv = (char*) hb_alloc(len + 1);                           \n");
-    sb.append("    strcpy(rv, str);                                                \n");
-    sb.append("    rv[len] = \'\\0\';                                              \n");
-    sb.append("    return rv;                                                      \n");
-    sb.append("}                                                                   \n");
-    //@formatter:on
+isAssignVarAllocObject               
+isAssignVarBinop                     
+isAssignVarBool                      
+isAssignVarCastExpression            
+isAssignVarDefaultValueForType       
+isAssignVarFieldAccess               
+isAssignVarFieldAccessStatic         
+isAssignVarFlatCallClassCreationTmp  
+isAssignVarFlatCallResult            
+isAssignVarFlatCallResultStatic      
+isAssignVarFlatCallStringCreationTmp 
+isAssignVarNum                       
+isAssignVarSizeof                    
+isAssignVarUnop                      
+isAssignVarVar                       
+isBuiltinFuncAssertTrue              
+isFlatCallConstructor                
+isFlatCallVoid                       
+isFlatCallVoidStatic                 
+isSelectionShortCircuit              
+isStoreFieldVar                      
+isStoreVarField                      
+isStoreVarVar                        

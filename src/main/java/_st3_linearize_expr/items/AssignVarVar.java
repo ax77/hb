@@ -1,8 +1,11 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarVar {
+public class AssignVarVar implements VarCollector {
   private final Var lvalue;
   private final Var rvalue;
 
@@ -22,6 +25,14 @@ public class AssignVarVar {
   @Override
   public String toString() {
     return lvalue.typeNameToString() + " = " + rvalue.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lvalue);
+    vars.add(rvalue);
+    return vars;
   }
 
 }

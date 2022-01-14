@@ -28,5 +28,4 @@ public enum Opc {
   //
   , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
   , BuiltinFuncAssertTrue              // assert_true(cond, file, line, expr)
-  , BuiltinFuncDropPtr                 // drop_ptr(void **ptr, void *set)
 }

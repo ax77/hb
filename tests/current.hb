@@ -1,29 +1,41 @@
 
+class suite {
+  int count;
+  int count() { return count; }
+}
+
 class utest {
   int version;
+  char cc;
+  suite s;
   utest(int v) {
     version = v;
+    cc = 'x';
+    s = new suite();
   }
+  char getc() { return cc; }
+  void fun() { cc == '.'; }
 }
 
 static class main {
   static int main() {
     utest a = new utest(32);
     utest b = a;
-    str s = "1.2.3";
-    fmt<str>.print(s);
-    arr<str> ar = new arr<str>();
-    ar.add(s);
-    ar.add("4.5.6");
-    
-    assert_true(ar.size() == 2);
-    assert_true(ar.get(0) == "1.2.3");
-    
-    for(int i=0; i<ar.size(); i+=1){
-      str content = ar.get(i);
-      fmt<str>.print(content);
+    int x = a.version;
+    a.version = 64;
+    char cc = a.getc();
+    char tt = b.getc();
+    if(cc == tt) {
+      x = -1;
     }
-    
-    return 0;
+    boolean f1 = true;
+    boolean f2 = f1;
+    a.fun();
+    if(!f1){
+      b.fun();
+    }
+    int count1 = a.s.count;
+    int count2 = a.s.count();
+    return x < a.version;
   }
 }

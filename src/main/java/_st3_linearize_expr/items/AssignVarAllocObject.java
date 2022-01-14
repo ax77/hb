@@ -1,11 +1,14 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_types.Type;
 
-public class AssignVarAllocObject {
+public class AssignVarAllocObject implements VarCollector {
   private final Var lvalue;
   private final Type typename;
 
@@ -29,6 +32,13 @@ public class AssignVarAllocObject {
 
     return lvalue.typeNameToString() + " = (" + ToStringsInternal.typeToString(lvalue.getType())
         + ") hb_alloc( sizeof(struct " + headerToString + ") )";
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(lvalue);
+    return vars;
   }
 
 }

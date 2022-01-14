@@ -187,10 +187,6 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isBuiltinFuncDropPtr()) {
-        rv.add(item);
-      }
-
       else {
         throw new AstParseException("unknown item: " + item.toString());
       }

@@ -1,8 +1,11 @@
 package _st3_linearize_expr.items;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import _st3_linearize_expr.leaves.Var;
 
-public class StoreVarVar {
+public class StoreVarVar implements VarCollector {
   private final Var dst;
   private final Var src;
 
@@ -22,6 +25,14 @@ public class StoreVarVar {
   @Override
   public String toString() {
     return dst.toString() + " = " + src.toString();
+  }
+
+  @Override
+  public List<Var> getAllVars() {
+    List<Var> vars = new ArrayList<>();
+    vars.add(dst);
+    vars.add(src);
+    return vars;
   }
 
 }

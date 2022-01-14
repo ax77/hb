@@ -50,11 +50,11 @@ public abstract class BuildDefaultConstructor {
     final StmtBlock block = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
     block.pushItemFront(createThisAssignExprAlloc(object));
     block.pushItemBack(createReturnThis(object));
-    
+
     final List<VarDeclarator> parameters = new ArrayList<>();
 
     final Token beginPos = object.getBeginPos();
-    final Type returnType = new Type(beginPos); // void
+    final Type returnType = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
 
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR,
         new Modifiers(), object, object.getIdentifier(), parameters, returnType, block, beginPos);
