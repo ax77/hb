@@ -109,7 +109,7 @@ public class ApplyUnitPreEachClass {
     for (ClassMethodDeclaration m : object.getMethods()) {
       final String msg = object.getIdentifier().toString() + "." + m.getIdentifier().toString() + ", "
           + m.getLocationToString();
-      
+
       if (!m.getModifiers().isStatic() && !m.getModifiers().isNative()) {
         throw new AstParseException("method in static class should be static: " + msg);
       }
@@ -230,6 +230,11 @@ public class ApplyUnitPreEachClass {
       for (ClassMethodDeclaration constr : object.getConstructors()) {
         final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
         constr.getBlock().pushItemFront(new StmtStatement(emptifiers, object.getBeginPos()));
+      }
+      // var __this = alloc(object type)
+      for (ClassMethodDeclaration constr : object.getConstructors()) {
+        constr.getBlock().pushItemFront(BuildDefaultConstructor.createThisAssignExprAlloc(object));
+        constr.getBlock().pushItemBack(BuildDefaultConstructor.createReturnThis(object));
       }
     }
 

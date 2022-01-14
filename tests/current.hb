@@ -1,41 +1,29 @@
 
-enum test_type {
-  t_plain, t_suite
-}
-
-static class tests {
-  static int version = 32;
-  static int version() {
-    return version;
-  }
-}
-
-interface markable {
-  void mark();
-}
-
-class utest implements markable {
-  test_type typ;
-  str name;
-  int ver;
-  utest() {
-    typ = test_type.t_suite;
-    name = "unit test";
-    ver = tests.version + tests.version();
-  }
-  void mark() {
-    ver = 128;
+class utest {
+  int version;
+  utest(int v) {
+    version = v;
   }
 }
 
 static class main {
   static int main() {
-    utest t = new utest();
-    if(t.typ == test_type.t_plain) {}
-    assert_true(t.ver == 64);
-    markable m = t;
-    m.mark();
-    assert_true(t.ver == 128);
+    utest a = new utest(32);
+    utest b = a;
+    str s = "1.2.3";
+    fmt<str>.print(s);
+    arr<str> ar = new arr<str>();
+    ar.add(s);
+    ar.add("4.5.6");
+    
+    assert_true(ar.size() == 2);
+    assert_true(ar.get(0) == "1.2.3");
+    
+    for(int i=0; i<ar.size(); i+=1){
+      str content = ar.get(i);
+      fmt<str>.print(content);
+    }
+    
     return 0;
   }
 }

@@ -39,11 +39,11 @@ public class TestCcode7 {
     InstantiationUnit unit = new ParserMain(filename).parseInstantiationUnit();
     final List<ClassDeclaration> classes = unit.getClasses();
     for (ClassDeclaration c : classes) {
-      System.out.println(UtilSrcToStringLevel.tos(c.toString()));
+      //System.out.println(UtilSrcToStringLevel.tos(c.toString()));
     }
 
     CgMain result = new CgMain(classes);
-    //    System.out.println(result.toString());
+    System.out.println(result.toString());
 
     //    FileWriter fw = new FileWriter("ccode.c");
     //    fw.write(result.toString());

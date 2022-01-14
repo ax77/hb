@@ -49,6 +49,7 @@ import _st3_linearize_expr.leaves.Unop;
 import _st3_linearize_expr.leaves.Var;
 import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
+import ast_expr.ExprAlloc;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
@@ -753,34 +754,14 @@ public class RewriterExpr {
       genRaw(item);
     }
 
-    //TODO: this one should be a special ITEM-node...
-    //TODO:TODO:TODO:delete_expr
-    else if (e.is(ExpressionBase.EDELETE)) {
-      // delete(sym)
-      //
-      VarDeclarator var = e.getExprDelete().getVar();
-      NullChecker.check(var);
+    else if (e.is(ExpressionBase.EALLOC)) {
+      ExprAlloc node = e.getExprAlloc();
+      ClassDeclaration object = node.getObject();
+      Type type = new Type(new ClassTypeRef(object, object.getTypeParametersT()));
 
-      String name = var.getIdentifier().getName();
-      if (var.is(VarBase.CLASS_FIELD)) {
-        name = "__this->" + name;
-      }
-
-      Type vartype = var.getType();
-      if (vartype.isClass()) {
-
-        ClassDeclaration clazz = vartype.getClassTypeFromRef();
-        List<Var> args = new ArrayList<>();
-        final Var varToDelete = VarCreator.varWithName(vartype, name);
-        args.add(varToDelete);
-        final ClassMethodDeclaration destructor = clazz.getDestructor();
-        FlatCallVoid flatCallVoid = new FlatCallVoid(destructor, ToStringsInternal.signToStringCall(destructor), args);
-        genRaw(new FlatCodeItem(flatCallVoid));
-
-        /// final Var rhsVar = VarCreator.varWithName(vartype, ToStringsInternal.defaultVarNameForType(vartype));
-        /// final BuiltinFuncDropPtr builtinFuncDropPtr = new BuiltinFuncDropPtr(name, rhsVar.getName().getName());
-        /// genRaw(new FlatCodeItem(builtinFuncDropPtr));
-      }
+      Var lvalue = VarCreator.justNewVar(type);
+      AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvalue, type);
+      genRaw(new FlatCodeItem(assignVarAllocObject));
     }
 
     else {

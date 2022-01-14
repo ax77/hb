@@ -139,7 +139,7 @@ public class ApplyUnitPostEachClass {
     }
 
     for (ClassMethodDeclaration constructor : object.getConstructors()) {
-      constructor.pushParameterFront(createThisParameter(object, constructor));
+      //constructor.pushParameterFront(createThisParameter(object, constructor));
     }
 
     final ClassMethodDeclaration destructor = object.getDestructor();

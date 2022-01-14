@@ -72,9 +72,9 @@ public class GenBuiltinArray implements Ccode {
     String varname = ToStringsInternal.defaultVarNameForType(tp);
 
     StringBuilder sb = new StringBuilder();
-    sb.append("for (size_t i = 0; i < __this->alloc; i += 1) {\n");
-    sb.append("  __this->data[i] = " + varname + ";\n");
-    sb.append("}\n");
+    sb.append("    for (size_t i = 0; i < __this->alloc; i += 1) {\n");
+    sb.append("      __this->data[i] = " + varname + ";\n");
+    sb.append("    }\n");
 
     return sb.toString();
   }
@@ -118,15 +118,19 @@ public class GenBuiltinArray implements Ccode {
     lineP("static " + methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters())
         + ";");
 
+    final String hdr = ToStringsInternal.classHeaderToString(clazz);
+    final String cast = "(struct " + hdr + " *)";
+
     if (signToStringCall.startsWith("arr_init_")) {
 
-      if (parameters.size() == 1) {
+      if (parameters.size() == 0) {
         lineI(methodCallsHeader);
-        lineI("    assert(__this);");
+        lineI("    struct " + hdr + " *__this = " + cast + " hb_alloc(sizeof(struct " + hdr + "));");
         lineI("    __this->size = 0;");
         lineI("    __this->alloc = 2;");
         lineI("    __this->data = " + sizeofMulAlloc);
         lineI(genTableEmptifier(arrayOf));
+        lineI("    return __this;");
         lineI("}\n");
       }
 

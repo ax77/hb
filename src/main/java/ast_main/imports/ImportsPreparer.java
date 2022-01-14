@@ -161,6 +161,7 @@ public abstract class ImportsPreparer {
     sb.append("  native str(str buffer);       \n");
     sb.append("  native int len();             \n");
     sb.append("  native char get(int index);   \n");
+    sb.append("  native boolean equals(str another); \n");
     sb.append("  native ~str();                \n");
     sb.append("}                               \n\n");
 

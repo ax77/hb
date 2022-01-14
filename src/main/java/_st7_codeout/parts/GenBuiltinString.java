@@ -62,6 +62,7 @@ public class GenBuiltinString implements Ccode {
   private void genMethod(Function func) {
 
     final ClassMethodDeclaration method = func.getMethodSignature();
+    final ClassDeclaration clazz = method.getClazz();
     final List<VarDeclarator> parameters = method.getParameters();
 
     final String methodType = ToStringsInternal.typeToString(method.getType());
@@ -72,16 +73,20 @@ public class GenBuiltinString implements Ccode {
     lineP("static " + methodType + " " + signToStringCall + ToStringsInternal.parametersToString(method.getParameters())
         + ";");
 
+    final String hdr = ToStringsInternal.classHeaderToString(clazz);
+    final String cast = "(struct " + hdr + " *)";
+
     // TODO: optimize, because we calculate the length in strdup() and here too!
     if (signToStringCall.startsWith("str_init_")) {
 
-      if (parameters.size() == 2) { // __this, buffer
+      if (parameters.size() == 1) { // __this, buffer
         lineI(methodCallsHeader);
-        lineI("    assert(__this);");
         lineI("    assert(buffer);");
         lineI("    assert(buffer->buf);");
+        lineI("    struct " + hdr + " *__this = " + cast + " hb_alloc(sizeof(struct " + hdr + "));");
         lineI("    __this->buf = hstrdup(buffer->buf);");
-        lineI("    __this->len = strlen(buffer->buf);");
+        lineI("    __this->len = buffer->len;");
+        lineI("    return __this;");
         lineI("}\n");
       }
 

@@ -40,7 +40,6 @@ public final class Keywords {
   public static final Ident false_ident          = g("false");
   public static final Ident this_ident           = g("this");
   public static final Ident default_ident        = g("default");
-  public static final Ident delete_ident         = g("delete");
   
   // new syntax:
   public static final Ident cast_ident           = g("cast");

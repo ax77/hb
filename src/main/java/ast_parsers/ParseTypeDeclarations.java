@@ -348,7 +348,7 @@ public class ParseTypeDeclarations {
       parser.semicolon();
     }
 
-    final Type returnType = new Type(beginPos); // the return type of constructor is 'void'
+    final Type returnType = new Type(new ClassTypeRef(clazz, clazz.getTypeParametersT()));
     final ClassMethodDeclaration constructor = new ClassMethodDeclaration(ClassMethodBase.IS_CONSTRUCTOR, modifiers,
         clazz, clazz.getIdentifier(), parameters, returnType, block, beginPos);
 

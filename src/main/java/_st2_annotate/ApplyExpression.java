@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ast_class.ClassDeclaration;
+import ast_expr.ExprAlloc;
 import ast_expr.ExprAssign;
 import ast_expr.ExprBinary;
 import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprCast;
 import ast_expr.ExprClassCreation;
-import ast_expr.ExprDelete;
 import ast_expr.ExprExpression;
 import ast_expr.ExprFieldAccess;
 import ast_expr.ExprForLoopStepComma;
@@ -107,8 +107,8 @@ public class ApplyExpression {
       applyDefaultValueFotType(e);
     } else if (e.is(ExpressionBase.ESTATIC_ACCESS)) {
       applyStaticAccess(e);
-    } else if (e.is(ExpressionBase.EDELETE)) {
-      applyDeleteExpression(e);
+    } else if (e.is(ExpressionBase.EALLOC)) {
+      applyAlloc(e);
     }
 
     else {
@@ -117,18 +117,9 @@ public class ApplyExpression {
 
   }
 
-  private void applyDeleteExpression(ExprExpression e) {
-    ExprDelete node = e.getExprDelete();
-    Ident name = node.getName();
-    Symbol sym = symtabApplier.findVar(name, F_ALL);
-    if (sym == null) {
-      ErrorLocation.errorExpression("symbol was not declared in the scope", e);
-    }
-    if (!sym.isVariable()) {
-      ErrorLocation.errorExpression("delete expression may work only with variables", e);
-    }
-    node.setVar(sym.getVariable());
-    e.setResultType(new Type(e.getBeginPos())); // void
+  private void applyAlloc(ExprExpression e) {
+    ExprAlloc node = e.getExprAlloc();
+    e.setResultType(new Type(new ClassTypeRef(node.getObject(), node.getObject().getTypeParametersT())));
   }
 
   private void applyStaticAccess(ExprExpression e) {
