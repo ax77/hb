@@ -30,4 +30,5 @@ public enum Opc {
   , BuiltinFuncAssertTrue              // assert_true(cond, file, line, expr)
   //
   , StoreFieldLiteral
+  , StoreVarLiteral
 }

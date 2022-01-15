@@ -22,7 +22,8 @@ opcodes = """
     StoreVarVar                        ,
     SelectionShortCircuit              ,
     BuiltinFuncAssertTrue              ,
-    StoreFieldLiteral
+    StoreFieldLiteral                  ,
+    StoreVarLiteral
                             
 """
 opcodes_arr = []

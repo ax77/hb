@@ -11,6 +11,7 @@ import ast_expr.ExprBuiltinFunc;
 import ast_expr.ExprExpression;
 import ast_expr.ExprIdent;
 import ast_expr.ExprUnary;
+import ast_main.ParserMainOptions;
 import ast_method.ClassMethodBase;
 import ast_method.ClassMethodDeclaration;
 import ast_modifiers.Modifiers;
@@ -181,8 +182,11 @@ public class ApplyUnitPreEachClass {
       object.setDestructor(defaultDestructor);
     } else {
       addGuardFront(object.getDestructor());
-      final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
-      object.getDestructor().getBlock().pushItemBack(new StmtStatement(emptifiers, object.getBeginPos()));
+
+      if (ParserMainOptions.GENERATE_DESTRUCTOR_BODY) {
+        final StmtBlock emptifiers = BuildDefaultInitializersBlockForAllFields.createEmptifiiers(object);
+        object.getDestructor().getBlock().pushItemBack(new StmtStatement(emptifiers, object.getBeginPos()));
+      }
     }
   }
 
@@ -192,6 +196,10 @@ public class ApplyUnitPreEachClass {
   // set_deletion_bit(__this);
 
   private void addGuardFront(ClassMethodDeclaration destructor) {
+    if (!ParserMainOptions.GENERATE_DESTRUCTOR_BODY) {
+      return;
+    }
+
     final ClassDeclaration object = destructor.getClazz();
     final Token beginPos = object.getBeginPos();
     final ExprExpression idExpr = new ExprExpression(object, beginPos);

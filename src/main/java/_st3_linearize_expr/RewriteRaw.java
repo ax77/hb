@@ -191,6 +191,10 @@ public class RewriteRaw {
         rv.add(item);
       }
 
+      else if (item.isStoreVarLiteral()) {
+        rv.add(item);
+      }
+
       else {
         throw new AstParseException("unknown item: " + item.toString());
       }

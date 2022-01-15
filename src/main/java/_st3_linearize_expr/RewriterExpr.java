@@ -40,6 +40,7 @@ import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldLiteral;
 import _st3_linearize_expr.items.StoreFieldVar;
+import _st3_linearize_expr.items.StoreVarLiteral;
 import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Binop;
 import _st3_linearize_expr.leaves.FieldAccess;
@@ -131,30 +132,67 @@ public class RewriterExpr {
     gen(var.getSimpleInitializer());
     this.rv = new RewriteRaw(var.getSimpleInitializer(), rawResult, method, location).getRv();
 
+    FlatCodeItem srcItem = getLast();
     Var lvaluevar = VarCreator.copyVarDecl(var);
-    Var rvaluevar = getLast().getDest();
+    Var rvaluevar = srcItem.getDest();
 
     //xxxxx
-    if (lvaluevar.getType().isInterface()) {
-      final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvaluevar, lvaluevar.getType());
-      final ClassDeclaration interfaceClazz = lvaluevar.getType().getClassTypeFromRef();
-      final ClassDeclaration realClazz = rvaluevar.getType().getClassTypeFromRef();
+    if (isLiteralItem(srcItem)) {
+      srcItem.setIgnore(lvaluevar);
 
-      rv.add(new FlatCodeItem(assignVarAllocObject));
+      if (srcItem.isAssignVarBool()) {
+        String literal = srcItem.getAssignVarBool().getLiteral();
+        Leaf u = new Leaf(literal.equals("false") ? false : true);
+        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u);
+        FlatCodeItem i = new FlatCodeItem(s);
+        rv.add(i);
+      }
 
-      String funcname = interfaceClazz.getIdentifier() + "_init_for_" + realClazz.getIdentifier();
-      List<Var> args = new ArrayList<>();
-      args.add(lvaluevar);
-      args.add(rvaluevar);
-      FlatCallConstructor flatCallConstructor = new FlatCallConstructor(funcname, args, lvaluevar);
-      rv.add(new FlatCodeItem(flatCallConstructor));
+      if (srcItem.isAssignVarNum()) {
+        Leaf u = new Leaf(srcItem.getAssignVarNum().getLiteral());
+        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u);
+        FlatCodeItem i = new FlatCodeItem(s);
+        rv.add(i);
+      }
 
+      if (srcItem.isAssignVarDefaultValueForType()) {
+        Leaf u = new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
+        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u);
+        FlatCodeItem i = new FlatCodeItem(s);
+        rv.add(i);
+      }
+
+      if (srcItem.isAssignVarVar()) {
+        Leaf u = new Leaf(srcItem.getAssignVarVar().getRvalue());
+        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u);
+        FlatCodeItem i = new FlatCodeItem(s);
+        rv.add(i);
+      }
     }
 
     else {
+      //xxxxx
+      if (lvaluevar.getType().isInterface()) {
+        final AssignVarAllocObject assignVarAllocObject = new AssignVarAllocObject(lvaluevar, lvaluevar.getType());
+        final ClassDeclaration interfaceClazz = lvaluevar.getType().getClassTypeFromRef();
+        final ClassDeclaration realClazz = rvaluevar.getType().getClassTypeFromRef();
 
-      AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
-      rv.add(new FlatCodeItem(assignVarVar));
+        rv.add(new FlatCodeItem(assignVarAllocObject));
+
+        String funcname = interfaceClazz.getIdentifier() + "_init_for_" + realClazz.getIdentifier();
+        List<Var> args = new ArrayList<>();
+        args.add(lvaluevar);
+        args.add(rvaluevar);
+        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(funcname, args, lvaluevar);
+        rv.add(new FlatCodeItem(flatCallConstructor));
+
+      }
+
+      else {
+
+        AssignVarVar assignVarVar = new AssignVarVar(lvaluevar, rvaluevar);
+        rv.add(new FlatCodeItem(assignVarVar));
+      }
     }
 
   }
@@ -175,6 +213,11 @@ public class RewriterExpr {
 
   private FlatCodeItem popCode() {
     return temproraries.remove(0);
+  }
+
+  private boolean isLiteralItem(final FlatCodeItem srcItem) {
+    return srcItem.isAssignVarBool() || srcItem.isAssignVarNum() || srcItem.isAssignVarDefaultValueForType()
+        || srcItem.isAssignVarVar();
   }
 
   private List<Var> genArgs(final List<ExprExpression> arguments) {
@@ -200,6 +243,10 @@ public class RewriterExpr {
 
     if (dstItem.isAssignVarVar()) {
 
+      if (isLiteralItem(srcItem)) {
+        throw new AstParseException("Not an error, just TODO. It is possible to rewrite this into store-var-literal.");
+      }
+
       // it was: a = b
       // we need: b = srv
       final Var dst = dstItem.getAssignVarVar().getRvalue();
@@ -218,8 +265,7 @@ public class RewriterExpr {
       final FieldAccess dst = dstItem.getAssignVarFieldAccess().getRvalue();
       final Var src = srcItem.getDest();
 
-      if (srcItem.isAssignVarBool() || srcItem.isAssignVarNum() || srcItem.isAssignVarDefaultValueForType()
-          || srcItem.isAssignVarVar()) {
+      if (isLiteralItem(srcItem)) {
 
         srcItem.setIgnore(srcItem.getDest());
 
@@ -255,6 +301,7 @@ public class RewriterExpr {
       }
 
       else {
+        // the var here may be a result of a function-call, etc.
         FlatCodeItem item = new FlatCodeItem(new StoreFieldVar(dst, src));
         genRaw(item);
       }

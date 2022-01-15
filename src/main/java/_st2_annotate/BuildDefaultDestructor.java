@@ -25,8 +25,11 @@ public abstract class BuildDefaultDestructor {
   public static ClassMethodDeclaration build(ClassDeclaration object) {
 
     final StmtBlock block = new StmtBlock();
-    for (StmtStatement s : deinits(object)) {
-      block.pushItemBack(s);
+
+    if (ParserMainOptions.GENERATE_DESTRUCTOR_BODY) {
+      for (StmtStatement s : deinits(object)) {
+        block.pushItemBack(s);
+      }
     }
 
     final Token beginPos = object.getBeginPos();

@@ -11,4 +11,5 @@ public abstract class ParserMainOptions {
   public static final boolean INJECT_BUILTIN_STD = false;
 
   public static final boolean FOLD_LINEARIZED_EXPRESSIONS = true;
+  public static final boolean GENERATE_DESTRUCTOR_BODY = false;
 }
