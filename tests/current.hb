@@ -31,15 +31,18 @@ static class main {
     if(cc == tt) {
       x = -1;
     }
-//    boolean f1 = true;
-//    boolean f2 = f1;
-//    a.fun();
-//    if(!f1){
-//      b.fun();
-//    }
-//    int count1 = a.s.count;
-//    int count2 = a.s.count();
-//    int zzz = 23+64*3;
-//    return x < a.version;
+    boolean f1 = true;
+    boolean f2 = f1;
+    a.fun();
+    if(!f1){
+      b.fun();
+    }
+    int count1 = a.s.count;
+    int count2 = a.s.count();
+    int zzz = 23+64*3;
+    int zzzzzz = 0;
+    int yyyyyy = 0;
+    yyyyyy = zzzzzz;
+    return x < a.version + zzzzzz;
   }
 }

@@ -136,36 +136,11 @@ public class RewriterExpr {
 
     //xxxxx
     if (isLiteralItem(srcItem)) {
-      srcItem.setIgnore(lvaluevar);
 
-      if (srcItem.isAssignVarBool()) {
-        String literal = srcItem.getAssignVarBool().getLiteral();
-        Leaf u = new Leaf(literal.equals("false") ? false : true);
-        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u, true);
-        FlatCodeItem i = new FlatCodeItem(s);
-        rv.add(i);
-      }
+      final Leaf u = makeLeaf(srcItem);
+      final StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u, true);
+      rv.add(new FlatCodeItem(s));
 
-      if (srcItem.isAssignVarNum()) {
-        Leaf u = new Leaf(srcItem.getAssignVarNum().getLiteral());
-        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u, true);
-        FlatCodeItem i = new FlatCodeItem(s);
-        rv.add(i);
-      }
-
-      if (srcItem.isAssignVarDefaultValueForType()) {
-        Leaf u = new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
-        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u, true);
-        FlatCodeItem i = new FlatCodeItem(s);
-        rv.add(i);
-      }
-
-      if (srcItem.isAssignVarVar()) {
-        Leaf u = new Leaf(srcItem.getAssignVarVar().getRvalue());
-        StoreVarLiteral s = new StoreVarLiteral(lvaluevar, u, true);
-        FlatCodeItem i = new FlatCodeItem(s);
-        rv.add(i);
-      }
     }
 
     else {
@@ -234,6 +209,34 @@ public class RewriterExpr {
     return args;
   }
 
+  private Leaf makeLeaf(final FlatCodeItem srcItem) {
+    if (!isLiteralItem(srcItem)) {
+      throw new AstParseException("not a leaf: " + srcItem);
+    }
+
+    srcItem.setIgnore(srcItem.getDest());
+
+    if (srcItem.isAssignVarBool()) {
+      String literal = srcItem.getAssignVarBool().getLiteral();
+      return new Leaf(literal.equals("false") ? false : true);
+    }
+
+    if (srcItem.isAssignVarNum()) {
+      return new Leaf(srcItem.getAssignVarNum().getLiteral());
+    }
+
+    if (srcItem.isAssignVarDefaultValueForType()) {
+      return new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
+    }
+
+    if (srcItem.isAssignVarVar()) {
+      return new Leaf(srcItem.getAssignVarVar().getRvalue());
+    }
+
+    // unreachable
+    return null;
+  }
+
   private void store(Type resultType) {
 
     final FlatCodeItem srcItem = popCode();
@@ -247,43 +250,17 @@ public class RewriterExpr {
       final Var src = srcItem.getDest();
 
       if (isLiteralItem(srcItem)) {
-        srcItem.setIgnore(srcItem.getDest());
 
-        if (srcItem.isAssignVarBool()) {
-          String literal = srcItem.getAssignVarBool().getLiteral();
-          Leaf u = new Leaf(literal.equals("false") ? false : true);
-          StoreVarLiteral s = new StoreVarLiteral(dst, u, false);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
+        final Leaf u = makeLeaf(srcItem);
+        final StoreVarLiteral s = new StoreVarLiteral(dst, u, false);
+        genRaw(new FlatCodeItem(s));
 
-        if (srcItem.isAssignVarNum()) {
-          Leaf u = new Leaf(srcItem.getAssignVarNum().getLiteral());
-          StoreVarLiteral s = new StoreVarLiteral(dst, u, false);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
-
-        if (srcItem.isAssignVarDefaultValueForType()) {
-          Leaf u = new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
-          StoreVarLiteral s = new StoreVarLiteral(dst, u, false);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
-
-        if (srcItem.isAssignVarVar()) {
-          Leaf u = new Leaf(srcItem.getAssignVarVar().getLvalue());
-          StoreVarLiteral s = new StoreVarLiteral(dst, u, false);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
       }
 
       else {
-
-        StoreVarLiteral u = new StoreVarLiteral(dst, new Leaf(src), false);
-        FlatCodeItem item = new FlatCodeItem(u);
-        genRaw(item);
+        // the var here may be a result of a function-call, etc.
+        final StoreVarLiteral u = new StoreVarLiteral(dst, new Leaf(src), false);
+        genRaw(new FlatCodeItem(u));
       }
 
     }
@@ -298,42 +275,15 @@ public class RewriterExpr {
 
       if (isLiteralItem(srcItem)) {
 
-        srcItem.setIgnore(srcItem.getDest());
-
-        if (srcItem.isAssignVarBool()) {
-          String literal = srcItem.getAssignVarBool().getLiteral();
-          Leaf u = new Leaf(literal.equals("false") ? false : true);
-          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
-
-        if (srcItem.isAssignVarNum()) {
-          Leaf u = new Leaf(srcItem.getAssignVarNum().getLiteral());
-          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
-
-        if (srcItem.isAssignVarDefaultValueForType()) {
-          Leaf u = new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
-          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
-
-        if (srcItem.isAssignVarVar()) {
-          Leaf u = new Leaf(srcItem.getAssignVarVar().getLvalue());
-          StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
-          FlatCodeItem i = new FlatCodeItem(s);
-          genRaw(i);
-        }
+        final Leaf u = makeLeaf(srcItem);
+        final StoreFieldLiteral s = new StoreFieldLiteral(dst, u);
+        genRaw(new FlatCodeItem(s));
 
       }
 
       else {
         // the var here may be a result of a function-call, etc.
-        StoreFieldLiteral u = new StoreFieldLiteral(dst, new Leaf(src));
+        final StoreFieldLiteral u = new StoreFieldLiteral(dst, new Leaf(src));
         genRaw(new FlatCodeItem(u));
       }
 
