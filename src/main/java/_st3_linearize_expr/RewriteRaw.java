@@ -90,10 +90,6 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isAssignVarFlatCallStringCreationTmp()) {
-        // pass
-      }
-
       else if (item.isAssignVarFlatCallClassCreationTmp()) {
         rv.add(item);
       }
@@ -142,16 +138,6 @@ public class RewriteRaw {
         //rv.add(makeCallListenerVoid(afterCallIdent(), sign));
       }
 
-      else if (item.isStoreFieldVar()) {
-        // a.b = c
-        //rv.add(genAssert(item.getStoreFieldVar().getDst().getObject()));
-        rv.add(item);
-      }
-
-      else if (item.isStoreVarVar()) {
-        rv.add(item);
-      }
-
       else if (item.isAssignVarSizeof()) {
         rv.add(item);
       }
@@ -193,6 +179,10 @@ public class RewriteRaw {
 
       else if (item.isStoreVarLiteral()) {
         rv.add(item);
+      }
+
+      else if (item.isAssignVarFlatCallStringCreationTmp()) {
+        // pass
       }
 
       else {

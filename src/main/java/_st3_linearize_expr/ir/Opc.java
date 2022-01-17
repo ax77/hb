@@ -22,13 +22,9 @@ public enum Opc {
   , FlatCallVoid                       // f(a, t1, t2) -> void
   , FlatCallVoidStatic                 // constants.write_settings(32)
   //
-  , StoreFieldVar                      // a.b = c
-  , StoreVarField                      // a = b.c
-  , StoreVarVar                        // a = b
-  //
   , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
   , BuiltinFuncAssertTrue              // assert_true(cond, file, line, expr)
   //
-  , StoreFieldLiteral
-  , StoreVarLiteral
+  , StoreFieldLiteral // a.b = 1 | a.b = true | a.b = default(int) | a.b = c
+  , StoreVarLiteral   // a = 1   | a = true   | a = default(int)   | a = b 
 }

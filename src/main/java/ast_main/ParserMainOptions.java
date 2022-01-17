@@ -7,9 +7,9 @@ public abstract class ParserMainOptions {
   public static final boolean WARN_SELF_REFERENCED_DESTRUCTORS = false;
 
   public static final boolean INJECT_BUILTIN_ARR = false;
-  public static final boolean INJECT_BUILTIN_STR = false;
+  public static final boolean INJECT_BUILTIN_STR = true;
   public static final boolean INJECT_BUILTIN_STD = false;
 
-  public static final boolean FOLD_LINEARIZED_EXPRESSIONS = true;
+  public static final boolean FOLD_LINEARIZED_EXPRESSIONS = false;
   public static final boolean GENERATE_DESTRUCTOR_BODY = false;
 }

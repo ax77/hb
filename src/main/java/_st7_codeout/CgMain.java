@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import _st7_codeout.parts.GenEnums;
 import _st7_codeout.parts.GenBuiltinArray;
 import _st7_codeout.parts.GenBuiltinString;
 import _st7_codeout.parts.GenBuiltinStringStaticLabels;
 import _st7_codeout.parts.GenCommentHeader;
 import _st7_codeout.parts.GenEmpties;
+import _st7_codeout.parts.GenEnums;
 import _st7_codeout.parts.GenFunctions;
 import _st7_codeout.parts.GenInterfaces;
 import _st7_codeout.parts.GenRuntimeHeader;

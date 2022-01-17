@@ -17,9 +17,6 @@ opcodes = """
     FlatCallConstructor                ,
     FlatCallVoid                       ,
     FlatCallVoidStatic                 ,
-    StoreFieldVar                      ,
-    StoreVarField                      ,
-    StoreVarVar                        ,
     SelectionShortCircuit              ,
     BuiltinFuncAssertTrue              ,
     StoreFieldLiteral                  ,
@@ -86,8 +83,8 @@ assigns_ops = """
       || isAssignVarFieldAccess() 
       || isAssignVarFieldAccessStatic()  
       || isAssignVarFlatCallClassCreationTmp()
-      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
+      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
       || isAssignVarDefaultValueForType()     

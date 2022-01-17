@@ -23,20 +23,23 @@ static class main {
     utest b = a;
     int x = a.version;
     a.version = 64;
+    int jjj = 0;
+    jjj = 255;
+    str some_string = "1.2.3.4.5.6.7.8.9.0";
     char cc = a.getc();
     char tt = b.getc();
     if(cc == tt) {
       x = -1;
     }
-    boolean f1 = true;
-    boolean f2 = f1;
-    a.fun();
-    if(!f1){
-      b.fun();
-    }
-    int count1 = a.s.count;
-    int count2 = a.s.count();
-    int zzz = 23+64*3;
-    return x < a.version;
+//    boolean f1 = true;
+//    boolean f2 = f1;
+//    a.fun();
+//    if(!f1){
+//      b.fun();
+//    }
+//    int count1 = a.s.count;
+//    int count2 = a.s.count();
+//    int zzz = 23+64*3;
+//    return x < a.version;
   }
 }

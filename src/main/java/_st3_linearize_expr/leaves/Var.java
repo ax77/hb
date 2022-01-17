@@ -2,7 +2,6 @@ package _st3_linearize_expr.leaves;
 
 import _st7_codeout.ToStringsInternal;
 import ast_modifiers.Modifiers;
-import ast_symtab.Keywords;
 import ast_types.Type;
 import ast_vars.VarBase;
 import tokenize.Ident;

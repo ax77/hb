@@ -25,10 +25,7 @@ import _st3_linearize_expr.items.FlatCallVoid;
 import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldLiteral;
-import _st3_linearize_expr.items.StoreFieldVar;
-import _st3_linearize_expr.items.StoreVarField;
 import _st3_linearize_expr.items.StoreVarLiteral;
-import _st3_linearize_expr.items.StoreVarVar;
 import _st3_linearize_expr.leaves.Var;
 import errors.AstParseException;
 
@@ -58,10 +55,7 @@ public class FlatCodeItem {
   private FlatCallVoidStatic flatCallVoidStatic;
   private SelectionShortCircuit selectionShortCircuit;
   private StoreFieldLiteral storeFieldLiteral;
-  private StoreFieldVar storeFieldVar;
-  private StoreVarField storeVarField;
   private StoreVarLiteral storeVarLiteral;
-  private StoreVarVar storeVarVar;
 
 
   private final String uid;
@@ -114,10 +108,7 @@ public class FlatCodeItem {
   public FlatCodeItem(FlatCallVoidStatic flatCallVoidStatic) { this.uid = genUid(); this.opcode = Opc.FlatCallVoidStatic; this.flatCallVoidStatic = flatCallVoidStatic; }
   public FlatCodeItem(SelectionShortCircuit selectionShortCircuit) { this.uid = genUid(); this.opcode = Opc.SelectionShortCircuit; this.selectionShortCircuit = selectionShortCircuit; }
   public FlatCodeItem(StoreFieldLiteral storeFieldLiteral) { this.uid = genUid(); this.opcode = Opc.StoreFieldLiteral; this.storeFieldLiteral = storeFieldLiteral; }
-  public FlatCodeItem(StoreFieldVar storeFieldVar) { this.uid = genUid(); this.opcode = Opc.StoreFieldVar; this.storeFieldVar = storeFieldVar; }
-  public FlatCodeItem(StoreVarField storeVarField) { this.uid = genUid(); this.opcode = Opc.StoreVarField; this.storeVarField = storeVarField; }
   public FlatCodeItem(StoreVarLiteral storeVarLiteral) { this.uid = genUid(); this.opcode = Opc.StoreVarLiteral; this.storeVarLiteral = storeVarLiteral; }
-  public FlatCodeItem(StoreVarVar storeVarVar) { this.uid = genUid(); this.opcode = Opc.StoreVarVar; this.storeVarVar = storeVarVar; }
 
   public boolean isAssignVarAllocObject() { return this.opcode == Opc.AssignVarAllocObject; }
   public boolean isAssignVarBinop() { return this.opcode == Opc.AssignVarBinop; }
@@ -140,10 +131,7 @@ public class FlatCodeItem {
   public boolean isFlatCallVoidStatic() { return this.opcode == Opc.FlatCallVoidStatic; }
   public boolean isSelectionShortCircuit() { return this.opcode == Opc.SelectionShortCircuit; }
   public boolean isStoreFieldLiteral() { return this.opcode == Opc.StoreFieldLiteral; }
-  public boolean isStoreFieldVar() { return this.opcode == Opc.StoreFieldVar; }
-  public boolean isStoreVarField() { return this.opcode == Opc.StoreVarField; }
   public boolean isStoreVarLiteral() { return this.opcode == Opc.StoreVarLiteral; }
-  public boolean isStoreVarVar() { return this.opcode == Opc.StoreVarVar; }
 
   public List<Var> getAllVars() {
     if ( isAssignVarAllocObject() ) { return assignVarAllocObject.getAllVars(); }
@@ -167,10 +155,7 @@ public class FlatCodeItem {
     if ( isFlatCallVoidStatic() ) { return flatCallVoidStatic.getAllVars(); }
     if ( isSelectionShortCircuit() ) { return selectionShortCircuit.getAllVars(); }
     if ( isStoreFieldLiteral() ) { return storeFieldLiteral.getAllVars(); }
-    if ( isStoreFieldVar() ) { return storeFieldVar.getAllVars(); }
-    if ( isStoreVarField() ) { return storeVarField.getAllVars(); }
     if ( isStoreVarLiteral() ) { return storeVarLiteral.getAllVars(); }
-    if ( isStoreVarVar() ) { return storeVarVar.getAllVars(); }
     err();
     return null;
   }
@@ -219,10 +204,7 @@ public class FlatCodeItem {
     if(isFlatCallVoidStatic()) { return flatCallVoidStatic.toString(); }
     if(isSelectionShortCircuit()) { return selectionShortCircuit.toString(); }
     if(isStoreFieldLiteral()) { return storeFieldLiteral.toString(); }
-    if(isStoreFieldVar()) { return storeFieldVar.toString(); }
-    if(isStoreVarField()) { return storeVarField.toString(); }
     if(isStoreVarLiteral()) { return storeVarLiteral.toString(); }
-    if(isStoreVarVar()) { return storeVarVar.toString(); }
     return "?UnknownItem"; 
   }
 
@@ -248,10 +230,7 @@ public class FlatCodeItem {
   public FlatCallVoidStatic getFlatCallVoidStatic() { return this.flatCallVoidStatic; }
   public SelectionShortCircuit getSelectionShortCircuit() { return this.selectionShortCircuit; }
   public StoreFieldLiteral getStoreFieldLiteral() { return this.storeFieldLiteral; }
-  public StoreFieldVar getStoreFieldVar() { return this.storeFieldVar; }
-  public StoreVarField getStoreVarField() { return this.storeVarField; }
   public StoreVarLiteral getStoreVarLiteral() { return this.storeVarLiteral; }
-  public StoreVarVar getStoreVarVar() { return this.storeVarVar; }
 
 
   public boolean isOneOfAssigns() {
@@ -262,8 +241,8 @@ public class FlatCodeItem {
       || isAssignVarFieldAccess() 
       || isAssignVarFieldAccessStatic()  
       || isAssignVarFlatCallClassCreationTmp()
-      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResult()
+      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
       || isAssignVarDefaultValueForType()     
@@ -296,10 +275,7 @@ public class FlatCodeItem {
     if(isFlatCallVoidStatic()) { err(); }
     if(isSelectionShortCircuit()) { return selectionShortCircuit.getDest(); }
     if(isStoreFieldLiteral()) { err(); }
-    if(isStoreFieldVar()) { err(); }
-    if(isStoreVarField()) { err(); }
-    if(isStoreVarLiteral()) { return storeVarLiteral.getDst(); }
-    if(isStoreVarVar()) { err(); }
+    if(isStoreVarLiteral()) { err(); }
     throw new AstParseException("unknown item for result: " + toString());
   }
   private void err() { throw new AstParseException("unexpected item for result: " + toString()); }

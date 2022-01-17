@@ -5,7 +5,6 @@ import static ast_expr.ExpressionBase.EPRIMARY_IDENT;
 import ast_expr.ExprExpression;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_vars.VarDeclarator;
 import errors.ErrorLocation;
 
 public abstract class LvalueUtil {
