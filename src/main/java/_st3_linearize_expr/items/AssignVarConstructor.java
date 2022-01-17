@@ -6,11 +6,11 @@ import java.util.List;
 import _st3_linearize_expr.leaves.FunctionCallWithResult;
 import _st3_linearize_expr.leaves.Var;
 
-public class AssignVarFlatCallClassCreationTmp implements VarCollector {
+public class AssignVarConstructor implements VarCollector {
   private final Var lvalue;
   private final FunctionCallWithResult rvalue;
 
-  public AssignVarFlatCallClassCreationTmp(Var lvalue, FunctionCallWithResult rvalue) {
+  public AssignVarConstructor(Var lvalue, FunctionCallWithResult rvalue) {
     this.lvalue = lvalue;
     this.rvalue = rvalue;
   }

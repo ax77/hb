@@ -8,8 +8,7 @@ public enum Opc {
   , AssignVarFieldAccess               // type a = b.c
   , AssignVarFieldAccessStatic         // type f = constants.flag
   , AssignVarSizeof                    // size_t a = sizeof(b)
-  , AssignVarFlatCallClassCreationTmp  // temporary
-  , AssignVarFlatCallStringCreationTmp // temporary
+  , AssignVarConstructor               // type a = new a()
   , AssignVarFlatCallResult            // type a = f(b, c)
   , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarNum                       // type a = 1

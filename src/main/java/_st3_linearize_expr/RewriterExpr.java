@@ -25,10 +25,9 @@ import _st3_linearize_expr.items.AssignVarCastExpression;
 import _st3_linearize_expr.items.AssignVarDefaultValueForType;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
 import _st3_linearize_expr.items.AssignVarFieldAccessStatic;
-import _st3_linearize_expr.items.AssignVarFlatCallClassCreationTmp;
+import _st3_linearize_expr.items.AssignVarConstructor;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
-import _st3_linearize_expr.items.AssignVarFlatCallStringCreationTmp;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
 import _st3_linearize_expr.items.AssignVarUnop;
@@ -415,29 +414,14 @@ public class RewriterExpr {
     }
 
     else if (base == ExpressionBase.EPRIMARY_STRING) {
-
+      final Type strType = e.getResultType();
       final String sconst = e.getBeginPos().getValue();
-      Var lvalue = BuiltinsFnSet.getVar(sconst);
-      if (lvalue == null) {
-        lvalue = VarCreator.justNewVar(e.getResultType());
-      }
 
-      List<Var> args = new ArrayList<>();
-      args.add(lvalue);
+      final Var lvalue = VarCreator.justNewVar(strType);
+      final Var label = BuiltinsFnSet.getLabel(sconst);
 
-      // TODO:
-      final ClassMethodDeclaration constructor = lvalue.getType().getClassTypeFromRef().getConstructors().get(0);
-      final FunctionCallWithResult callWithResult = new FunctionCallWithResult(constructor,
-          ToStringsInternal.signToStringCall(constructor), lvalue.getType(), args);
-
-      final AssignVarFlatCallStringCreationTmp res = new AssignVarFlatCallStringCreationTmp(lvalue, sconst,
-          callWithResult);
-      final FlatCodeItem item = new FlatCodeItem(res);
-      genRaw(item);
-
-      /// label
-      BuiltinsFnSet.registerStringLabel(sconst, lvalue);
-
+      final AssignVarVar res = new AssignVarVar(lvalue, label);
+      genRaw(new FlatCodeItem(res));
     }
 
     else if (base == EPRIMARY_NUMBER) {
@@ -596,8 +580,7 @@ public class RewriterExpr {
       final FunctionCallWithResult call = new FunctionCallWithResult(constructor,
           ToStringsInternal.signToStringCall(constructor), constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);
-      final AssignVarFlatCallClassCreationTmp assignVarFlatCallResult = new AssignVarFlatCallClassCreationTmp(lvalue,
-          call);
+      final AssignVarConstructor assignVarFlatCallResult = new AssignVarConstructor(lvalue, call);
       final FlatCodeItem item = new FlatCodeItem(assignVarFlatCallResult);
       genRaw(item);
 
@@ -851,12 +834,7 @@ public class RewriterExpr {
   }
 
   private Var getStrlabel(String sconst) {
-    Var lvalue = BuiltinsFnSet.getVar(sconst);
-    if (lvalue == null) {
-      lvalue = VarCreator.justNewVar(TypeBindings.make_char()); // that's wrong :)
-    }
-    BuiltinsFnSet.registerStringLabel(sconst, lvalue);
-    return lvalue;
+    return BuiltinsFnSet.getLabel(sconst);
   }
 
 }

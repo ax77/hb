@@ -90,7 +90,7 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isAssignVarFlatCallClassCreationTmp()) {
+      else if (item.isAssignVarConstructor()) {
         rv.add(item);
       }
 
@@ -179,10 +179,6 @@ public class RewriteRaw {
 
       else if (item.isStoreVarLiteral()) {
         rv.add(item);
-      }
-
-      else if (item.isAssignVarFlatCallStringCreationTmp()) {
-        // pass
       }
 
       else {

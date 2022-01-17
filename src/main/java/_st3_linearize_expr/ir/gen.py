@@ -5,8 +5,7 @@ opcodes = """
     AssignVarFieldAccess               ,
     AssignVarFieldAccessStatic         ,
     AssignVarSizeof                    ,
-    AssignVarFlatCallClassCreationTmp  ,
-    AssignVarFlatCallStringCreationTmp ,
+    AssignVarConstructor               ,
     AssignVarFlatCallResult            ,
     AssignVarFlatCallResultStatic      ,
     AssignVarNum                       ,
@@ -84,7 +83,6 @@ assigns_ops = """
       || isAssignVarFieldAccessStatic()  
       || isAssignVarFlatCallClassCreationTmp()
       || isAssignVarFlatCallResult()
-      || isAssignVarFlatCallStringCreationTmp()
       || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
       || isAssignVarDefaultValueForType()     

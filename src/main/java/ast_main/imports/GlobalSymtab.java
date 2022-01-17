@@ -64,4 +64,12 @@ public abstract class GlobalSymtab {
     return false;
   }
 
+  public static ClassDeclaration getClassByName(Ident name, boolean mustBe) {
+    ClassDeclaration c = referenceTypes.get(name);
+    if (c == null && mustBe) {
+      throw new AstParseException("class not found: " + name.getName());
+    }
+    return c;
+  }
+
 }
