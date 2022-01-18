@@ -3,8 +3,9 @@ package _st3_linearize_expr.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st3_linearize_expr.leaves.Unop;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.VarCollector;
+import _st3_linearize_expr.rvalues.Unop;
+import _st3_linearize_expr.rvalues.Var;
 
 public class AssignVarUnop implements VarCollector {
   private final Var lvalue;

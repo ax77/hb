@@ -6,20 +6,15 @@ public enum Opc {
   , AssignVarBinop                     // type a = b + c
   , AssignVarBool                      // type a = false
   , AssignVarFieldAccess               // type a = b.c
-  , AssignVarFieldAccessStatic         // type f = constants.flag
+  , AssignVarStaticLabel               // type f = constants_flag
   , AssignVarSizeof                    // size_t a = sizeof(b)
-  , AssignVarConstructor               // type a = new a()
   , AssignVarFlatCallResult            // type a = f(b, c)
-  , AssignVarFlatCallResultStatic      // type a = io.read(b)
   , AssignVarNum                       // type a = 1
-  , AssignVarDefaultValueForType       // type a = default(type)
   , AssignVarUnop                      // type a = -b
   , AssignVarVar                       // type a = b
   , AssignVarCastExpression            // cast(expression : to_this_type) -> cast(32:char)
   //
-  , FlatCallConstructor                // initialize(_this_, t1, t2) -> void
   , FlatCallVoid                       // f(a, t1, t2) -> void
-  , FlatCallVoidStatic                 // constants.write_settings(32)
   //
   , SelectionShortCircuit              // ?(cond, btrue, bfalse) -> if(cond) { btrue; } else { bfalse; }
   , BuiltinFuncAssertTrue              // assert_true(cond, file, line, expr)

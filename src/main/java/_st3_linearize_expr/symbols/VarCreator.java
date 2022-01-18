@@ -1,6 +1,6 @@
-package _st3_linearize_expr.ir;
+package _st3_linearize_expr.symbols;
 
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Var;
 import ast_main.GlobalCounter;
 import ast_modifiers.Modifiers;
 import ast_symtab.BuiltinNames;

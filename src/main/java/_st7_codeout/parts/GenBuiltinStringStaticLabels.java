@@ -3,9 +3,9 @@ package _st7_codeout.parts;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import _st3_linearize_expr.BuiltinsFnSet;
-import _st3_linearize_expr.CEscaper;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Var;
+import _st3_linearize_expr.symbols.BuiltinsFnSet;
+import utils_oth.CEscaper;
 
 public abstract class GenBuiltinStringStaticLabels {
 

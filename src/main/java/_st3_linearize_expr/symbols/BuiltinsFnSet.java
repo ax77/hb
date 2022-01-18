@@ -1,10 +1,9 @@
-package _st3_linearize_expr;
+package _st3_linearize_expr.symbols;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import _st3_linearize_expr.ir.VarCreator;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Var;
 import ast_class.ClassDeclaration;
 import ast_main.imports.GlobalSymtab;
 import ast_symtab.BuiltinNames;

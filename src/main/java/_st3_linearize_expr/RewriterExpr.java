@@ -17,34 +17,30 @@ import java.util.List;
 import _st2_annotate.LvalueUtil;
 import _st2_annotate.TypeTraitsUtil;
 import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarBool;
 import _st3_linearize_expr.items.AssignVarCastExpression;
-import _st3_linearize_expr.items.AssignVarDefaultValueForType;
 import _st3_linearize_expr.items.AssignVarFieldAccess;
-import _st3_linearize_expr.items.AssignVarFieldAccessStatic;
-import _st3_linearize_expr.items.AssignVarConstructor;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
-import _st3_linearize_expr.items.AssignVarFlatCallResultStatic;
 import _st3_linearize_expr.items.AssignVarNum;
 import _st3_linearize_expr.items.AssignVarSizeof;
+import _st3_linearize_expr.items.AssignVarStaticLabel;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
 import _st3_linearize_expr.items.BuiltinFuncAssertTrue;
-import _st3_linearize_expr.items.FlatCallConstructor;
 import _st3_linearize_expr.items.FlatCallVoid;
-import _st3_linearize_expr.items.FlatCallVoidStatic;
 import _st3_linearize_expr.items.SelectionShortCircuit;
 import _st3_linearize_expr.items.StoreFieldLiteral;
 import _st3_linearize_expr.items.StoreVarLiteral;
-import _st3_linearize_expr.leaves.Binop;
-import _st3_linearize_expr.leaves.FieldAccess;
-import _st3_linearize_expr.leaves.FunctionCallWithResult;
-import _st3_linearize_expr.leaves.FunctionCallWithResultStatic;
-import _st3_linearize_expr.leaves.Unop;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Binop;
+import _st3_linearize_expr.rvalues.FieldAccess;
+import _st3_linearize_expr.rvalues.FunctionCallWithResult;
+import _st3_linearize_expr.rvalues.Leaf;
+import _st3_linearize_expr.rvalues.Unop;
+import _st3_linearize_expr.rvalues.Var;
+import _st3_linearize_expr.symbols.BuiltinsFnSet;
+import _st3_linearize_expr.symbols.VarCreator;
 import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_expr.ExprAlloc;
@@ -65,7 +61,6 @@ import ast_expr.ExprTypeof;
 import ast_expr.ExprUnary;
 import ast_expr.ExpressionBase;
 import ast_method.ClassMethodDeclaration;
-import ast_modifiers.Modifiers;
 import ast_sourceloc.SourceLocation;
 import ast_symtab.Keywords;
 import ast_types.ClassTypeRef;
@@ -78,6 +73,7 @@ import errors.ErrorLocation;
 import literals.IntLiteral;
 import tokenize.Ident;
 import tokenize.Token;
+import utils_oth.CEscaper;
 import utils_oth.Normalizer;
 import utils_oth.NullChecker;
 
@@ -155,7 +151,8 @@ public class RewriterExpr {
         List<Var> args = new ArrayList<>();
         args.add(lvaluevar);
         args.add(rvaluevar);
-        FlatCallConstructor flatCallConstructor = new FlatCallConstructor(funcname, args, lvaluevar);
+        // TODO:wrong,wrong,wrong.
+        FlatCallVoid flatCallConstructor = new FlatCallVoid(realClazz.getMethods().get(0), funcname, args);
         rv.add(new FlatCodeItem(flatCallConstructor));
 
       }
@@ -188,8 +185,7 @@ public class RewriterExpr {
   }
 
   private boolean isLiteralItem(final FlatCodeItem srcItem) {
-    return srcItem.isAssignVarBool() || srcItem.isAssignVarNum() || srcItem.isAssignVarDefaultValueForType()
-        || srcItem.isAssignVarVar();
+    return srcItem.isAssignVarBool() || srcItem.isAssignVarNum() || srcItem.isAssignVarVar();
   }
 
   private List<Var> genArgs(final List<ExprExpression> arguments) {
@@ -222,10 +218,6 @@ public class RewriterExpr {
 
     if (srcItem.isAssignVarNum()) {
       return new Leaf(srcItem.getAssignVarNum().getLiteral());
-    }
-
-    if (srcItem.isAssignVarDefaultValueForType()) {
-      return new Leaf(srcItem.getAssignVarDefaultValueForType().getRvalue().getType());
     }
 
     if (srcItem.isAssignVarVar()) {
@@ -465,17 +457,16 @@ public class RewriterExpr {
 
         if (method.isVoid()) {
 
-          final FlatCallVoidStatic call = new FlatCallVoidStatic(method, ToStringsInternal.signToStringCall(method),
-              args);
+          final FlatCallVoid call = new FlatCallVoid(method, ToStringsInternal.signToStringCall(method), args);
           final FlatCodeItem item = new FlatCodeItem(call);
           genRaw(item);
         }
 
         else {
-          final FunctionCallWithResultStatic call = new FunctionCallWithResultStatic(method,
+          final FunctionCallWithResult call = new FunctionCallWithResult(method,
               ToStringsInternal.signToStringCall(method), method.getType(), args);
           final Var resultVar = VarCreator.justNewVar(method.getType());
-          final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResultStatic(resultVar, call));
+          final FlatCodeItem item = new FlatCodeItem(new AssignVarFlatCallResult(resultVar, call));
           genRaw(item);
         }
       }
@@ -520,21 +511,17 @@ public class RewriterExpr {
         /// int t8 = constants->os_version;
         /// int f = t8;
         ///
-        final Var staticClassName = new Var(VarBase.STATIC_VAR, new Modifiers(), field.getType(),
-            clazz.getIdentifier());
-        final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
         final Var lhsvar = VarCreator.justNewVar(field.getType());
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccessStatic(lhsvar, access));
+        final FlatCodeItem item = new FlatCodeItem(
+            new AssignVarStaticLabel(lhsvar, clazz.getIdentifier(), field.getIdentifier()));
 
         genRaw(item);
       }
 
       else if (clazz.isEnum()) {
-        final Var staticClassName = new Var(VarBase.STATIC_VAR, new Modifiers(), field.getType(),
-            clazz.getIdentifier());
-        final FieldAccess access = new FieldAccess(staticClassName, VarCreator.copyVarDecl(field));
         final Var lhsvar = VarCreator.justNewVar(field.getType());
-        final FlatCodeItem item = new FlatCodeItem(new AssignVarFieldAccessStatic(lhsvar, access));
+        final FlatCodeItem item = new FlatCodeItem(
+            new AssignVarStaticLabel(lhsvar, clazz.getIdentifier(), field.getIdentifier()));
 
         genRaw(item);
       }
@@ -580,7 +567,7 @@ public class RewriterExpr {
       final FunctionCallWithResult call = new FunctionCallWithResult(constructor,
           ToStringsInternal.signToStringCall(constructor), constructor.getType(), args);
       final Var lvalue = VarCreator.justNewVar(typename);
-      final AssignVarConstructor assignVarFlatCallResult = new AssignVarConstructor(lvalue, call);
+      final AssignVarFlatCallResult assignVarFlatCallResult = new AssignVarFlatCallResult(lvalue, call);
       final FlatCodeItem item = new FlatCodeItem(assignVarFlatCallResult);
       genRaw(item);
 
@@ -777,7 +764,7 @@ public class RewriterExpr {
 
       final Var lhsVar = VarCreator.justNewVar(tp);
       final Var rhsVar = VarCreator.varWithName(tp, ToStringsInternal.defaultVarNameForType(tp));
-      AssignVarDefaultValueForType node = new AssignVarDefaultValueForType(lhsVar, rhsVar);
+      AssignVarVar node = new AssignVarVar(lhsVar, rhsVar);
       FlatCodeItem item = new FlatCodeItem(node);
       genRaw(item);
     }

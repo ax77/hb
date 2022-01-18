@@ -3,7 +3,8 @@ package _st3_linearize_expr.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.VarCollector;
+import _st3_linearize_expr.rvalues.Var;
 import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_types.Type;

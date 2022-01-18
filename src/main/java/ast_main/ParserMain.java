@@ -6,7 +6,7 @@ import java.util.List;
 
 import _st0_resolve.CUnitCompleteChecker;
 import _st1_templates.InstatantiationUnitBuilder;
-import _st3_linearize_expr.BuiltinsFnSet;
+import _st3_linearize_expr.symbols.BuiltinsFnSet;
 import ast_class.ClassDeclaration;
 import ast_main.imports.GlobalSymtab;
 import ast_main.imports.ImportsPreparer;

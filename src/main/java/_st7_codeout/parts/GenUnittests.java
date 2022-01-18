@@ -2,12 +2,12 @@ package _st7_codeout.parts;
 
 import java.util.List;
 
-import _st3_linearize_expr.CEscaper;
 import _st7_codeout.Ccode;
 import _st7_codeout.ToStringsInternal;
 import ast_class.ClassDeclaration;
 import ast_main.ParserMainOptions;
 import ast_method.ClassMethodDeclaration;
+import utils_oth.CEscaper;
 
 public class GenUnittests implements Ccode {
 

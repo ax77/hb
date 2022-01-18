@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import _st3_linearize_expr.LinearExpression;
 import _st3_linearize_expr.ir.FlatCodeItem;
 import _st3_linearize_expr.items.FlatCallVoid;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Var;
 import _st4_linearize_stmt.LinearBlock;
 import _st4_linearize_stmt.items.LinearBreak;
 import _st4_linearize_stmt.items.LinearContinue;

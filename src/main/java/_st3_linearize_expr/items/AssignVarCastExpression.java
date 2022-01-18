@@ -3,7 +3,8 @@ package _st3_linearize_expr.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.VarCollector;
+import _st3_linearize_expr.rvalues.Var;
 import ast_types.Type;
 
 public class AssignVarCastExpression implements VarCollector {

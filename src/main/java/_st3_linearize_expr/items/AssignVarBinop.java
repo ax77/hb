@@ -3,8 +3,9 @@ package _st3_linearize_expr.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st3_linearize_expr.leaves.Binop;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.VarCollector;
+import _st3_linearize_expr.rvalues.Binop;
+import _st3_linearize_expr.rvalues.Var;
 
 public class AssignVarBinop implements VarCollector {
   private final Var lvalue;

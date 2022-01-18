@@ -3,9 +3,10 @@ package _st3_linearize_expr.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import _st3_linearize_expr.Leaf;
-import _st3_linearize_expr.leaves.FieldAccess;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.VarCollector;
+import _st3_linearize_expr.rvalues.FieldAccess;
+import _st3_linearize_expr.rvalues.Leaf;
+import _st3_linearize_expr.rvalues.Var;
 
 public class StoreFieldLiteral implements VarCollector {
   private final FieldAccess dst;

@@ -1,15 +1,11 @@
-package _st3_linearize_expr;
+package _st3_linearize_expr.rvalues;
 
-import _st3_linearize_expr.leaves.Var;
-import _st7_codeout.ToStringsInternal;
-import ast_types.Type;
 import literals.IntLiteral;
 
 public class Leaf {
   private Var var;
   private IntLiteral intLiteral;
   private Boolean boolLiteral;
-  private Type defaultValueForType;
 
   public Leaf(Var var) {
     this.var = var;
@@ -23,20 +19,12 @@ public class Leaf {
     this.boolLiteral = boolLiteral;
   }
 
-  public Leaf(Type deffaultValueForType) {
-    this.defaultValueForType = deffaultValueForType;
-  }
-
   public boolean isVar() {
     return var != null;
   }
 
   public boolean isBool() {
     return boolLiteral != null;
-  }
-
-  public boolean isDefault() {
-    return defaultValueForType != null;
   }
 
   public boolean isIntLiteral() {
@@ -55,10 +43,6 @@ public class Leaf {
     return boolLiteral;
   }
 
-  public Type getDefaultValueForType() {
-    return defaultValueForType;
-  }
-
   @Override
   public String toString() {
     if (isVar()) {
@@ -69,9 +53,6 @@ public class Leaf {
     }
     if (isIntLiteral()) {
       return intLiteral.toString();
-    }
-    if (isDefault()) {
-      return ToStringsInternal.defaultVarNameForType(defaultValueForType);
     }
     return "Leaf ?[ 0";
   }

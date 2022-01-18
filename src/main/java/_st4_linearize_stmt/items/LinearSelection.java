@@ -1,6 +1,6 @@
 package _st4_linearize_stmt.items;
 
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Var;
 import _st4_linearize_stmt.LinearBlock;
 
 public class LinearSelection {

@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import _st3_linearize_expr.ir.FlatCodeItem;
-import _st3_linearize_expr.ir.VarCreator;
 import _st3_linearize_expr.items.AssignVarAllocObject;
 import _st3_linearize_expr.items.AssignVarBinop;
 import _st3_linearize_expr.items.AssignVarFlatCallResult;
 import _st3_linearize_expr.items.AssignVarUnop;
 import _st3_linearize_expr.items.AssignVarVar;
-import _st3_linearize_expr.leaves.Binop;
-import _st3_linearize_expr.leaves.FunctionCallWithResult;
-import _st3_linearize_expr.leaves.Unop;
-import _st3_linearize_expr.leaves.Var;
+import _st3_linearize_expr.rvalues.Binop;
+import _st3_linearize_expr.rvalues.FunctionCallWithResult;
+import _st3_linearize_expr.rvalues.Unop;
+import _st3_linearize_expr.rvalues.Var;
+import _st3_linearize_expr.symbols.VarCreator;
 import _st7_codeout.ToStringsInternal;
 import ast_expr.ExprExpression;
 import ast_method.ClassMethodDeclaration;
@@ -90,10 +90,6 @@ public class RewriteRaw {
         rv.add(item);
       }
 
-      else if (item.isAssignVarConstructor()) {
-        rv.add(item);
-      }
-
       else if (item.isAssignVarFlatCallResult()) {
         final AssignVarFlatCallResult fcall = item.getAssignVarFlatCallResult();
         final FunctionCallWithResult rvalue = fcall.getRvalue();
@@ -144,15 +140,7 @@ public class RewriteRaw {
 
       /// statics
       ///
-      else if (item.isAssignVarFieldAccessStatic()) {
-        rv.add(item);
-      }
-
-      else if (item.isFlatCallVoidStatic()) {
-        rv.add(item);
-      }
-
-      else if (item.isAssignVarFlatCallResultStatic()) {
+      else if (item.isAssignVarStaticLabel()) {
         rv.add(item);
       }
 
@@ -162,10 +150,6 @@ public class RewriteRaw {
       }
 
       else if (item.isSelectionShortCircuit()) {
-        rv.add(item);
-      }
-
-      else if (item.isAssignVarDefaultValueForType()) {
         rv.add(item);
       }
 
@@ -222,15 +206,6 @@ public class RewriteRaw {
     }
     if (lhsType.isStaticClass() || lhsType.isEnum()) {
       return false;
-    }
-    if (!rv.isEmpty()) {
-      FlatCodeItem last = rv.get(rv.size() - 1);
-      if (last.isAssignVarDefaultValueForType()) {
-        Var dest = last.getDest();
-        if (dest.getName().equals(RHS.getName())) {
-          return false;
-        }
-      }
     }
     return true;
   }

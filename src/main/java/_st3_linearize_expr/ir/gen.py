@@ -3,19 +3,14 @@ opcodes = """
     AssignVarBinop                     ,
     AssignVarBool                      ,
     AssignVarFieldAccess               ,
-    AssignVarFieldAccessStatic         ,
+    AssignVarStaticLabel               ,
     AssignVarSizeof                    ,
-    AssignVarConstructor               ,
     AssignVarFlatCallResult            ,
-    AssignVarFlatCallResultStatic      ,
     AssignVarNum                       ,
-    AssignVarDefaultValueForType       ,
     AssignVarUnop                      ,
     AssignVarVar                       ,
     AssignVarCastExpression            ,
-    FlatCallConstructor                ,
     FlatCallVoid                       ,
-    FlatCallVoidStatic                 ,
     SelectionShortCircuit              ,
     BuiltinFuncAssertTrue              ,
     StoreFieldLiteral                  ,
@@ -80,12 +75,9 @@ assigns_ops = """
       || isAssignVarBinop()  
       || isAssignVarBool()  
       || isAssignVarFieldAccess() 
-      || isAssignVarFieldAccessStatic()  
-      || isAssignVarFlatCallClassCreationTmp()
+      || isAssignVarStaticLabel()  
       || isAssignVarFlatCallResult()
-      || isAssignVarFlatCallResultStatic() 
       || isAssignVarNum() 
-      || isAssignVarDefaultValueForType()     
       || isAssignVarUnop()   
       || isAssignVarVar()
       || isAssignVarCastExpression() 
